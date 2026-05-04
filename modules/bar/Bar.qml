@@ -22,7 +22,8 @@ PanelWindow {
             "notifications": "components/Notifications.qml",
             "dock": "components/Dock.qml",
             "stats": "components/SystemResources.qml",
-            "systemControl": "components/SystemControl.qml"
+            "connectivity": "components/Connectivity.qml",
+
         };
         return map[name] || "";
     }
@@ -113,6 +114,9 @@ PanelWindow {
                             source: bar.resolveComponentSource(modelData)
                             
                             visible: {
+                                const source = bar.resolveComponentSource(modelData);
+                                if (source === "") return false;
+
                                 switch(modelData) {
                                     case "dock": return Compositor.windows.length > 0;
                                     case "nowPlaying": return Media.activePlayer !== null;
@@ -120,6 +124,7 @@ PanelWindow {
                                     default: return true;
                                 }
                             }
+
 
                             Binding {
                                 target: item
@@ -161,6 +166,9 @@ PanelWindow {
                         source: bar.resolveComponentSource(modelData)
                         
                         visible: {
+                            const source = bar.resolveComponentSource(modelData);
+                            if (source === "") return false;
+
                             switch(modelData) {
                                 case "dock": return Compositor.windows.length > 0;
                                 case "nowPlaying": return Media.activePlayer !== null;
@@ -168,6 +176,7 @@ PanelWindow {
                                 default: return true;
                             }
                         }
+
 
                         Binding {
                             target: item
@@ -214,6 +223,9 @@ PanelWindow {
                             source: bar.resolveComponentSource(modelData)
                             
                             visible: {
+                                const source = bar.resolveComponentSource(modelData);
+                                if (source === "") return false;
+
                                 switch(modelData) {
                                     case "dock": return Compositor.windows.length > 0;
                                     case "nowPlaying": return Media.activePlayer !== null;
@@ -221,6 +233,7 @@ PanelWindow {
                                     default: return true;
                                 }
                             }
+
 
                             Binding {
                                 target: item
