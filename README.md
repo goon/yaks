@@ -19,12 +19,6 @@ Blazingly mid desktop shell built with [Quickshell](https://quickshell.org/) for
 
 Whilst the shell is intended for personal use within my [Nix](https://github.com/goon/nixos) configuration, it **is** intended to be distro agnostic. It has been minimally tested on Arch and it's derivatives.
 
-> [!IMPORTANT]
-> 
-> Don't use the `install.sh` script. It's a mess and outdated.
->
-> *It was intended for Arch and derivitives, but it is no longer maintained*.
-
 > [!NOTE]
 >
 > Package names may vary across distributions. 
@@ -43,8 +37,6 @@ mesa-utils
 xdg-utils
 xdg-open
 nmcli
-upower
-powerprofilesctl
 bluez-utils
 brightnessctl
 ddcutil
