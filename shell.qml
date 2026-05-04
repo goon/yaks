@@ -7,9 +7,10 @@ import qs
 import qs.services
 
 ShellRoot {
-    // Instantiate Stats service for background tracking
+    // Instantiate background services for tracking
     property var _stats: Stats
     property var _gowall: Gowall
+    property var _display: Display
 
     objectName: "shellRoot"
     Component.onCompleted: {
