@@ -14,6 +14,7 @@ singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
 singleton Niri services/compositor/Niri.qml
 singleton Hyprland services/compositor/Hyprland.qml
+singleton Mango services/compositor/Mango.qml
 singleton Compositor services/compositor/Compositor.qml
 
 
@@ -31,7 +32,6 @@ singleton Network services/Network.qml
 singleton Clipboard services/Clipboard.qml
 singleton Bluetooth services/Bluetooth.qml
 singleton Display services/Display.qml
-singleton Battery services/Battery.qml
 singleton Notifications services/Notifications.qml
 singleton Gowall services/Gowall.qml
 
@@ -92,6 +92,8 @@ BarVolume modules/bar/components/Volume.qml
 Workspaces modules/bar/components/Workspaces.qml
 BarNotifications modules/bar/components/Notifications.qml
 BarDock modules/bar/components/Dock.qml
+Connectivity modules/bar/components/Connectivity.qml
+
 
 
 
@@ -112,9 +114,12 @@ Forecast modules/panels/forecast/Forecast.qml
 CalendarForecast modules/panels/forecast/CalendarForecast.qml
 WeatherForecast modules/panels/forecast/WeatherForecast.qml
 TrayPopout modules/panels/TrayPopout.qml
-NetworkContent modules/panels/system/NetworkContent.qml
-BluetoothContent modules/panels/system/BluetoothContent.qml
-SystemControlPopout modules/panels/system/SystemControlPopout.qml
+NetworkContent modules/panels/connectivity/NetworkContent.qml
+BluetoothContent modules/panels/connectivity/BluetoothContent.qml
+ConnectivityPopout modules/panels/connectivity/ConnectivityPopout.qml
+
+
+PowerPopout modules/panels/PowerPopout.qml
 
 FileDialogWindow modules/filedialog/FileDialogWindow.qml
 FileDialogSidebar modules/filedialog/FileDialogSidebar.qml
