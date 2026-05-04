@@ -497,9 +497,11 @@ SettingsPage {
             "notifications": { name: "Notifications", icon: "notifications" },
             "dock": { name: "Dock", icon: "vertical_split" },
             "stats": { name: "System Resources", icon: "monitoring" },
-            "systemControl": { name: "System Control", icon: "tune" },
-            "network": { name: "Network", icon: "network_wifi" },
-            "bluetooth": { name: "Bluetooth", icon: "bluetooth" }
+            "connectivity": { name: "Connectivity", icon: "wifi" },
+
+
+
+
         })
 
         // Get all available component IDs
