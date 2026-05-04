@@ -21,8 +21,10 @@ ShellRoot {
         PopoutService.systemPopoutLoader = systemPopoutLoader;
         PopoutService.audioPopoutLoader = audioPopoutLoader;
         PopoutService.forecastLoader = forecastLoader;
-        PopoutService.systemControlPopoutLoader = systemControlPopoutLoader;
+        PopoutService.powerPopoutLoader = powerPopoutLoader;
+        PopoutService.connectivityPopoutLoader = connectivityPopoutLoader;
         PopoutService.fileDialogLoader = fileDialogLoader;
+
     }
 
     Commander {
@@ -50,9 +52,15 @@ ShellRoot {
     }
 
     BaseLazyLoader {
-        id: systemControlPopoutLoader
-        source: Qt.resolvedUrl("modules/panels/system/SystemControlPopout.qml")
+        id: powerPopoutLoader
+        source: Qt.resolvedUrl("modules/panels/PowerPopout.qml")
     }
+
+    BaseLazyLoader {
+        id: connectivityPopoutLoader
+        source: Qt.resolvedUrl("modules/panels/connectivity/ConnectivityPopout.qml")
+    }
+
 
     BaseLazyLoader {
         id: notificationPopoutLoader
