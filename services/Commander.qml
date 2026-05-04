@@ -80,27 +80,17 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleSystemControl(undefined, undefined, undefined, 2); }
+        function toggle() { PopoutService.toggleConnectivityPopout(); }
         target: "network"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleSystemControl(undefined, undefined, undefined, 1); }
+        function toggle() { PopoutService.toggleConnectivityPopout(); }
         target: "bluetooth"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleSystemControl(undefined, undefined, undefined, 3); }
-        target: "battery"
-    }
-
-    IpcHandler {
-        function toggle() { PopoutService.toggleSystemControl(undefined, undefined, undefined, 0); }
+        function toggle() { PopoutService.togglePowerPopout(); }
         target: "power"
-    }
-
-    IpcHandler {
-        function toggle() { PopoutService.toggleSystemControl(undefined, undefined, undefined, 0); }
-        target: "systemcontrol"
     }
 }

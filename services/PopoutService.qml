@@ -16,8 +16,9 @@ QtObject {
     property var notificationPopoutLoader: null
     property var notificationManager: null
     property var powerPopoutLoader: null
-    property var systemControlPopoutLoader: null
+    property var connectivityPopoutLoader: null
     property var fileDialogLoader: null
+
 
     // Helper properties
     readonly property var launcher: launcherLoader ? launcherLoader.item : null
@@ -28,12 +29,14 @@ QtObject {
     readonly property var forecast: forecastLoader ? forecastLoader.item : null
     readonly property var notificationPopout: notificationPopoutLoader ? notificationPopoutLoader.item : null
     readonly property var powerPopout: powerPopoutLoader ? powerPopoutLoader.item : null
-    readonly property var systemControlPopout: systemControlPopoutLoader ? systemControlPopoutLoader.item : null
+    readonly property var connectivityPopout: connectivityPopoutLoader ? connectivityPopoutLoader.item : null
     readonly property var fileDialog: fileDialogLoader ? fileDialogLoader.item : null
+
 
     property Item launcherItem: null
     property Item systemResourcesItem: null
-    property Item systemControlItem: null
+    property Item connectivityItem: null
+
     property Item volumeItem: null
     property Item notificationsItem: null
     property Item nowPlayingItem: null
@@ -130,12 +133,8 @@ QtObject {
     }
 
     function togglePowerPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && systemControlItem) {
-            var coords = _getCoordinatesFromItem(systemControlItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(systemControlPopoutLoader, screenX, barLeft, barRight);
-        _toggle(systemControlPopoutLoader);
+        _applyAnchors(powerPopoutLoader, screenX, barLeft, barRight);
+        _toggle(powerPopoutLoader);
     }
 
     // --- OPEN ACTIONS (FOR HOVER) ---
@@ -185,29 +184,24 @@ QtObject {
     }
 
     function openPowerPopout() {
-        var sx, bl, br;
-        if (systemControlItem) {
-            var c = _getCoordinatesFromItem(systemControlItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(systemControlPopoutLoader, sx, bl, br);
+        _ensureOpen(powerPopoutLoader);
     }
 
-    function toggleSystemControl(screenX, barLeft, barRight, initialTab) {
-        if (screenX === undefined && systemControlItem) {
-            var coords = _getCoordinatesFromItem(systemControlItem);
+    function toggleConnectivityPopout(screenX, barLeft, barRight, initialTab) {
+        if (screenX === undefined && connectivityItem) {
+            var coords = _getCoordinatesFromItem(connectivityItem);
             if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
         }
-        _applyAnchors(systemControlPopoutLoader, screenX, barLeft, barRight);
+        _applyAnchors(connectivityPopoutLoader, screenX, barLeft, barRight);
         
-        if (systemControlPopoutLoader) {
-            systemControlPopoutLoader.runWhenReady(() => {
-                if (systemControlPopoutLoader.item.panelState !== "Open") {
-                    if (initialTab !== undefined) systemControlPopoutLoader.item.switchToTab(initialTab);
+        if (connectivityPopoutLoader) {
+            connectivityPopoutLoader.runWhenReady(() => {
+                if (connectivityPopoutLoader.item.panelState !== "Open") {
+                    if (initialTab !== undefined) connectivityPopoutLoader.item.switchToTab(initialTab);
                 }
             });
         }
-        _toggle(systemControlPopoutLoader);
+        _toggle(connectivityPopoutLoader);
     }
 
     function openFileDialog(initialPath, callback) {

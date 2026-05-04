@@ -41,7 +41,8 @@ QtObject {
     property int popoutMargin: 8
     property bool barFitToContent: true
     property var barLeftComponents: []
-    property var barCenterComponents: ["workspaces", "dock", "stats", "tray", "volume", "systemControl", "notifications", "clock"]
+    property var barCenterComponents: ["workspaces", "dock", "stats", "tray", "volume", "connectivity", "notifications", "clock"]
+
     property var barRightComponents: []
     property var themedApps: ({
         "gtk": false,
@@ -359,21 +360,21 @@ QtObject {
                         root.barLeftComponents = data.barLeftComponents.map((c) => {
                         return c === "smartCapsule" ? "nowPlaying" : c;
                     }).filter((c) => {
-                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "battery" && c !== "weather";
+                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "weather" && c !== "systemControl";
                     });
 
                     if (data.hasOwnProperty("barCenterComponents"))
                         root.barCenterComponents = data.barCenterComponents.map((c) => {
                         return c === "smartCapsule" ? "nowPlaying" : c;
                     }).filter((c) => {
-                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "battery" && c !== "weather";
+                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "weather" && c !== "systemControl";
                     });
 
                     if (data.hasOwnProperty("barRightComponents"))
                         root.barRightComponents = data.barRightComponents.map((c) => {
                         return c === "smartCapsule" ? "nowPlaying" : c;
                     }).filter((c) => {
-                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "battery" && c !== "weather";
+                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "weather" && c !== "systemControl";
                     });
 
                     if (data.hasOwnProperty("themedApps")) {
