@@ -20,7 +20,43 @@ BasePopoutWindow {
 
             width: parent.width
             spacing: Theme.geometry.spacing.large
-            padding: Theme.geometry.spacing.dynamicPadding
+
+            BaseBlock {
+                Layout.fillWidth: true
+                spacing: Theme.geometry.spacing.large
+                paddingVertical: Theme.geometry.spacing.large
+
+                BaseText {
+                    text: "DISPLAY"
+                    color: Theme.colors.muted
+                    pixelSize: Theme.typography.size.base
+                    weight: Theme.typography.weights.bold
+                    Layout.alignment: Qt.AlignHCenter
+                    font.letterSpacing: 2
+                }
+
+                BaseSlider {
+                    id: brightnessSlider
+                    Layout.fillWidth: true
+                    trackHeight: 38
+                    value: Display.brightness
+                    icon: "light_mode"
+                    suffix: Math.round(Display.brightness * 100)
+                    iconColor: Theme.colors.text
+                    suffixColor: Theme.colors.text
+                    iconSize: Theme.dimensions.iconMedium
+                    from: 0
+                    to: 1
+                    stepSize: 0.01
+                    onValueChangedByUser: Display.setBrightness(value)
+
+                    Binding on value {
+                        value: Display.brightness
+                        when: !brightnessSlider.pressed
+                        restoreMode: Binding.RestoreBinding
+                    }
+                }
+            }
 
             BaseBlock {
                 id: powerSection
