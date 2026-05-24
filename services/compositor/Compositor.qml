@@ -83,7 +83,7 @@ QtObject {
                 if (a.colIdx !== b.colIdx) {
                     return a.colIdx - b.colIdx;
                 }
-                return a.id - b.id; // Deterministic tie-breaker
+                return String(a.id).localeCompare(String(b.id)); // Deterministic tie-breaker (string-safe)
             });
             root.windows = sortedWins;
         });
@@ -146,7 +146,7 @@ QtObject {
 
                     if (idxA !== idxB) return idxA - idxB;
                     if (a.colIdx !== b.colIdx) return a.colIdx - b.colIdx;
-                    return a.id - b.id; // Deterministic tie-breaker
+                    return String(a.id).localeCompare(String(b.id)); // Deterministic tie-breaker (string-safe)
                 });
                 root.windows = sortedWins;
             });
