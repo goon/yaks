@@ -56,19 +56,6 @@ PanelWindow {
         right: Preferences.barMarginSide
     }
 
-    Item {
-        id: emptyBlurArea
-        width: 1; height: 1
-        opacity: 0
-    }
-
-    BackgroundEffect.blurRegion: blurRegionItem
-
-    Region {
-        id: blurRegionItem
-        item: Preferences.blurEnabled ? barBackground : emptyBlurArea
-        radius: Theme.geometry.radius
-    }
 
     BaseBackground {
         id: barBackground

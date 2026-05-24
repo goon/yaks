@@ -31,16 +31,6 @@ PanelWindow {
     implicitHeight: card.implicitHeight + (shadowPadding * 2)
     screen: Quickshell.screens[0]
 
-    Item {
-        id: dummyItem
-        width: 1; height: 1
-        opacity: 0
-    }
-
-    BackgroundEffect.blurRegion: Region {
-        item: (Preferences.blurEnabled && popup.active) ? card : dummyItem
-        radius: Theme.geometry.radius
-    }
 
     anchors {
         top: true

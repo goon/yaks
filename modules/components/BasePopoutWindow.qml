@@ -238,79 +238,12 @@ Item {
 
         anchors { top: true; bottom: true; left: true; right: true }
 
-        Item {
-            id: emptyBlurArea
-            width: 1; height: 1
-            opacity: 0
-        }
-
-        BackgroundEffect.blurRegion: blurRegionItem
-
-        Region {
-            id: blurRegionItem
-            item: Preferences.blurEnabled ? visibleBlurArea : emptyBlurArea
-            radius: {
-                var isTopClipped = contentWrapper.y < 0;
-                var isBottomClipped = (contentWrapper.y + contentWrapper.height) > container.height;
-                // If the QML is being mathematically sliced by the container bounds, drop the
-                // blur radius to 0 to prevent Wayland's rounded blur corners from protruding past
-                // the sharp straight QML limits.
-                if (isTopClipped || isBottomClipped) return 0;
-                return root.radius;
-            }
-        }
 
         // Click-outside-to-close
         MouseArea {
             anchors.fill: parent
             enabled: root.interactive
             onClicked: root.close()
-
-            // Desktop Dimming - Dynamically CutOut
-            Shape {
-                id: dimmingArea
-                anchors.fill: parent
-                opacity: Preferences.desktopDim * root.animOpacity
-                visible: opacity > 0
-                layer.enabled: true
-                layer.samples: 4
-
-                ShapePath {
-                    fillColor: "black"
-                    strokeColor: "transparent"
-                    fillRule: ShapePath.OddEvenFill
-
-                    // Sub-path 1: Entire Screen
-                    startX: 0; startY: 0
-                    PathLine { x: dimmingArea.width; y: 0 }
-                    PathLine { x: dimmingArea.width; y: dimmingArea.height }
-                    PathLine { x: 0; y: dimmingArea.height }
-                    PathLine { x: 0; y: 0 }
-
-                    // Sub-path 2: The Rounded Cutout
-                    PathMove { x: root.barX + Preferences.cornerRadius; y: root.barY }
-                    PathLine { x: root.barX + root.barW - Preferences.cornerRadius; y: root.barY }
-                    PathArc { 
-                        x: root.barX + root.barW; y: root.barY + Preferences.cornerRadius
-                        radiusX: Preferences.cornerRadius; radiusY: Preferences.cornerRadius 
-                    }
-                    PathLine { x: root.barX + root.barW; y: root.barY + root.barH - Preferences.cornerRadius }
-                    PathArc { 
-                        x: root.barX + root.barW - Preferences.cornerRadius; y: root.barY + root.barH
-                        radiusX: Preferences.cornerRadius; radiusY: Preferences.cornerRadius 
-                    }
-                    PathLine { x: root.barX + Preferences.cornerRadius; y: root.barY + root.barH }
-                    PathArc { 
-                        x: root.barX; y: root.barY + root.barH - Preferences.cornerRadius
-                        radiusX: Preferences.cornerRadius; radiusY: Preferences.cornerRadius 
-                    }
-                    PathLine { x: root.barX; y: root.barY + Preferences.cornerRadius }
-                    PathArc { 
-                        x: root.barX + Preferences.cornerRadius; y: root.barY
-                        radiusX: Preferences.cornerRadius; radiusY: Preferences.cornerRadius 
-                    }
-                }
-            }
         }
 
         // Panel Content Area (Static & Clipped)
@@ -382,3 +315,5 @@ Item {
     }
 
 }
+
+
