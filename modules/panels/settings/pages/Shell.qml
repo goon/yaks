@@ -116,33 +116,6 @@ SettingsPage {
 
             }
 
-            BaseText {
-                text: "Desktop Dimming:"
-                pixelSize: Theme.typography.size.medium
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Theme.geometry.spacing.large
-
-                BaseSlider {
-                    id: desktopDimSlider
-
-                    Layout.fillWidth: true
-                    from: 0
-                    to: 0.5
-                    stepSize: 0.01
-                    value: Preferences.desktopDim
-                    onMoved: Preferences.desktopDim = value
-                }
-
-                BaseText {
-                    text: Math.round(desktopDimSlider.value * 100) + "%"
-                    Layout.preferredWidth: 40
-                    horizontalAlignment: Text.AlignRight
-                }
-
-            }
 
             BaseText {
                 text: "Popout Trigger:"
@@ -165,17 +138,6 @@ SettingsPage {
                 }
             }
 
-            BaseText {
-                text: "Background Blur:"
-                pixelSize: Theme.typography.size.medium
-            }
-
-            BaseSwitch {
-                id: blurSwitch
-                checked: Preferences.blurEnabled
-                onToggled: Preferences.blurEnabled = checked
-                Layout.alignment: Qt.AlignLeft
-            }
 
             BaseText {
                 text: "Background Opacity:"
