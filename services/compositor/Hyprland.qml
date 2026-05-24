@@ -164,17 +164,17 @@ Singleton {
 
     // --- Actions (Unified Interface) ---
     function switchToWorkspace(workspaceIdx) {
-        QsHyprland.Hyprland.dispatch("workspace " + workspaceIdx);
+        QsHyprland.Hyprland.dispatch("hl.dsp.focus({ workspace = " + workspaceIdx + " })");
     }
 
     function focusWindow(windowId) {
         var addr = windowId;
         if (!addr.startsWith("0x")) addr = "0x" + addr;
-        QsHyprland.Hyprland.dispatch("focuswindow address:" + addr);
+        QsHyprland.Hyprland.dispatch("hl.dsp.focus({ window = \"address:" + addr + "\" })");
     }
 
     function quit() {
-        QsHyprland.Hyprland.dispatch("exit");
+        QsHyprland.Hyprland.dispatch("hl.dsp.exit()");
     }
 
     // --- Initial Polling / Manual Refresh ---
