@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
-import Quickshell.Hyprland
-import qs
+import Quickshell.Hyprland as QsHyprland
 pragma Singleton
 
 Singleton {
@@ -19,15 +18,15 @@ Singleton {
     function mapWorkspaces() {
         var res = [];
         var activeId = -1;
-        var maxId = 0;
-        var focusedWs = Hyprland.focusedWorkspace;
+        var maxId = 5;
+        var focusedWs = QsHyprland.Hyprland.focusedWorkspace;
         if (focusedWs) {
             activeId = focusedWs.id;
-            if (activeId > 0) maxId = activeId;
+            if (activeId > maxId) maxId = activeId;
         }
 
         var wsMap = {};
-        var wsList = Hyprland.workspaces.values;
+        var wsList = QsHyprland.Hyprland.workspaces.values;
         for (var i = 0; i < wsList.length; i++) {
             var ws = wsList[i];
             if (ws.id < 0) continue; // Skip special
@@ -68,7 +67,7 @@ Singleton {
     // Helper to map native toplevels to our unified format
     function mapWindows() {
         var res = [];
-        var tlList = Hyprland.toplevels.values;
+        var tlList = QsHyprland.Hyprland.toplevels.values;
         
         for (var i = 0; i < tlList.length; i++) {
             var win = tlList[i];
@@ -104,15 +103,15 @@ Singleton {
 
     // --- State Bridging ---
     Connections {
-        target: Hyprland.workspaces
+        target: QsHyprland.Hyprland.workspaces
         function onObjectInsertedPost() { triggerWorkspacesUpdate(); }
         function onObjectRemovedPost() { triggerWorkspacesUpdate(); }
     }
 
     Connections {
-        target: Hyprland.toplevels
+        target: QsHyprland.Hyprland.toplevels
         function onObjectInsertedPost() { 
-            Hyprland.refreshToplevels(); 
+            QsHyprland.Hyprland.refreshToplevels(); 
             triggerWindowsUpdate(); 
             retryUpdateTimer.restart();
         }
@@ -120,7 +119,7 @@ Singleton {
     }
 
     Connections {
-        target: Hyprland
+        target: QsHyprland.Hyprland
         function onFocusedWorkspaceChanged() { triggerWorkspacesUpdate(); }
         function onActiveToplevelChanged() { 
             triggerWindowsUpdate(); 
@@ -151,7 +150,7 @@ Singleton {
     }
 
     function triggerFocusedWindowUpdate() {
-        var win = Hyprland.activeToplevel;
+        var win = QsHyprland.Hyprland.activeToplevel;
         var mapped = null;
         if (win) {
             mapped = {
@@ -165,17 +164,17 @@ Singleton {
 
     // --- Actions (Unified Interface) ---
     function switchToWorkspace(workspaceIdx) {
-        Hyprland.dispatch("workspace " + workspaceIdx);
+        QsHyprland.Hyprland.dispatch("workspace " + workspaceIdx);
     }
 
     function focusWindow(windowId) {
         var addr = windowId;
         if (!addr.startsWith("0x")) addr = "0x" + addr;
-        Hyprland.dispatch("focuswindow address:" + addr);
+        QsHyprland.Hyprland.dispatch("focuswindow address:" + addr);
     }
 
     function quit() {
-        Hyprland.dispatch("exit");
+        QsHyprland.Hyprland.dispatch("exit");
     }
 
     // --- Initial Polling / Manual Refresh ---
@@ -192,7 +191,7 @@ Singleton {
     }
 
     function queryFocusedWindow(callback) {
-        var win = Hyprland.activeToplevel;
+        var win = QsHyprland.Hyprland.activeToplevel;
         var mapped = null;
         if (win) {
             mapped = {
@@ -206,8 +205,8 @@ Singleton {
     }
 
     Component.onCompleted: {
-        Hyprland.refreshWorkspaces();
-        Hyprland.refreshToplevels();
+        QsHyprland.Hyprland.refreshWorkspaces();
+        QsHyprland.Hyprland.refreshToplevels();
         triggerWorkspacesUpdate();
         triggerWindowsUpdate();
         triggerFocusedWindowUpdate();
