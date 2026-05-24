@@ -121,6 +121,10 @@ QtObject {
             if (!name)
                 return "";
 
+            // Fast path: skip iconPath() call entirely if not in theme
+            if (!Quickshell.hasThemeIcon(name))
+                return "";
+
             var path = Quickshell.iconPath(name, true);
             if (!path)
                 return "";
@@ -146,57 +150,51 @@ QtObject {
         if (iconName.startsWith("symbol:") || iconName.includes("symbol:"))
             return "";
 
+        // Absolute / protocol paths bypass theme lookup entirely
         if (iconName.startsWith("/") || iconName.startsWith("file://") || iconName.startsWith("image://")) {
             if (iconName.startsWith("/"))
                 return "file://" + iconName;
-
             return iconName;
         }
 
-        // --- Proper Fix: Lookup in Desktop Entries first ---
+        // --- Desktop Entry lookup first ---
         var desktopIcon = getIconFromDesktop(iconName);
         if (desktopIcon) {
+            // If the desktop icon is itself a path, return it directly
+            if (desktopIcon.startsWith("/") || desktopIcon.startsWith("file://"))
+                return desktopIcon.startsWith("/") ? "file://" + desktopIcon : desktopIcon;
             var dp = getVerifiedPath(desktopIcon);
             if (dp) return dp;
         }
 
+        // --- Direct theme hit ---
         var v = getVerifiedPath(iconName);
-        if (v)
-            return v;
+        if (v) return v;
 
-        var variations = [];
+        // --- Fallback variations (only built when needed) ---
         var lowerIcon = iconName.toLowerCase();
-        
-        variations.push(iconName);
-        variations.push(lowerIcon);
+        var variations = [lowerIcon];
 
         if (iconName.length > 0) {
             var firstChar = iconName.charAt(0);
             var rest = iconName.slice(1);
-            if (firstChar === firstChar.toUpperCase())
-                variations.push(firstChar.toLowerCase() + rest);
-            else
-                variations.push(firstChar.toUpperCase() + rest);
+            variations.push(firstChar === firstChar.toUpperCase()
+                ? firstChar.toLowerCase() + rest
+                : firstChar.toUpperCase() + rest);
         }
-        
-        // Use symbolic/panel variants ONLY as fallbacks
+
+        // Symbolic / indicator / panel suffixes
         variations.push(lowerIcon + "-symbolic");
         variations.push(iconName + "-symbolic");
         variations.push(lowerIcon + "-indicator");
-        variations.push(iconName + "-indicator");
         variations.push(lowerIcon + "-panel");
-        variations.push(iconName + "-panel");
 
         if (iconName.indexOf('.') !== -1)
             variations.push(iconName.split('.').pop());
 
         for (var i = 0; i < variations.length; i++) {
-            if (variations[i] === iconName && i > 0)
-                continue;
-
             var hv = getVerifiedPath(variations[i]);
-            if (hv)
-                return hv;
+            if (hv) return hv;
         }
         return "";
     }
