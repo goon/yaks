@@ -18,7 +18,7 @@ PanelWindow {
     property var activeNotification: null
     property bool active: false
 
-    property real shadowPadding: 24
+    property real shadowPadding: 0
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
@@ -88,9 +88,9 @@ PanelWindow {
         opacity: popup.active ? 1 : 0
         scale: popup.active ? 1 : 0.8
 
-        layer.enabled: true
+        layer.enabled: false
         layer.effect: MultiEffect {
-            shadowEnabled: true
+            shadowEnabled: false
             shadowOpacity: 0.4
             shadowBlur: 1.0
             shadowVerticalOffset: 3
