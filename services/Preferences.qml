@@ -9,13 +9,13 @@ QtObject {
 
     property bool loaded: false
     property int notificationMode: 0 // 0: Normal, 1: DND (Silent)
-    property double desktopDim: 0.25 // 0.0 to 1.0 (Opacity)
+
     property string weatherLat: "51.50853"
     property string weatherLong: "-0.12574"
     property string weatherLocationName: "London, England, United Kingdom"
     property string weatherUnit: "celsius" // "celsius" or "fahrenheit"
     property bool gowallEnabled: false // Global Toggle
-    property bool blurEnabled: false
+
     property double blurOpacity: 0.5
     property double blockOpacity: 0.7
     property double themedAppsOpacity: 1.0
@@ -78,13 +78,13 @@ QtObject {
 
         var data = {
             "notificationMode": root.notificationMode,
-            "desktopDim": root.desktopDim,
+
             "weatherLat": root.weatherLat,
             "weatherLong": root.weatherLong,
             "weatherLocationName": root.weatherLocationName,
             "weatherUnit": root.weatherUnit,
             "gowallEnabled": root.gowallEnabled,
-            "blurEnabled": root.blurEnabled,
+
             "blurOpacity": root.blurOpacity,
             "blockOpacity": root.blockOpacity,
             "themedAppsOpacity": root.themedAppsOpacity,
@@ -138,7 +138,7 @@ QtObject {
             "currentTheme": root.currentTheme,
             "shellFont": root.shellFont,
             "cornerRadius": root.cornerRadius,
-            "desktopDim": root.desktopDim,
+
             "barPosition": root.barPosition,
             "barFitToContent": root.barFitToContent,
             "barDensity": root.barDensity,
@@ -148,7 +148,7 @@ QtObject {
             "barLeftComponents": JSON.parse(JSON.stringify(root.barLeftComponents)),
             "barCenterComponents": JSON.parse(JSON.stringify(root.barCenterComponents)),
             "barRightComponents": JSON.parse(JSON.stringify(root.barRightComponents)),
-            "blurEnabled": root.blurEnabled,
+
             "blurOpacity": root.blurOpacity,
             "blockOpacity": root.blockOpacity,
             "themedAppsOpacity": root.themedAppsOpacity
@@ -168,7 +168,7 @@ QtObject {
         
         if (preset.hasOwnProperty("shellFont")) root.shellFont = preset.shellFont;
         if (preset.hasOwnProperty("cornerRadius")) root.cornerRadius = preset.cornerRadius;
-        if (preset.hasOwnProperty("desktopDim")) root.desktopDim = preset.desktopDim;
+
         if (preset.hasOwnProperty("barPosition")) root.barPosition = preset.barPosition;
         if (preset.hasOwnProperty("barFitToContent")) root.barFitToContent = preset.barFitToContent;
         if (preset.hasOwnProperty("barDensity")) root.barDensity = preset.barDensity;
@@ -179,7 +179,7 @@ QtObject {
         if (preset.hasOwnProperty("barLeftComponents")) root.barLeftComponents = preset.barLeftComponents;
         if (preset.hasOwnProperty("barCenterComponents")) root.barCenterComponents = preset.barCenterComponents;
         if (preset.hasOwnProperty("barRightComponents")) root.barRightComponents = preset.barRightComponents;
-        if (preset.hasOwnProperty("blurEnabled")) root.blurEnabled = preset.blurEnabled;
+
         if (preset.hasOwnProperty("blurOpacity")) root.blurOpacity = preset.blurOpacity;
         if (preset.hasOwnProperty("blockOpacity")) root.blockOpacity = preset.blockOpacity;
         if (preset.hasOwnProperty("themedAppsOpacity")) root.themedAppsOpacity = preset.themedAppsOpacity;
@@ -210,13 +210,13 @@ QtObject {
 
     onThemedAppsChanged: requestSave("themedApps")
     onNotificationModeChanged: requestSave("notificationMode")
-    onDesktopDimChanged: requestSave("desktopDim")
+
     onWeatherLatChanged: requestSave("weatherLat")
     onWeatherLongChanged: requestSave("weatherLong")
     onWeatherLocationNameChanged: requestSave("weatherLocationName")
     onWeatherUnitChanged: requestSave("weatherUnit")
     onGowallEnabledChanged: requestSave("gowallEnabled")
-    onBlurEnabledChanged: requestSave("blurEnabled")
+
     onBlurOpacityChanged: requestSave("blurOpacity")
     onBlockOpacityChanged: requestSave("blockOpacity")
     onThemedAppsOpacityChanged: requestSave("themedAppsOpacity")
@@ -285,8 +285,6 @@ QtObject {
                     if (data.hasOwnProperty("notificationMode"))
                         root.notificationMode = data.notificationMode;
 
-                    if (data.hasOwnProperty("desktopDim"))
-                        root.desktopDim = data.desktopDim;
 
                     if (data.hasOwnProperty("weatherLat"))
                         root.weatherLat = data.weatherLat;
@@ -303,8 +301,7 @@ QtObject {
                     if (data.hasOwnProperty("gowallEnabled"))
                         root.gowallEnabled = data.gowallEnabled;
 
-                    if (data.hasOwnProperty("blurEnabled"))
-                        root.blurEnabled = data.blurEnabled;
+
 
                     if (data.hasOwnProperty("blurOpacity"))
                         root.blurOpacity = data.blurOpacity;
