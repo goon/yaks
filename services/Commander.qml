@@ -55,18 +55,8 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleMediaPopout(); }
-        target: "media"
-    }
-
-    IpcHandler {
         function toggle() { PopoutService.toggleNotificationPopout(); }
         target: "notifications"
-    }
-
-    IpcHandler {
-        function toggle() { PopoutService.toggleSystemPopout(); }
-        target: "system"
     }
 
     IpcHandler {
@@ -74,10 +64,6 @@ Item {
         target: "volume"
     }
 
-    IpcHandler {
-        function toggle() { PopoutService.toggleForecast(); }
-        target: "forecast"
-    }
 
     IpcHandler {
         function toggle() { PopoutService.toggleConnectivityPopout(); }

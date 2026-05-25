@@ -9,10 +9,7 @@ QtObject {
     // Pointers to the various loaders injected by shell.qml
     property var launcherLoader: null
     property var settingsLoader: null
-    property var mediaPopoutLoader: null
-    property var systemPopoutLoader: null
     property var audioPopoutLoader: null
-    property var forecastLoader: null
     property var notificationPopoutLoader: null
     property var notificationManager: null
     property var powerPopoutLoader: null
@@ -24,10 +21,7 @@ QtObject {
     // Helper properties
     readonly property var launcher: launcherLoader ? launcherLoader.item : null
     readonly property var settings: settingsLoader ? settingsLoader.item : null
-    readonly property var mediaPopout: mediaPopoutLoader ? mediaPopoutLoader.item : null
-    readonly property var systemPopout: systemPopoutLoader ? systemPopoutLoader.item : null
     readonly property var audioPopout: audioPopoutLoader ? audioPopoutLoader.item : null
-    readonly property var forecast: forecastLoader ? forecastLoader.item : null
     readonly property var notificationPopout: notificationPopoutLoader ? notificationPopoutLoader.item : null
     readonly property var powerPopout: powerPopoutLoader ? powerPopoutLoader.item : null
     readonly property var connectivityPopout: connectivityPopoutLoader ? connectivityPopoutLoader.item : null
@@ -36,12 +30,10 @@ QtObject {
 
 
     property Item launcherItem: null
-    property Item systemResourcesItem: null
     property Item connectivityItem: null
 
     property Item volumeItem: null
     property Item notificationsItem: null
-    property Item nowPlayingItem: null
     property Item clockItem: null
     property Item dashboardItem: null
 
@@ -99,14 +91,6 @@ QtObject {
         _toggle(dashboardPopoutLoader);
     }
 
-    function toggleMediaPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && nowPlayingItem) {
-            var coords = _getCoordinatesFromItem(nowPlayingItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(mediaPopoutLoader, screenX, barLeft, barRight);
-        _toggle(mediaPopoutLoader);
-    }
 
     function toggleNotificationPopout(screenX, barLeft, barRight) {
         if (screenX === undefined && notificationsItem) {
@@ -115,15 +99,6 @@ QtObject {
         }
         _applyAnchors(notificationPopoutLoader, screenX, barLeft, barRight);
         _toggle(notificationPopoutLoader);
-    }
-
-    function toggleSystemPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && systemResourcesItem) {
-            var coords = _getCoordinatesFromItem(systemResourcesItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(systemPopoutLoader, screenX, barLeft, barRight);
-        _toggle(systemPopoutLoader);
     }
 
     function toggleAudioPopout(screenX, barLeft, barRight) {
@@ -135,30 +110,12 @@ QtObject {
         _toggle(audioPopoutLoader);
     }
 
-    function toggleForecast(screenX, barLeft, barRight) {
-        if (screenX === undefined && clockItem) {
-            var coords = _getCoordinatesFromItem(clockItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(forecastLoader, screenX, barLeft, barRight);
-        _toggle(forecastLoader);
-    }
-
     function togglePowerPopout(screenX, barLeft, barRight) {
         _applyAnchors(powerPopoutLoader, screenX, barLeft, barRight);
         _toggle(powerPopoutLoader);
     }
 
     // --- OPEN ACTIONS (FOR HOVER) ---
-    function openMediaPopout() {
-        var sx, bl, br;
-        if (nowPlayingItem) {
-            var c = _getCoordinatesFromItem(nowPlayingItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(mediaPopoutLoader, sx, bl, br);
-    }
-    
     function openNotificationPopout() {
         var sx, bl, br;
         if (notificationsItem) {
@@ -166,15 +123,6 @@ QtObject {
             if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
         }
         _ensureOpen(notificationPopoutLoader, sx, bl, br);
-    }
-
-    function openSystemPopout() {
-        var sx, bl, br;
-        if (systemResourcesItem) {
-            var c = _getCoordinatesFromItem(systemResourcesItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(systemPopoutLoader, sx, bl, br);
     }
 
     function openAudioPopout() {
@@ -186,14 +134,6 @@ QtObject {
         _ensureOpen(audioPopoutLoader, sx, bl, br);
     }
 
-    function openForecast() {
-        var sx, bl, br;
-        if (clockItem) {
-            var c = _getCoordinatesFromItem(clockItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(forecastLoader, sx, bl, br);
-    }
 
     function openPowerPopout() {
         _ensureOpen(powerPopoutLoader);

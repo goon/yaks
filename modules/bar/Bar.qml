@@ -18,12 +18,9 @@ PanelWindow {
             "tray": "components/Tray.qml",
             "volume": "components/Volume.qml",
             "clock": "components/Clock.qml",
-            "nowPlaying": "components/NowPlaying.qml",
             "notifications": "components/Notifications.qml",
             "dock": "components/Dock.qml",
-            "stats": "components/SystemResources.qml",
             "connectivity": "components/Connectivity.qml",
-
         };
         return map[name] || "";
     }
@@ -106,7 +103,6 @@ PanelWindow {
 
                                 switch(modelData) {
                                     case "dock": return Compositor.windows.length > 0;
-                                    case "nowPlaying": return Media.activePlayer !== null;
                                     case "tray": return TrayService.itemCount > 0;
                                     default: return true;
                                 }
@@ -158,7 +154,6 @@ PanelWindow {
 
                             switch(modelData) {
                                 case "dock": return Compositor.windows.length > 0;
-                                case "nowPlaying": return Media.activePlayer !== null;
                                 case "tray": return TrayService.itemCount > 0;
                                 default: return true;
                             }
@@ -215,7 +210,6 @@ PanelWindow {
 
                                 switch(modelData) {
                                     case "dock": return Compositor.windows.length > 0;
-                                    case "nowPlaying": return Media.activePlayer !== null;
                                     case "tray": return TrayService.itemCount > 0;
                                     default: return true;
                                 }

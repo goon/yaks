@@ -117,13 +117,8 @@ DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 
 # Popouts
 
-MediaPopout modules/panels/MediaPopout.qml
 NotificationPopout modules/panels/NotificationPopout.qml
-SystemPopout modules/panels/SystemPopout.qml
 AudioPopout modules/panels/AudioPopout.qml
-Forecast modules/panels/forecast/Forecast.qml
-CalendarForecast modules/panels/forecast/CalendarForecast.qml
-WeatherForecast modules/panels/forecast/WeatherForecast.qml
 TrayPopout modules/panels/TrayPopout.qml
 NetworkContent modules/panels/connectivity/NetworkContent.qml
 BluetoothContent modules/panels/connectivity/BluetoothContent.qml

@@ -17,12 +17,9 @@ ShellRoot {
     Component.onCompleted: {
         PopoutService.launcherLoader = launcherLoader;
         PopoutService.settingsLoader = settingsLoader;
-        PopoutService.mediaPopoutLoader = mediaPopoutLoader;
         PopoutService.notificationPopoutLoader = notificationPopoutLoader;
         PopoutService.notificationManager = Notifications;
-        PopoutService.systemPopoutLoader = systemPopoutLoader;
         PopoutService.audioPopoutLoader = audioPopoutLoader;
-        PopoutService.forecastLoader = forecastLoader;
         PopoutService.powerPopoutLoader = powerPopoutLoader;
         PopoutService.connectivityPopoutLoader = connectivityPopoutLoader;
         PopoutService.fileDialogLoader = fileDialogLoader;
@@ -54,11 +51,6 @@ ShellRoot {
     }
 
     BaseLazyLoader {
-        id: mediaPopoutLoader
-        source: Qt.resolvedUrl("modules/panels/MediaPopout.qml")
-    }
-
-    BaseLazyLoader {
         id: powerPopoutLoader
         source: Qt.resolvedUrl("modules/panels/PowerPopout.qml")
     }
@@ -67,7 +59,6 @@ ShellRoot {
         id: connectivityPopoutLoader
         source: Qt.resolvedUrl("modules/panels/connectivity/ConnectivityPopout.qml")
     }
-
 
     BaseLazyLoader {
         id: notificationPopoutLoader
@@ -78,18 +69,8 @@ ShellRoot {
     }
 
     BaseLazyLoader {
-        id: systemPopoutLoader
-        source: Qt.resolvedUrl("modules/panels/SystemPopout.qml")
-    }
-
-    BaseLazyLoader {
         id: audioPopoutLoader
         source: Qt.resolvedUrl("modules/panels/AudioPopout.qml")
-    }
-
-    BaseLazyLoader {
-        id: forecastLoader
-        source: Qt.resolvedUrl("modules/panels/forecast/Forecast.qml")
     }
 
     BaseLazyLoader {

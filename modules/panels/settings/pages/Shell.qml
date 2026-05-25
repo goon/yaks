@@ -455,15 +455,9 @@ SettingsPage {
             "tray": { name: "System Tray", icon: "keyboard_arrow_up" },
             "volume": { name: "Volume Control", icon: "volume_up" },
             "clock": { name: "Clock", icon: "schedule" },
-            "nowPlaying": { name: "Now Playing", icon: "music_note" },
             "notifications": { name: "Notifications", icon: "notifications" },
             "dock": { name: "Dock", icon: "vertical_split" },
-            "stats": { name: "System Resources", icon: "monitoring" },
             "connectivity": { name: "Connectivity", icon: "wifi" },
-
-
-
-
         })
 
         // Get all available component IDs

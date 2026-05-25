@@ -42,7 +42,7 @@ QtObject {
     property int popoutMargin: 8
     property bool barFitToContent: true
     property var barLeftComponents: []
-    property var barCenterComponents: ["workspaces", "dock", "stats", "tray", "volume", "connectivity", "notifications", "clock"]
+    property var barCenterComponents: ["workspaces", "dock", "tray", "volume", "connectivity", "notifications", "clock"]
 
     property var barRightComponents: []
     property var themedApps: ({
@@ -358,27 +358,14 @@ QtObject {
                     if (data.hasOwnProperty("barFitToContent"))
                         root.barFitToContent = data.barFitToContent;
 
-
                     if (data.hasOwnProperty("barLeftComponents"))
-                        root.barLeftComponents = data.barLeftComponents.map((c) => {
-                        return c === "smartCapsule" ? "nowPlaying" : c;
-                    }).filter((c) => {
-                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "weather" && c !== "systemControl";
-                    });
+                        root.barLeftComponents = data.barLeftComponents;
 
                     if (data.hasOwnProperty("barCenterComponents"))
-                        root.barCenterComponents = data.barCenterComponents.map((c) => {
-                        return c === "smartCapsule" ? "nowPlaying" : c;
-                    }).filter((c) => {
-                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "weather" && c !== "systemControl";
-                    });
+                        root.barCenterComponents = data.barCenterComponents;
 
                     if (data.hasOwnProperty("barRightComponents"))
-                        root.barRightComponents = data.barRightComponents.map((c) => {
-                        return c === "smartCapsule" ? "nowPlaying" : c;
-                    }).filter((c) => {
-                        return c !== "arch" && c !== "windowTitle" && c !== "network" && c !== "weather" && c !== "systemControl";
-                    });
+                        root.barRightComponents = data.barRightComponents;
 
                     if (data.hasOwnProperty("themedApps")) {
                         // Merge with defaults to ensure new app keys are present
