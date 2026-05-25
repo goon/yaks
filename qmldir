@@ -34,6 +34,7 @@ singleton Bluetooth services/Bluetooth.qml
 singleton Display services/Display.qml
 singleton Notifications services/Notifications.qml
 singleton Gowall services/Gowall.qml
+singleton Cava services/Cava.qml
 
 
 # Services (Types)
@@ -103,6 +104,16 @@ SettingsPage modules/panels/settings/SettingsPage.qml
 Settings modules/panels/settings/Settings.qml
 # Sidebar deleted
 BaseGraph modules/components/BaseGraph.qml
+
+# Dashboard
+DashboardPage modules/dashboard/DashboardPage.qml
+DashboardPopout modules/dashboard/DashboardPopout.qml
+DashboardCalendar modules/dashboard/components/DashboardCalendar.qml
+DashboardWeather modules/dashboard/components/DashboardWeather.qml
+DashboardMedia modules/dashboard/components/DashboardMedia.qml
+DashboardUserPanel modules/dashboard/components/DashboardUserPanel.qml
+DashboardClock modules/dashboard/components/DashboardClock.qml
+DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 
 # Popouts
 
