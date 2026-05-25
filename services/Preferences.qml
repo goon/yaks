@@ -15,6 +15,7 @@ QtObject {
     property string weatherLocationName: "London, England, United Kingdom"
     property string weatherUnit: "celsius" // "celsius" or "fahrenheit"
     property bool gowallEnabled: false // Global Toggle
+    property string customAvatar: ""
 
     property double blurOpacity: 0.5
     property double blockOpacity: 0.7
@@ -84,6 +85,7 @@ QtObject {
             "weatherLocationName": root.weatherLocationName,
             "weatherUnit": root.weatherUnit,
             "gowallEnabled": root.gowallEnabled,
+            "customAvatar": root.customAvatar,
 
             "blurOpacity": root.blurOpacity,
             "blockOpacity": root.blockOpacity,
@@ -216,6 +218,7 @@ QtObject {
     onWeatherLocationNameChanged: requestSave("weatherLocationName")
     onWeatherUnitChanged: requestSave("weatherUnit")
     onGowallEnabledChanged: requestSave("gowallEnabled")
+    onCustomAvatarChanged: requestSave("customAvatar")
 
     onBlurOpacityChanged: requestSave("blurOpacity")
     onBlockOpacityChanged: requestSave("blockOpacity")
@@ -300,6 +303,9 @@ QtObject {
 
                     if (data.hasOwnProperty("gowallEnabled"))
                         root.gowallEnabled = data.gowallEnabled;
+
+                    if (data.hasOwnProperty("customAvatar"))
+                        root.customAvatar = data.customAvatar;
 
 
 

@@ -16,7 +16,7 @@ QtObject {
     // derived properties for easy access
     property string temperature: currentWeather ? Math.round(currentWeather.temperature_2m ?? currentWeather.temperature) + "°" : "--"
     property string feelsLike: currentWeather ? Math.round(currentWeather.apparent_temperature) + "°" : "--"
-    property string windSpeed: currentWeather ? Math.round(currentWeather.wind_speed_10m) + (Preferences.weatherUnit === "fahrenheit" ? " mph" : " km/h") : "--"
+    property string windSpeed: currentWeather ? Math.round(currentWeather.wind_speed_10m) + " mph" : "--"
     property string humidity: currentWeather ? Math.round(currentWeather.relative_humidity_2m) + "%" : "--"
     property int weatherCode: currentWeather ? (currentWeather.weather_code ?? currentWeather.weathercode) : -1
     property bool isDay: currentWeather ? currentWeather.is_day === 1 : true
@@ -66,7 +66,7 @@ QtObject {
                  "&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m" + 
                  "&hourly=temperature_2m,weather_code" +
                  "&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto" + 
-                 "&temperature_unit=" + Preferences.weatherUnit;
+                 "&temperature_unit=celsius&wind_speed_unit=mph";
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 loading = false;
@@ -115,10 +115,6 @@ QtObject {
     // Refresh when location or units change
     onLatitudeChanged: fetchDebounce.restart()
     onLongitudeChanged: fetchDebounce.restart()
-    property Connections unitConnections: Connections {
-        target: Preferences
-        function onWeatherUnitChanged() { root.fetchWeather(); }
-    }
     Component.onCompleted: fetchWeather()
 
     autoRefreshTimer: Timer {

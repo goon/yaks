@@ -11,6 +11,7 @@ ShellRoot {
     property var _stats: Stats
     property var _gowall: Gowall
     property var _display: Display
+    property var _cava: Cava
 
     objectName: "shellRoot"
     Component.onCompleted: {
@@ -25,7 +26,7 @@ ShellRoot {
         PopoutService.powerPopoutLoader = powerPopoutLoader;
         PopoutService.connectivityPopoutLoader = connectivityPopoutLoader;
         PopoutService.fileDialogLoader = fileDialogLoader;
-
+        PopoutService.dashboardPopoutLoader = dashboardPopoutLoader;
     }
 
     Commander {
@@ -45,6 +46,11 @@ ShellRoot {
     BaseLazyLoader {
         id: settingsLoader
         source: Qt.resolvedUrl("modules/panels/settings/Settings.qml")
+    }
+
+    BaseLazyLoader {
+        id: dashboardPopoutLoader
+        source: Qt.resolvedUrl("modules/dashboard/DashboardPopout.qml")
     }
 
     BaseLazyLoader {

@@ -93,4 +93,9 @@ Item {
         function toggle() { PopoutService.togglePowerPopout(); }
         target: "power"
     }
+
+    IpcHandler {
+        function toggle() { PopoutService.toggleDashboardPopout(); }
+        target: "dashboard"
+    }
 }

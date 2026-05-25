@@ -18,6 +18,7 @@ QtObject {
     property var powerPopoutLoader: null
     property var connectivityPopoutLoader: null
     property var fileDialogLoader: null
+    property var dashboardPopoutLoader: null
 
 
     // Helper properties
@@ -31,6 +32,7 @@ QtObject {
     readonly property var powerPopout: powerPopoutLoader ? powerPopoutLoader.item : null
     readonly property var connectivityPopout: connectivityPopoutLoader ? connectivityPopoutLoader.item : null
     readonly property var fileDialog: fileDialogLoader ? fileDialogLoader.item : null
+    readonly property var dashboardPopout: dashboardPopoutLoader ? dashboardPopoutLoader.item : null
 
 
     property Item launcherItem: null
@@ -41,6 +43,7 @@ QtObject {
     property Item notificationsItem: null
     property Item nowPlayingItem: null
     property Item clockItem: null
+    property Item dashboardItem: null
 
     property var activePanelLoader: null
     property int barWidth: 0
@@ -86,6 +89,15 @@ QtObject {
     }
 
     function toggleSettings() { _toggle(settingsLoader); }
+
+    function toggleDashboardPopout(screenX, barLeft, barRight) {
+        if (screenX === undefined && dashboardItem) {
+            var coords = _getCoordinatesFromItem(dashboardItem);
+            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
+        }
+        _applyAnchors(dashboardPopoutLoader, screenX, barLeft, barRight);
+        _toggle(dashboardPopoutLoader);
+    }
 
     function toggleMediaPopout(screenX, barLeft, barRight) {
         if (screenX === undefined && nowPlayingItem) {
@@ -185,6 +197,15 @@ QtObject {
 
     function openPowerPopout() {
         _ensureOpen(powerPopoutLoader);
+    }
+
+    function openDashboardPopout() {
+        var sx, bl, br;
+        if (dashboardItem) {
+            var c = _getCoordinatesFromItem(dashboardItem);
+            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
+        }
+        _ensureOpen(dashboardPopoutLoader, sx, bl, br);
     }
 
     function toggleConnectivityPopout(screenX, barLeft, barRight, initialTab) {
