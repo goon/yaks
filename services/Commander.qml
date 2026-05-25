@@ -66,12 +66,12 @@ Item {
 
 
     IpcHandler {
-        function toggle() { PopoutService.toggleConnectivityPopout(); }
+        function toggle() { PopoutService.toggleNetworkPopout(); }
         target: "network"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleConnectivityPopout(); }
+        function toggle() { PopoutService.toggleBluetoothPopout(); }
         target: "bluetooth"
     }
 

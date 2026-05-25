@@ -122,7 +122,8 @@ AudioPopout modules/panels/AudioPopout.qml
 TrayPopout modules/panels/TrayPopout.qml
 NetworkContent modules/panels/connectivity/NetworkContent.qml
 BluetoothContent modules/panels/connectivity/BluetoothContent.qml
-ConnectivityPopout modules/panels/connectivity/ConnectivityPopout.qml
+NetworkPopout modules/panels/connectivity/NetworkPopout.qml
+BluetoothPopout modules/panels/connectivity/BluetoothPopout.qml
 
 
 PowerPopout modules/panels/PowerPopout.qml

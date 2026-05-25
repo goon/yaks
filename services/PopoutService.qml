@@ -13,7 +13,8 @@ QtObject {
     property var notificationPopoutLoader: null
     property var notificationManager: null
     property var powerPopoutLoader: null
-    property var connectivityPopoutLoader: null
+    property var networkPopoutLoader: null
+    property var bluetoothPopoutLoader: null
     property var fileDialogLoader: null
     property var dashboardPopoutLoader: null
 
@@ -24,13 +25,15 @@ QtObject {
     readonly property var audioPopout: audioPopoutLoader ? audioPopoutLoader.item : null
     readonly property var notificationPopout: notificationPopoutLoader ? notificationPopoutLoader.item : null
     readonly property var powerPopout: powerPopoutLoader ? powerPopoutLoader.item : null
-    readonly property var connectivityPopout: connectivityPopoutLoader ? connectivityPopoutLoader.item : null
+    readonly property var networkPopout: networkPopoutLoader ? networkPopoutLoader.item : null
+    readonly property var bluetoothPopout: bluetoothPopoutLoader ? bluetoothPopoutLoader.item : null
     readonly property var fileDialog: fileDialogLoader ? fileDialogLoader.item : null
     readonly property var dashboardPopout: dashboardPopoutLoader ? dashboardPopoutLoader.item : null
 
 
     property Item launcherItem: null
-    property Item connectivityItem: null
+    property Item networkItem: null
+    property Item bluetoothItem: null
 
     property Item volumeItem: null
     property Item notificationsItem: null
@@ -148,21 +151,42 @@ QtObject {
         _ensureOpen(dashboardPopoutLoader, sx, bl, br);
     }
 
-    function toggleConnectivityPopout(screenX, barLeft, barRight, initialTab) {
-        if (screenX === undefined && connectivityItem) {
-            var coords = _getCoordinatesFromItem(connectivityItem);
+    function openNetworkPopout() {
+        var sx, bl, br;
+        if (networkItem) {
+            var c = _getCoordinatesFromItem(networkItem);
+            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
+        }
+        _ensureOpen(networkPopoutLoader, sx, bl, br);
+    }
+
+    function openBluetoothPopout() {
+        var sx, bl, br;
+        if (bluetoothItem) {
+            var c = _getCoordinatesFromItem(bluetoothItem);
+            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
+        }
+        _ensureOpen(bluetoothPopoutLoader, sx, bl, br);
+    }
+
+
+
+    function toggleNetworkPopout(screenX, barLeft, barRight) {
+        if (screenX === undefined && networkItem) {
+            var coords = _getCoordinatesFromItem(networkItem);
             if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
         }
-        _applyAnchors(connectivityPopoutLoader, screenX, barLeft, barRight);
-        
-        if (connectivityPopoutLoader) {
-            connectivityPopoutLoader.runWhenReady(() => {
-                if (connectivityPopoutLoader.item.panelState !== "Open") {
-                    if (initialTab !== undefined) connectivityPopoutLoader.item.switchToTab(initialTab);
-                }
-            });
+        _applyAnchors(networkPopoutLoader, screenX, barLeft, barRight);
+        _toggle(networkPopoutLoader);
+    }
+
+    function toggleBluetoothPopout(screenX, barLeft, barRight) {
+        if (screenX === undefined && bluetoothItem) {
+            var coords = _getCoordinatesFromItem(bluetoothItem);
+            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
         }
-        _toggle(connectivityPopoutLoader);
+        _applyAnchors(bluetoothPopoutLoader, screenX, barLeft, barRight);
+        _toggle(bluetoothPopoutLoader);
     }
 
     function openFileDialog(initialPath, callback) {

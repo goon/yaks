@@ -523,15 +523,185 @@ BaseBlock {
                 }
             }
 
-            BaseButton {
-                size: Theme.dimensions.iconBase
-                hoverGradient: true
-                icon: Media.playbackState === MprisPlaybackState.Playing ? "pause" : "play_arrow"
+            // Scalloped badge play/pause button (replicates screenshot design)
+            Item {
+                id: scalloppedPlayBtn
+                width: 64
+                height: 64
                 enabled: Media.activePlayer !== null
-                onClicked: Media.togglePlayPause()
-                
-                iconRotation: Media.playbackState === MprisPlaybackState.Playing ? 180 : 0
-                Behavior on iconRotation { BaseAnimation { speed: "fast"; easing.type: Easing.InOutBack } }
+                opacity: enabled ? 1.0 : 0.4
+
+                Behavior on opacity { NumberAnimation { duration: Theme.animations.fast } }
+
+                // Press scale feedback
+                property real pressScale: 1.0
+                scale: pressScale
+                Behavior on pressScale { NumberAnimation { duration: 80; easing.type: Easing.OutQuad } }
+
+                // Scalloped shape — border doubles as a progress ring
+                Canvas {
+                    id: scallopsCanvas
+                    anchors.fill: parent
+
+                    // Reactive repaint triggers
+                    property color fillColor:    Theme.alpha(Theme.colors.primary, 0.18)
+                    property color trackColor:   Theme.alpha(Theme.colors.secondary, 0.22)
+                    property color primaryColor: Theme.colors.primary
+                    property color secondaryColor: Theme.colors.secondary
+                    property bool  hovered:      scallopsMouseArea.containsMouse
+                    property real  progress:       Media.progressRatio
+                    // Animate toward the raw progress so MPRIS jumps are smoothed
+                    property real  smoothProgress: progress
+                    property real  wavePhase:      0.0
+
+                    Behavior on smoothProgress {
+                        NumberAnimation { duration: 1000; easing.type: Easing.Linear }
+                    }
+
+                    // Continuously rotate the gradient while playing
+                    NumberAnimation on wavePhase {
+                        from: 0; to: Math.PI * 2
+                        duration: 3000
+                        loops: Animation.Infinite
+                        running: Media.playbackState === MprisPlaybackState.Playing
+                        easing.type: Easing.Linear
+                    }
+
+                    onFillColorChanged:       requestPaint()
+                    onTrackColorChanged:      requestPaint()
+                    onPrimaryColorChanged:    requestPaint()
+                    onSecondaryColorChanged:  requestPaint()
+                    onHoveredChanged:         requestPaint()
+                    onSmoothProgressChanged:  requestPaint()
+                    onWavePhaseChanged:       requestPaint()
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.clearRect(0, 0, width, height);
+
+                        var cx      = width  / 2;
+                        var cy      = height / 2;
+                        var nPeaks  = 10;
+                        var baseR   = width  / 2 - 5;
+                        var amp     = baseR * 0.12;
+                        // Use exact nPeaks*20 samples so the curve divides evenly
+                        var samples = nPeaks * 20;   // 200 samples, NO closing duplicate
+
+                        // 1. Build points (open — pts[0] != pts[last])
+                        var pts = [];
+                        for (var i = 0; i < samples; i++) {
+                            var angle = (i / samples) * Math.PI * 2 - Math.PI / 2;
+                            var r     = baseR + amp * Math.cos(nPeaks * angle);
+                            pts.push({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
+                        }
+
+                        // 2. Smooth closed path via quadratic bezier midpoints (C1 continuity)
+                        function buildSmoothedClosedPath() {
+                            ctx.beginPath();
+                            var n = pts.length;
+                            // start at midpoint between last and first point
+                            var sx = (pts[n-1].x + pts[0].x) / 2;
+                            var sy = (pts[n-1].y + pts[0].y) / 2;
+                            ctx.moveTo(sx, sy);
+                            for (var k = 0; k < n; k++) {
+                                var p    = pts[k];
+                                var pn   = pts[(k + 1) % n];
+                                var midX = (p.x + pn.x) / 2;
+                                var midY = (p.y + pn.y) / 2;
+                                ctx.quadraticCurveTo(p.x, p.y, midX, midY);
+                            }
+                            ctx.closePath();
+                        }
+
+                        // 3. Fill
+                        buildSmoothedClosedPath();
+                        ctx.fillStyle = hovered
+                            ? Theme.alpha(Theme.colors.primary, 0.28)
+                            : Theme.alpha(Theme.colors.primary, 0.18);
+                        ctx.fill();
+
+                        ctx.lineWidth = 2.5;
+                        ctx.lineJoin  = "round";
+                        ctx.lineCap   = "round";
+
+                        // 4. Background track — full dim outline
+                        buildSmoothedClosedPath();
+                        ctx.strokeStyle = trackColor;
+                        ctx.stroke();
+
+                        // 5. Progress arc — sub-point fractional endpoint for pixel-smooth movement
+                        var clamp      = Math.max(0, Math.min(1, smoothProgress));
+                        var exactPos   = clamp * samples;           // float index
+                        var floorIdx   = Math.floor(exactPos);      // whole points to draw
+                        var frac       = exactPos - floorIdx;       // fractional remainder
+
+                        if (floorIdx > 0 || frac > 0) {
+                            // Rotating gradient sweeps with wavePhase
+                            var gx1  = cx + cx * Math.cos(wavePhase);
+                            var gy1  = cy + cy * Math.sin(wavePhase);
+                            var gx2  = cx + cx * Math.cos(wavePhase + Math.PI);
+                            var gy2  = cy + cy * Math.sin(wavePhase + Math.PI);
+                            var grad = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
+                            grad.addColorStop(0.0, primaryColor);
+                            grad.addColorStop(1.0, secondaryColor);
+
+                            // Open partial path using bezier midpoints up to floorIdx
+                            ctx.beginPath();
+                            var startMidX = (pts[0].x + pts[1 % pts.length].x) / 2;
+                            var startMidY = (pts[0].y + pts[1 % pts.length].y) / 2;
+                            ctx.moveTo(startMidX, startMidY);
+                            var limit = Math.min(floorIdx, pts.length - 1);
+                            for (var pk = 1; pk < limit; pk++) {
+                                var pp   = pts[pk];
+                                var ppn  = pts[pk + 1];
+                                var pmx  = (pp.x + ppn.x) / 2;
+                                var pmy  = (pp.y + ppn.y) / 2;
+                                ctx.quadraticCurveTo(pp.x, pp.y, pmx, pmy);
+                            }
+                            // Fractional final segment: interpolate between pts[limit] and pts[limit+1]
+                            if (frac > 0 && limit < pts.length - 1) {
+                                var pa  = pts[limit];
+                                var pb  = pts[limit + 1];
+                                var tipX = pa.x + (pb.x - pa.x) * frac;
+                                var tipY = pa.y + (pb.y - pa.y) * frac;
+                                ctx.lineTo(tipX, tipY);
+                            }
+                            ctx.strokeStyle = grad;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // Play / Pause icon centered inside the scallop
+                Text {
+                    anchors.centerIn: parent
+                    font.family:      Theme.typography.iconFamily
+                    font.pixelSize:   22
+                    color:            Theme.colors.primary
+                    text:             Media.playbackState === MprisPlaybackState.Playing ? "\ue034" : "\ue037"
+                    // pause = U+E034  play_arrow = U+E037  (Material Symbols codepoints)
+
+                    Behavior on text {
+                        // Cross-fade on state change
+                        SequentialAnimation {
+                            NumberAnimation { target: scalloppedPlayBtn; property: "opacity"; to: 0.6; duration: 80 }
+                            NumberAnimation { target: scalloppedPlayBtn; property: "opacity"; to: scalloppedPlayBtn.enabled ? 1.0 : 0.4; duration: 80 }
+                        }
+                    }
+                }
+
+                MouseArea {
+                    id: scallopsMouseArea
+                    anchors.fill:  parent
+                    hoverEnabled:  true
+                    cursorShape:   scalloppedPlayBtn.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    enabled:       scalloppedPlayBtn.enabled
+
+                    onPressed:  scalloppedPlayBtn.pressScale = 0.93
+                    onReleased: scalloppedPlayBtn.pressScale = 1.0
+                    onClicked:  Media.togglePlayPause()
+                    onContainsMouseChanged: scallopsCanvas.requestPaint()
+                }
             }
 
             BaseButton {

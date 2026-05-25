@@ -21,7 +21,8 @@ ShellRoot {
         PopoutService.notificationManager = Notifications;
         PopoutService.audioPopoutLoader = audioPopoutLoader;
         PopoutService.powerPopoutLoader = powerPopoutLoader;
-        PopoutService.connectivityPopoutLoader = connectivityPopoutLoader;
+        PopoutService.networkPopoutLoader = networkPopoutLoader;
+        PopoutService.bluetoothPopoutLoader = bluetoothPopoutLoader;
         PopoutService.fileDialogLoader = fileDialogLoader;
         PopoutService.dashboardPopoutLoader = dashboardPopoutLoader;
     }
@@ -56,8 +57,13 @@ ShellRoot {
     }
 
     BaseLazyLoader {
-        id: connectivityPopoutLoader
-        source: Qt.resolvedUrl("modules/panels/connectivity/ConnectivityPopout.qml")
+        id: networkPopoutLoader
+        source: Qt.resolvedUrl("modules/panels/connectivity/NetworkPopout.qml")
+    }
+
+    BaseLazyLoader {
+        id: bluetoothPopoutLoader
+        source: Qt.resolvedUrl("modules/panels/connectivity/BluetoothPopout.qml")
     }
 
     BaseLazyLoader {
