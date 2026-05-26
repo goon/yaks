@@ -89,7 +89,14 @@ Rectangle {
         // Premium Selection Gradient Border
         Item {
             anchors.fill: parent
-            visible: root.premiumHover && mouseArea.containsMouse
+            opacity: (root.premiumHover && mouseArea.containsMouse) ? 1.0 : 0.0
+            visible: opacity > 0.0 || (root.premiumHover && mouseArea.containsMouse)
+            
+            Behavior on opacity {
+                BaseAnimation {
+                    speed: "fast"
+                }
+            }
             
             // The Gradient "Border"
             Rectangle {
@@ -133,6 +140,12 @@ Rectangle {
                     return Theme.colors.background;
 
                 return Theme.colors.transparent;
+            }
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Theme.animations.fast
+                }
             }
         }
     }

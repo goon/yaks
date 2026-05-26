@@ -35,6 +35,15 @@ QtObject {
     property var currentThemeColors: ({})
     property string currentWallpaper: ""
 
+    // Indicators Block Settings & Reordering
+    property bool indicatorsShowWifi: true
+    property bool indicatorsShowBluetooth: true
+    property bool indicatorsShowVolume: true
+    property bool indicatorsShowNotifications: true
+    property bool indicatorsShowTray: true
+    property bool indicatorsTrayExpanded: false
+    property var indicatorsOrder: ["wifi", "bluetooth", "volume", "notifications"]
+
     property int barHeight: 55
     property int barMarginTop: 10
     property int barMarginSide: 10
@@ -42,7 +51,7 @@ QtObject {
     property int popoutMargin: 8
     property bool barFitToContent: true
     property var barLeftComponents: []
-    property var barCenterComponents: ["workspaces", "dock", "tray", "volume", "connectivity", "notifications", "clock"]
+    property var barCenterComponents: ["workspaces", "dock", "indicators", "clock"]
 
     property var barRightComponents: []
     property var themedApps: ({
@@ -114,7 +123,14 @@ QtObject {
             "currentThemeColors": root.currentThemeColors,
             "currentWallpaper": root.currentWallpaper,
             "workspaceStyle": root.workspaceStyle,
-            "presets": root.presets
+            "presets": root.presets,
+            "indicatorsShowWifi": root.indicatorsShowWifi,
+            "indicatorsShowBluetooth": root.indicatorsShowBluetooth,
+            "indicatorsShowVolume": root.indicatorsShowVolume,
+            "indicatorsShowNotifications": root.indicatorsShowNotifications,
+            "indicatorsOrder": root.indicatorsOrder,
+            "indicatorsShowTray": root.indicatorsShowTray,
+            "indicatorsTrayExpanded": root.indicatorsTrayExpanded
         };
 
         // Atomic write: Write to temp file then move to original
@@ -251,6 +267,13 @@ QtObject {
     onWallpaperDirectoryChanged: requestSave("wallpaperDirectory")
     onCurrentThemeColorsChanged: requestSave("currentThemeColors")
     onCurrentWallpaperChanged: requestSave("currentWallpaper")
+    onIndicatorsShowWifiChanged: requestSave("indicatorsShowWifi")
+    onIndicatorsShowBluetoothChanged: requestSave("indicatorsShowBluetooth")
+    onIndicatorsShowNotificationsChanged: requestSave("indicatorsShowNotifications")
+    onIndicatorsOrderChanged: requestSave("indicatorsOrder")
+    onIndicatorsShowTrayChanged: requestSave("indicatorsShowTray")
+    onIndicatorsShowVolumeChanged: requestSave("indicatorsShowVolume")
+    onIndicatorsTrayExpandedChanged: requestSave("indicatorsTrayExpanded")
     Component.onCompleted: {
         prefsFileView.reload();
     }
@@ -358,14 +381,113 @@ QtObject {
                     if (data.hasOwnProperty("barFitToContent"))
                         root.barFitToContent = data.barFitToContent;
 
-                    if (data.hasOwnProperty("barLeftComponents"))
-                        root.barLeftComponents = data.barLeftComponents;
+                    if (data.hasOwnProperty("barLeftComponents")) {
+                        let arr = data.barLeftComponents;
+                        let migrated = [];
+                        let hasIndicators = false;
+                        for (let i = 0; i < arr.length; i++) {
+                            let c = arr[i];
+                            if (c === "connectivity" || c === "status" || c === "indicators") {
+                                if (!hasIndicators) { migrated.push("indicators"); hasIndicators = true; }
+                            } else if (c === "tray" || c === "notifications" || c === "volume") {
+                                // filter out
+                            } else {
+                                migrated.push(c);
+                            }
+                        }
+                        if (!hasIndicators && (arr.includes("tray") || arr.includes("volume"))) {
+                            let idx = arr.indexOf("tray");
+                            if (idx === -1) idx = arr.indexOf("volume");
+                            migrated.splice(idx, 0, "indicators");
+                        }
+                        root.barLeftComponents = migrated;
+                    }
 
-                    if (data.hasOwnProperty("barCenterComponents"))
-                        root.barCenterComponents = data.barCenterComponents;
+                    if (data.hasOwnProperty("barCenterComponents")) {
+                        let arr = data.barCenterComponents;
+                        let migrated = [];
+                        let hasIndicators = false;
+                        for (let i = 0; i < arr.length; i++) {
+                            let c = arr[i];
+                            if (c === "connectivity" || c === "status" || c === "indicators") {
+                                if (!hasIndicators) { migrated.push("indicators"); hasIndicators = true; }
+                            } else if (c === "tray" || c === "notifications" || c === "volume") {
+                                // filter out
+                            } else {
+                                migrated.push(c);
+                            }
+                        }
+                        if (!hasIndicators && (arr.includes("tray") || arr.includes("volume"))) {
+                            let idx = arr.indexOf("tray");
+                            if (idx === -1) idx = arr.indexOf("volume");
+                            migrated.splice(idx, 0, "indicators");
+                        }
+                        root.barCenterComponents = migrated;
+                    }
 
-                    if (data.hasOwnProperty("barRightComponents"))
-                        root.barRightComponents = data.barRightComponents;
+                    if (data.hasOwnProperty("barRightComponents")) {
+                        let arr = data.barRightComponents;
+                        let migrated = [];
+                        let hasIndicators = false;
+                        for (let i = 0; i < arr.length; i++) {
+                            let c = arr[i];
+                            if (c === "connectivity" || c === "status" || c === "indicators") {
+                                if (!hasIndicators) { migrated.push("indicators"); hasIndicators = true; }
+                            } else if (c === "tray" || c === "notifications" || c === "volume") {
+                                // filter out
+                            } else {
+                                migrated.push(c);
+                            }
+                        }
+                        if (!hasIndicators && (arr.includes("tray") || arr.includes("volume"))) {
+                            let idx = arr.indexOf("tray");
+                            if (idx === -1) idx = arr.indexOf("volume");
+                            migrated.splice(idx, 0, "indicators");
+                        }
+                        root.barRightComponents = migrated;
+                    }
+
+                    if (data.hasOwnProperty("indicatorsShowWifi"))
+                        root.indicatorsShowWifi = data.indicatorsShowWifi;
+                    else if (data.hasOwnProperty("statusShowWifi"))
+                        root.indicatorsShowWifi = data.statusShowWifi;
+                    else if (data.hasOwnProperty("connectivityShowWifi"))
+                        root.indicatorsShowWifi = data.connectivityShowWifi;
+
+                    if (data.hasOwnProperty("indicatorsShowBluetooth"))
+                        root.indicatorsShowBluetooth = data.indicatorsShowBluetooth;
+                    else if (data.hasOwnProperty("statusShowBluetooth"))
+                        root.indicatorsShowBluetooth = data.statusShowBluetooth;
+                    else if (data.hasOwnProperty("connectivityShowBluetooth"))
+                        root.indicatorsShowBluetooth = data.connectivityShowBluetooth;
+
+                    if (data.hasOwnProperty("indicatorsShowNotifications"))
+                        root.indicatorsShowNotifications = data.indicatorsShowNotifications;
+                    else if (data.hasOwnProperty("statusShowNotifications"))
+                        root.indicatorsShowNotifications = data.statusShowNotifications;
+                    else if (data.hasOwnProperty("connectivityShowNotifications"))
+                        root.indicatorsShowNotifications = data.connectivityShowNotifications;
+
+                    if (data.hasOwnProperty("indicatorsShowVolume"))
+                        root.indicatorsShowVolume = data.indicatorsShowVolume;
+
+                    if (data.hasOwnProperty("indicatorsOrder") || data.hasOwnProperty("statusOrder")) {
+                        let order = data.hasOwnProperty("indicatorsOrder") ? data.indicatorsOrder : data.statusOrder;
+                        let defaults = ["wifi", "bluetooth", "volume", "notifications"];
+                        order = order.filter(function(x) { return x !== "tray"; });
+                        for (let j = 0; j < defaults.length; j++) {
+                            if (!order.includes(defaults[j])) {
+                                order.push(defaults[j]);
+                            }
+                        }
+                        root.indicatorsOrder = order;
+                    }
+
+                    if (data.hasOwnProperty("indicatorsShowTray"))
+                        root.indicatorsShowTray = data.indicatorsShowTray;
+
+                    if (data.hasOwnProperty("indicatorsTrayExpanded"))
+                        root.indicatorsTrayExpanded = data.indicatorsTrayExpanded;
 
                     if (data.hasOwnProperty("themedApps")) {
                         // Merge with defaults to ensure new app keys are present

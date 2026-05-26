@@ -88,12 +88,9 @@ Bar modules/bar/Bar.qml
 
 # Bar Components
 Clock modules/bar/components/Clock.qml
-Tray modules/bar/components/Tray.qml
-BarVolume modules/bar/components/Volume.qml
 Workspaces modules/bar/components/Workspaces.qml
-BarNotifications modules/bar/components/Notifications.qml
 BarDock modules/bar/components/Dock.qml
-Connectivity modules/bar/components/Connectivity.qml
+Indicators modules/bar/components/Indicators.qml
 
 
 

@@ -151,6 +151,11 @@ Item {
             opacityAnimation.from = 0;
             opacityAnimation.to = 1;
             opacityAnimation.start();
+            scaleAnimation.from = root.openScaleFrom;
+            scaleAnimation.to = 1.0;
+            scaleAnimation.start();
+            root.animFadeOpacity = 0.0;
+            fadeInAnimation.start();
         });
     }
 
@@ -181,6 +186,11 @@ Item {
         opacityAnimation.from = 1;
         opacityAnimation.to = 0;
         opacityAnimation.start();
+        scaleAnimation.from = 1.0;
+        scaleAnimation.to = root.closeScaleTo;
+        scaleAnimation.start();
+        root.animFadeOpacity = 1.0;
+        fadeOutAnimation.start();
     }
 
     function toggle() {
@@ -191,6 +201,16 @@ Item {
     // --- Animations ---
     property real animOffset: 0
     property real animOpacity: 0
+    property real animScale: 1.0
+    property real animFadeOpacity: 1.0
+
+    // Per-popout scale configuration (default 1.0 = no scaling effect)
+    property real openScaleFrom: 1.0
+    property real closeScaleTo: 1.0
+
+    // Fade duration = 20% of total animation duration
+    readonly property int _fadeDuration: Math.round(Theme.animations.normal * 0.2)
+    readonly property int _holdDuration: Theme.animations.normal - _fadeDuration
     
     BaseAnimation {
         id: slideInAnimation
@@ -221,6 +241,43 @@ Item {
         id: opacityAnimation
         target: root
         property: "animOpacity"
+    }
+
+    // Fade in: 0→1 over first 20% of animation duration
+    SequentialAnimation {
+        id: fadeInAnimation
+        PropertyAnimation {
+            target: root
+            property: "animFadeOpacity"
+            from: 0.0
+            to: 1.0
+            duration: root._fadeDuration
+            easing.type: Easing.OutQuad
+        }
+    }
+
+    // Fade out: hold at 1 for 80%, then fade 1→0 over last 20%
+    SequentialAnimation {
+        id: fadeOutAnimation
+        PauseAnimation {
+            duration: root._holdDuration
+        }
+        PropertyAnimation {
+            target: root
+            property: "animFadeOpacity"
+            from: 1.0
+            to: 0.0
+            duration: root._fadeDuration
+            easing.type: Easing.InQuad
+        }
+    }
+
+    BaseAnimation {
+        id: scaleAnimation
+        target: root
+        property: "animScale"
+        easing.type: Easing.OutSine
+        easing.bezierCurve: []
     }
 
     // --- Window Structure ---
@@ -270,6 +327,9 @@ Item {
                 width: parent.width
                 height: root.contentHeight
                 y: (root.floating ? root.floatingY : root.verticalGap) + root.animOffset
+                transformOrigin: Item.Center
+                scale: root.animScale
+                opacity: root.animFadeOpacity
 
                 // Background Shape
                 BaseBackground {

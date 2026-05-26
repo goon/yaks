@@ -15,12 +15,9 @@ PanelWindow {
     function resolveComponentSource(name) {
         const map = {
             "workspaces": "components/Workspaces.qml",
-            "tray": "components/Tray.qml",
-            "volume": "components/Volume.qml",
             "clock": "components/Clock.qml",
-            "notifications": "components/Notifications.qml",
             "dock": "components/Dock.qml",
-            "connectivity": "components/Connectivity.qml",
+            "indicators": "components/Indicators.qml",
         };
         return map[name] || "";
     }
@@ -53,18 +50,36 @@ PanelWindow {
         right: Preferences.barMarginSide
     }
 
+    // Startup Fade-in Animation Opacity
+    property real startupOpacity: 0.0
+
+    Component.onCompleted: {
+        startupAnimation.start();
+    }
+
+    BaseAnimation {
+        id: startupAnimation
+        target: bar
+        property: "startupOpacity"
+        to: 1.0
+        duration: Theme.animations.slow
+        easing.type: Easing.OutCubic
+    }
+
 
     BaseBackground {
         id: barBackground
 
         readonly property real maxSideWidth: Math.max(leftContent.implicitWidth, rightContent.implicitWidth)
 
+        opacity: bar.startupOpacity
+
         RowLayout {
             id: contentLayout
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-            width: (Preferences.barFitToContent ? implicitWidth : (parent.width - (bar.sideMargin * 2)) / Theme.barScale)
+            width: (parent.width - (bar.sideMargin * 2)) / Theme.barScale
             spacing: bar.sideMargin / Theme.barScale
             
             transform: Scale {
@@ -93,31 +108,58 @@ PanelWindow {
                     Repeater {
                         model: bar.leftComponents
 
-                        Loader {
+                        RowLayout {
+                            id: leftItemWrapper
                             Layout.alignment: Qt.AlignVCenter
-                            source: bar.resolveComponentSource(modelData)
-                            
-                            visible: {
-                                const source = bar.resolveComponentSource(modelData);
-                                if (source === "") return false;
+                            visible: leftLoader.visible
+                            spacing: bar.sideMargin / Theme.barScale
 
-                                switch(modelData) {
-                                    case "dock": return Compositor.windows.length > 0;
-                                    case "tray": return TrayService.itemCount > 0;
-                                    default: return true;
+                            BaseSeparator {
+                                visible: {
+                                    if (!parent.visible) return false;
+                                    let visibleIndex = -1;
+                                    for (let i = 0; i < leftContent.visibleChildren.length; i++) {
+                                        if (leftContent.visibleChildren[i] === parent) {
+                                            visibleIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    return visibleIndex > 0;
+                                }
+                                orientation: BaseSeparator.Vertical
+                                fill: false
+                                thickness: 1
+                                Layout.preferredHeight: Theme.dimensions.iconSmall
+                                Layout.preferredWidth: 1
+                                Layout.alignment: Qt.AlignVCenter
+                                opacity: 0.3
+                                color: Theme.colors.border
+                            }
+
+                            Loader {
+                                id: leftLoader
+                                Layout.alignment: Qt.AlignVCenter
+                                source: bar.resolveComponentSource(modelData)
+                                
+                                visible: {
+                                    const source = bar.resolveComponentSource(modelData);
+                                    if (source === "") return false;
+
+                                    switch(modelData) {
+                                        case "dock": return Compositor.windows.length > 0;
+                                        case "tray": return TrayService.itemCount > 0;
+                                        default: return true;
+                                    }
+                                }
+
+                                Binding {
+                                    target: leftLoader.item
+                                    property: "barWindow"
+                                    value: bar
+                                    when: leftLoader.item !== null && (modelData === "tray" || modelData === "indicators")
                                 }
                             }
-
-
-                            Binding {
-                                target: item
-                                property: "barWindow"
-                                value: bar
-                                when: item !== null && modelData === "tray"
-                            }
-
                         }
-
                     }
 
                 }
@@ -144,31 +186,58 @@ PanelWindow {
                 Repeater {
                     model: bar.centerComponents
 
-                    Loader {
+                    RowLayout {
+                        id: centerItemWrapper
                         Layout.alignment: Qt.AlignVCenter
-                        source: bar.resolveComponentSource(modelData)
-                        
-                        visible: {
-                            const source = bar.resolveComponentSource(modelData);
-                            if (source === "") return false;
+                        visible: centerLoader.visible
+                        spacing: bar.sideMargin / Theme.barScale
 
-                            switch(modelData) {
-                                case "dock": return Compositor.windows.length > 0;
-                                case "tray": return TrayService.itemCount > 0;
-                                default: return true;
+                        BaseSeparator {
+                            visible: {
+                                if (!parent.visible) return false;
+                                let visibleIndex = -1;
+                                for (let i = 0; i < centerSection.visibleChildren.length; i++) {
+                                    if (centerSection.visibleChildren[i] === parent) {
+                                        visibleIndex = i;
+                                        break;
+                                    }
+                                }
+                                return visibleIndex > 0;
+                            }
+                            orientation: BaseSeparator.Vertical
+                            fill: false
+                            thickness: 1
+                            Layout.preferredHeight: Theme.dimensions.iconSmall
+                            Layout.preferredWidth: 1
+                            Layout.alignment: Qt.AlignVCenter
+                            opacity: 0.3
+                            color: Theme.colors.border
+                        }
+
+                        Loader {
+                            id: centerLoader
+                            Layout.alignment: Qt.AlignVCenter
+                            source: bar.resolveComponentSource(modelData)
+                            
+                            visible: {
+                                const source = bar.resolveComponentSource(modelData);
+                                if (source === "") return false;
+
+                                switch(modelData) {
+                                    case "dock": return Compositor.windows.length > 0;
+                                    case "tray": return TrayService.itemCount > 0;
+                                    default: return true;
+                                }
+                            }
+
+                            Binding {
+                                target: centerLoader.item
+                                property: "barWindow"
+                                value: bar
+                                when: centerLoader.item !== null && (modelData === "tray" || modelData === "indicators")
                             }
                         }
-
-
-                        Binding {
-                            target: item
-                            property: "barWindow"
-                            value: bar
-                            when: item !== null && modelData === "tray"
-                        }
-
                     }
-
                 }
 
             }
@@ -200,31 +269,58 @@ PanelWindow {
                     Repeater {
                         model: bar.rightComponents
 
-                        Loader {
+                        RowLayout {
+                            id: rightItemWrapper
                             Layout.alignment: Qt.AlignVCenter
-                            source: bar.resolveComponentSource(modelData)
-                            
-                            visible: {
-                                const source = bar.resolveComponentSource(modelData);
-                                if (source === "") return false;
+                            visible: rightLoader.visible
+                            spacing: bar.sideMargin / Theme.barScale
 
-                                switch(modelData) {
-                                    case "dock": return Compositor.windows.length > 0;
-                                    case "tray": return TrayService.itemCount > 0;
-                                    default: return true;
+                            BaseSeparator {
+                                visible: {
+                                    if (!parent.visible) return false;
+                                    let visibleIndex = -1;
+                                    for (let i = 0; i < rightContent.visibleChildren.length; i++) {
+                                        if (rightContent.visibleChildren[i] === parent) {
+                                            visibleIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    return visibleIndex > 0;
+                                }
+                                orientation: BaseSeparator.Vertical
+                                fill: false
+                                thickness: 1
+                                Layout.preferredHeight: Theme.dimensions.iconSmall
+                                Layout.preferredWidth: 1
+                                Layout.alignment: Qt.AlignVCenter
+                                opacity: 0.3
+                                color: Theme.colors.border
+                            }
+
+                            Loader {
+                                id: rightLoader
+                                Layout.alignment: Qt.AlignVCenter
+                                source: bar.resolveComponentSource(modelData)
+                                
+                                visible: {
+                                    const source = bar.resolveComponentSource(modelData);
+                                    if (source === "") return false;
+
+                                    switch(modelData) {
+                                        case "dock": return Compositor.windows.length > 0;
+                                        case "tray": return TrayService.itemCount > 0;
+                                        default: return true;
+                                    }
+                                }
+
+                                Binding {
+                                    target: rightLoader.item
+                                    property: "barWindow"
+                                    value: bar
+                                    when: rightLoader.item !== null && (modelData === "tray" || modelData === "indicators")
                                 }
                             }
-
-
-                            Binding {
-                                target: item
-                                property: "barWindow"
-                                value: bar
-                                when: item !== null && modelData === "tray"
-                            }
-
                         }
-
                     }
 
                 }
@@ -239,7 +335,14 @@ PanelWindow {
         BaseAnimation {
             duration: Theme.animations.fast
         }
+    }
 
+    Behavior on implicitWidth {
+        enabled: Preferences.barFitToContent && !startupAnimation.running
+        BaseAnimation {
+            duration: Theme.animations.normal
+            easing.type: Easing.OutQuint
+        }
     }
 
     onWidthChanged: PopoutService.barWidth = width

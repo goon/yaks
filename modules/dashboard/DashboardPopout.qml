@@ -13,6 +13,8 @@ BasePopoutWindow {
     panelNamespace: "quickshell:dashboard"
     fixedWidth: 1100
     floating: false
+    openScaleFrom: 0.05
+    closeScaleTo: 0.05
 
     body: Item {
         id: mainContainer

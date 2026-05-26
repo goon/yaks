@@ -8,6 +8,7 @@ BaseBlock {
     
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
+    backgroundColor: Theme.colors.transparent
     // Explicitly bind width for stable hover and layout in the bar
     implicitWidth: layout.implicitWidth + (paddingHorizontal * 2)
     implicitHeight: Theme.dimensions.barItemHeight
@@ -49,7 +50,7 @@ BaseBlock {
             visible: false
             text: segment.bold ? "<b>00</b>" : "00"
             textFormat: Text.RichText
-            pixelSize: Theme.typography.size.medium
+            pixelSize: Theme.typography.size.large
             weight: Theme.typography.weights.normal
         }
 
@@ -68,7 +69,7 @@ BaseBlock {
             y: segment.centerY
             text: segment.bold ? "<b>" + segment.displayedText + "</b>" : segment.displayedText
             textFormat: Text.RichText
-            pixelSize: Theme.typography.size.medium
+            pixelSize: Theme.typography.size.large
             weight: Theme.typography.weights.normal
             color: segment.textColor
         }
@@ -80,7 +81,7 @@ BaseBlock {
             opacity: 0
             text: segment.bold ? "<b>" + segment.text + "</b>" : segment.text
             textFormat: Text.RichText
-            pixelSize: Theme.typography.size.medium
+            pixelSize: Theme.typography.size.large
             weight: Theme.typography.weights.normal
             color: segment.textColor
         }
@@ -142,6 +143,7 @@ BaseBlock {
         RowLayout {
             id: layout
             anchors.centerIn: parent
+            anchors.verticalCenterOffset: 1
             spacing: Theme.geometry.spacing.medium
 
             // Time Segments
@@ -171,7 +173,7 @@ BaseBlock {
             // Temperature
             BaseText {
                 text: Weather.temperature
-                pixelSize: Theme.typography.size.medium
+                pixelSize: Theme.typography.size.large
                 weight: Theme.typography.weights.normal
                 color: root.containsMouse ? Theme.colors.primary : Theme.colors.text
             }

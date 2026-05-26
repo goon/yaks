@@ -402,6 +402,70 @@ SettingsPage {
                 Layout.fillWidth: true
             }
 
+            BaseText {
+                text: "Indicators Block Settings"
+                weight: Theme.typography.weights.bold
+                color: Theme.colors.primary
+                pixelSize: Theme.typography.size.large
+                Layout.columnSpan: 2
+                Layout.topMargin: Theme.geometry.spacing.large
+            }
+
+            BaseText {
+                text: "Show Wi-Fi Icon:"
+                pixelSize: Theme.typography.size.medium
+            }
+
+            BaseSwitch {
+                Layout.alignment: Qt.AlignLeft
+                checked: Preferences.indicatorsShowWifi
+                onToggled: Preferences.indicatorsShowWifi = checked
+            }
+
+            BaseText {
+                text: "Show Bluetooth Icon:"
+                pixelSize: Theme.typography.size.medium
+            }
+
+            BaseSwitch {
+                Layout.alignment: Qt.AlignLeft
+                checked: Preferences.indicatorsShowBluetooth
+                onToggled: Preferences.indicatorsShowBluetooth = checked
+            }
+
+            BaseText {
+                text: "Show Volume:"
+                pixelSize: Theme.typography.size.medium
+            }
+
+            BaseSwitch {
+                Layout.alignment: Qt.AlignLeft
+                checked: Preferences.indicatorsShowVolume
+                onToggled: Preferences.indicatorsShowVolume = checked
+            }
+
+            BaseText {
+                text: "Show Notifications Icon:"
+                pixelSize: Theme.typography.size.medium
+            }
+
+            BaseSwitch {
+                Layout.alignment: Qt.AlignLeft
+                checked: Preferences.indicatorsShowNotifications
+                onToggled: Preferences.indicatorsShowNotifications = checked
+            }
+
+            BaseText {
+                text: "Show System Tray:"
+                pixelSize: Theme.typography.size.medium
+            }
+
+            BaseSwitch {
+                Layout.alignment: Qt.AlignLeft
+                checked: Preferences.indicatorsShowTray
+                onToggled: Preferences.indicatorsShowTray = checked
+            }
+
             BaseSeparator {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
@@ -452,12 +516,9 @@ SettingsPage {
         // Component metadata mapping
         readonly property var componentMetadata: ({
             "workspaces": { name: "Workspaces", icon: "view_week" },
-            "tray": { name: "System Tray", icon: "keyboard_arrow_up" },
-            "volume": { name: "Volume Control", icon: "volume_up" },
             "clock": { name: "Clock", icon: "schedule" },
-            "notifications": { name: "Notifications", icon: "notifications" },
             "dock": { name: "Dock", icon: "vertical_split" },
-            "connectivity": { name: "Connectivity", icon: "wifi" },
+            "indicators": { name: "Indicators", icon: "stacks" },
         })
 
         // Get all available component IDs

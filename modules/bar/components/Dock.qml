@@ -53,6 +53,7 @@ BaseBlock {
     visible: Compositor.windows.length > 0
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
+    backgroundColor: Theme.colors.transparent
     paddingHorizontal: Theme.geometry.spacing.small
     paddingVertical: 0
     implicitHeight: 32

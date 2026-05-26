@@ -12,7 +12,9 @@ BasePopoutWindow {
     
     panelNamespace: "quickshell:settings"
     fixedWidth: 800
-    floating: true
+    floating: false
+    openScaleFrom: 0.05
+    closeScaleTo: 0.05
 
 
     body: Item {

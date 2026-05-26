@@ -139,7 +139,7 @@ Item {
                     id: label
 
                     anchors.fill: parent
-                    anchors.verticalCenterOffset: -1 // Adjust for font baseline 
+                    anchors.verticalCenterOffset: 1 // Adjust for font baseline 
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     
@@ -148,7 +148,7 @@ Item {
                         if (Preferences.workspaceStyle === 2) return root.toKanji(modelData.idx);
                         return modelData.idx;
                     }
-                    pixelSize: Theme.typography.size.medium
+                    pixelSize: Theme.typography.size.large
                     // Use background for active to contrast with the gradient pill
                     color: indicator.isActive ? Theme.colors.background : (mouseArea.containsMouse ? Theme.colors.primary : Theme.colors.text)
                     weight: (indicator.isActive || indicator.hasWindows) ? Theme.typography.weights.bold : Theme.typography.weights.normal
