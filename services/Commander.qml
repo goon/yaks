@@ -23,6 +23,10 @@ Item {
             PopoutService.toggleSettings();
         }
 
+        function switchTo(pageName: string) {
+            PopoutService.toggleSettings(pageName);
+        }
+
         target: "settings"
     }
 

@@ -31,6 +31,7 @@ Rectangle {
     property bool clickable: false
     property bool hoverEnabled: true
     property bool premiumHover: false
+    property bool premiumActive: false
     property bool popoutOnHover: false
     property var onHoverAction: null
     readonly property alias containsMouse: mouseArea.containsMouse
@@ -49,7 +50,7 @@ Rectangle {
     implicitHeight: mainLayout.implicitHeight + (paddingVertical * 2)
     color: backgroundColor
     radius: blockRadius
-    border.color: borderEnabled ? borderColor : Theme.colors.transparent
+    border.color: borderEnabled ? (premiumActive ? Theme.colors.transparent : borderColor) : Theme.colors.transparent
     border.width: borderEnabled ? borderWidth : 0
     scale: (root.clickable && pressed) ? 0.98 : 1.0
 
@@ -89,8 +90,8 @@ Rectangle {
         // Premium Selection Gradient Border
         Item {
             anchors.fill: parent
-            opacity: (root.premiumHover && mouseArea.containsMouse) ? 1.0 : 0.0
-            visible: opacity > 0.0 || (root.premiumHover && mouseArea.containsMouse)
+            opacity: (root.premiumActive || (root.premiumHover && mouseArea.containsMouse)) ? 1.0 : 0.0
+            visible: opacity > 0.0 || root.premiumActive || (root.premiumHover && mouseArea.containsMouse)
             
             Behavior on opacity {
                 BaseAnimation {
@@ -130,7 +131,7 @@ Rectangle {
             anchors.fill: parent
             radius: parent.radius
             color: {
-                if (!root.hoverEnabled || root.premiumHover)
+                if (!root.hoverEnabled || root.premiumHover || root.premiumActive)
                     return Theme.colors.transparent;
 
                 if (root.hoverColor !== Theme.colors.transparent && mouseArea.containsMouse)

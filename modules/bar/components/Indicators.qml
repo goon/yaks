@@ -319,9 +319,9 @@ Item {
                     }
                 } else {
                     if (itemKey === "wifi") {
-                        PopoutService.toggleNetworkPopout();
+                        PopoutService.toggleSettings("Wifi");
                     } else if (itemKey === "bluetooth") {
-                        PopoutService.toggleBluetoothPopout();
+                        PopoutService.toggleSettings("Bluetooth");
                     } else if (itemKey === "volume") {
                         PopoutService.toggleAudioPopout();
                     } else if (itemKey === "notifications") {

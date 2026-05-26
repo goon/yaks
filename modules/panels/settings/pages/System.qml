@@ -28,32 +28,95 @@ SettingsPage {
             Layout.bottomMargin: Theme.geometry.spacing.small
         }
 
-        BaseText {
-            text: "Color Scheme:"
-            pixelSize: Theme.typography.size.medium
-        }
-
         RowLayout {
+            Layout.columnSpan: 2
             Layout.fillWidth: true
             spacing: Theme.geometry.spacing.large
+            Layout.bottomMargin: Theme.geometry.spacing.medium
 
-            BaseButton {
-                text: "Dark"
-                normalColor: (ThemeService.colorScheme === 'prefer-dark') ? Theme.colors.primary : Theme.colors.background
-                textColor: (ThemeService.colorScheme === 'prefer-dark') ? Theme.colors.background : Theme.colors.text
+            // Dark Mode Hero Card
+            BaseBlock {
+                id: darkCard
+                Layout.fillWidth: true
+                Layout.preferredHeight: 100
+                clickable: true
+                premiumActive: isActive
+                borderWidth: 1
+                borderColor: Theme.colors.border
+                padding: Theme.geometry.spacing.medium
+                
+                readonly property bool isActive: ThemeService.colorScheme === 'prefer-dark'
+
                 onClicked: {
-                    if (ThemeService.colorScheme !== 'prefer-dark')
-                        ThemeService.toggleColorScheme();
+                    if (!isActive) ThemeService.toggleColorScheme();
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: Theme.geometry.spacing.small
+
+                        BaseIcon {
+                            icon: "dark_mode"
+                            size: Theme.dimensions.iconLarge
+                            color: darkCard.isActive ? Theme.colors.primary : Theme.colors.text
+                            Layout.alignment: Qt.AlignHCenter
+                        }
+
+                        BaseText {
+                            text: "Dark Mode"
+                            weight: Theme.typography.weights.bold
+                            pixelSize: Theme.typography.size.medium
+                            color: darkCard.isActive ? Theme.colors.textLighter : Theme.colors.text
+                            Layout.alignment: Qt.AlignHCenter
+                        }
+                    }
                 }
             }
 
-            BaseButton {
-                text: "Light"
-                normalColor: (ThemeService.colorScheme !== 'prefer-dark') ? Theme.colors.primary : Theme.colors.background
-                textColor: (ThemeService.colorScheme !== 'prefer-dark') ? Theme.colors.background : Theme.colors.text
+            // Light Mode Hero Card
+            BaseBlock {
+                id: lightCard
+                Layout.fillWidth: true
+                Layout.preferredHeight: 100
+                clickable: true
+                premiumActive: isActive
+                borderWidth: 1
+                borderColor: Theme.colors.border
+                padding: Theme.geometry.spacing.medium
+                
+                readonly property bool isActive: ThemeService.colorScheme !== 'prefer-dark'
+
                 onClicked: {
-                    if (ThemeService.colorScheme === 'prefer-dark')
-                        ThemeService.toggleColorScheme();
+                    if (!isActive) ThemeService.toggleColorScheme();
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: Theme.geometry.spacing.small
+
+                        BaseIcon {
+                            icon: "light_mode"
+                            size: Theme.dimensions.iconLarge
+                            color: lightCard.isActive ? Theme.colors.primary : Theme.colors.text
+                            Layout.alignment: Qt.AlignHCenter
+                        }
+
+                        BaseText {
+                            text: "Light Mode"
+                            weight: Theme.typography.weights.bold
+                            pixelSize: Theme.typography.size.medium
+                            color: lightCard.isActive ? Theme.colors.textLighter : Theme.colors.text
+                            Layout.alignment: Qt.AlignHCenter
+                        }
+                    }
                 }
             }
         }
@@ -235,25 +298,72 @@ SettingsPage {
             Repeater {
                 model: ThemeRegistration.applications
 
-                delegate: Rectangle {
+                delegate: Item {
                     id: pill
 
                     readonly property bool isInstalled: ThemeService.installedApps[modelData.id] !== false
                     readonly property bool isEnabled: (Preferences.themedApps[modelData.id] || false) && isInstalled
 
-                    width: label.width + Theme.geometry.spacing.medium * 2
-                    height: label.height + Theme.geometry.spacing.small * 2
-                    radius: Theme.geometry.radius
-                    color: isEnabled ? Theme.colors.primary : Theme.colors.text
+                    width: innerRow.width + Theme.geometry.spacing.medium * 2
+                    height: innerRow.height + Theme.geometry.spacing.small * 2
                     opacity: isInstalled ? 1 : 0.5
-                    border.width: 1
-                    border.color: isEnabled ? Theme.colors.primary : Theme.colors.border
 
-                    BaseText {
-                        id: label
+                    // 1. Premium Selection Gradient Border (Active)
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: Theme.geometry.radius
+                        visible: pill.isEnabled
+                        gradient: Gradient {
+                            orientation: Gradient.Horizontal
+                            GradientStop { position: 0; color: Theme.colors.primary }
+                            GradientStop { position: 1; color: Theme.colors.secondary }
+                        }
+                    }
+
+                    // 2. Inner Cutout (Active)
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 1.5
+                        radius: Theme.geometry.radius - 1.5
+                        visible: pill.isEnabled
+                        color: Theme.colors.surface
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: parent.radius
+                            color: Qt.alpha(Theme.colors.primary, 0.08)
+                        }
+                    }
+
+                    // 3. Inactive Border (Inactive)
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: Theme.geometry.radius
+                        visible: !pill.isEnabled
+                        color: Theme.colors.transparent
+                        border.width: 1
+                        border.color: Theme.colors.border
+                    }
+
+                    Row {
+                        id: innerRow
                         anchors.centerIn: parent
-                        text: modelData.name
-                        color: pill.isEnabled ? Theme.colors.background : Theme.colors.text
+                        spacing: 6
+
+                        BaseIcon {
+                            icon: pill.isEnabled ? "check_circle" : "circle"
+                            fill: false
+                            size: 14
+                            color: pill.isEnabled ? Theme.colors.primary : Theme.colors.border
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        BaseText {
+                            id: label
+                            text: modelData.name
+                            color: pill.isEnabled ? Theme.colors.textLighter : Theme.colors.text
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
 
                     BaseTooltip {

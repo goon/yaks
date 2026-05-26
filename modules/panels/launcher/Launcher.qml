@@ -10,6 +10,8 @@ BasePopoutWindow {
     
     fixedWidth: 600
     panelNamespace: "quickshell:launcher"
+    openScaleFrom: 0.05
+    closeScaleTo: 0.05
 
     function switchToTab(index) {
         if (root.bodyItem)

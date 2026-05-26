@@ -112,10 +112,24 @@ QtObject {
         geoXhr.send();
     }
 
-    // Refresh when location or units change
-    onLatitudeChanged: fetchDebounce.restart()
-    onLongitudeChanged: fetchDebounce.restart()
-    Component.onCompleted: fetchWeather()
+    // Only re-fetch on coord changes if preferences are already loaded
+    // (avoids a spurious fetch with hardcoded defaults on first load)
+    onLatitudeChanged: { if (Preferences.loaded) fetchDebounce.restart(); }
+    onLongitudeChanged: { if (Preferences.loaded) fetchDebounce.restart(); }
+
+    // Wait for Preferences to finish loading before doing the initial fetch.
+    // This ensures we use the user's saved coordinates, not the hardcoded defaults.
+    property Connections prefConnections: Connections {
+        target: Preferences
+        function onLoadedChanged() {
+            if (Preferences.loaded) root.fetchWeather();
+        }
+    }
+
+    Component.onCompleted: {
+        // Only fetch immediately if Preferences is already loaded (e.g. fast load / empty file)
+        if (Preferences.loaded) fetchWeather();
+    }
 
     autoRefreshTimer: Timer {
         interval: 30 * 60 * 1000

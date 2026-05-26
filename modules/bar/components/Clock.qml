@@ -29,6 +29,10 @@ BaseBlock {
         Weather.fetchWeather();
     }
 
+    onRightClicked: {
+        PopoutService.toggleSettings("Bar");
+    }
+
     SystemClock {
         id: systemClock
         precision: SystemClock.Minutes

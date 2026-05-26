@@ -83,7 +83,41 @@ QtObject {
         launcherLoader.runWhenReady(() => { launcherLoader.item.switchToTab(1); });
     }
 
-    function toggleSettings() { _toggle(settingsLoader); }
+    function toggleSettings(pageName) {
+        if (!settingsLoader) return;
+
+        var isCurrentlyOpen = (settingsLoader.active && settingsLoader.item &&
+                               (settingsLoader.item.panelState === "Open" || settingsLoader.item.panelState === "Opening"));
+
+        if (isCurrentlyOpen) {
+            if (pageName !== undefined) {
+                var settingsItem = settingsLoader.item;
+                if (settingsItem && settingsItem.bodyItem) {
+                    var mainContainer = settingsItem.bodyItem;
+                    if (mainContainer.selectedPage === pageName) {
+                        // Already on this page — close
+                        _toggle(settingsLoader);
+                    } else {
+                        // Switch page without closing; path resolved inside Settings.qml
+                        mainContainer.changePage(pageName);
+                    }
+                }
+            } else {
+                _toggle(settingsLoader);
+            }
+        } else {
+            _toggle(settingsLoader);
+            if (pageName !== undefined) {
+                settingsLoader.runWhenReady(() => {
+                    var settingsItem = settingsLoader.item;
+                    if (settingsItem && settingsItem.bodyItem) {
+                        // Path resolved inside Settings.qml, not here
+                        settingsItem.bodyItem.changePage(pageName);
+                    }
+                });
+            }
+        }
+    }
 
     function toggleDashboardPopout(screenX, barLeft, barRight) {
         if (screenX === undefined && dashboardItem) {

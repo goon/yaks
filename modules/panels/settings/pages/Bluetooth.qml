@@ -3,10 +3,10 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs
 
-ColumnLayout {
+SettingsPage {
     id: root
-    spacing: Theme.geometry.spacing.large
-    Layout.fillWidth: true
+
+    title: "Bluetooth"
 
     function resolveBluetoothIcon(bluezIcon) {
         if (!bluezIcon)

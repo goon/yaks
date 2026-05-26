@@ -117,8 +117,6 @@ DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 NotificationPopout modules/panels/NotificationPopout.qml
 AudioPopout modules/panels/AudioPopout.qml
 TrayPopout modules/panels/TrayPopout.qml
-NetworkContent modules/panels/connectivity/NetworkContent.qml
-BluetoothContent modules/panels/connectivity/BluetoothContent.qml
 NetworkPopout modules/panels/connectivity/NetworkPopout.qml
 BluetoothPopout modules/panels/connectivity/BluetoothPopout.qml
 

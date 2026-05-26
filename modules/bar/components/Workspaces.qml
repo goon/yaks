@@ -112,7 +112,10 @@ Item {
             Item {
                 id: indicator
 
+                // Primary: match by ID from service. Fallback: use ws.focused flag from
+                // the workspace data itself, in case the service chain hasn't delivered yet.
                 readonly property bool isActive: modelData.id === root.activeWorkspaceId
+                    || (root.activeWorkspaceId === -1 && modelData.isFocused)
                 readonly property bool hasWindows: modelData.hasWindows
 
                 implicitHeight: Theme.dimensions.barItemHeight
@@ -128,10 +131,15 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     hoverEnabled: true
-                    onClicked: {
-                        root.localActiveId = modelData.id;
-                        syncTimer.restart();
-                        Compositor.switchToWorkspace(modelData.idx || modelData.id);
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: (mouse) => {
+                        if (mouse.button === Qt.RightButton) {
+                            PopoutService.toggleSettings("Workspaces");
+                        } else {
+                            root.localActiveId = modelData.id;
+                            syncTimer.restart();
+                            Compositor.switchToWorkspace(modelData.idx || modelData.id);
+                        }
                     }
                 }
 

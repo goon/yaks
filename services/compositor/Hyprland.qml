@@ -19,8 +19,10 @@ Singleton {
         var res = [];
         var activeId = -1;
         var maxId = 5;
+
+        // Primary source: Hyprland.focusedWorkspace
         var focusedWs = QsHyprland.Hyprland.focusedWorkspace;
-        if (focusedWs) {
+        if (focusedWs && focusedWs.id > 0) {
             activeId = focusedWs.id;
             if (activeId > maxId) maxId = activeId;
         }
@@ -30,6 +32,11 @@ Singleton {
         for (var i = 0; i < wsList.length; i++) {
             var ws = wsList[i];
             if (ws.id < 0) continue; // Skip special
+
+            // Fallback: derive activeId from ws.focused if focusedWorkspace didn't give us one
+            if (activeId === -1 && ws.focused) {
+                activeId = ws.id;
+            }
             
             wsMap[ws.id] = {
                 "id": ws.id,
@@ -138,6 +145,27 @@ Singleton {
         }
     }
 
+    // Startup retry: force a fresh IPC round-trip to get the focused workspace,
+    // since focusedWorkspace may be null or stale immediately after launch.
+    Timer {
+        id: startupRetryTimer
+        interval: 300
+        repeat: true
+        property int _attempts: 0
+        onTriggered: {
+            _attempts++;
+            // Force a fresh IPC query from Hyprland each tick
+            QsHyprland.Hyprland.refreshWorkspaces();
+            triggerWorkspacesUpdate();
+            // Stop once we have a valid focused workspace or after 10 attempts (~3s)
+            var fw = QsHyprland.Hyprland.focusedWorkspace;
+            if ((fw && fw.id > 0) || _attempts >= 10) {
+                stop();
+                _attempts = 0;
+            }
+        }
+    }
+
     function triggerWorkspacesUpdate() {
         var data = mapWorkspaces();
         root._currentWorkspaces = data.list;
@@ -210,5 +238,7 @@ Singleton {
         triggerWorkspacesUpdate();
         triggerWindowsUpdate();
         triggerFocusedWindowUpdate();
+        // Start async startup retry in case focusedWorkspace isn't ready yet
+        startupRetryTimer.start();
     }
 }

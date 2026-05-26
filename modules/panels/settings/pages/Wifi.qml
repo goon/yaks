@@ -3,12 +3,12 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs
 
-ColumnLayout {
+SettingsPage {
     id: root
-    spacing: Theme.geometry.spacing.large
-    Layout.fillWidth: true
 
-    // Auto-scan while popout is open and Wi-Fi is selected
+    title: "Wi-Fi"
+
+    // Auto-scan while page is open and Wi-Fi is enabled/selected
     Timer {
         id: scanTimer
         interval: 10000 // 10 seconds
