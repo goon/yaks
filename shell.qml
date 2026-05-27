@@ -38,12 +38,12 @@ ShellRoot {
     // Windows / Overlays
     BaseLazyLoader {
         id: launcherLoader
-        source: Qt.resolvedUrl("modules/panels/launcher/Launcher.qml")
+        source: Qt.resolvedUrl("modules/launcher/Launcher.qml")
     }
 
     BaseLazyLoader {
         id: settingsLoader
-        source: Qt.resolvedUrl("modules/panels/settings/Settings.qml")
+        source: Qt.resolvedUrl("modules/settings/Settings.qml")
     }
 
     BaseLazyLoader {

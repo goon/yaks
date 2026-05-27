@@ -9,17 +9,13 @@ singleton ThemeService services/ThemeService.qml
 singleton ThemeRegistration assets/themes/ThemeRegistration.qml
 singleton Calendar services/Calendar.qml
 singleton ProcessService services/ProcessService.qml
-
 singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
 singleton Niri services/compositor/Niri.qml
 singleton Hyprland services/compositor/Hyprland.qml
 singleton Mango services/compositor/Mango.qml
 singleton Compositor services/compositor/Compositor.qml
-
-
 singleton PopoutService services/PopoutService.qml
-
 singleton Power services/Power.qml
 singleton TrayService services/TrayService.qml
 singleton Stats services/Stats.qml
@@ -36,71 +32,60 @@ singleton Notifications services/Notifications.qml
 singleton Gowall services/Gowall.qml
 singleton Cava services/Cava.qml
 
-
 # Services (Types)
 Commander services/Commander.qml
 NotificationOverlay modules/notifications/NotificationOverlay.qml
 
-# Components (Root)
-AppList modules/panels/launcher/AppList.qml
-ClipboardHistory modules/panels/launcher/ClipboardHistory.qml
-WallpaperSwitcher modules/panels/launcher/wallpaper/WallpaperSwitcher.qml
-WallpaperCarousel modules/panels/launcher/wallpaper/WallpaperCarousel.qml
-ThemeSwitcher modules/panels/launcher/ThemeSwitcher.qml
+# Shared Base Components
+BaseBackground shared/BaseBackground.qml
+BaseBlock shared/BaseBlock.qml
+BaseButton shared/BaseButton.qml
+BaseMultiButton shared/BaseMultiButton.qml
+BaseIcon shared/BaseIcon.qml
+BaseInput shared/BaseInput.qml
+BasePopoutWindow shared/BasePopoutWindow.qml
+BaseFloatingWindow shared/BaseFloatingWindow.qml
+BaseScrollBar shared/BaseScrollBar.qml
+BaseScroller shared/BaseScroller.qml
+BaseSeparator shared/BaseSeparator.qml
+BaseSlider shared/BaseSlider.qml
+BaseText shared/BaseText.qml
+BaseComboBox shared/BaseComboBox.qml
+BaseSwitch shared/BaseSwitch.qml
+BaseLazyLoader shared/BaseLazyLoader.qml
+BaseAnimation shared/BaseAnimation.qml
+BaseSpinBox shared/BaseSpinBox.qml
+BaseTooltip shared/BaseTooltip.qml
+BaseGraph shared/BaseGraph.qml
 
+# Notifications
 NotificationCard modules/notifications/NotificationCard.qml
 NotificationToast modules/notifications/NotificationToast.qml
-
 VolumeToast modules/notifications/VolumeToast.qml
 
+# Launcher
+Launcher modules/launcher/Launcher.qml
+LauncherSearch modules/launcher/LauncherSearch.qml
+LauncherTab modules/launcher/LauncherTab.qml
+LauncherListView modules/launcher/LauncherListView.qml
+LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
+AppList modules/launcher/AppList.qml
+ClipboardHistory modules/launcher/ClipboardHistory.qml
+ThemeSwitcher modules/launcher/ThemeSwitcher.qml
+WallpaperSwitcher modules/launcher/wallpaper/WallpaperSwitcher.qml
+WallpaperCarousel modules/launcher/wallpaper/WallpaperCarousel.qml
 
-# Components (Base)
-BaseBackground modules/components/BaseBackground.qml
-BaseBlock modules/components/BaseBlock.qml
-BaseButton modules/components/BaseButton.qml
-BaseMultiButton modules/components/BaseMultiButton.qml
-BaseIcon modules/components/BaseIcon.qml
-BaseInput modules/components/BaseInput.qml
-BasePopoutWindow modules/components/BasePopoutWindow.qml
-BaseFloatingWindow modules/components/BaseFloatingWindow.qml
-BaseScrollBar modules/components/BaseScrollBar.qml
-BaseScroller modules/components/BaseScroller.qml
-BaseSeparator modules/components/BaseSeparator.qml
-BaseSlider modules/components/BaseSlider.qml
-BaseText modules/components/BaseText.qml
-BaseComboBox modules/components/BaseComboBox.qml
-BaseSwitch modules/components/BaseSwitch.qml
-BaseLazyLoader modules/components/BaseLazyLoader.qml
-BaseAnimation modules/components/BaseAnimation.qml
-BaseSpinBox modules/components/BaseSpinBox.qml
-BaseTooltip modules/components/BaseTooltip.qml
+# Settings
+Settings modules/settings/Settings.qml
+SettingsPage modules/settings/SettingsPage.qml
 
-
-# Modules
-Launcher modules/panels/launcher/Launcher.qml
-LauncherSearch modules/panels/launcher/LauncherSearch.qml
-LauncherTab modules/panels/launcher/LauncherTab.qml
-LauncherListView modules/panels/launcher/LauncherListView.qml
-LauncherItemDelegate modules/panels/launcher/LauncherItemDelegate.qml
-
+# Bar
 WallpaperBackground modules/WallpaperBackground.qml
 Bar modules/bar/Bar.qml
-
-# Bar Components
 Clock modules/bar/components/Clock.qml
 Workspaces modules/bar/components/Workspaces.qml
 BarDock modules/bar/components/Dock.qml
 Indicators modules/bar/components/Indicators.qml
-
-
-
-
-# Appearance (Consolidated)
-SettingsPage modules/panels/settings/SettingsPage.qml
-# Control Panel
-Settings modules/panels/settings/Settings.qml
-# Sidebar deleted
-BaseGraph modules/components/BaseGraph.qml
 
 # Dashboard
 DashboardPage modules/dashboard/DashboardPage.qml
@@ -113,16 +98,14 @@ DashboardClock modules/dashboard/components/DashboardClock.qml
 DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 
 # Popouts
-
 NotificationPopout modules/panels/NotificationPopout.qml
 AudioPopout modules/panels/AudioPopout.qml
 TrayPopout modules/panels/TrayPopout.qml
+PowerPopout modules/panels/PowerPopout.qml
 NetworkPopout modules/panels/connectivity/NetworkPopout.qml
 BluetoothPopout modules/panels/connectivity/BluetoothPopout.qml
 
-
-PowerPopout modules/panels/PowerPopout.qml
-
+# File Dialog
 FileDialogWindow modules/filedialog/FileDialogWindow.qml
 FileDialogSidebar modules/filedialog/FileDialogSidebar.qml
 FileDialogNav modules/filedialog/FileDialogNav.qml
