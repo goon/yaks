@@ -15,7 +15,6 @@ QtObject {
     property var powerPopoutLoader: null
     property var networkPopoutLoader: null
     property var bluetoothPopoutLoader: null
-    property var fileDialogLoader: null
     property var dashboardPopoutLoader: null
 
 
@@ -27,7 +26,6 @@ QtObject {
     readonly property var powerPopout: powerPopoutLoader ? powerPopoutLoader.item : null
     readonly property var networkPopout: networkPopoutLoader ? networkPopoutLoader.item : null
     readonly property var bluetoothPopout: bluetoothPopoutLoader ? bluetoothPopoutLoader.item : null
-    readonly property var fileDialog: fileDialogLoader ? fileDialogLoader.item : null
     readonly property var dashboardPopout: dashboardPopoutLoader ? dashboardPopoutLoader.item : null
 
 
@@ -221,13 +219,6 @@ QtObject {
         }
         _applyAnchors(bluetoothPopoutLoader, screenX, barLeft, barRight);
         _toggle(bluetoothPopoutLoader);
-    }
-
-    function openFileDialog(initialPath, callback) {
-        if (fileDialogLoader) {
-            fileDialogLoader.active = true;
-            fileDialogLoader.runWhenReady(() => { fileDialogLoader.item.open(initialPath, callback); });
-        }
     }
 
     function _applyAnchors(loader, screenX, barLeft, barRight) {

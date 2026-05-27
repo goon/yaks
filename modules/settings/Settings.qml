@@ -281,12 +281,13 @@ BasePopoutWindow {
                         id: contentScroller
                         anchors.fill: parent
                         clip: false
+                        implicitHeight: 0
 
                         StackView {
                             id: pageStack
                             width: contentScroller.availableWidth
                             implicitHeight: currentItem ? currentItem.implicitHeight : 0
-                            height: Math.max(implicitHeight, contentScroller.availableHeight)
+                            height: Math.max(implicitHeight, contentScroller.height)
                             initialItem: "pages/About.qml"
 
                             replaceEnter: Transition {

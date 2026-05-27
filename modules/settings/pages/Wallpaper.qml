@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs
+import qs.services
 
 SettingsPage {
     id: root
@@ -162,20 +163,12 @@ SettingsPage {
                 icon: "folder"
                 Layout.preferredHeight: dirInput.height
                 Layout.preferredWidth: dirInput.height
-                onClicked: PopoutService.openFileDialog(Preferences.wallpaperDirectory, (path) => {
-                    if (path) {
-                        var p = path.toString();
-                        if (p.indexOf("file://") === 0) p = p.substring(7);
-                        
-                        // Always update preferences
-                        Preferences.wallpaperDirectory = p;
-                        
-                        // Only update UI if it's still alive
-                        if (typeof dirInput !== 'undefined' && dirInput !== null) {
-                            dirInput.text = p;
-                        }
-                    }
-                })
+                onClicked: {
+                    Zenity.selectFolder(function(path) {
+                        Preferences.wallpaperDirectory = path;
+                        dirInput.text = path;
+                    });
+                }
             }
         }
 

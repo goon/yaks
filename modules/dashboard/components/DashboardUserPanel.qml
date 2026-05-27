@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
 import qs
+import qs.services
 
 BaseBlock {
     id: root
@@ -144,36 +145,13 @@ BaseBlock {
                         }
                     }
 
-                    // Click handler to open native GTK file dialog
+                    // Click handler to open native file dialog via portal
                     MouseArea {
                         id: avatarMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            var pythonCode = "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; Gtk.init(); dialog = Gtk.FileChooserDialog(title='Select Profile Image', action=Gtk.FileChooserAction.OPEN); dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK); response = dialog.run(); print(dialog.get_filename() if response == Gtk.ResponseType.OK else '', end=''); dialog.destroy()";
-                            
-                            var bashScript = 
-                                "if python3 -c \"import gi; gi.require_version('Gtk', '3.0')\" 2>/dev/null; then " +
-                                "  python3 -c \"" + pythonCode + "\"; " +
-                                "elif command -v nix-shell >/dev/null 2>&1; then " +
-                                "  nix-shell -p python3Packages.pygobject3 -p gtk3 -p gobject-introspection --run \"python3 -c \\\"" + pythonCode + "\\\"\"; " +
-                                "elif command -v zenity >/dev/null 2>&1; then " +
-                                "  zenity --file-selection --title='Select Profile Image' --file-filter='Images | *.png *.jpg *.jpeg *.gif *.webp'; " +
-                                "elif command -v kdialog >/dev/null 2>&1; then " +
-                                "  kdialog --getopenfilename; " +
-                                "fi";
-
-                            var cmd = ["sh", "-c", bashScript];
-                            ProcessService.run(cmd, function(stdout, exitCode) {
-                                if (exitCode === 0) {
-                                    var filePath = stdout.trim();
-                                    if (filePath !== "") {
-                                        Preferences.customAvatar = "file://" + filePath;
-                                    }
-                                }
-                            });
-                        }
+                        onClicked: Zenity.selectFile(["Images (*.png *.jpg *.jpeg *.gif *.webp)"], (path) => Preferences.customAvatar = "file://" + path)
                     }
                 }
             }

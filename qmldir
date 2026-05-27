@@ -9,6 +9,7 @@ singleton ThemeService services/ThemeService.qml
 singleton ThemeRegistration assets/themes/ThemeRegistration.qml
 singleton Calendar services/Calendar.qml
 singleton ProcessService services/ProcessService.qml
+singleton Zenity services/Zenity.qml
 singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
 singleton Niri services/compositor/Niri.qml
@@ -105,8 +106,3 @@ PowerPopout modules/panels/PowerPopout.qml
 NetworkPopout modules/panels/connectivity/NetworkPopout.qml
 BluetoothPopout modules/panels/connectivity/BluetoothPopout.qml
 
-# File Dialog
-FileDialogWindow modules/filedialog/FileDialogWindow.qml
-FileDialogSidebar modules/filedialog/FileDialogSidebar.qml
-FileDialogNav modules/filedialog/FileDialogNav.qml
-FileDialogContent modules/filedialog/FileDialogContent.qml

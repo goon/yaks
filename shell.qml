@@ -23,7 +23,6 @@ ShellRoot {
         PopoutService.powerPopoutLoader = powerPopoutLoader;
         PopoutService.networkPopoutLoader = networkPopoutLoader;
         PopoutService.bluetoothPopoutLoader = bluetoothPopoutLoader;
-        PopoutService.fileDialogLoader = fileDialogLoader;
         PopoutService.dashboardPopoutLoader = dashboardPopoutLoader;
     }
 
@@ -77,11 +76,6 @@ ShellRoot {
     BaseLazyLoader {
         id: audioPopoutLoader
         source: Qt.resolvedUrl("modules/panels/AudioPopout.qml")
-    }
-
-    BaseLazyLoader {
-        id: fileDialogLoader
-        source: Qt.resolvedUrl("modules/filedialog/FileDialogWindow.qml")
     }
 
 
