@@ -29,6 +29,7 @@ BasePopoutWindow {
             target: root
             function onOpening() {
                 LauncherService.resetInputStates();
+                LauncherService.activeUtilityMode = "";
                 LauncherService.lastInputMethod = "keyboard";
                 searchBar.text = "";
                 
@@ -103,6 +104,24 @@ BasePopoutWindow {
         readonly property bool isWallpaperActive: (root.currentTabIndex >= 0 && root.currentTabIndex < tabModel.length) ? !!tabModel[root.currentTabIndex].isWallpaper : false
 
         property string currentPlaceholder: {
+            if (root.currentTabIndex === 0) {
+                var mode = LauncherService.activeUtilityMode;
+                if (mode === "web") return "Search the web...";
+                if (mode === "youtube") return "Search YouTube...";
+                if (mode === "calculator") return "Type math expression...";
+                if (mode === "command") return "Run terminal command...";
+                if (mode.startsWith("bang-")) {
+                    var trigger = mode.substring(5);
+                    if (Preferences.launcherBangs) {
+                        for (var i = 0; i < Preferences.launcherBangs.length; i++) {
+                            if (Preferences.launcherBangs[i].trigger === trigger) {
+                                return Preferences.launcherBangs[i].name + "...";
+                            }
+                        }
+                    }
+                    return "Search...";
+                }
+            }
             if (root.currentTabIndex >= 0 && root.currentTabIndex < tabModel.length) {
                 return tabModel[root.currentTabIndex].placeholder; 
             }
@@ -144,6 +163,7 @@ BasePopoutWindow {
             if (newIndex < 0 || newIndex >= mainScope.tabModel.length) return;
 
             LauncherService.resetInputStates();
+            LauncherService.activeUtilityMode = "";
             searchBar.text = "";
             
             // Deactivate old tab
@@ -389,6 +409,12 @@ BasePopoutWindow {
                                             mainScope.switchTab(targetIndex);
                                          });
                                     });
+                                    if (typeof item.searchTextUpdateRequested !== 'undefined') {
+                                        item.searchTextUpdateRequested.connect((newText) => {
+                                            searchBar.text = newText;
+                                            searchBar.focusInput();
+                                        });
+                                    }
                                     
                                     // Bind properties
                                     item.searchText = Qt.binding(() => searchBar.text);

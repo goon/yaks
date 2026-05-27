@@ -66,6 +66,63 @@ SettingsPage {
             Layout.bottomMargin: Theme.geometry.spacing.medium
         }
 
+        // --- Parallax ---
+        BaseText {
+            text: "Parallax"
+            weight: Theme.typography.weights.bold
+            color: Theme.colors.primary
+            pixelSize: Theme.typography.size.large
+            Layout.columnSpan: 2
+        }
+
+        BaseText {
+            text: "Enable Parallax:"
+            pixelSize: Theme.typography.size.medium
+        }
+
+        BaseSwitch {
+            checked: Preferences.wallpaperParallaxEnabled
+            onToggled: Preferences.wallpaperParallaxEnabled = checked
+            Layout.alignment: Qt.AlignLeft
+        }
+
+        BaseText {
+            text: "Parallax Strength:"
+            pixelSize: Theme.typography.size.medium
+            opacity: enabled ? 1.0 : 0.5
+            enabled: Preferences.wallpaperParallaxEnabled
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Theme.geometry.spacing.large
+            opacity: enabled ? 1.0 : 0.5
+            enabled: Preferences.wallpaperParallaxEnabled
+
+            BaseSlider {
+                id: parallaxSlider
+                Layout.fillWidth: true
+                from: 5
+                to: 100
+                stepSize: 1
+                value: Preferences.wallpaperParallaxStrength
+                onMoved: Preferences.wallpaperParallaxStrength = value
+            }
+
+            BaseText {
+                text: Math.round(parallaxSlider.value) + "px"
+                Layout.preferredWidth: 40
+                horizontalAlignment: Text.AlignRight
+            }
+        }
+
+        BaseSeparator {
+            Layout.fillWidth: true
+            Layout.columnSpan: 2
+            Layout.topMargin: Theme.geometry.spacing.medium
+            Layout.bottomMargin: Theme.geometry.spacing.medium
+        }
+
         // --- Storage ---
         BaseText {
             text: "Storage"

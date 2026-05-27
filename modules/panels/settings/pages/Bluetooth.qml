@@ -6,8 +6,6 @@ import qs
 SettingsPage {
     id: root
 
-    title: "Bluetooth"
-
     function resolveBluetoothIcon(bluezIcon) {
         if (!bluezIcon)
             return "bluetooth";

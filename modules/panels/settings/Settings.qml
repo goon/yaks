@@ -11,7 +11,7 @@ BasePopoutWindow {
     id: root
     
     panelNamespace: "quickshell:settings"
-    fixedWidth: 832
+    fixedWidth: 1100
     floating: false
     openScaleFrom: 0.05
     closeScaleTo: 0.05
@@ -29,6 +29,7 @@ BasePopoutWindow {
 
         property string selectedPage: "About"
         property alias pageStack: pageStack
+        property Item selectedButtonItem: null
 
         function changePage(pageName) {
             selectedPage = pageName;
@@ -52,7 +53,7 @@ BasePopoutWindow {
             // 1. LEFT SIDEBAR
             BaseBlock {
                 id: sidebar
-                Layout.preferredWidth: 220
+                Layout.preferredWidth: 242
                 Layout.fillWidth: false
                 Layout.fillHeight: true
                 padding: Theme.geometry.spacing.medium
@@ -60,187 +61,100 @@ BasePopoutWindow {
                 borderEnabled: true
                 borderColor: Theme.colors.divider
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Theme.geometry.spacing.medium
-                    Layout.bottomMargin: Theme.geometry.spacing.medium
+                // Smooth Sliding Left Indicator Line (Liquid/Gooey Effect)
+                Item {
+                    id: slidingLine
+                    parent: sidebar
+                    z: 10
+                    width: 3
+                    height: 20
 
-                    // Avatar Container
-                    Item {
-                        id: avatarWrapper
-                        width: 64
-                        height: 64
+                    property real targetY: {
+                        if (!mainContainer.selectedButtonItem) return 0;
+                        var btnYInLayout = mainContainer.selectedButtonItem.y + (mainContainer.selectedButtonItem.parent ? mainContainer.selectedButtonItem.parent.y : 0);
+                        return sidebar.paddingVertical + btnYInLayout + (mainContainer.selectedButtonItem.height - height) / 2;
+                    }
 
-                        // Gradient Ring border
-                        Canvas {
-                            id: ringCanvas
-                            anchors.fill: parent
-                            
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.clearRect(0, 0, width, height);
+                    // Position relative to sidebar coordinate space
+                    x: {
+                        if (!mainContainer.selectedButtonItem) return 0;
+                        var btnXInLayout = mainContainer.selectedButtonItem.x + (mainContainer.selectedButtonItem.parent ? mainContainer.selectedButtonItem.parent.x : 0);
+                        return sidebar.paddingHorizontal + btnXInLayout + 8;
+                    }
+                    y: targetY
+                    visible: mainContainer.selectedButtonItem !== null
 
-                                var lineWidth = 1.5;
-                                var cx = width / 2;
-                                var cy = height / 2;
-                                var r = (width - lineWidth) / 2;
+                    // Glow Effect applied to the entire combined liquid shape
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        shadowEnabled: true
+                        shadowColor: Theme.colors.primary
+                        shadowBlur: 0.3
+                        shadowHorizontalOffset: 0
+                        shadowVerticalOffset: 0
+                    }
 
-                                ctx.beginPath();
-                                ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-
-                                var grad = ctx.createLinearGradient(0, 0, width, height);
-                                grad.addColorStop(0.0, Theme.colors.primary);
-                                grad.addColorStop(1.0, Theme.colors.secondary);
-
-                                ctx.strokeStyle = grad;
-                                ctx.lineWidth = lineWidth;
-                                ctx.stroke();
-                            }
-
-                            onWidthChanged: requestPaint()
-                            onHeightChanged: requestPaint()
-
-                            RotationAnimation {
-                                target: ringCanvas
-                                property: "rotation"
-                                from: 0
-                                to: 360
-                                duration: 12000
-                                loops: Animation.Infinite
-                                running: true
-                            }
+                    Behavior on y {
+                        BaseAnimation {
+                            speed: "fast"
                         }
+                    }
 
-                        // Mask Item
-                        Rectangle {
-                            id: avatarMask
-                            width: 54
-                            height: 54
-                            anchors.centerIn: parent
-                            radius: width / 2
-                            color: "black"
-                            visible: false
-                            layer.enabled: true
-                            layer.smooth: true
+                    // 1. Lead Bubble
+                    Rectangle {
+                        id: bubble1
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: 3
+                        height: 20
+                        radius: 1.5
+                        gradient: Gradient {
+                            orientation: Gradient.Vertical
+                            GradientStop { position: 0.0; color: Theme.colors.primary }
+                            GradientStop { position: 1.0; color: Theme.colors.secondary }
                         }
+                    }
 
-                        // Inner Avatar Circle
-                        Rectangle {
-                            id: avatarContainer
-                            anchors.centerIn: parent
-                            width: 54
-                            height: 54
-                            radius: 27
-                            color: Theme.alpha(Theme.colors.primary, 0.1)
+                    // 2. Mid Trail Bubble (follows with a slight lag)
+                    Rectangle {
+                        id: bubble2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: 3
+                        height: 16
+                        radius: 1.5
+                        color: Theme.colors.primary
+                        opacity: 0.8
 
-                            layer.enabled: true
-                            layer.smooth: true
-                            layer.effect: MultiEffect {
-                                maskEnabled: true
-                                maskSource: avatarMask
-                            }
+                        y: targetY2 - slidingLine.y
 
-                            Image {
-                                id: avatarImg
-                                anchors.fill: parent
-                                source: Preferences.customAvatar
-                                visible: source.toString() !== ""
-                                fillMode: Image.PreserveAspectCrop
-                                asynchronous: true
-                                opacity: avatarMouseArea.containsMouse ? 0.4 : 1.0
-                                Behavior on opacity { NumberAnimation { duration: 150 } }
-                            }
-
-                            BaseIcon {
-                                anchors.centerIn: parent
-                                icon: "person"
-                                size: 26
-                                color: Theme.colors.primary
-                                visible: Preferences.customAvatar.toString() === "" && !avatarMouseArea.containsMouse
-                            }
-
-                            BaseIcon {
-                                id: editOverlayIcon
-                                anchors.centerIn: parent
-                                icon: "edit"
-                                size: 22
-                                color: Preferences.customAvatar.toString() !== "" ? "white" : Theme.colors.primary
-                                visible: avatarMouseArea.containsMouse
-                                
-                                onVisibleChanged: {
-                                    if (visible) {
-                                        editIconAnim.restart();
-                                    }
-                                }
-
-                                SequentialAnimation {
-                                    id: editIconAnim
-                                    BaseAnimation { target: editOverlayIcon; property: "scale"; from: 1.0; to: 0.7; speed: "fast" }
-                                    BaseAnimation { target: editOverlayIcon; property: "scale"; to: 1.0; speed: "fast"; easing.type: Easing.OutBack }
-                                }
-                            }
-
-                            MouseArea {
-                                id: avatarMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    var pythonCode = "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; Gtk.init(); dialog = Gtk.FileChooserDialog(title='Select Profile Image', action=Gtk.FileChooserAction.OPEN); dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK); response = dialog.run(); print(dialog.get_filename() if response == Gtk.ResponseType.OK else '', end=''); dialog.destroy()";
-                                    
-                                    var bashScript = 
-                                        "if python3 -c \"import gi; gi.require_version('Gtk', '3.0')\" 2>/dev/null; then " +
-                                        "  python3 -c \"" + pythonCode + "\"; " +
-                                        "elif command -v nix-shell >/dev/null 2>&1; then " +
-                                        "  nix-shell -p python3Packages.pygobject3 -p gtk3 -p gobject-introspection --run \"python3 -c \\\"" + pythonCode + "\\\"\"; " +
-                                        "elif command -v zenity >/dev/null 2>&1; then " +
-                                        "  zenity --file-selection --title='Select Profile Image' --file-filter='Images | *.png *.jpg *.jpeg *.gif *.webp'; " +
-                                        "elif command -v kdialog >/dev/null 2>&1; then " +
-                                        "  kdialog --getopenfilename; " +
-                                        "fi";
-
-                                    var cmd = ["sh", "-c", bashScript];
-                                    ProcessService.run(cmd, function(stdout, exitCode) {
-                                        if (exitCode === 0) {
-                                            var filePath = stdout.trim();
-                                            if (filePath !== "") {
-                                                Preferences.customAvatar = "file://" + filePath;
-                                            }
-                                        }
-                                    });
-                                }
+                        property real targetY2: slidingLine.targetY
+                        Behavior on targetY2 {
+                            BaseAnimation {
+                                duration: Theme.animations.fast + 80
+                                easing.type: Easing.OutQuad
                             }
                         }
                     }
 
-                    // User Info
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 1
+                    // 3. Tail Bubble (follows with more lag)
+                    Rectangle {
+                        id: bubble3
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: 3
+                        height: 12
+                        radius: 1.5
+                        color: Theme.colors.secondary
+                        opacity: 0.5
 
-                        BaseText {
-                            text: SystemInfo.username || "User"
-                            weight: Theme.typography.weights.bold
-                            pixelSize: 17
-                            color: Theme.colors.textLighter
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                        }
+                        y: targetY3 - slidingLine.y
 
-                        BaseText {
-                            text: SystemInfo.hostname || "hostname"
-                            weight: Theme.typography.weights.normal
-                            pixelSize: 13
-                            color: Theme.colors.muted
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
+                        property real targetY3: slidingLine.targetY
+                        Behavior on targetY3 {
+                            BaseAnimation {
+                                duration: Theme.animations.fast + 160
+                                easing.type: Easing.OutQuad
+                            }
                         }
                     }
-                }
-
-                BaseSeparator {
-                    Layout.fillWidth: true
-                    Layout.bottomMargin: Theme.geometry.spacing.medium
                 }
 
                 ColumnLayout {
@@ -251,99 +165,83 @@ BasePopoutWindow {
                     Repeater {
                         model: [
                             { text: "About",      icon: "info",             page: "About"                  },
-                            { label: "— Shell"                                                             },
-                            { text: "Shell",      icon: "dashboard",        page: "Shell",      indent: true },
-                            { text: "Globals",    icon: "settings_suggest", page: "Globals",    indent: true },
-                            { text: "Workspaces", icon: "grid_view",        page: "Workspaces", indent: true },
-                            { text: "Bar",        icon: "border_top",       page: "Bar",        indent: true },
-                            { text: "Launcher",   icon: "rocket_launch",    page: "Launcher",   indent: true },
-                            { text: "Wallpaper",  icon: "image",            page: "Wallpaper",  indent: true },
-                            { label: "— System"                                                            },
-                            { text: "System",     icon: "settings",         page: "System",     indent: true },
-                            { text: "Wi-Fi",      icon: "wifi",             page: "Wifi",       indent: true },
-                            { text: "Bluetooth",  icon: "bluetooth",        page: "Bluetooth",  indent: true }
+                            { category: "Shell"                                                            },
+                            { text: "Globals",    icon: "settings_suggest", page: "Globals"                },
+                            { text: "Workspaces", icon: "grid_view",        page: "Workspaces"             },
+                            { text: "Bar",        icon: "border_top",       page: "Bar"                    },
+                            { text: "Launcher",   icon: "rocket_launch",    page: "Launcher"               },
+                            { text: "Wallpaper",  icon: "image",            page: "Wallpaper"              },
+                            { category: "System"                                                           },
+                            { text: "Appearance", icon: "palette",          page: "Appearance"             },
+                            { text: "Network",    icon: "wifi",             page: "NetworkPage"            },
+                            { text: "Bluetooth",  icon: "bluetooth",        page: "Bluetooth"              }
                         ]
 
                         delegate: ColumnLayout {
                             spacing: 0
                             Layout.fillWidth: true
 
-                            // Section label header
+                            // Section line separator with category header
                             RowLayout {
-                                visible: modelData.label !== undefined
+                                visible: modelData.category !== undefined
                                 Layout.fillWidth: true
                                 Layout.topMargin: Theme.geometry.spacing.medium
-                                Layout.leftMargin: Theme.geometry.spacing.small
-                                Layout.bottomMargin: 2
-                                spacing: 4
+                                Layout.bottomMargin: Theme.geometry.spacing.small
+                                spacing: Theme.geometry.spacing.small
 
-                                // Gradient em dash via gradient-masked rectangle
-                                Item {
-                                    implicitWidth:  dashSource.implicitWidth
-                                    implicitHeight: dashSource.implicitHeight
-
-                                    // Hidden source text for the mask
-                                    Text {
-                                        id: dashSource
-                                        text: "—"
-                                        font.pixelSize: Theme.typography.size.base
-                                        font.weight: Font.Bold
-                                        font.family: Preferences.shellFont || "Inter"
-                                        color: "white"
-                                        visible: false
-                                        layer.enabled: true
-                                    }
-
-                                    // Gradient rectangle masked to the text shape
-                                    Rectangle {
-                                        anchors.fill: dashSource
-                                        gradient: Gradient {
-                                            orientation: Gradient.Horizontal
-                                            GradientStop { position: 0.0; color: Theme.colors.primary }
-                                            GradientStop { position: 1.0; color: Theme.colors.secondary }
-                                        }
-                                        layer.enabled: true
-                                        layer.effect: MultiEffect {
-                                            maskEnabled: true
-                                            maskSource: dashSource
-                                        }
-                                    }
+                                BaseText {
+                                    text: modelData.category ? modelData.category.toUpperCase() : ""
+                                    color: Theme.colors.muted
+                                    pixelSize: Theme.typography.size.small
+                                    weight: Theme.typography.weights.bold
                                 }
 
-                                // Section name
-                                BaseText {
-                                    text: (modelData.label || "").replace(/^— /, "")
-                                    color: Theme.colors.muted
-                                    pixelSize: Theme.typography.size.base
-                                    weight: Theme.typography.weights.bold
+                                BaseSeparator {
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                    color: Theme.colors.border
                                 }
                             }
 
-                            // Nav button (normal or indented child)
+                            // Nav button
                             BaseButton {
-                                visible: modelData.label === undefined && !modelData.separator
+                                id: navBtn
+                                visible: modelData.page !== undefined
                                 Layout.fillWidth: true
-                                Layout.leftMargin: modelData.indent ? Theme.geometry.spacing.medium : 0
                                 text: modelData.text || ""
                                 icon: modelData.icon || ""
                                 selected: modelData.page === mainContainer.selectedPage
-                                gradient: true
-                                hoverGradient: true
+                                gradient: false
+                                hoverGradient: false
+                                textColor: selected ? Theme.colors.primary : (containsMouse ? Theme.colors.primary : Theme.colors.text)
+                                iconColor: selected ? Theme.colors.primary : (containsMouse ? Theme.colors.primary : Theme.colors.text)
                                 contentAlignment: Qt.AlignLeft
                                 normalColor: Theme.colors.transparent
-                                textSize: modelData.indent
-                                    ? Theme.typography.size.base
-                                    : Theme.typography.size.medium
-                                iconSize: modelData.indent
-                                    ? Theme.dimensions.iconBase
-                                    : Theme.dimensions.iconMedium
+                                textSize: Theme.typography.size.medium
+                                iconSize: Theme.dimensions.iconMedium
+
+                                property real shift: (containsMouse && !selected) ? 4 : 0
+                                paddingHorizontal: Theme.geometry.spacing.dynamicPadding + shift
+
+                                Behavior on shift {
+                                    BaseAnimation { duration: Theme.animations.fast }
+                                }
+
+                                onSelectedChanged: {
+                                    if (selected) {
+                                        mainContainer.selectedButtonItem = navBtn;
+                                    }
+                                }
+                                Component.onCompleted: {
+                                    if (selected) {
+                                        mainContainer.selectedButtonItem = navBtn;
+                                    }
+                                }
 
                                 onClicked: {
                                     mainContainer.changePage(modelData.page);
                                 }
                             }
-
-
                         }
                     }
 
@@ -357,7 +255,7 @@ BasePopoutWindow {
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                implicitHeight: centeredContainer.implicitHeight
+                implicitHeight: pageStack.implicitHeight
 
                 // Mask for rounded clipping
                 Rectangle {
@@ -383,27 +281,22 @@ BasePopoutWindow {
                         anchors.fill: parent
                         clip: false
 
-                        ColumnLayout {
-                            id: centeredContainer
-                            width: parent.width
-                            spacing: 0
+                        StackView {
+                            id: pageStack
+                            width: contentScroller.availableWidth
+                            implicitHeight: currentItem ? currentItem.implicitHeight : 0
+                            height: Math.max(implicitHeight, contentScroller.availableHeight)
+                            initialItem: "pages/About.qml"
 
-                            StackView {
-                                id: pageStack
-                                Layout.fillWidth: true
-                                implicitHeight: currentItem ? currentItem.implicitHeight : 0
-                                initialItem: "pages/About.qml"
-
-                                replaceEnter: Transition {
-                                    ParallelAnimation {
-                                        BaseAnimation { property: "opacity"; from: 0; to: 1; speed: "normal"; easing.type: Easing.OutQuad }
-                                        BaseAnimation { property: "scale"; from: 0.98; to: 1; speed: "normal"; easing.type: Easing.OutQuad }
-                                    }
+                            replaceEnter: Transition {
+                                ParallelAnimation {
+                                    BaseAnimation { property: "opacity"; from: 0; to: 1; speed: "normal"; easing.type: Easing.OutQuad }
+                                    BaseAnimation { property: "scale"; from: 0.98; to: 1; speed: "normal"; easing.type: Easing.OutQuad }
                                 }
+                            }
 
-                                replaceExit: Transition {
-                                    BaseAnimation { property: "opacity"; from: 1; to: 0; speed: "normal"; easing.type: Easing.OutQuad }
-                                }
+                            replaceExit: Transition {
+                                BaseAnimation { property: "opacity"; from: 1; to: 0; speed: "normal"; easing.type: Easing.OutQuad }
                             }
                         }
                     }

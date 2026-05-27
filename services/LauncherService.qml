@@ -10,6 +10,7 @@ QtObject {
 
     // Input State Management
     property string lastInputMethod: "keyboard"
+    property string activeUtilityMode: "" // "", "command", "calculator", "web", "youtube"
     property point originMousePos: Qt.point(-1, -1)
     property bool mouseSelectionEnabled: false
     property point lastMousePos: Qt.point(-1, -1)
@@ -358,11 +359,203 @@ QtObject {
     }
 
     function isCommandMode(query) {
-        return query.startsWith(">");
+        var prefix = Preferences.launcherGlobalPrefix;
+        if (!prefix) return false;
+        return query.startsWith(prefix);
     }
 
     function getCommandText(query) {
-        return query.substring(1);
+        var prefix = Preferences.launcherGlobalPrefix;
+        if (!prefix) return query;
+        return query.substring(prefix.length);
+    }
+
+    function getShortcutResults(query) {
+        var globalPrefix = Preferences.launcherGlobalPrefix || ">";
+        
+        // If we are in an active utility mode, process based on that mode
+        if (activeUtilityMode === "web" || activeUtilityMode === "youtube") {
+            var isYoutube = (activeUtilityMode === "youtube");
+            if (query === "") {
+                return [{
+                    "type": "web-hint",
+                    "name": isYoutube ? "YouTube Search" : "Web Search",
+                    "description": "Type search query and press Enter",
+                    "icon": isYoutube ? "play_circle" : "language"
+                }];
+            } else {
+                var searchUrl = isYoutube ? "https://www.youtube.com/results?search_query=" : (Preferences.webSearchUrl || "https://duckduckgo.com/?q=");
+                return [{
+                    "type": "web",
+                    "name": (isYoutube ? "Search YouTube" : "Search Web") + " for '" + query + "'",
+                    "description": "Open search in browser",
+                    "icon": isYoutube ? "play_circle" : "language",
+                    "url": searchUrl + encodeURIComponent(query)
+                }];
+            }
+        }
+
+        if (activeUtilityMode.startsWith("bang-")) {
+            var trigger = activeUtilityMode.substring(5);
+            var activeBang = null;
+            if (Preferences.launcherBangs) {
+                for (var i = 0; i < Preferences.launcherBangs.length; i++) {
+                    if (Preferences.launcherBangs[i].trigger === trigger) {
+                        activeBang = Preferences.launcherBangs[i];
+                        break;
+                    }
+                }
+            }
+            if (activeBang) {
+                if (query === "") {
+                    return [{
+                        "type": "web-hint",
+                        "name": activeBang.name,
+                        "description": "Type search query and press Enter",
+                        "icon": "search"
+                    }];
+                } else {
+                    return [{
+                        "type": "web",
+                        "name": "Search " + activeBang.name + " for '" + query + "'",
+                        "description": "Open search in browser",
+                        "icon": "search",
+                        "url": activeBang.url + encodeURIComponent(query)
+                    }];
+                }
+            }
+        }
+        
+        if (activeUtilityMode === "calculator") {
+            if (query === "") {
+                return [{
+                    "type": "calculation-hint",
+                    "name": "Calculator",
+                    "description": "Type a mathematical expression to evaluate",
+                    "icon": "calculate"
+                }];
+            } else {
+                var calcResult = evaluateCalculator(query);
+                if (calcResult !== null) {
+                    return [{
+                        "type": "calculation",
+                        "name": calcResult.toString(),
+                        "description": "Result - Press Enter to copy to clipboard",
+                        "icon": "calculate"
+                    }];
+                } else {
+                    return [{
+                        "type": "calculation-hint",
+                        "name": "Calculator",
+                        "description": "Incomplete expression: " + query,
+                        "icon": "calculate"
+                    }];
+                }
+            }
+        }
+        
+        if (activeUtilityMode === "command") {
+            if (query === "") {
+                return [{
+                    "type": "command-hint",
+                    "name": "Terminal Command",
+                    "description": "Type command to execute",
+                    "icon": "terminal"
+                }];
+            } else {
+                return [{
+                    "type": "command",
+                    "name": "Run '" + query + "'",
+                    "description": "Execute command in terminal",
+                    "icon": "terminal",
+                    "commandText": query
+                }];
+            }
+        }
+        
+        // If we are not in an active utility mode, check if the query starts with global prefix
+        if (query.startsWith(globalPrefix)) {
+            var rest = query.substring(globalPrefix.length);
+            
+            var options = [
+                {
+                    "type": "shortcut-option",
+                    "name": "Web Search",
+                    "description": "Search the web",
+                    "icon": "language",
+                    "mode": "web",
+                    "trigger": "s"
+                },
+                {
+                    "type": "shortcut-option",
+                    "name": "Calculator",
+                    "description": "Evaluate mathmatical expressions",
+                    "icon": "calculate",
+                    "mode": "calculator",
+                    "trigger": "c"
+                },
+                {
+                    "type": "shortcut-option",
+                    "name": "Terminal Command",
+                    "description": "Run terminal commands",
+                    "icon": "terminal",
+                    "mode": "command",
+                    "trigger": " "
+                },
+                {
+                    "type": "shortcut-option",
+                    "name": "Wallpaper Switcher",
+                    "description": "Change your wallpaper",
+                    "icon": "image",
+                    "mode": "wallpaper",
+                    "trigger": "w"
+                }
+            ];
+
+            // Add custom bangs to options list dynamically
+            if (Preferences.launcherBangs) {
+                for (var i = 0; i < Preferences.launcherBangs.length; i++) {
+                    var bang = Preferences.launcherBangs[i];
+                    options.push({
+                        "type": "shortcut-option",
+                        "name": bang.name,
+                        "description": "Search via " + bang.trigger + " prefix",
+                        "icon": "search",
+                        "mode": "bang-" + bang.trigger,
+                        "trigger": bang.trigger
+                    });
+                }
+            }
+
+            if (rest.trim() === "") {
+                return options;
+            } else {
+                var filterQuery = rest.trim();
+                var filtered = [];
+                for (var i = 0; i < options.length; i++) {
+                    var opt = options[i];
+                    if (fuzzyMatch(opt.name, filterQuery) || 
+                        fuzzyMatch(opt.mode, filterQuery) || 
+                        (opt.trigger && fuzzyMatch(opt.trigger, filterQuery))) {
+                        filtered.push(opt);
+                    }
+                }
+
+                if (filtered.length > 0) {
+                    return filtered;
+                } else {
+                    return [{
+                        "type": "command",
+                        "name": "Run '" + filterQuery + "'",
+                        "description": "Execute command in terminal",
+                        "icon": "terminal",
+                        "commandText": filterQuery
+                    }];
+                }
+            }
+        }
+        
+        return null;
     }
 
 
@@ -394,6 +587,10 @@ QtObject {
             item.action();
         else if (item.type === "command" && item.command)
             ProcessService.runDetached(item.command);
+        else if (item.type === "command" && item.commandText)
+            ProcessService.runDetached([Preferences.terminal, "-e", "sh", "-c", item.commandText + "; read"]);
+        else if (item.type === "calculation")
+            ProcessService.runDetached(["wl-copy", item.name]);
         else if (item.type === "web")
             ProcessService.runDetached(["xdg-open", item.url]);
     }

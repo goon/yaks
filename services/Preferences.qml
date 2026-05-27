@@ -16,6 +16,8 @@ QtObject {
     property string weatherUnit: "celsius" // "celsius" or "fahrenheit"
     property bool gowallEnabled: false // Global Toggle
     property string customAvatar: ""
+    property bool wallpaperParallaxEnabled: false
+    property double wallpaperParallaxStrength: 20.0
 
     property double blurOpacity: 0.5
     property double blockOpacity: 0.7
@@ -70,6 +72,13 @@ QtObject {
     property string webSearchUrl: Config.webSearchUrl
     property string terminal: Config.terminal
     property string wallpaperDirectory: ""
+    property string launcherGlobalPrefix: ">"
+    property bool launcherShowAppDescriptions: false
+    property var launcherBangs: [
+        { "trigger": "yt", "name": "YouTube", "url": "https://www.youtube.com/results?search_query=" },
+        { "trigger": "gh", "name": "GitHub Search", "url": "https://github.com/search?q=" },
+        { "trigger": "g", "name": "Google Search", "url": "https://google.com/search?q=" }
+    ]
     
     // Presets Configuration
     property var presets: ({})
@@ -95,6 +104,8 @@ QtObject {
             "weatherUnit": root.weatherUnit,
             "gowallEnabled": root.gowallEnabled,
             "customAvatar": root.customAvatar,
+            "wallpaperParallaxEnabled": root.wallpaperParallaxEnabled,
+            "wallpaperParallaxStrength": root.wallpaperParallaxStrength,
 
             "blurOpacity": root.blurOpacity,
             "blockOpacity": root.blockOpacity,
@@ -120,6 +131,9 @@ QtObject {
             "webSearchUrl": root.webSearchUrl,
             "terminal": root.terminal,
             "wallpaperDirectory": root.wallpaperDirectory,
+            "launcherGlobalPrefix": root.launcherGlobalPrefix,
+            "launcherShowAppDescriptions": root.launcherShowAppDescriptions,
+            "launcherBangs": root.launcherBangs,
             "currentThemeColors": root.currentThemeColors,
             "currentWallpaper": root.currentWallpaper,
             "workspaceStyle": root.workspaceStyle,
@@ -214,6 +228,46 @@ QtObject {
         requestSave("deletePreset");
     }
     
+    function addLauncherBang(trigger, name, url) {
+        var list = [];
+        if (launcherBangs) {
+            for (var i = 0; i < launcherBangs.length; i++) {
+                list.push(launcherBangs[i]);
+            }
+        }
+        list.push({ "trigger": trigger, "name": name, "url": url });
+        launcherBangs = list;
+        save();
+    }
+
+    function deleteLauncherBang(index) {
+        var list = [];
+        if (launcherBangs) {
+            for (var i = 0; i < launcherBangs.length; i++) {
+                if (i !== index) {
+                    list.push(launcherBangs[i]);
+                }
+            }
+        }
+        launcherBangs = list;
+        save();
+    }
+
+    function updateLauncherBang(index, trigger, name, url) {
+        var list = [];
+        if (launcherBangs) {
+            for (var i = 0; i < launcherBangs.length; i++) {
+                if (i === index) {
+                    list.push({ "trigger": trigger, "name": name, "url": url });
+                } else {
+                    list.push(launcherBangs[i]);
+                }
+            }
+        }
+        launcherBangs = list;
+        save();
+    }
+
     property Timer saveTimer: Timer {
         interval: 500
         repeat: false
@@ -235,6 +289,8 @@ QtObject {
     onWeatherUnitChanged: requestSave("weatherUnit")
     onGowallEnabledChanged: requestSave("gowallEnabled")
     onCustomAvatarChanged: requestSave("customAvatar")
+    onWallpaperParallaxEnabledChanged: requestSave("wallpaperParallaxEnabled")
+    onWallpaperParallaxStrengthChanged: requestSave("wallpaperParallaxStrength")
 
     onBlurOpacityChanged: requestSave("blurOpacity")
     onBlockOpacityChanged: requestSave("blockOpacity")
@@ -265,6 +321,9 @@ QtObject {
     onWebSearchUrlChanged: requestSave("webSearchUrl")
     onTerminalChanged: requestSave("terminal")
     onWallpaperDirectoryChanged: requestSave("wallpaperDirectory")
+    onLauncherGlobalPrefixChanged: requestSave("launcherGlobalPrefix")
+    onLauncherShowAppDescriptionsChanged: requestSave("launcherShowAppDescriptions")
+    onLauncherBangsChanged: requestSave("launcherBangs")
     onCurrentThemeColorsChanged: requestSave("currentThemeColors")
     onCurrentWallpaperChanged: requestSave("currentWallpaper")
     onIndicatorsShowWifiChanged: requestSave("indicatorsShowWifi")
@@ -329,6 +388,12 @@ QtObject {
 
                     if (data.hasOwnProperty("customAvatar"))
                         root.customAvatar = data.customAvatar;
+
+                    if (data.hasOwnProperty("wallpaperParallaxEnabled"))
+                        root.wallpaperParallaxEnabled = data.wallpaperParallaxEnabled;
+
+                    if (data.hasOwnProperty("wallpaperParallaxStrength"))
+                        root.wallpaperParallaxStrength = data.wallpaperParallaxStrength;
 
 
 
@@ -513,6 +578,15 @@ QtObject {
 
                     if (data.hasOwnProperty("wallpaperDirectory"))
                         root.wallpaperDirectory = data.wallpaperDirectory;
+
+                    if (data.hasOwnProperty("launcherGlobalPrefix"))
+                        root.launcherGlobalPrefix = data.launcherGlobalPrefix;
+
+                    if (data.hasOwnProperty("launcherShowAppDescriptions"))
+                        root.launcherShowAppDescriptions = data.launcherShowAppDescriptions;
+
+                    if (data.hasOwnProperty("launcherBangs"))
+                        root.launcherBangs = data.launcherBangs;
 
                     if (data.hasOwnProperty("currentThemeColors"))
                         root.currentThemeColors = data.currentThemeColors;

@@ -173,126 +173,12 @@ SettingsPage {
                 Layout.bottomMargin: Theme.geometry.spacing.small
             }
 
+
             BarConfiguration {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
             }
 
-            // ── Indicators ───────────────────────────────────────────────
-            BaseText {
-                text: "Indicators"
-                weight: Theme.typography.weights.bold
-                color: Theme.colors.primary
-                pixelSize: Theme.typography.size.large
-                Layout.columnSpan: 2
-                Layout.topMargin: Theme.geometry.spacing.large
-            }
-
-            BaseText {
-                text: "Toggle which status icons appear in the Indicators block."
-                color: Theme.colors.text
-                pixelSize: Theme.typography.size.medium
-                Layout.fillWidth: true
-                Layout.preferredWidth: 0
-                Layout.columnSpan: 2
-                Layout.bottomMargin: Theme.geometry.spacing.small
-            }
-
-            // Pill flow
-            Flow {
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-                spacing: Theme.geometry.spacing.small
-
-                Repeater {
-                    model: [
-                        { label: "Wi-Fi",         icon: "wifi",                 get: function() { return Preferences.indicatorsShowWifi          }, set: function(v) { Preferences.indicatorsShowWifi          = v } },
-                        { label: "Bluetooth",     icon: "bluetooth",            get: function() { return Preferences.indicatorsShowBluetooth      }, set: function(v) { Preferences.indicatorsShowBluetooth      = v } },
-                        { label: "Volume",        icon: "volume_up",            get: function() { return Preferences.indicatorsShowVolume         }, set: function(v) { Preferences.indicatorsShowVolume         = v } },
-                        { label: "Notifications", icon: "notifications",        get: function() { return Preferences.indicatorsShowNotifications  }, set: function(v) { Preferences.indicatorsShowNotifications  = v } },
-                        { label: "Tray",          icon: "more_horiz",           get: function() { return Preferences.indicatorsShowTray           }, set: function(v) { Preferences.indicatorsShowTray           = v } }
-                    ]
-
-                    delegate: Item {
-                        id: pill
-
-                        readonly property bool isEnabled: modelData.get()
-
-                        width:  pillRow.width  + Theme.geometry.spacing.medium * 2
-                        height: pillRow.height + Theme.geometry.spacing.small  * 2
-
-                        // Premium gradient border (active)
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Theme.geometry.radius
-                            visible: pill.isEnabled
-                            gradient: Gradient {
-                                orientation: Gradient.Horizontal
-                                GradientStop { position: 0; color: Theme.colors.primary }
-                                GradientStop { position: 1; color: Theme.colors.secondary }
-                            }
-                        }
-
-                        // Inner cutout (active)
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 1.5
-                            radius: Theme.geometry.radius - 1.5
-                            visible: pill.isEnabled
-                            color: Theme.colors.surface
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: parent.radius
-                                color: Qt.alpha(Theme.colors.primary, 0.08)
-                            }
-                        }
-
-                        // Plain border (inactive)
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Theme.geometry.radius
-                            visible: !pill.isEnabled
-                            color: Theme.colors.transparent
-                            border.width: 1
-                            border.color: Theme.colors.border
-                        }
-
-                        Row {
-                            id: pillRow
-                            anchors.centerIn: parent
-                            spacing: 6
-
-                            BaseIcon {
-                                icon: pill.isEnabled ? "check_circle" : "circle"
-                                fill: false
-                                size: 14
-                                color: pill.isEnabled ? Theme.colors.primary : Theme.colors.border
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            BaseIcon {
-                                icon: modelData.icon
-                                size: 14
-                                color: pill.isEnabled ? Theme.colors.textLighter : Theme.colors.text
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            BaseText {
-                                text: modelData.label
-                                color: pill.isEnabled ? Theme.colors.textLighter : Theme.colors.text
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: modelData.set(!pill.isEnabled)
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -467,18 +353,22 @@ SettingsPage {
             property var  dragData: itemRoot.dragData
             readonly property bool isActive: dragHandler.containsMouse || dragHandler.drag.active
 
-            width:  innerRow.width  + Theme.geometry.spacing.medium * 2
-            height: innerRow.height + Theme.geometry.spacing.small  * 2
+            width:  innerLayout.width  + Theme.geometry.spacing.medium * 2
+            height: Theme.dimensions.iconBase + Theme.geometry.spacing.small  * 2
 
-            color:        Theme.colors.surface
-            radius:       Theme.geometry.radius
-            border.width: 1
+            // Base radius
+            radius: Theme.geometry.radius
+
+            // Outer border/color for inactive available components
+            color:        Theme.colors.transparent
+            border.width: sourceSection === "available" ? 1 : 0
             border.color: Theme.colors.border
 
+            // Premium gradient layer (visible for active sections OR when hovered/dragged)
             Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
-                visible: rect.isActive
+                visible: (sourceSection !== "available") || rect.isActive
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
                     GradientStop { position: 0.0; color: Theme.colors.primary }
@@ -486,28 +376,26 @@ SettingsPage {
                 }
             }
 
-            RowLayout {
-                id: innerRow
-                anchors.centerIn: parent
-                spacing: 6
+            // Cutout/Inner background layer
+            // This is visible when not hovered/dragged for active components, to show the cutout gradient border.
+            // For available (inactive) components, it is hidden to keep the background transparent.
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 1.5
+                radius: parent.radius - anchors.margins
+                visible: !rect.isActive && sourceSection !== "available"
+                color: Theme.colors.surface
 
-                BaseIcon {
-                    icon:  barRoot.componentMetadata[itemRoot.componentId]?.icon || "extension"
-                    size:  Theme.dimensions.iconBase
-                    color: rect.isActive ? Theme.colors.background : Theme.colors.muted
-                }
-
-                BaseText {
-                    text:  itemRoot.label
-                    color: rect.isActive ? Theme.colors.background : Theme.colors.muted
+                // Overlay primary tint for premium active section items
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: sourceSection !== "available"
+                    color: Qt.alpha(Theme.colors.primary, 0.08)
                 }
             }
 
-            Drag.active:    dragHandler.drag.active
-            Drag.keys:      ["bar-component"]
-            Drag.hotSpot.x: width  / 2
-            Drag.hotSpot.y: height / 2
-
+            // Drag handler covering the entire background of the pill
             MouseArea {
                 id: dragHandler
                 anchors.fill: parent
@@ -526,6 +414,30 @@ SettingsPage {
                     }
                 }
             }
+
+            Row {
+                id: innerLayout
+                anchors.centerIn: parent
+                spacing: 6
+
+                BaseIcon {
+                    icon:  barRoot.componentMetadata[itemRoot.componentId]?.icon || "extension"
+                    size:  Theme.dimensions.iconBase
+                    color: rect.isActive ? Theme.colors.background : (sourceSection !== "available" ? Theme.colors.primary : Theme.colors.text)
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                BaseText {
+                    text:  itemRoot.label
+                    color: rect.isActive ? Theme.colors.background : (sourceSection !== "available" ? Theme.colors.textLighter : Theme.colors.text)
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            Drag.active:    dragHandler.drag.active
+            Drag.keys:      ["bar-component"]
+            Drag.hotSpot.x: width  / 2
+            Drag.hotSpot.y: height / 2
 
             states: [
                 State {

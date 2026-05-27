@@ -107,113 +107,152 @@ PanelWindow {
         bottom: (Preferences.barPosition === "bottom") ? -(Preferences.barHeight + Preferences.barMarginTop) : 0
     }
 
-    // --- Buffers ---
+    // --- Buffers & Parallax ---
 
-    Image {
-        id: loaderA
+    MouseArea {
+        id: mouseArea
         anchors.fill: parent
-        visible: false
-        fillMode: Image.PreserveAspectCrop
-        asynchronous: true
-        cache: true
-        
-        // Trigger transition when load completes
-        onStatusChanged: if (status === Image.Ready) root.checkAndTransition()
+        hoverEnabled: true
+        acceptedButtons: Qt.NoButton
     }
 
-    Image {
-        id: loaderB
-        anchors.fill: parent
-        visible: false
-        fillMode: Image.PreserveAspectCrop
-        asynchronous: true
-        cache: true
-        
-        // Trigger transition when load completes
-        onStatusChanged: if (status === Image.Ready) root.checkAndTransition()
-    }
-
-    // --- Internal Transition Logic ---
     Item {
-        id: transition
-        anchors.fill: parent
+        id: parallaxContainer
         
-        property Item sourceOld
-        property Item sourceNew
-        property int type: 0
-        property bool running: false
-        property int duration: Theme.animations.slow * 2 // Long crossfade
+        property real strength: Preferences.wallpaperParallaxEnabled ? Preferences.wallpaperParallaxStrength : 0
+        
+        x: -currentOffsetX
+        y: -currentOffsetY
+        width: root.width + (2 * strength)
+        height: root.height + (2 * strength)
 
-        signal finished()
-
-        function prepare() {
-            if (sourceOld) {
-                sourceOld.opacity = 1;
-                sourceOld.x = 0;
-                sourceOld.y = 0;
-                sourceOld.visible = true;
-                sourceOld.scale = 1;
-                sourceOld.z = 1;
-                sourceNew.z = 2;
-                sourceOld.z = 1;
-            }
-            if (sourceNew) {
-                sourceNew.opacity = 1;
-                sourceNew.x = 0;
-                sourceNew.y = 0;
-                sourceNew.scale = 1;
-                sourceNew.visible = false;
-            }
-        }
-
-        function startTransition(newType) {
-            transition.type = newType;
-            prepare();
-            if (type === 1) { // Zoom
-                sourceNew.scale = 0.5;
-                sourceNew.opacity = 0;
-                sourceNew.visible = true;
-                animZoom.restart();
-            } else { // Crossfade
-                sourceNew.opacity = 0;
-                sourceNew.visible = true;
-                animFade.restart();
-            }
-            transition.running = true;
-        }
-
-        BaseAnimation {
-            id: animFade
-            target: transition.sourceNew
-            property: "opacity"
-            from: 0
-            to: 1
-            duration: transition.duration
-            easing.type: Easing.InOutQuad
-            onFinished: transition.finished()
-        }
-
-        ParallelAnimation {
-            id: animZoom
-            onFinished: transition.finished()
-
-            BaseAnimation {
-                target: transition.sourceNew
-                property: "scale"
-                from: 1.2
-                to: 1
-                duration: transition.duration
+        property real currentOffsetX: (mouseArea.containsMouse && Preferences.wallpaperParallaxEnabled)
+            ? (mouseArea.mouseX / Math.max(1, root.width)) * 2 * strength
+            : strength
+            
+        property real currentOffsetY: (mouseArea.containsMouse && Preferences.wallpaperParallaxEnabled)
+            ? (mouseArea.mouseY / Math.max(1, root.height)) * 2 * strength
+            : strength
+            
+        Behavior on currentOffsetX {
+            NumberAnimation {
+                duration: 400
                 easing.type: Easing.OutCubic
             }
+        }
+        
+        Behavior on currentOffsetY {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Image {
+            id: loaderA
+            anchors.fill: parent
+            visible: false
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
+            
+            // Trigger transition when load completes
+            onStatusChanged: if (status === Image.Ready) root.checkAndTransition()
+        }
+
+        Image {
+            id: loaderB
+            anchors.fill: parent
+            visible: false
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
+            
+            // Trigger transition when load completes
+            onStatusChanged: if (status === Image.Ready) root.checkAndTransition()
+        }
+
+        // --- Internal Transition Logic ---
+        Item {
+            id: transition
+            anchors.fill: parent
+            
+            property Item sourceOld
+            property Item sourceNew
+            property int type: 0
+            property bool running: false
+            property int duration: Theme.animations.slow * 2 // Long crossfade
+
+            signal finished()
+
+            function prepare() {
+                if (sourceOld) {
+                    sourceOld.opacity = 1;
+                    sourceOld.x = 0;
+                    sourceOld.y = 0;
+                    sourceOld.visible = true;
+                    sourceOld.scale = 1;
+                    sourceOld.z = 1;
+                    sourceNew.z = 2;
+                    sourceOld.z = 1;
+                }
+                if (sourceNew) {
+                    sourceNew.opacity = 1;
+                    sourceNew.x = 0;
+                    sourceNew.y = 0;
+                    sourceNew.scale = 1;
+                    sourceNew.visible = false;
+                }
+            }
+
+            function startTransition(newType) {
+                transition.type = newType;
+                prepare();
+                if (type === 1) { // Zoom
+                    sourceNew.scale = 0.5;
+                    sourceNew.opacity = 0;
+                    sourceNew.visible = true;
+                    animZoom.restart();
+                } else { // Crossfade
+                    sourceNew.opacity = 0;
+                    sourceNew.visible = true;
+                    animFade.restart();
+                }
+                transition.running = true;
+            }
 
             BaseAnimation {
+                id: animFade
                 target: transition.sourceNew
                 property: "opacity"
                 from: 0
                 to: 1
                 duration: transition.duration
+                easing.type: Easing.InOutQuad
+                onFinished: transition.finished()
+            }
+
+            ParallelAnimation {
+                id: animZoom
+                onFinished: transition.finished()
+
+                BaseAnimation {
+                    target: transition.sourceNew
+                    property: "scale"
+                    from: 1.2
+                    to: 1
+                    duration: transition.duration
+                    easing.type: Easing.OutCubic
+                }
+
+                BaseAnimation {
+                    target: transition.sourceNew
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: transition.duration
+                }
             }
         }
     }
-
 }

@@ -33,6 +33,7 @@ FocusScope {
     signal closeRequested()
     signal mouseMoveRequested(int index, var mouse)
     signal tabRedirectRequested(int index)
+    signal searchTextUpdateRequested(string text)
 
     // --- State Management ---
     visible: opacity > 0

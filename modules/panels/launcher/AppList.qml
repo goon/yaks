@@ -38,22 +38,57 @@ LauncherTab {
 
     // Override the base performSearch
     function performSearch() {
+        var rawQuery = root.searchText;
+        var globalPrefix = Preferences.launcherGlobalPrefix || ">";
+        if (rawQuery.startsWith(globalPrefix) && LauncherService.activeUtilityMode === "") {
+            var rest = rawQuery.substring(globalPrefix.length);
+            var spaceIdx = rest.indexOf(" ");
+            if (spaceIdx !== -1) {
+                var trigger = rest.substring(0, spaceIdx).trim();
+                var remaining = rest.substring(spaceIdx + 1);
+                
+                var modeToEnter = "";
+                if (trigger === "s" || trigger === "web") modeToEnter = "web";
+                else if (trigger === "c" || trigger === "calc" || trigger === "calculator") modeToEnter = "calculator";
+                else if (trigger === "" || trigger === "cmd" || trigger === "command") modeToEnter = "command";
+                else if (trigger === "w" || trigger === "wallpaper") {
+                    root.tabRedirectRequested(2);
+                    return;
+                }
+                else {
+                    if (Preferences.launcherBangs) {
+                        for (var i = 0; i < Preferences.launcherBangs.length; i++) {
+                            if (Preferences.launcherBangs[i].trigger === trigger) {
+                                modeToEnter = "bang-" + trigger;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if (modeToEnter !== "") {
+                    LauncherService.activeUtilityMode = modeToEnter;
+                    root.searchTextUpdateRequested(remaining);
+                    return;
+                }
+            }
+        }
+
         var query = root.searchText.trim();
         var queryChanged = query !== _lastQuery;
         _lastQuery = query;
 
-        // 1. Command Mode
-        if (LauncherService.isCommandMode(query)) {
-            specialMode = "command";
-            specialModeText = LauncherService.getCommandText(query);
-            appListView.currentIndex = -1;
-            return;
-        }
-
         specialMode = "";
         specialModeText = "";
 
-        // 2. Calculator & App Search
+        // Check for shortcut mode
+        var shortcutResults = LauncherService.getShortcutResults(query);
+        if (shortcutResults !== null) {
+            finalizeModel(null, shortcutResults, queryChanged);
+            return;
+        }
+
+        // Otherwise, regular application & calculator search
         var calcResult = LauncherService.evaluateCalculator(query);
         var appResults = [];
 
@@ -104,16 +139,15 @@ LauncherTab {
         if (appListView.currentIndex < 0 && cachedModel.length > 0)
             appListView.currentIndex = 0;
 
-        if (specialMode === "command") {
-            if (specialModeText.length > 0) {
-                ProcessService.runDetached([Preferences.terminal, "-e", "sh", "-c", specialModeText + "; read"]);
-                root.closeRequested();
-            }
-        } else if (appListView.currentIndex >= 0 && cachedModel && appListView.currentIndex < cachedModel.length) {
+        if (appListView.currentIndex >= 0 && cachedModel && appListView.currentIndex < cachedModel.length) {
             var item = cachedModel[appListView.currentIndex];
-            if (item.type === "calculation") {
-                ProcessService.runDetached(["wl-copy", item.name]);
-                root.closeRequested();
+            if (item.type === "shortcut-option") {
+                if (item.mode === "wallpaper") {
+                    root.tabRedirectRequested(2);
+                } else {
+                    LauncherService.activeUtilityMode = item.mode;
+                    root.searchTextUpdateRequested("");
+                }
             } else {
                 LauncherService.executeItem(item);
                 root.closeRequested();
@@ -127,6 +161,13 @@ LauncherTab {
         target: DesktopEntries.applications
         function onValuesChanged() {
             if (root.isActive) performSearch();
+        }
+    }
+
+    Connections {
+        target: LauncherService
+        function onActiveUtilityModeChanged() {
+            performSearch();
         }
     }
 
@@ -158,20 +199,47 @@ LauncherTab {
             
             // App Logic
             text: modelData ? modelData.name : ""
+            subText: {
+                if (!modelData) return "";
+                if (modelData.type === "calculation" || 
+                    modelData.type === "calculation-hint" ||
+                    modelData.type === "workspace" || 
+                    modelData.type === "web" ||
+                    modelData.type === "web-hint" ||
+                    modelData.type === "command" ||
+                    modelData.type === "command-hint" ||
+                    modelData.type === "shortcut-option") {
+                    return modelData.description || "";
+                }
+                return Preferences.launcherShowAppDescriptions ? (modelData.description || "") : "";
+            }
             
-            property bool isWorkspace: (modelData && modelData.type === "workspace")
-            property bool isCalculation: (modelData && modelData.type === "calculation")
+            property bool isGlyphIcon: (modelData && (
+                modelData.type === "workspace" || 
+                modelData.type === "calculation" || 
+                modelData.type === "calculation-hint" ||
+                modelData.type === "shortcut-option" ||
+                modelData.type === "command" ||
+                modelData.type === "command-hint" ||
+                modelData.type === "web" ||
+                modelData.type === "web-hint"
+            ))
             
-            iconSource: isCalculation ? "calculate" : (isWorkspace ? "view_carousel" : "")
-            imageSource: (!isWorkspace && !isCalculation && modelData) ? LauncherService.resolveIcon(modelData.icon) : ""
+            iconSource: isGlyphIcon ? (modelData.icon || "extension") : ""
+            imageSource: (!isGlyphIcon && modelData) ? LauncherService.resolveIcon(modelData.icon) : ""
             
-            showFallbackIcon: (imageSource === "") && !isCalculation && !isWorkspace
-            boxedIcon: isCalculation || isWorkspace
+            showFallbackIcon: (imageSource === "") && !isGlyphIcon
+            boxedIcon: isGlyphIcon
             fallbackText: (modelData && modelData.name && modelData.name.length > 0) ? modelData.name.charAt(0).toUpperCase() : "?"
             
             onClicked: {
                 appListView.currentIndex = index;
-                root.activateCurrentItem();
+                if (modelData && modelData.type === "shortcut-option") {
+                    LauncherService.activeUtilityMode = modelData.mode;
+                    root.searchTextUpdateRequested("");
+                } else {
+                    root.activateCurrentItem();
+                }
             }
         }
 

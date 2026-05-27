@@ -6,7 +6,7 @@ import qs
 SettingsPage {
     id: root
 
-    title: "System Configuration"
+    title: "Appearance Configuration"
 
     Component.onCompleted: {
         ThemeService.refreshThemeService();

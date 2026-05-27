@@ -75,6 +75,11 @@ BaseBlock {
                     if (event.key === Qt.Key_Down) {
                         root.downPressed();
                         event.accepted = true;
+                    } else if (event.key === Qt.Key_Backspace && input.text.length === 0) {
+                        if (LauncherService.activeUtilityMode !== "") {
+                            LauncherService.activeUtilityMode = "";
+                            event.accepted = true;
+                        }
                     }
                 }
             }

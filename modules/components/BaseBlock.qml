@@ -38,6 +38,7 @@ Rectangle {
     readonly property alias pressed: mouseArea.pressed
     // Internal layout control
     default property alias contentData: contentContainer.data
+    property alias _contentContainer: contentContainer
 
     signal clicked()
     signal rightClicked()
