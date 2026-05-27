@@ -33,7 +33,7 @@ BasePopoutWindow {
 
         function changePage(pageName) {
             selectedPage = pageName;
-            pageStack.replace("pages/" + pageName + ".qml");
+            pageStack.replace("views/" + pageName + ".qml");
         }
 
         Connections {
@@ -288,7 +288,7 @@ BasePopoutWindow {
                             width: contentScroller.availableWidth
                             implicitHeight: currentItem ? currentItem.implicitHeight : 0
                             height: Math.max(implicitHeight, contentScroller.height)
-                            initialItem: "pages/About.qml"
+                            initialItem: "views/About.qml"
 
                             replaceEnter: Transition {
                                 ParallelAnimation {

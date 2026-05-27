@@ -33,7 +33,7 @@ BasePopoutWindow {
         Connections {
             target: root
             function onClosed() {
-                pageStack.replace("pages/Dashboard.qml");
+                pageStack.replace("views/Dashboard.qml");
             }
         }
 
@@ -74,7 +74,7 @@ BasePopoutWindow {
                             id: pageStack
                             Layout.fillWidth: true
                             implicitHeight: currentItem ? currentItem.implicitHeight : 0
-                            initialItem: "pages/Dashboard.qml"
+                            initialItem: "views/Dashboard.qml"
 
                             onCurrentItemChanged: console.log("DEBUG: pageStack currentItem changed to:", currentItem, "currentItem implicitHeight:", currentItem ? currentItem.implicitHeight : "null")
                             onImplicitHeightChanged: console.log("DEBUG: pageStack implicitHeight changed to:", implicitHeight)
