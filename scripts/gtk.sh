@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/gtk4.sh
+# scripts/gtk.sh
 # This script is triggered by Quickshell's ThemeService.
 # Args: $1 = theme_id, $2 = theme_path
 
@@ -112,6 +112,16 @@ apply_template() {
     chmod 644 "$output_file"
 }
 
+safe_write_import() {
+    local file="$1"
+    local import_line="$2"
+    if [ ! -f "$file" ]; then
+        echo "$import_line" > "$file"
+    elif ! grep -qF "$import_line" "$file"; then
+        sed -i "1i\\$import_line" "$file"
+    fi
+}
+
 # Apply to GTK 4.0 (Libadwaita)
 GTK4_DIR="$HOME/.config/gtk-4.0"
 GTK4_THEME_CSS="$GTK4_DIR/quickshell.css"
@@ -146,7 +156,14 @@ if [ "$MODE" = "light" ]; then
 fi
 
 # Apply the theme if it exists
-if ls /usr/share/themes | grep -q "$TARGET_GTK_THEME"; then
+THEME_FOUND=false
+for dir in /usr/share/themes ~/.local/share/themes /run/current-system/sw/share/themes; do
+    if [ -d "$dir" ] && [ -d "$dir/$TARGET_GTK_THEME" ]; then
+        THEME_FOUND=true
+        break
+    fi
+done
+if [ "$THEME_FOUND" = true ]; then
     dconf write /org/gnome/desktop/interface/gtk-theme "'$TARGET_GTK_THEME'"
 fi
 
