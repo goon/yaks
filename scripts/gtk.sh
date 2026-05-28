@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 # scripts/gtk.sh
-# This script is triggered by Quickshell's ThemeService.
-# Args: $1 = theme_id, $2 = theme_path
 
 THEME_ID="$1"
 THEME_PATH="$2"
@@ -47,9 +45,7 @@ get_color() {
 hex_to_rgba() {
     local hex="$1"
     local alpha="$2"
-    # Remove # if present
     hex=${hex#\#}
-    # Ensure it's a 6-digit hex
     if [ ${#hex} -ne 6 ]; then
         echo "$1"
         return
@@ -146,7 +142,6 @@ safe_write_import "$GTK3_MAIN_CSS" "$IMPORT_LINE"
 
 
 # --- 3. Update gsettings ---
-# MODE is $5 (captured above)
 TARGET_GTK_THEME="adw-gtk3-dark"
 COLOR_SCHEME="prefer-dark"
 
@@ -169,7 +164,7 @@ fi
 
 dconf write /org/gnome/desktop/interface/color-scheme "'$COLOR_SCHEME'"
 
-# --- 4. Force Reload (Contrast Trick) ---
+# --- 4. Force Reload (Contrast Switch) ---
 if [ "$CONTEXT" != "startup" ]; then
     dconf write /org/gnome/desktop/a11y/interface/high-contrast true
     sleep 0.1
