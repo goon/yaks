@@ -120,13 +120,12 @@ Item {
 
     // Central registry for panel paths and dimensions
     readonly property var panelRegistry: ({
-        "launcher":      { source: "../modules/launcher/Launcher.qml", width: 600, height: 650 },
-        "settings":      { source: "../modules/settings/Settings.qml", width: 1100, height: 850 },
-        "dashboard":     { source: "../modules/dashboard/Dashboard.qml", width: 1100, height: 850 },
-        "notifications": { source: "../modules/notifications/Notifications.qml", width: 550, height: 600 },
-        "audio":         { source: "../modules/audio/Audio.qml", width: 420, height: 450 },
-        "power":         { source: "../modules/power/Power.qml", width: 450, height: 300 },
-        "wallpaper":     { source: "../modules/wallpaper/WallpaperPanel.qml", width: 1600, height: 600 }
+        "launcher":      { source: "../modules/launcher/Launcher.qml" },
+        "settings":      { source: "../modules/settings/Settings.qml" },
+        "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
+        "notifications": { source: "../modules/notifications/Notifications.qml" },
+        "power":         { source: "../modules/power/Power.qml" },
+        "wallpaper":     { source: "../modules/wallpaper/WallpaperPanel.qml" }
     })
 
     // Expected fallback dimensions during transition before component load completes

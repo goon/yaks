@@ -14,7 +14,7 @@ FocusScope {
 
     readonly property var popupWindow: Window.window
 
-    implicitWidth: 1060
+    implicitWidth: 940
     
     readonly property real maxHeight: (root.popupWindow && root.popupWindow.screen) 
         ? Math.min(860, root.popupWindow.screen.height * 0.9 - 40)

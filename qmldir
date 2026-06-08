@@ -90,7 +90,6 @@ DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 
 # Panels
 NotificationsPanel modules/notifications/Notifications.qml
-Audio modules/audio/Audio.qml
 PowerPanel modules/power/Power.qml
 WallpaperPanel modules/wallpaper/WallpaperPanel.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml

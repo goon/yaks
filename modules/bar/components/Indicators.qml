@@ -189,7 +189,7 @@ Item {
                 if (itemRoot.isDragging) return;
                 if (itemKey === "wifi") IslandService.toggleSettings("NetworkPage");
                 else if (itemKey === "bluetooth") IslandService.toggleSettings("Bluetooth");
-                else if (itemKey === "volume") IslandService.openPanel("audio");
+                else if (itemKey === "volume") IslandService.toggleSettings("Audio");
                 else if (itemKey === "notifications") IslandService.openPanel("notifications");
             }
         }
@@ -245,11 +245,11 @@ Item {
                     }
                 } else {
                     if (itemKey === "wifi") {
-                        IslandService.toggleSettings("Wifi");
+                        IslandService.toggleSettings("NetworkPage");
                     } else if (itemKey === "bluetooth") {
                         IslandService.toggleSettings("Bluetooth");
                     } else if (itemKey === "volume") {
-                        IslandService.toggleAudioPopout();
+                        IslandService.toggleSettings("Audio");
                     } else if (itemKey === "notifications") {
                         IslandService.toggleNotificationPopout();
                     }

@@ -99,12 +99,11 @@ QtObject {
 
         if (isCurrentlyOpen) {
             if (pageName !== undefined) {
-                if (activePanelItem && activePanelItem.bodyItem) {
-                    var mainContainer = activePanelItem.bodyItem;
-                    if (mainContainer.selectedPage === pageName) {
+                if (activePanelItem) {
+                    if (activePanelItem.selectedPage === pageName) {
                         closeAll();
-                    } else {
-                        mainContainer.changePage(pageName);
+                    } else if (typeof activePanelItem.changePage === "function") {
+                        activePanelItem.changePage(pageName);
                     }
                 }
             } else {
@@ -114,8 +113,8 @@ QtObject {
             openPanel("settings");
             if (pageName !== undefined) {
                 runWhenPanelReady(() => {
-                    if (activePanelItem && activePanelItem.bodyItem && typeof activePanelItem.bodyItem.changePage === "function") {
-                        activePanelItem.bodyItem.changePage(pageName);
+                    if (activePanelItem && typeof activePanelItem.changePage === "function") {
+                        activePanelItem.changePage(pageName);
                     }
                 });
             }
@@ -131,7 +130,7 @@ QtObject {
     }
 
     function toggleAudioPopout(screenX, barLeft, barRight) {
-        togglePanel("audio");
+        toggleSettings("Audio");
     }
 
     function togglePowerPopout(screenX, barLeft, barRight) {
