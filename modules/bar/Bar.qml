@@ -27,7 +27,7 @@ PanelWindow {
     color: Theme.colors.transparent
     
     // Dynamic keyboard focus grabbing when morphed
-    focusable: island.isIslandMorphed
+    WlrLayershell.keyboardFocus: island.isIslandMorphed ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
     WlrLayershell.namespace: "quickshell:bar"
     WlrLayershell.layer: WlrLayer.Top
@@ -73,7 +73,7 @@ PanelWindow {
     }
 
     // Centralized Island framework component
-    BaseIsland {
+    Island {
         id: island
         barWindow: bar
         anchors.fill: parent

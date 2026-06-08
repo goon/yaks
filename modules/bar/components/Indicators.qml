@@ -168,7 +168,7 @@ Item {
 
         onIsDraggingChanged: {
             if (isDragging) {
-                PopoutService.closeAll();
+                IslandService.closeAll();
             }
         }
 
@@ -187,10 +187,10 @@ Item {
             repeat: false
             onTriggered: {
                 if (itemRoot.isDragging) return;
-                if (itemKey === "wifi") PopoutService.toggleSettings("NetworkPage");
-                else if (itemKey === "bluetooth") PopoutService.toggleSettings("Bluetooth");
-                else if (itemKey === "volume") PopoutService.openPanel("audio");
-                else if (itemKey === "notifications") PopoutService.openPanel("notifications");
+                if (itemKey === "wifi") IslandService.toggleSettings("NetworkPage");
+                else if (itemKey === "bluetooth") IslandService.toggleSettings("Bluetooth");
+                else if (itemKey === "volume") IslandService.openPanel("audio");
+                else if (itemKey === "notifications") IslandService.openPanel("notifications");
             }
         }
 
@@ -245,13 +245,13 @@ Item {
                     }
                 } else {
                     if (itemKey === "wifi") {
-                        PopoutService.toggleSettings("Wifi");
+                        IslandService.toggleSettings("Wifi");
                     } else if (itemKey === "bluetooth") {
-                        PopoutService.toggleSettings("Bluetooth");
+                        IslandService.toggleSettings("Bluetooth");
                     } else if (itemKey === "volume") {
-                        PopoutService.toggleAudioPopout();
+                        IslandService.toggleAudioPopout();
                     } else if (itemKey === "notifications") {
-                        PopoutService.toggleNotificationPopout();
+                        IslandService.toggleNotificationPopout();
                     }
                 }
             }

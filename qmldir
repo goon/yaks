@@ -12,8 +12,8 @@ singleton ProcessService services/ProcessService.qml
 singleton Zenity services/Zenity.qml
 singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
-singleton Hyprland services/Hyprland.qml
-singleton PopoutService services/PopoutService.qml
+singleton Compositor services/Compositor.qml
+singleton IslandService services/IslandService.qml
 singleton Power services/Power.qml
 singleton Stats services/Stats.qml
 singleton Preferences services/Preferences.qml
@@ -40,7 +40,7 @@ BaseButton shared/BaseButton.qml
 BaseMultiButton shared/BaseMultiButton.qml
 BaseIcon shared/BaseIcon.qml
 BaseInput shared/BaseInput.qml
-BaseIsland shared/BaseIsland.qml
+Island modules/Island.qml
 BaseFloatingWindow shared/BaseFloatingWindow.qml
 BaseScrollBar shared/BaseScrollBar.qml
 BaseScroller shared/BaseScroller.qml

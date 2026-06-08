@@ -11,7 +11,7 @@ Item {
     // Launcher
     IpcHandler {
         function toggle() {
-            PopoutService.toggleLauncher();
+            IslandService.toggleLauncher();
         }
 
         target: "launcher"
@@ -20,11 +20,11 @@ Item {
     // Settings
     IpcHandler {
         function toggle() {
-            PopoutService.toggleSettings();
+            IslandService.toggleSettings();
         }
 
         function switchTo(pageName: string) {
-            PopoutService.toggleSettings(pageName);
+            IslandService.toggleSettings(pageName);
         }
 
         target: "settings"
@@ -33,7 +33,7 @@ Item {
     // Wallpaper
     IpcHandler {
         function toggle() {
-            PopoutService.toggleWallpaper();
+            IslandService.toggleWallpaper();
         }
 
         function apply(path: string) {
@@ -46,7 +46,7 @@ Item {
     // Clipboard
     IpcHandler {
         function toggle() {
-            PopoutService.toggleClipboard();
+            IslandService.toggleClipboard();
         }
 
         target: "clipboard"
@@ -59,33 +59,33 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleNotificationPopout(); }
+        function toggle() { IslandService.toggleNotificationPopout(); }
         target: "notifications"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleAudioPopout(); }
+        function toggle() { IslandService.toggleAudioPopout(); }
         target: "volume"
     }
 
 
     IpcHandler {
-        function toggle() { PopoutService.toggleNetworkPopout(); }
+        function toggle() { IslandService.toggleNetworkPopout(); }
         target: "network"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleBluetoothPopout(); }
+        function toggle() { IslandService.toggleBluetoothPopout(); }
         target: "bluetooth"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.togglePowerPopout(); }
+        function toggle() { IslandService.togglePowerPopout(); }
         target: "power"
     }
 
     IpcHandler {
-        function toggle() { PopoutService.toggleDashboardPopout(); }
+        function toggle() { IslandService.toggleDashboardPopout(); }
         target: "dashboard"
     }
 }

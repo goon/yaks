@@ -56,7 +56,7 @@ SettingsPage {
         BaseButton {
             text: "Open Gallery"
             implicitHeight: 42
-            onClicked: PopoutService.toggleWallpaper()
+            onClicked: IslandService.toggleWallpaper()
             Layout.alignment: Qt.AlignLeft
         }
 

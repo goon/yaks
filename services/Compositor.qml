@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import Quickshell.Hyprland as QsHyprland
+import Quickshell.Hyprland
 pragma Singleton
 
 Singleton {
@@ -18,13 +18,13 @@ Singleton {
         var maxId = 5;
         var activeId = -1;
 
-        var focusedWs = QsHyprland.Hyprland.focusedWorkspace;
+        var focusedWs = Hyprland.focusedWorkspace;
         if (focusedWs && focusedWs.id > 0) {
             activeId = focusedWs.id;
             if (activeId > maxId) maxId = activeId;
         }
 
-        var wsList = QsHyprland.Hyprland.workspaces.values;
+        var wsList = Hyprland.workspaces.values;
         for (var i = 0; i < wsList.length; i++) {
             var ws = wsList[i];
             if (ws.id < 0) continue; // skip named/special
@@ -62,7 +62,7 @@ Singleton {
     // --- Window Mapping ---
     function _mapWindows() {
         var res = [];
-        var tlList = QsHyprland.Hyprland.toplevels.values;
+        var tlList = Hyprland.toplevels.values;
 
         for (var i = 0; i < tlList.length; i++) {
             var win = tlList[i];
@@ -112,7 +112,7 @@ Singleton {
     }
 
     function _updateActiveWindow() {
-        var win = QsHyprland.Hyprland.activeToplevel;
+        var win = Hyprland.activeToplevel;
         if (win) {
             var app = "";
             if (win.wayland && win.wayland.appId) app = win.wayland.appId;
@@ -126,7 +126,7 @@ Singleton {
     // --- Event-Driven Updates via rawEvent ---
     // This is the reliable mechanism — ObjectModel doesn't have usable change signals.
     Connections {
-        target: QsHyprland.Hyprland
+        target: Compositor
         function onRawEvent(event) {
             switch (event.type) {
                 // Workspace events
@@ -141,7 +141,7 @@ Singleton {
                 case "moveworkspacev2":
                 case "renameworkspace":
                 case "activespecial":
-                    QsHyprland.Hyprland.refreshWorkspaces();
+                    Hyprland.refreshWorkspaces();
                     wsDebounce.restart();
                     break;
 
@@ -152,7 +152,7 @@ Singleton {
                 case "movewindowv2":
                 case "changefloatingmode":
                 case "fullscreen":
-                    QsHyprland.Hyprland.refreshToplevels();
+                    Hyprland.refreshToplevels();
                     winDebounce.restart();
                     break;
 
@@ -189,13 +189,13 @@ Singleton {
         property int _tries: 0
         onTriggered: {
             _tries++;
-            QsHyprland.Hyprland.refreshWorkspaces();
-            QsHyprland.Hyprland.refreshToplevels();
+            Hyprland.refreshWorkspaces();
+            Hyprland.refreshToplevels();
             root._updateWorkspaces();
             root._updateWindows();
             root._updateActiveWindow();
 
-            var fw = QsHyprland.Hyprland.focusedWorkspace;
+            var fw = Hyprland.focusedWorkspace;
             if ((fw && fw.id > 0) || _tries >= 15) {
                 stop();
                 _tries = 0;
@@ -218,16 +218,26 @@ Singleton {
 
     // Dispatch helper — handles Lua vs non-Lua syntax automatically
     function _dispatch(cmd) {
-        QsHyprland.Hyprland.dispatch(cmd);
+        Hyprland.dispatch(cmd);
     }
 
     function switchToWorkspace(workspaceIdx) {
-        _dispatch("workspace " + workspaceIdx);
+        if (Hyprland.usingLua) {
+            _dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
+        } else {
+            _dispatch("workspace " + workspaceIdx.toString());
+        }
     }
 
     function focusWindow(windowId) {
-        // address is already a bare hex string from the API (e.g. "1a2b3c")
-        _dispatch("focuswindow address:" + windowId);
+        var addr = windowId.toString();
+        if (!addr.startsWith("0x")) addr = "0x" + addr;
+        
+        if (Hyprland.usingLua) {
+            _dispatch("hl.dsp.focus({ window = \"address:" + addr + "\" })");
+        } else {
+            _dispatch("focuswindow address:" + addr);
+        }
     }
 
     function quit() {
@@ -235,8 +245,8 @@ Singleton {
     }
 
     Component.onCompleted: {
-        QsHyprland.Hyprland.refreshWorkspaces();
-        QsHyprland.Hyprland.refreshToplevels();
+        Hyprland.refreshWorkspaces();
+        Hyprland.refreshToplevels();
         _updateWorkspaces();
         _updateWindows();
         _updateActiveWindow();

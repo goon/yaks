@@ -49,7 +49,7 @@ QtObject {
     // Logout the current user
     function logout() {
         powerOperationStarted("logout");
-        Hyprland.quit();
+        Compositor.quit();
     }
 
     // Reboot to BIOS/Firmware

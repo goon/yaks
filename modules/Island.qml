@@ -13,8 +13,8 @@ Item {
     Component.onCompleted: Qt.callLater(() => { _ready = true; })
     
     // --- Dynamic Island State ---
-    readonly property bool shouldBeMorphed: PopoutService.activePanelName !== "" && 
-        (PopoutService.activeScreen === barWindow.screen || (!PopoutService.activeScreen && barWindow.screen === Quickshell.screens[0]))
+    readonly property bool shouldBeMorphed: IslandService.activePanelName !== "" && 
+        (IslandService.activeScreen === barWindow.screen || (!IslandService.activeScreen && barWindow.screen === Quickshell.screens[0]))
 
     property bool isMorphed: false
     property string activePanelName: ""
@@ -43,7 +43,7 @@ Item {
 
     function updateMorphedState() {
         if (islandRoot.shouldBeMorphed) {
-            var newName = PopoutService.activePanelName;
+            var newName = IslandService.activePanelName;
             if (islandRoot.loadedPanelName !== "" && islandRoot.loadedPanelName !== newName) {
                 // Transitioning directly between two panels
                 if (panelLoader.item) {
@@ -70,7 +70,7 @@ Item {
     }
 
     Connections {
-        target: PopoutService
+        target: IslandService
         function onActivePanelNameChanged() { islandRoot.updateMorphedState(); }
         function onActiveScreenChanged() { islandRoot.updateMorphedState(); }
     }
@@ -143,12 +143,12 @@ Item {
 
     readonly property real targetCapsuleX: {
         if (!isMorphed) return normalCapsuleX;
-        if (PopoutService.anchorX < 0) return (barWindow.width - activePanelWidth) / 2;
+        if (IslandService.anchorX < 0) return (barWindow.width - activePanelWidth) / 2;
         
-        var x = PopoutService.anchorX - (activePanelWidth / 2);
+        var x = IslandService.anchorX - (activePanelWidth / 2);
         var radiusInset = Theme.geometry.radius;
-        var minX = (PopoutService.anchorMinX >= 0) ? (PopoutService.anchorMinX + radiusInset) : 0;
-        var maxX = (PopoutService.anchorMaxX >= 0) ? (PopoutService.anchorMaxX - activePanelWidth - radiusInset) : (barWindow.width - activePanelWidth);
+        var minX = (IslandService.anchorMinX >= 0) ? (IslandService.anchorMinX + radiusInset) : 0;
+        var maxX = (IslandService.anchorMaxX >= 0) ? (IslandService.anchorMaxX - activePanelWidth - radiusInset) : (barWindow.width - activePanelWidth);
         return Math.max(minX, Math.min(x, maxX));
     }
 
@@ -163,7 +163,7 @@ Item {
         enabled: islandRoot.isMorphed
         z: 1
         onClicked: {
-            PopoutService.closeAll();
+            IslandService.closeAll();
         }
     }
 
@@ -237,7 +237,7 @@ Item {
 
                         RowLayout {
                             Layout.alignment: Qt.AlignVCenter
-                            visible: modelData === "dock" ? Hyprland.windows.length > 0 : (barWindow.resolveComponentSource(modelData) !== "")
+                            visible: modelData === "dock" ? Compositor.windows.length > 0 : (barWindow.resolveComponentSource(modelData) !== "")
                             spacing: barWindow.sideMargin / Theme.barScale
 
                             BaseSeparator {
@@ -298,7 +298,7 @@ Item {
 
                     RowLayout {
                         Layout.alignment: Qt.AlignVCenter
-                        visible: modelData === "dock" ? Hyprland.windows.length > 0 : (barWindow.resolveComponentSource(modelData) !== "")
+                        visible: modelData === "dock" ? Compositor.windows.length > 0 : (barWindow.resolveComponentSource(modelData) !== "")
                         spacing: barWindow.sideMargin / Theme.barScale
 
                         BaseSeparator {
@@ -363,7 +363,7 @@ Item {
 
                         RowLayout {
                             Layout.alignment: Qt.AlignVCenter
-                            visible: modelData === "dock" ? Hyprland.windows.length > 0 : (barWindow.resolveComponentSource(modelData) !== "")
+                            visible: modelData === "dock" ? Compositor.windows.length > 0 : (barWindow.resolveComponentSource(modelData) !== "")
                             spacing: barWindow.sideMargin / Theme.barScale
 
                             BaseSeparator {
@@ -439,7 +439,7 @@ Item {
 
             onLoaded: {
                 if (item) {
-                    PopoutService.activePanelItem = item;
+                    IslandService.activePanelItem = item;
                     if (islandRoot.isMorphed) {
                         islandRoot.setPanelState("Opening");
                         islandRoot.notifyPanel("opening");

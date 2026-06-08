@@ -146,10 +146,7 @@ SettingsPage {
                 BaseText { text: "Wallpaper Switcher" }
                 BaseText { text: "Change your wallpaper" }
 
-                // Row 4: [space] -> Terminal Command
-                BaseText { text: "[space]"; color: Theme.colors.primary; weight: Theme.typography.weights.bold }
-                BaseText { text: "Terminal Command" }
-                BaseText { text: "Run terminal commands" }
+
             }
         }
 

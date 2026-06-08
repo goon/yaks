@@ -9,17 +9,17 @@ Item {
 
     // Centralized state from Hyprland service
     readonly property var workspaces: {
-        var rawList = Hyprland.workspaces || [];
+        var rawList = Compositor.workspaces || [];
         return rawList;
     }
-    readonly property int activeWorkspaceId: localActiveId !== -1 ? localActiveId : Hyprland.activeWorkspaceId
+    readonly property int activeWorkspaceId: localActiveId !== -1 ? localActiveId : Compositor.activeWorkspaceId
     property int localActiveId: -1
 
     // Instantly sync local state when the compositor's event arrives
     Connections {
-        target: Hyprland
+        target: Compositor
         function onActiveWorkspaceIdChanged() {
-            if (Hyprland.activeWorkspaceId === localActiveId) {
+            if (Compositor.activeWorkspaceId === localActiveId) {
                 localActiveId = -1;
             }
         }
@@ -134,11 +134,11 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.RightButton) {
-                            PopoutService.toggleSettings("Workspaces");
+                            IslandService.toggleSettings("Workspaces");
                         } else {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();
-                            Hyprland.switchToWorkspace(modelData.idx || modelData.id);
+                            Compositor.switchToWorkspace(modelData.idx || modelData.id);
                         }
                     }
                 }

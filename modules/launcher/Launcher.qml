@@ -96,7 +96,6 @@ FocusScope {
                 if (mode === "web") return "Search the web...";
                 if (mode === "youtube") return "Search YouTube...";
                 if (mode === "calculator") return "Type math expression...";
-                if (mode === "command") return "Run terminal command...";
                 if (mode.startsWith("bang-")) {
                     var trigger = mode.substring(5);
                     if (Preferences.launcherBangs) {
@@ -253,7 +252,7 @@ FocusScope {
                 activateCurrentItem();
                 event.accepted = true;
             } else if (event.key === Qt.Key_Escape) {
-                PopoutService.closeAll();
+                IslandService.closeAll();
                 event.accepted = true;
             } else if (listView && listView.activeFocus) {
                 if (event.key === Qt.Key_Delete) {
@@ -386,7 +385,7 @@ FocusScope {
                             onLoaded: {
                                 if (item) {
                                     // Connect signals
-                                    item.closeRequested.connect(PopoutService.closeAll);
+                                    item.closeRequested.connect(IslandService.closeAll);
                                     item.mouseMoveRequested.connect((index, mouse) => {
                                          root.handleListMouseMove(item.listView, index, mouse);
                                     });

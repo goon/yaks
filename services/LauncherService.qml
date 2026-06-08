@@ -454,24 +454,7 @@ QtObject {
             }
         }
         
-        if (activeUtilityMode === "command") {
-            if (query === "") {
-                return [{
-                    "type": "command-hint",
-                    "name": "Terminal Command",
-                    "description": "Type command to execute",
-                    "icon": "terminal"
-                }];
-            } else {
-                return [{
-                    "type": "command",
-                    "name": "Run '" + query + "'",
-                    "description": "Execute command in terminal",
-                    "icon": "terminal",
-                    "commandText": query
-                }];
-            }
-        }
+
         
         // If we are not in an active utility mode, check if the query starts with global prefix
         if (query.startsWith(globalPrefix)) {
@@ -494,14 +477,7 @@ QtObject {
                     "mode": "calculator",
                     "trigger": "c"
                 },
-                {
-                    "type": "shortcut-option",
-                    "name": "Terminal Command",
-                    "description": "Run terminal commands",
-                    "icon": "terminal",
-                    "mode": "command",
-                    "trigger": " "
-                },
+
                 {
                     "type": "shortcut-option",
                     "name": "Wallpaper Switcher",
@@ -541,17 +517,7 @@ QtObject {
                     }
                 }
 
-                if (filtered.length > 0) {
-                    return filtered;
-                } else {
-                    return [{
-                        "type": "command",
-                        "name": "Run '" + filterQuery + "'",
-                        "description": "Execute command in terminal",
-                        "icon": "terminal",
-                        "commandText": filterQuery
-                    }];
-                }
+                return filtered;
             }
         }
         
@@ -580,15 +546,9 @@ QtObject {
             else if (item.app)
                 item.app.execute();
         } else if (item.type === "workspace")
-            Hyprland.switchToWorkspace(item.workspaceIdx);
+            Compositor.switchToWorkspace(item.workspaceIdx);
         else if (item.type === "window")
-            Hyprland.focusWindow(item.windowId);
-        else if (item.type === "command" && item.action)
-            item.action();
-        else if (item.type === "command" && item.command)
-            ProcessService.runDetached(item.command);
-        else if (item.type === "command" && item.commandText)
-            ProcessService.runDetached([Preferences.terminal, "-e", "sh", "-c", item.commandText + "; read"]);
+            Compositor.focusWindow(item.windowId);
         else if (item.type === "calculation")
             ProcessService.runDetached(["wl-copy", item.name]);
         else if (item.type === "web")

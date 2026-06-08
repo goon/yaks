@@ -76,7 +76,7 @@ FocusScope {
                         hoverEnabled: false
                         hoverRotate: true
                         onClicked: {
-                            PopoutService.closeAll();
+                            IslandService.closeAll();
                             Power.shutdown();
                         }
                     }
@@ -88,7 +88,7 @@ FocusScope {
                         hoverEnabled: false
                         hoverRotate: true
                         onClicked: {
-                            PopoutService.closeAll();
+                            IslandService.closeAll();
                             Power.reboot();
                         }
                     }
@@ -100,7 +100,7 @@ FocusScope {
                         hoverEnabled: false
                         hoverRotate: true
                         onClicked: {
-                            PopoutService.closeAll();
+                            IslandService.closeAll();
                             Power.suspend();
                         }
                     }
@@ -112,7 +112,7 @@ FocusScope {
                         hoverEnabled: false
                         hoverRotate: true
                         onClicked: {
-                            PopoutService.closeAll();
+                            IslandService.closeAll();
                             Power.logout();
                         }
                     }
@@ -124,7 +124,7 @@ FocusScope {
                         hoverEnabled: false
                         hoverRotate: true
                         onClicked: {
-                            PopoutService.closeAll();
+                            IslandService.closeAll();
                             Power.rebootToBios();
                         }
                     }

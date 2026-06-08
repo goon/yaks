@@ -17,10 +17,10 @@ BaseBlock {
     clickable: true
     
     onClicked: {
-        PopoutService.toggleDashboardPopout();
+        IslandService.toggleDashboardPopout();
     }
     popoutOnHover: true
-    onHoverAction: () => PopoutService.openPanel("dashboard")
+    onHoverAction: () => IslandService.openPanel("dashboard")
 
     SystemClock {
         id: systemClock

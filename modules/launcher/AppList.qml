@@ -50,7 +50,6 @@ LauncherTab {
                 var modeToEnter = "";
                 if (trigger === "s" || trigger === "web") modeToEnter = "web";
                 else if (trigger === "c" || trigger === "calc" || trigger === "calculator") modeToEnter = "calculator";
-                else if (trigger === "" || trigger === "cmd" || trigger === "command") modeToEnter = "command";
                 else if (trigger === "w" || trigger === "wallpaper") {
                     root.tabRedirectRequested(2);
                     return;
@@ -206,8 +205,6 @@ LauncherTab {
                     modelData.type === "workspace" || 
                     modelData.type === "web" ||
                     modelData.type === "web-hint" ||
-                    modelData.type === "command" ||
-                    modelData.type === "command-hint" ||
                     modelData.type === "shortcut-option") {
                     return modelData.description || "";
                 }
@@ -219,8 +216,6 @@ LauncherTab {
                 modelData.type === "calculation" || 
                 modelData.type === "calculation-hint" ||
                 modelData.type === "shortcut-option" ||
-                modelData.type === "command" ||
-                modelData.type === "command-hint" ||
                 modelData.type === "web" ||
                 modelData.type === "web-hint"
             ))
