@@ -20,17 +20,3 @@
 > - Features may be partially implemented or entirely broken. 
 > - The README and documentation will often times be outdated.
 > - I provide no guarantees of stability or support.
-
-## Dependencies 
-
-The shell is developed in tandem with my [Nix OS](https://github.com/goon/nixos/) configuration, and is not intended to be used outside of it. That said, it has been developed to be distro agnostic and minimally tested on **Arch Linux** and it's derivatives. 
-
-> [!NOTE]
-> - Package names may vary across distributions.
-> - This is **NOT** an exhausive list. If specific components of the shell do not work it is likely a missing dependency. 
-
-
-```
-quickshell
-
-```
