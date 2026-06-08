@@ -62,9 +62,9 @@ LauncherSearch modules/launcher/LauncherSearch.qml
 LauncherTab modules/launcher/LauncherTab.qml
 LauncherListView modules/launcher/LauncherListView.qml
 LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
-AppList modules/launcher/AppList.qml
-ClipboardHistory modules/launcher/ClipboardHistory.qml
-ThemeSwitcher modules/launcher/ThemeSwitcher.qml
+LauncherApps modules/launcher/LauncherApps.qml
+LauncherClipboard modules/launcher/LauncherClipboard.qml
+LauncherTheme modules/launcher/LauncherTheme.qml
 
 # Settings
 Settings modules/settings/Settings.qml

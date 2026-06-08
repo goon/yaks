@@ -129,7 +129,7 @@ Item {
                 Image {
                     anchors.fill: parent
                     source: root.imageSource
-                    asynchronous: false // Keeping consistent with previous AppList behavior
+                    asynchronous: false // Keeping consistent with previous LauncherApps behavior
                     fillMode: Image.PreserveAspectFit
                     visible: !!root.imageSource && status === Image.Ready
                 }

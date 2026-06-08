@@ -84,9 +84,9 @@ FocusScope {
     property var currentItem: null
     
     property var tabModel: [
-        { icon: "dashboard", key: "", component: "AppList.qml", placeholder: "Search..." },
-        { icon: "content_paste", key: "", component: "ClipboardHistory.qml", placeholder: "Search clipboard..." },
-        { icon: "palette", key: "", component: "ThemeSwitcher.qml", placeholder: "Search themes..." }
+        { icon: "dashboard", key: "", component: "LauncherApps.qml", placeholder: "Search..." },
+        { icon: "content_paste", key: "", component: "LauncherClipboard.qml", placeholder: "Search clipboard..." },
+        { icon: "palette", key: "", component: "LauncherTheme.qml", placeholder: "Search themes..." }
     ]
 
     readonly property var activeTabObject: (tabRepeater && root.currentTabIndex >= 0 && root.currentTabIndex < tabRepeater.count) ? tabRepeater.itemAt(root.currentTabIndex).item : null
