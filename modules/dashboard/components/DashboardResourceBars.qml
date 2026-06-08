@@ -4,9 +4,6 @@ import qs
 
 BaseBlock {
     id: root
-    clickable: true
-    premiumHover: true
-
     implicitWidth: 120
     implicitHeight: 320
 
@@ -19,24 +16,30 @@ BaseBlock {
         Layout.fillHeight: true
         spacing: Theme.geometry.spacing.medium
 
-        // Individual vertical bar helper component
         component ResourceBar: ColumnLayout {
             id: barCol
-            property real value: 0.0 // 0.0 to 1.0
+            property real value: 0.0
             property color color: Theme.colors.primary
             property string icon: ""
             property string label: ""
+            property string tempText: ""
+            property bool hovered: false
 
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 8
 
-            // 1. Vertical Track Container
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                // Track Background
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: barCol.hovered = true
+                    onExited: barCol.hovered = false
+                }
+
                 Rectangle {
                     id: trackBg
                     anchors.fill: parent
@@ -46,7 +49,6 @@ BaseBlock {
                     border.color: Theme.alpha(Theme.colors.border, 0.1)
                     clip: true
 
-                    // Animated fill
                     Rectangle {
                         anchors.left: parent.left
                         anchors.right: parent.right
@@ -62,7 +64,6 @@ BaseBlock {
                     }
                 }
 
-                // Handle (knob)
                 Rectangle {
                     id: handle
                     width: parent.width - 8
@@ -82,10 +83,9 @@ BaseBlock {
                         }
                     }
 
-                    // Value text inside knob (fits 2 digits perfectly)
                     BaseText {
                         anchors.centerIn: parent
-                        text: Math.round(barCol.value * 100)
+                        text: barCol.hovered && barCol.tempText !== "" ? barCol.tempText : Math.round(barCol.value * 100)
                         pixelSize: 9
                         weight: Theme.typography.weights.bold
                         color: barCol.color
@@ -93,17 +93,12 @@ BaseBlock {
                 }
             }
 
-            // 2. Label (CPU/RAM/GPU) at the bottom
             BaseText {
                 Layout.alignment: Qt.AlignHCenter
                 text: barCol.label
                 pixelSize: 9
                 weight: Theme.typography.weights.bold
-                color: root.containsMouse ? Theme.alpha(Theme.colors.text, 0.75) : Theme.alpha(Theme.colors.text, 0.4)
-
-                Behavior on color {
-                    ColorAnimation { duration: 150 }
-                }
+                color: Theme.alpha(Theme.colors.text, 0.4)
             }
         }
 
@@ -112,6 +107,7 @@ BaseBlock {
             color: Theme.colors.accent
             icon: "memory"
             label: "CPU"
+            tempText: Stats.currentTemp + "°"
         }
 
         ResourceBar {
@@ -126,6 +122,7 @@ BaseBlock {
             color: Theme.colors.error
             icon: "videogame_asset"
             label: "GPU"
+            tempText: Stats.currentGpuTemp + "°"
         }
     }
 }

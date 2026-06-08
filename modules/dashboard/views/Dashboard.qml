@@ -60,7 +60,6 @@ DashboardPage {
                 DashboardResourceBars {
                     id: resourceBars
                     Layout.fillHeight: true
-                    onClicked: root.StackView.view.replace("Performance.qml")
                 }
             }
         }
