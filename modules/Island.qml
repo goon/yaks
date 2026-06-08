@@ -44,7 +44,9 @@ Item {
     function updateMorphedState() {
         if (islandRoot.shouldBeMorphed) {
             var newName = IslandService.activePanelName;
-            if (islandRoot.loadedPanelName !== "" && islandRoot.loadedPanelName !== newName) {
+            var wasAlreadyLoaded = (islandRoot.loadedPanelName !== "" && islandRoot.loadedPanelName === newName);
+            
+            if (islandRoot.loadedPanelName !== "" && !wasAlreadyLoaded) {
                 // Transitioning directly between two panels
                 if (panelLoader.item) {
                     islandRoot.setPanelState("Closing");
@@ -57,6 +59,12 @@ Item {
             islandRoot.loadedPanelName = newName;
             islandRoot.isMorphed = true;
             collapseTimer.stop();
+            
+            if (wasAlreadyLoaded && panelLoader.item) {
+                islandRoot.setPanelState("Opening");
+                islandRoot.notifyPanel("opening");
+                openTimer.start();
+            }
         } else {
             if (islandRoot.isMorphed) {
                 islandRoot.isMorphed = false;
@@ -117,7 +125,8 @@ Item {
         "dashboard":     { source: "../modules/dashboard/Dashboard.qml", width: 1100, height: 850 },
         "notifications": { source: "../modules/notifications/Notifications.qml", width: 550, height: 600 },
         "audio":         { source: "../modules/audio/Audio.qml", width: 420, height: 450 },
-        "power":         { source: "../modules/power/Power.qml", width: 450, height: 300 }
+        "power":         { source: "../modules/power/Power.qml", width: 450, height: 300 },
+        "wallpaper":     { source: "../modules/wallpaper/WallpaperPanel.qml", width: 1600, height: 600 }
     })
 
     // Expected fallback dimensions during transition before component load completes

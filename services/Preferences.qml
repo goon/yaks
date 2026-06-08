@@ -74,11 +74,7 @@ QtObject {
     property string wallpaperDirectory: ""
     property string launcherGlobalPrefix: ">"
     property bool launcherShowAppDescriptions: false
-    property var launcherBangs: [
-        { "trigger": "yt", "name": "YouTube", "url": "https://www.youtube.com/results?search_query=" },
-        { "trigger": "gh", "name": "GitHub Search", "url": "https://github.com/search?q=" },
-        { "trigger": "g", "name": "Google Search", "url": "https://google.com/search?q=" }
-    ]
+
     
     // Presets Configuration
     property var presets: ({})
@@ -133,7 +129,7 @@ QtObject {
             "wallpaperDirectory": root.wallpaperDirectory,
             "launcherGlobalPrefix": root.launcherGlobalPrefix,
             "launcherShowAppDescriptions": root.launcherShowAppDescriptions,
-            "launcherBangs": root.launcherBangs,
+
             "currentThemeColors": root.currentThemeColors,
             "currentWallpaper": root.currentWallpaper,
             "workspaceStyle": root.workspaceStyle,
@@ -228,45 +224,7 @@ QtObject {
         requestSave("deletePreset");
     }
     
-    function addLauncherBang(trigger, name, url) {
-        var list = [];
-        if (launcherBangs) {
-            for (var i = 0; i < launcherBangs.length; i++) {
-                list.push(launcherBangs[i]);
-            }
-        }
-        list.push({ "trigger": trigger, "name": name, "url": url });
-        launcherBangs = list;
-        save();
-    }
 
-    function deleteLauncherBang(index) {
-        var list = [];
-        if (launcherBangs) {
-            for (var i = 0; i < launcherBangs.length; i++) {
-                if (i !== index) {
-                    list.push(launcherBangs[i]);
-                }
-            }
-        }
-        launcherBangs = list;
-        save();
-    }
-
-    function updateLauncherBang(index, trigger, name, url) {
-        var list = [];
-        if (launcherBangs) {
-            for (var i = 0; i < launcherBangs.length; i++) {
-                if (i === index) {
-                    list.push({ "trigger": trigger, "name": name, "url": url });
-                } else {
-                    list.push(launcherBangs[i]);
-                }
-            }
-        }
-        launcherBangs = list;
-        save();
-    }
 
     property Timer saveTimer: Timer {
         interval: 500
@@ -323,7 +281,7 @@ QtObject {
     onWallpaperDirectoryChanged: requestSave("wallpaperDirectory")
     onLauncherGlobalPrefixChanged: requestSave("launcherGlobalPrefix")
     onLauncherShowAppDescriptionsChanged: requestSave("launcherShowAppDescriptions")
-    onLauncherBangsChanged: requestSave("launcherBangs")
+
     onCurrentThemeColorsChanged: requestSave("currentThemeColors")
     onCurrentWallpaperChanged: requestSave("currentWallpaper")
     onIndicatorsShowWifiChanged: requestSave("indicatorsShowWifi")
@@ -585,8 +543,7 @@ QtObject {
                     if (data.hasOwnProperty("launcherShowAppDescriptions"))
                         root.launcherShowAppDescriptions = data.launcherShowAppDescriptions;
 
-                    if (data.hasOwnProperty("launcherBangs"))
-                        root.launcherBangs = data.launcherBangs;
+
 
                     if (data.hasOwnProperty("currentThemeColors"))
                         root.currentThemeColors = data.currentThemeColors;

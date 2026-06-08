@@ -37,11 +37,9 @@ NotificationOverlay modules/notifications/NotificationOverlay.qml
 BaseBackground shared/BaseBackground.qml
 BaseBlock shared/BaseBlock.qml
 BaseButton shared/BaseButton.qml
-BaseMultiButton shared/BaseMultiButton.qml
 BaseIcon shared/BaseIcon.qml
 BaseInput shared/BaseInput.qml
 Island modules/Island.qml
-BaseFloatingWindow shared/BaseFloatingWindow.qml
 BaseScrollBar shared/BaseScrollBar.qml
 BaseScroller shared/BaseScroller.qml
 BaseSeparator shared/BaseSeparator.qml
@@ -49,10 +47,8 @@ BaseSlider shared/BaseSlider.qml
 BaseText shared/BaseText.qml
 BaseComboBox shared/BaseComboBox.qml
 BaseSwitch shared/BaseSwitch.qml
-BaseLazyLoader shared/BaseLazyLoader.qml
 BaseAnimation shared/BaseAnimation.qml
 BaseSpinBox shared/BaseSpinBox.qml
-BaseTooltip shared/BaseTooltip.qml
 BaseGraph shared/BaseGraph.qml
 
 # Notifications
@@ -69,15 +65,13 @@ LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
 AppList modules/launcher/AppList.qml
 ClipboardHistory modules/launcher/ClipboardHistory.qml
 ThemeSwitcher modules/launcher/ThemeSwitcher.qml
-WallpaperSwitcher modules/launcher/wallpaper/WallpaperSwitcher.qml
-WallpaperCarousel modules/launcher/wallpaper/WallpaperCarousel.qml
 
 # Settings
 Settings modules/settings/Settings.qml
 SettingsPage modules/settings/SettingsPage.qml
 
 # Bar
-WallpaperBackground modules/WallpaperBackground.qml
+WallpaperBackground modules/wallpaper/WallpaperBackground.qml
 Bar modules/bar/Bar.qml
 Clock modules/bar/components/Clock.qml
 Workspaces modules/bar/components/Workspaces.qml
@@ -98,4 +92,5 @@ DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 NotificationsPanel modules/notifications/Notifications.qml
 Audio modules/audio/Audio.qml
 PowerPanel modules/power/Power.qml
-
+WallpaperPanel modules/wallpaper/WallpaperPanel.qml
+WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml

@@ -19,8 +19,8 @@ QtObject {
     property var _pendingCallbacks: []
 
     function runWhenPanelReady(callback) {
-        if (activePanelItem && activePanelItem.panelState === "Open") {
-            callback();
+        if (activePanelItem && (activePanelItem.panelState === "Opening" || activePanelItem.panelState === "Open")) {
+            Qt.callLater(callback);
         } else {
             _pendingCallbacks.push(callback);
         }
@@ -29,10 +29,10 @@ QtObject {
     onActivePanelItemChanged: {
         if (activePanelItem) {
             var checkState = () => {
-                if (activePanelItem && activePanelItem.panelState === "Open") {
+                if (activePanelItem && (activePanelItem.panelState === "Opening" || activePanelItem.panelState === "Open")) {
                     while (_pendingCallbacks.length > 0) {
                         var cb = _pendingCallbacks.shift();
-                        if (typeof cb === "function") cb();
+                        if (typeof cb === "function") Qt.callLater(cb);
                     }
                     activePanelItem.panelStateChanged.disconnect(checkState);
                 }
@@ -80,14 +80,7 @@ QtObject {
     }
 
     function toggleWallpaper() {
-        if (activePanelName !== "launcher") {
-            openPanel("launcher");
-        }
-        runWhenPanelReady(() => {
-            if (activePanelItem && typeof activePanelItem.switchToTab === "function") {
-                activePanelItem.switchToTab(2);
-            }
-        });
+        togglePanel("wallpaper");
     }
 
     function toggleClipboard() {

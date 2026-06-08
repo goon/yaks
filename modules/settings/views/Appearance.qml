@@ -366,10 +366,7 @@ SettingsPage {
                         }
                     }
 
-                    BaseTooltip {
-                        visible: mouseArea.containsMouse
-                        text: modelData.path
-                    }
+
 
                     MouseArea {
                         id: mouseArea

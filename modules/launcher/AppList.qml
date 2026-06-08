@@ -41,36 +41,7 @@ LauncherTab {
         var rawQuery = root.searchText;
         var globalPrefix = Preferences.launcherGlobalPrefix || ">";
         if (rawQuery.startsWith(globalPrefix) && LauncherService.activeUtilityMode === "") {
-            var rest = rawQuery.substring(globalPrefix.length);
-            var spaceIdx = rest.indexOf(" ");
-            if (spaceIdx !== -1) {
-                var trigger = rest.substring(0, spaceIdx).trim();
-                var remaining = rest.substring(spaceIdx + 1);
-                
-                var modeToEnter = "";
-                if (trigger === "s" || trigger === "web") modeToEnter = "web";
-                else if (trigger === "c" || trigger === "calc" || trigger === "calculator") modeToEnter = "calculator";
-                else if (trigger === "w" || trigger === "wallpaper") {
-                    root.tabRedirectRequested(2);
-                    return;
-                }
-                else {
-                    if (Preferences.launcherBangs) {
-                        for (var i = 0; i < Preferences.launcherBangs.length; i++) {
-                            if (Preferences.launcherBangs[i].trigger === trigger) {
-                                modeToEnter = "bang-" + trigger;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                if (modeToEnter !== "") {
-                    LauncherService.activeUtilityMode = modeToEnter;
-                    root.searchTextUpdateRequested(remaining);
-                    return;
-                }
-            }
+            // Suffix shortcuts removed, user must select from the list
         }
 
         var query = root.searchText.trim();
@@ -141,8 +112,11 @@ LauncherTab {
         if (appListView.currentIndex >= 0 && cachedModel && appListView.currentIndex < cachedModel.length) {
             var item = cachedModel[appListView.currentIndex];
             if (item.type === "shortcut-option") {
-                if (item.mode === "wallpaper") {
-                    root.tabRedirectRequested(2);
+                if (item.mode.startsWith("tab-")) {
+                    var tabIndex = parseInt(item.mode.substring(4));
+                    root.tabRedirectRequested(tabIndex);
+                } else if (item.mode === "invoke-wallpaper") {
+                    IslandService.toggleWallpaper();
                 } else {
                     LauncherService.activeUtilityMode = item.mode;
                     root.searchTextUpdateRequested("");
@@ -230,8 +204,15 @@ LauncherTab {
             onClicked: {
                 appListView.currentIndex = index;
                 if (modelData && modelData.type === "shortcut-option") {
-                    LauncherService.activeUtilityMode = modelData.mode;
-                    root.searchTextUpdateRequested("");
+                    if (modelData.mode.startsWith("tab-")) {
+                        var tabIndex = parseInt(modelData.mode.substring(4));
+                        root.tabRedirectRequested(tabIndex);
+                    } else if (modelData.mode === "invoke-wallpaper") {
+                        IslandService.toggleWallpaper();
+                    } else {
+                        LauncherService.activeUtilityMode = modelData.mode;
+                        root.searchTextUpdateRequested("");
+                    }
                 } else {
                     root.activateCurrentItem();
                 }

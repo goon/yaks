@@ -6,16 +6,16 @@ PathView {
     id: root
 
     property int borderRadius: Theme.geometry.radius
-    property int centerHeight: 500
-    property int sideHeight: 250
+    property int centerWidth: 500
+    property int sideWidth: 250
     property int gap: Theme.geometry.spacing.large
-    readonly property real centerY: root.height / 2
-    readonly property real topY: centerY - (centerHeight / 2) - gap - (sideHeight / 2)
-    readonly property real bottomY: centerY + (centerHeight / 2) + gap + (sideHeight / 2)
+    readonly property real centerX: root.width / 2
+    readonly property real leftX: centerX - (centerWidth / 2) - gap - (sideWidth / 2)
+    readonly property real rightX: centerX + (centerWidth / 2) + gap + (sideWidth / 2)
     
     // Far positions can just be off-screen
-    readonly property real farTopY: topY - sideHeight - gap
-    readonly property real farBottomY: bottomY + sideHeight + gap
+    readonly property real farLeftX: leftX - sideWidth - gap
+    readonly property real farRightX: rightX + sideWidth + gap
 
     property bool canNavigate: true
     signal closeRequested()
@@ -78,13 +78,13 @@ PathView {
     
     // --- Input Handling ---
     
-    Keys.onUpPressed: safeDecrement()
-    Keys.onDownPressed: safeIncrement()
+    Keys.onLeftPressed: safeDecrement()
+    Keys.onRightPressed: safeIncrement()
     Keys.onPressed: function(event) {
-        if (event.key === Qt.Key_K) {
+        if (event.key === Qt.Key_H) {
             safeDecrement();
             event.accepted = true;
-        } else if (event.key === Qt.Key_J) {
+        } else if (event.key === Qt.Key_L) {
             safeIncrement();
             event.accepted = true;
         }
@@ -110,111 +110,111 @@ PathView {
 
     Path {
         id: standardPath
-        startX: root.width / 2
-        startY: -500
+        startX: -500
+        startY: root.height / 2
 
         // Start Attributes
-        PathAttribute { name: "itemHeight"; value: root.sideHeight }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth }
         PathAttribute { name: "itemZ"; value: 0 }
         PathAttribute { name: "itemOpacity"; value: 0 }
         PathAttribute { name: "dimOpacity"; value: 0.5 }
-        PathAttribute { name: "topRadius"; value: root.borderRadius }
-        PathAttribute { name: "bottomRadius"; value: 0 }
+        PathAttribute { name: "leftRadius"; value: root.borderRadius }
+        PathAttribute { name: "rightRadius"; value: 0 }
 
-        // 1. Far Top (Preload)
-        PathLine { x: root.width / 2; y: root.farTopY }
-        PathAttribute { name: "itemHeight"; value: root.sideHeight }
+        // 1. Far Left (Preload)
+        PathLine { x: root.farLeftX; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth }
         PathAttribute { name: "itemZ"; value: 0 }
         PathAttribute { name: "itemOpacity"; value: 0 }
         PathAttribute { name: "dimOpacity"; value: 0.5 }
-        PathAttribute { name: "topRadius"; value: root.borderRadius }
-        PathAttribute { name: "bottomRadius"; value: 0 }
+        PathAttribute { name: "leftRadius"; value: root.borderRadius }
+        PathAttribute { name: "rightRadius"; value: 0 }
         PathPercent { value: 0.1 }
 
-        // 2. Top Side (Visible)
-        PathLine { x: root.width / 2; y: root.topY }
-        PathAttribute { name: "itemHeight"; value: root.sideHeight }
+        // 2. Left Side (Visible)
+        PathLine { x: root.leftX; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth }
         PathAttribute { name: "itemZ"; value: 1 }
         PathAttribute { name: "itemOpacity"; value: 1 }
         PathAttribute { name: "dimOpacity"; value: 0.4 }
-        PathAttribute { name: "topRadius"; value: root.borderRadius }
-        PathAttribute { name: "bottomRadius"; value: 0 }
+        PathAttribute { name: "leftRadius"; value: root.borderRadius }
+        PathAttribute { name: "rightRadius"; value: 0 }
         PathPercent { value: 0.3 }
 
         // 2b. Pre-Center (Hold Radius)
-        PathLine { x: root.width / 2; y: root.topY + (root.centerY - root.topY) * 0.9 }
-        PathAttribute { name: "itemHeight"; value: root.sideHeight + (root.centerHeight - root.sideHeight) * 0.9 }
+        PathLine { x: root.leftX + (root.centerX - root.leftX) * 0.9; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth + (root.centerWidth - root.sideWidth) * 0.9 }
         PathAttribute { name: "itemZ"; value: 99 }
         PathAttribute { name: "itemOpacity"; value: 1 }
         PathAttribute { name: "dimOpacity"; value: 0.1 }
-        PathAttribute { name: "topRadius"; value: root.borderRadius } // Hold radius
-        PathAttribute { name: "bottomRadius"; value: 0 }
+        PathAttribute { name: "leftRadius"; value: root.borderRadius } // Hold radius
+        PathAttribute { name: "rightRadius"; value: 0 }
         PathPercent { value: 0.49 }
 
         // 3. Center (Hero)
-        PathLine { x: root.width / 2; y: root.centerY }
-        PathAttribute { name: "itemHeight"; value: root.centerHeight }
+        PathLine { x: root.centerX; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.centerWidth }
         PathAttribute { name: "itemZ"; value: 100 }
         PathAttribute { name: "itemOpacity"; value: 1 }
         PathAttribute { name: "dimOpacity"; value: 0 }
-        PathAttribute { name: "topRadius"; value: 0 }
-        PathAttribute { name: "bottomRadius" ; value: 0 }
+        PathAttribute { name: "leftRadius"; value: 0 }
+        PathAttribute { name: "rightRadius" ; value: 0 }
         PathPercent { value: 0.5 }
 
         // 3b. Post-Center (Restore Radius)
-        PathLine { x: root.width / 2; y: root.centerY + (root.bottomY - root.centerY) * 0.1 }
-        PathAttribute { name: "itemHeight"; value: root.centerHeight - (root.centerHeight - root.sideHeight) * 0.1 }
+        PathLine { x: root.centerX + (root.rightX - root.centerX) * 0.1; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.centerWidth - (root.centerWidth - root.sideWidth) * 0.1 }
         PathAttribute { name: "itemZ"; value: 99 }
         PathAttribute { name: "itemOpacity"; value: 1 }
         PathAttribute { name: "dimOpacity"; value: 0.1 }
-        PathAttribute { name: "topRadius"; value: 0 }
-        PathAttribute { name: "bottomRadius"; value: root.borderRadius } // Restore radius
+        PathAttribute { name: "leftRadius"; value: 0 }
+        PathAttribute { name: "rightRadius"; value: root.borderRadius } // Restore radius
         PathPercent { value: 0.51 }
 
-        // 4. Bottom Side (Visible)
-        PathLine { x: root.width / 2; y: root.bottomY }
-        PathAttribute { name: "itemHeight"; value: root.sideHeight }
+        // 4. Right Side (Visible)
+        PathLine { x: root.rightX; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth }
         PathAttribute { name: "itemZ"; value: 1 }
         PathAttribute { name: "itemOpacity"; value: 1 }
         PathAttribute { name: "dimOpacity"; value: 0.4 }
-        PathAttribute { name: "topRadius"; value: 0 }
-        PathAttribute { name: "bottomRadius"; value: root.borderRadius }
+        PathAttribute { name: "leftRadius"; value: 0 }
+        PathAttribute { name: "rightRadius"; value: root.borderRadius }
         PathPercent { value: 0.7 }
 
-        // 5. Far Bottom (Preload)
-        PathLine { x: root.width / 2; y: root.farBottomY }
-        PathAttribute { name: "itemHeight"; value: root.sideHeight }
+        // 5. Far Right (Preload)
+        PathLine { x: root.farRightX; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth }
         PathAttribute { name: "itemZ"; value: 0 }
         PathAttribute { name: "itemOpacity"; value: 0 }
         PathAttribute { name: "dimOpacity"; value: 0.5 }
-        PathAttribute { name: "topRadius"; value: 0 }
-        PathAttribute { name: "bottomRadius"; value: root.borderRadius }
+        PathAttribute { name: "leftRadius"; value: 0 }
+        PathAttribute { name: "rightRadius"; value: root.borderRadius }
         PathPercent { value: 0.9 }
 
         // End Point
-        PathLine { x: root.width / 2; y: root.height + 500 }
-        PathAttribute { name: "itemHeight"; value: root.sideHeight }
+        PathLine { x: root.width + 500; y: root.height / 2 }
+        PathAttribute { name: "itemWidth"; value: root.sideWidth }
         PathAttribute { name: "itemZ"; value: 0 }
         PathAttribute { name: "itemOpacity"; value: 0 }
         PathAttribute { name: "dimOpacity"; value: 0.5 }
-        PathAttribute { name: "topRadius"; value: 0 }
-        PathAttribute { name: "bottomRadius"; value: Theme.geometry.radius * 1.5 }
+        PathAttribute { name: "leftRadius"; value: 0 }
+        PathAttribute { name: "rightRadius"; value: Theme.geometry.radius * 1.5 }
     }
 
     delegate: Item {
         id: delegateRoot
 
         property real dimLevel: (typeof PathView.dimOpacity !== 'undefined') ? PathView.dimOpacity : 0
-        property real topRadius: (typeof PathView.topRadius !== 'undefined') ? PathView.topRadius : Theme.geometry.radius
-        property real bottomRadius: (typeof PathView.bottomRadius !== 'undefined') ? PathView.bottomRadius : Theme.geometry.radius
+        property real leftRadius: (typeof PathView.leftRadius !== 'undefined') ? PathView.leftRadius : Theme.geometry.radius
+        property real rightRadius: (typeof PathView.rightRadius !== 'undefined') ? PathView.rightRadius : Theme.geometry.radius
         // Model data (file path)
         property string imageSource: modelData || ""
 
         // PathView injected properties
-        height: (typeof PathView.itemHeight !== 'undefined') ? PathView.itemHeight : 150
-        width: root.width // Full width in vertical carousel
+        width: (typeof PathView.itemWidth !== 'undefined') ? PathView.itemWidth : 150
+        height: root.height // Full height in horizontal carousel
         
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
         
         z: (typeof PathView.itemZ !== 'undefined') ? PathView.itemZ : 0
         opacity: (typeof PathView.itemOpacity !== 'undefined') ? PathView.itemOpacity : 0
@@ -226,10 +226,10 @@ PathView {
             anchors.fill: effectContainer
             visible: false // Hidden, used as texture source
             color: Theme.colors.text // Mask source
-            topLeftRadius: delegateRoot.topRadius
-            topRightRadius: delegateRoot.topRadius
-            bottomLeftRadius: delegateRoot.bottomRadius
-            bottomRightRadius: delegateRoot.bottomRadius
+            topLeftRadius: delegateRoot.leftRadius
+            topRightRadius: delegateRoot.rightRadius
+            bottomLeftRadius: delegateRoot.leftRadius
+            bottomRightRadius: delegateRoot.rightRadius
             
             // Render to texture for MultiEffect
             layer.enabled: true
@@ -276,7 +276,7 @@ PathView {
                 color: Theme.colors.transparent
                 border.color: Theme.colors.primary
                 border.width: PathView.isCurrentItem ? 2 : 0
-                radius: delegateRoot.topRadius 
+                radius: delegateRoot.leftRadius 
                 visible: PathView.isCurrentItem
                 opacity: PathView.isCurrentItem ? 0.3 : 0
             }

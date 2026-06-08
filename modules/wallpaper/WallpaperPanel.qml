@@ -4,47 +4,33 @@ import QtQuick.Layouts
 import qs.services
 import qs
 
-LauncherTab {
+FocusScope {
     id: root
+
+    property string panelState: "Closed"
+
+    implicitWidth: 1600
+    implicitHeight: 600
     
-    // Alias for the 'list view' equivalent, which is the carousel here. 
-    property alias listView: carousel
-
-    // Launcher expectation for currentItem
-    property var currentItem: {
-        if (carousel && carousel.model && carousel.model.length > 0 && carousel.currentIndex >= 0) {
-            var path = carousel.model[carousel.currentIndex];
-            if (!path) return null;
-            var filename = path.split("/").pop();
-            return {
-                "name": filename,
-                "description": path,
-                "icon": "image",
-                "category": "Wallpaper",
-                "type": "wallpaper",
-                "path": path
-            };
-        }
-        return null;
-    }
-
-    // Explicit count override for robustness
-    listCount: (carousel && carousel.model) ? (carousel.model.length || 0) : 0
+    // Cleaned up legacy LauncherTab properties
+    property Item initialFocusItem: carousel
 
     function activateCurrentItem() {
-        if (root.currentItem) {
-            Wallpaper.setWallpaper(root.currentItem.path);
-            root.closeRequested();
+        if (carousel && carousel.model && carousel.model.length > 0 && carousel.currentIndex >= 0) {
+            var path = carousel.model[carousel.currentIndex];
+            if (path) {
+                Wallpaper.setWallpaper(path);
+                IslandService.closeAll();
+            }
         }
     }
 
-    function onActivated() {
-    }
-
-    function onLauncherClosed() {
-        Wallpaper.ensureScanned();
-        Wallpaper.shuffleWallpapers();
-        carousel.setRandomIndex();
+    onPanelStateChanged: {
+        if (panelState === "Closed") {
+            Wallpaper.ensureScanned();
+            Wallpaper.shuffleWallpapers();
+            carousel.setRandomIndex();
+        }
     }
 
     Component.onCompleted: {
@@ -88,12 +74,12 @@ LauncherTab {
 
                     borderRadius: Theme.geometry.radius
                     
-                    centerHeight: parent.height * 0.5
-                    sideHeight: ((parent.height * 0.5) / 2) - gap
+                    centerWidth: parent.width * 0.5
+                    sideWidth: ((parent.width * 0.5) / 2) - gap
                     
                     focus: true
                     
-                    onCloseRequested: root.closeRequested()
+                    onCloseRequested: IslandService.closeAll()
                     
                     function safeIncrement() { if (incrementCurrentIndex) incrementCurrentIndex() }
                     function safeDecrement() { if (decrementCurrentIndex) decrementCurrentIndex() }

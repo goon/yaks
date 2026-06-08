@@ -79,6 +79,9 @@ BaseBlock {
                         if (LauncherService.activeUtilityMode !== "") {
                             LauncherService.activeUtilityMode = "";
                             event.accepted = true;
+                        } else if (root.currentIndex !== 0) {
+                            root.tabClicked(0);
+                            event.accepted = true;
                         }
                     }
                 }
@@ -110,52 +113,6 @@ BaseBlock {
         }
 
 
-        // Container for tabs
-        Item {
-            Layout.preferredWidth: tabsRow.implicitWidth
-            Layout.preferredHeight: Theme.dimensions.iconLarge
-            Layout.alignment: Qt.AlignVCenter
-            visible: root.tabModel && root.tabModel.length > 0
-
-            RowLayout {
-                id: tabsRow
-                anchors.fill: parent
-                spacing: Theme.geometry.spacing.small
-
-                Repeater {
-                    id: tabsRepeater
-                    model: root.tabModel
-
-                    Rectangle {
-                        id: tabItem
-                        Layout.preferredHeight: Theme.dimensions.iconLarge
-                        Layout.preferredWidth: tabContent.implicitWidth + 16
-                        radius: Theme.geometry.radius
-                        color: Theme.colors.transparent
-
-                        RowLayout {
-                            id: tabContent
-                            anchors.centerIn: parent
-                            spacing: 4
-
-                            BaseIcon {
-                                icon: modelData.icon
-                                size: Theme.dimensions.iconBase
-                                color: root.currentIndex === index ? Theme.colors.primary : Theme.colors.muted
-                                
-                                Behavior on color { BaseAnimation { speed: "fast" } }
-                            }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: root.tabClicked(index)
-                            hoverEnabled: true
-                        }
-                    }
-                }
-            }
-        }
 
     }
 }

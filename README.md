@@ -6,7 +6,7 @@
 
 </div>
 
-**Yaks** aka **Yet Another Quickshell** is a blazingly mid desktop shell built with [Quickshell](https://quickshell.org/). It's **feature limited** by design, **proudly unoptimised** and a questionable attempt at replicating what others have done far better.
+**Yaks** aka **Yet Another Quickshell** is a blazingly mid keyboard driven desktop shell built with [Quickshell](https://quickshell.org/). It's **feature limited** by design, **proudly unoptimised** and a questionable attempt at replicating what others have done far better.
 
 > [!IMPORTANT]
 > - I am **not** taking feature requests.

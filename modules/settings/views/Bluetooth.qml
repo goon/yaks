@@ -66,19 +66,28 @@ SettingsPage {
     BaseBlock {
         id: powerBlock
         Layout.fillWidth: true
-        padding: 4
+        padding: Theme.geometry.spacing.medium
 
-        BaseMultiButton {
-            model: [
-                { text: "Disabled", icon: "bluetooth_disabled" },
-                { text: "Enabled", icon: "bluetooth" }
-            ]
-            selectedIndex: Bluetooth.powered ? 1 : 0
-            buttonCustomRadius: powerBlock.blockRadius - powerBlock.padding
-            onButtonClicked: (index) => {
-                if ((index === 1 && !Bluetooth.powered) || (index === 0 && Bluetooth.powered)) {
-                    Bluetooth.togglePower();
-                }
+        RowLayout {
+            anchors.fill: parent
+            spacing: Theme.geometry.spacing.medium
+
+            BaseIcon {
+                icon: Bluetooth.powered ? "bluetooth" : "bluetooth_disabled"
+                color: Bluetooth.powered ? Theme.colors.primary : Theme.colors.muted
+                size: Theme.dimensions.iconMedium
+            }
+
+            BaseText {
+                text: "Bluetooth Power"
+                color: Theme.colors.text
+                weight: Theme.typography.weights.bold
+                Layout.fillWidth: true
+            }
+
+            BaseSwitch {
+                checked: !!Bluetooth.powered
+                onClicked: Bluetooth.togglePower()
             }
         }
     }

@@ -15,12 +15,6 @@ QtObject {
     property bool mouseSelectionEnabled: false
     property point lastMousePos: Qt.point(-1, -1)
     readonly property int moveThreshold: 10
-    // Frequency tracking
-    property var launchCounts: ({
-    })
-    readonly property string frequencyFile: Config.frequencyFile
-    readonly property int maxFrequencyEntries: 100
-    property FileView fregFileView
 
     function resetInputStates() {
         lastInputMethod = "keyboard";
@@ -69,35 +63,7 @@ QtObject {
         return idx === query.length;
     }
 
-    function saveFrequencyData() {
-        var entries = [];
-        for (var key in launchCounts) {
-            if (launchCounts.hasOwnProperty(key))
-                entries.push({
-                "name": key,
-                "count": launchCounts[key]
-            });
 
-        }
-        if (entries.length > maxFrequencyEntries) {
-            entries.sort((a, b) => {
-                return b.count - a.count;
-            });
-            var trimmed = {
-            };
-            for (var i = 0; i < maxFrequencyEntries; i++) {
-                trimmed[entries[i].name] = entries[i].count;
-            }
-            launchCounts = trimmed;
-        }
-        var json = JSON.stringify(launchCounts);
-        root.fregFileView.setText(json);
-    }
-
-    function incrementAppFrequency(appName) {
-        launchCounts[appName] = (launchCounts[appName] || 0) + 1;
-        saveFrequencyData();
-    }
 
     function getIconFromDesktop(appId) {
         if (!appId) return "";
@@ -235,8 +201,6 @@ QtObject {
             var genericName = (app.genericName || "").toLowerCase();
             if (queryLower === "" || fuzzyMatch(name, queryLower) || fuzzyMatch(comment, queryLower) || fuzzyMatch(genericName, queryLower)) {
                 var score = 0;
-                var frequency = launchCounts[app.name] || 0;
-                score += frequency * 50;
                 if (queryLower !== "") {
                     if (name === queryLower)
                         score += 2000;
@@ -246,8 +210,6 @@ QtObject {
                         score += 500;
                     else
                         score += 100;
-                } else {
-                    score += frequency > 0 ? 50 : 0; // Show frequent apps first
                 }
                 scored.push({
                     "item": {
@@ -263,7 +225,10 @@ QtObject {
             }
         }
         scored.sort((a, b) => {
-            return b.score - a.score;
+            if (b.score !== a.score) {
+                return b.score - a.score;
+            }
+            return (a.item.name || "").localeCompare(b.item.name || "");
         });
         var finalResults = [];
         for (var i = 0; i < Math.min(scored.length, maxResults); i++) {
@@ -395,36 +360,7 @@ QtObject {
             }
         }
 
-        if (activeUtilityMode.startsWith("bang-")) {
-            var trigger = activeUtilityMode.substring(5);
-            var activeBang = null;
-            if (Preferences.launcherBangs) {
-                for (var i = 0; i < Preferences.launcherBangs.length; i++) {
-                    if (Preferences.launcherBangs[i].trigger === trigger) {
-                        activeBang = Preferences.launcherBangs[i];
-                        break;
-                    }
-                }
-            }
-            if (activeBang) {
-                if (query === "") {
-                    return [{
-                        "type": "web-hint",
-                        "name": activeBang.name,
-                        "description": "Type search query and press Enter",
-                        "icon": "search"
-                    }];
-                } else {
-                    return [{
-                        "type": "web",
-                        "name": "Search " + activeBang.name + " for '" + query + "'",
-                        "description": "Open search in browser",
-                        "icon": "search",
-                        "url": activeBang.url + encodeURIComponent(query)
-                    }];
-                }
-            }
-        }
+
         
         if (activeUtilityMode === "calculator") {
             if (query === "") {
@@ -463,45 +399,42 @@ QtObject {
             var options = [
                 {
                     "type": "shortcut-option",
-                    "name": "Web Search",
-                    "description": "Search the web",
-                    "icon": "language",
-                    "mode": "web",
-                    "trigger": "s"
-                },
-                {
-                    "type": "shortcut-option",
                     "name": "Calculator",
                     "description": "Evaluate mathmatical expressions",
                     "icon": "calculate",
-                    "mode": "calculator",
-                    "trigger": "c"
+                    "mode": "calculator"
                 },
-
+                {
+                    "type": "shortcut-option",
+                    "name": "Clipboard History",
+                    "description": "Search clipboard history",
+                    "icon": "content_paste",
+                    "mode": "tab-1"
+                },
+                {
+                    "type": "shortcut-option",
+                    "name": "Theme Switcher",
+                    "description": "Change your color theme",
+                    "icon": "palette",
+                    "mode": "tab-2"
+                },
                 {
                     "type": "shortcut-option",
                     "name": "Wallpaper Switcher",
                     "description": "Change your wallpaper",
                     "icon": "image",
-                    "mode": "wallpaper",
-                    "trigger": "w"
+                    "mode": "invoke-wallpaper"
+                },
+                {
+                    "type": "shortcut-option",
+                    "name": "Web Search",
+                    "description": "Search the web",
+                    "icon": "language",
+                    "mode": "web"
                 }
             ];
 
-            // Add custom bangs to options list dynamically
-            if (Preferences.launcherBangs) {
-                for (var i = 0; i < Preferences.launcherBangs.length; i++) {
-                    var bang = Preferences.launcherBangs[i];
-                    options.push({
-                        "type": "shortcut-option",
-                        "name": bang.name,
-                        "description": "Search via " + bang.trigger + " prefix",
-                        "icon": "search",
-                        "mode": "bang-" + bang.trigger,
-                        "trigger": bang.trigger
-                    });
-                }
-            }
+
 
             if (rest.trim() === "") {
                 return options;
@@ -511,8 +444,7 @@ QtObject {
                 for (var i = 0; i < options.length; i++) {
                     var opt = options[i];
                     if (fuzzyMatch(opt.name, filterQuery) || 
-                        fuzzyMatch(opt.mode, filterQuery) || 
-                        (opt.trigger && fuzzyMatch(opt.trigger, filterQuery))) {
+                        fuzzyMatch(opt.mode, filterQuery)) {
                         filtered.push(opt);
                     }
                 }
@@ -540,7 +472,6 @@ QtObject {
             return ;
 
         if (item.type === "app") {
-            incrementAppFrequency(item.name);
             if (item.app && item.app.runInTerminal)
                 ProcessService.runDetached(["sh", "-c", Preferences.terminal + " -e " + item.app.command]);
             else if (item.app)
@@ -555,23 +486,7 @@ QtObject {
             ProcessService.runDetached(["xdg-open", item.url]);
     }
 
-    Component.onCompleted: {
-        fregFileView.reload();
-    }
 
-    fregFileView: FileView {
-        path: root.frequencyFile
-        watchChanges: false
-        onLoadedChanged: {
-            if (loaded) {
-                try {
-                    root.launchCounts = JSON.parse(text()) || {
-                    };
-                } catch (e) {
-                }
-            }
-        }
-    }
 
 
 }

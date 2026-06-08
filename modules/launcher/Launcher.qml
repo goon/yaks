@@ -64,6 +64,9 @@ FocusScope {
     }
     
     function closing() {
+        LauncherService.resetInputStates();
+        LauncherService.activeUtilityMode = "";
+        searchBar.text = "";
         for (var i = 0; i < root.tabModel.length; i++) {
             var tab = root.getTab(i);
             if (tab && tab.onLauncherClosed) tab.onLauncherClosed();
@@ -83,7 +86,6 @@ FocusScope {
     property var tabModel: [
         { icon: "dashboard", key: "", component: "AppList.qml", placeholder: "Search..." },
         { icon: "content_paste", key: "", component: "ClipboardHistory.qml", placeholder: "Search clipboard..." },
-        { icon: "image", key: "", component: "wallpaper/WallpaperSwitcher.qml", placeholder: "Search wallpapers...", isWallpaper: true },
         { icon: "palette", key: "", component: "ThemeSwitcher.qml", placeholder: "Search themes..." }
     ]
 
@@ -96,17 +98,7 @@ FocusScope {
                 if (mode === "web") return "Search the web...";
                 if (mode === "youtube") return "Search YouTube...";
                 if (mode === "calculator") return "Type math expression...";
-                if (mode.startsWith("bang-")) {
-                    var trigger = mode.substring(5);
-                    if (Preferences.launcherBangs) {
-                        for (var i = 0; i < Preferences.launcherBangs.length; i++) {
-                            if (Preferences.launcherBangs[i].trigger === trigger) {
-                                return Preferences.launcherBangs[i].name + "...";
-                            }
-                        }
-                    }
-                    return "Search...";
-                }
+
             }
             if (root.currentTabIndex >= 0 && root.currentTabIndex < tabModel.length) {
                 return tabModel[root.currentTabIndex].placeholder; 
@@ -274,15 +266,7 @@ FocusScope {
         anchors.fill: parent
         focus: true
 
-        Shortcut {
-            sequence: "Tab"
-            onActivated: root.nextTab()
-        }
 
-        Shortcut {
-            sequence: "Shift+Tab"
-            onActivated: root.prevTab()
-        }
 
         ColumnLayout {
             anchors.fill: parent
