@@ -29,8 +29,7 @@ Honestly, just fuck around and find out - *it works on my machine*
 
 Thank you to the countless shells that I ~~copied~~ took inspiration from.
 
-[Noctalia](https://noctalia.dev/) — [Caelestia](https://github.com/caelestia-dots/shell) — [DMS](https://danklinux.com/) — [end4](https://github.com/end-4/dots-hyprland) — [Nucleus](https://github.com/nucleus-hq/nucleus-shell) and the many others I am forgetting. 
-
-[Outfoxxed](https://github.com/Outfoxxed) for [Quickshell](https://quickshell.org) as none of this would be possible without it.
+-[Noctalia](https://noctalia.dev/) — [Caelestia](https://github.com/caelestia-dots/shell) — [DMS](https://danklinux.com/) — [end4](https://github.com/end-4/dots-hyprland) — [Nucleus](https://github.com/nucleus-hq/nucleus-shell) and the many others I am forgetting. 
+-[Outfoxxed](https://github.com/Outfoxxed) for [Quickshell](https://quickshell.org) as none of this would be possible without it.
 
 <p align="center"><img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" /></p>
