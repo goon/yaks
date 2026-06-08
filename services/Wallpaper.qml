@@ -15,7 +15,6 @@ Item {
     // --- State Properties ---
     property var wallpapers: []
     property string currentWallpaper: ""
-    property int wallpaperVersion: 0 
     
     // UI State
     property bool isLoading: false
@@ -81,7 +80,6 @@ Item {
         ProcessService.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper has been applied."]);
     }
 
-    function applyWallpaper(path) { setWallpaper(path); }
     function ensureScanned() { 
         if (!hasScanned) {
             if (Preferences.loaded) {
@@ -132,10 +130,6 @@ Item {
         
         // Expand $HOME and ~ in the directory path
         var dir = expandPath(Preferences.wallpaperDirectory);
-        if (!dir || dir === "" || dir === "/home/michael/Pictures/wall") { // Handle truncated path if present
-             dir = expandPath("~/Pictures/wallpapers");
-        }
-
         if (!dir || dir === "") {
             console.warn("[WallpaperService] No valid directory to scan");
             root.wallpapers = [];

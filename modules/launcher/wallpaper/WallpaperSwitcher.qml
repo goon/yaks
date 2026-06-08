@@ -33,7 +33,7 @@ LauncherTab {
 
     function activateCurrentItem() {
         if (root.currentItem) {
-            Wallpaper.applyWallpaper(root.currentItem.path);
+            Wallpaper.setWallpaper(root.currentItem.path);
             root.closeRequested();
         }
     }

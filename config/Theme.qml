@@ -88,9 +88,9 @@ QtObject {
         readonly property color transparent: "transparent"
     }
 
-    readonly property QtObject blur: QtObject {
-        readonly property real backgroundOpacity: Math.max(0.3, Preferences.blurOpacity)
-        readonly property real surfaceOpacity: Math.max(0.3, Preferences.blockOpacity)
+    readonly property QtObject opacity: QtObject {
+        readonly property real background: Math.max(0.3, Preferences.backgroundOpacity)
+        readonly property real surface: Math.max(0.3, Preferences.surfaceOpacity)
     }
 
     /*

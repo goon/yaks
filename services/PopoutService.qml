@@ -6,111 +6,123 @@ pragma Singleton
 QtObject {
     id: root
 
-    // Pointers to the various loaders injected by shell.qml
-    property var launcherLoader: null
-    property var settingsLoader: null
-    property var audioPopoutLoader: null
-    property var notificationPopoutLoader: null
-    property var notificationManager: null
-    property var powerPopoutLoader: null
-    property var networkPopoutLoader: null
-    property var bluetoothPopoutLoader: null
-    property var dashboardPopoutLoader: null
+    // --- State Properties ---
+    property string activePanelName: ""
+    property var activeScreen: null
+    property Item activePanelItem: null
 
+    property real anchorX: -1
+    property real anchorMinX: -1
+    property real anchorMaxX: -1
 
-    // Helper properties
-    readonly property var launcher: launcherLoader ? launcherLoader.item : null
-    readonly property var settings: settingsLoader ? settingsLoader.item : null
-    readonly property var audioPopout: audioPopoutLoader ? audioPopoutLoader.item : null
-    readonly property var notificationPopout: notificationPopoutLoader ? notificationPopoutLoader.item : null
-    readonly property var powerPopout: powerPopoutLoader ? powerPopoutLoader.item : null
-    readonly property var networkPopout: networkPopoutLoader ? networkPopoutLoader.item : null
-    readonly property var bluetoothPopout: bluetoothPopoutLoader ? bluetoothPopoutLoader.item : null
-    readonly property var dashboardPopout: dashboardPopoutLoader ? dashboardPopoutLoader.item : null
+    // Callback Queue for panel-specific navigation on load
+    property var _pendingCallbacks: []
 
-
-    property Item launcherItem: null
-    property Item networkItem: null
-    property Item bluetoothItem: null
-
-    property Item volumeItem: null
-    property Item notificationsItem: null
-    property Item clockItem: null
-    property Item dashboardItem: null
-
-    property var activePanelLoader: null
-    property int barWidth: 0
-
-
-    // --- COORDINATE MATH ---
-    function _getCoordinatesFromItem(item) {
-        if (!item) return undefined;
-        try {
-            var posInWindow = item.mapToItem(null, item.width / 2, 0);
-            var topParent = item;
-            while (topParent.parent) topParent = topParent.parent;
-            var bW = topParent.width;
-            var screen = Quickshell.screens[0];
-            var barScreenX = Preferences.barFitToContent ? (screen.width - bW) / 2 : Preferences.barMarginSide;
-            return { screenX: barScreenX + posInWindow.x, barLeft: barScreenX, barRight: barScreenX + bW };
-        } catch (e) { return undefined; }
+    function runWhenPanelReady(callback) {
+        if (activePanelItem && activePanelItem.panelState === "Open") {
+            callback();
+        } else {
+            _pendingCallbacks.push(callback);
+        }
     }
 
-    // --- TOGGLE ACTIONS ---
-    function toggleLauncher() { _toggle(launcherLoader); }
+    onActivePanelItemChanged: {
+        if (activePanelItem) {
+            var checkState = () => {
+                if (activePanelItem && activePanelItem.panelState === "Open") {
+                    while (_pendingCallbacks.length > 0) {
+                        var cb = _pendingCallbacks.shift();
+                        if (typeof cb === "function") cb();
+                    }
+                    activePanelItem.panelStateChanged.disconnect(checkState);
+                }
+            };
+            activePanelItem.panelStateChanged.connect(checkState);
+            checkState();
+        }
+    }
+
+    // --- COORDINATE MATH ---
+    // --- CONTROL APIs ---
+    function togglePanel(name, screenX, barLeft, barRight, screen) {
+        if (activePanelName === name) {
+            closeAll();
+        } else {
+            activePanelName = name;
+            activeScreen = screen || Quickshell.screens[0];
+            anchorX = (screenX !== undefined) ? screenX : -1;
+            anchorMinX = (barLeft !== undefined) ? barLeft : -1;
+            anchorMaxX = (barRight !== undefined) ? barRight : -1;
+        }
+    }
+
+    function openPanel(name, screenX, barLeft, barRight, screen) {
+        if (activePanelName === name) return;
+        activePanelName = name;
+        activeScreen = screen || Quickshell.screens[0];
+        anchorX = (screenX !== undefined) ? screenX : -1;
+        anchorMinX = (barLeft !== undefined) ? barLeft : -1;
+        anchorMaxX = (barRight !== undefined) ? barRight : -1;
+    }
+
+    function closeAll() {
+        activePanelName = "";
+        activeScreen = null;
+        activePanelItem = null;
+        anchorX = -1;
+        anchorMinX = -1;
+        anchorMaxX = -1;
+    }
+
+    // --- WRAPPER APIs FOR INDIVIDUAL PANELS ---
+    function toggleLauncher() {
+        togglePanel("launcher");
+    }
 
     function toggleWallpaper() {
-        if (!launcherLoader) return;
-        if (activePanelLoader && activePanelLoader !== launcherLoader) activePanelLoader.close();
-        
-        if (!launcherLoader.active || (launcherLoader.item && launcherLoader.item.panelState !== "Open")) {
-            launcherLoader.toggle();
-            activePanelLoader = launcherLoader;
+        if (activePanelName !== "launcher") {
+            openPanel("launcher");
         }
-        launcherLoader.runWhenReady(() => { launcherLoader.item.switchToTab(2); });
+        runWhenPanelReady(() => {
+            if (activePanelItem && typeof activePanelItem.switchToTab === "function") {
+                activePanelItem.switchToTab(2);
+            }
+        });
     }
 
     function toggleClipboard() {
-        if (!launcherLoader) return;
-        if (activePanelLoader && activePanelLoader !== launcherLoader) activePanelLoader.close();
-        
-        if (!launcherLoader.active || (launcherLoader.item && launcherLoader.item.panelState !== "Open")) {
-            launcherLoader.toggle();
-            activePanelLoader = launcherLoader;
+        if (activePanelName !== "launcher") {
+            openPanel("launcher");
         }
-        launcherLoader.runWhenReady(() => { launcherLoader.item.switchToTab(1); });
+        runWhenPanelReady(() => {
+            if (activePanelItem && typeof activePanelItem.switchToTab === "function") {
+                activePanelItem.switchToTab(1);
+            }
+        });
     }
 
     function toggleSettings(pageName) {
-        if (!settingsLoader) return;
-
-        var isCurrentlyOpen = (settingsLoader.active && settingsLoader.item &&
-                               (settingsLoader.item.panelState === "Open" || settingsLoader.item.panelState === "Opening"));
+        var isCurrentlyOpen = (activePanelName === "settings");
 
         if (isCurrentlyOpen) {
             if (pageName !== undefined) {
-                var settingsItem = settingsLoader.item;
-                if (settingsItem && settingsItem.bodyItem) {
-                    var mainContainer = settingsItem.bodyItem;
+                if (activePanelItem && activePanelItem.bodyItem) {
+                    var mainContainer = activePanelItem.bodyItem;
                     if (mainContainer.selectedPage === pageName) {
-                        // Already on this page — close
-                        _toggle(settingsLoader);
+                        closeAll();
                     } else {
-                        // Switch page without closing; path resolved inside Settings.qml
                         mainContainer.changePage(pageName);
                     }
                 }
             } else {
-                _toggle(settingsLoader);
+                closeAll();
             }
         } else {
-            _toggle(settingsLoader);
+            openPanel("settings");
             if (pageName !== undefined) {
-                settingsLoader.runWhenReady(() => {
-                    var settingsItem = settingsLoader.item;
-                    if (settingsItem && settingsItem.bodyItem) {
-                        // Path resolved inside Settings.qml, not here
-                        settingsItem.bodyItem.changePage(pageName);
+                runWhenPanelReady(() => {
+                    if (activePanelItem && activePanelItem.bodyItem && typeof activePanelItem.bodyItem.changePage === "function") {
+                        activePanelItem.bodyItem.changePage(pageName);
                     }
                 });
             }
@@ -118,159 +130,27 @@ QtObject {
     }
 
     function toggleDashboardPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && dashboardItem) {
-            var coords = _getCoordinatesFromItem(dashboardItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(dashboardPopoutLoader, screenX, barLeft, barRight);
-        _toggle(dashboardPopoutLoader);
+        togglePanel("dashboard");
     }
 
-
     function toggleNotificationPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && notificationsItem) {
-            var coords = _getCoordinatesFromItem(notificationsItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(notificationPopoutLoader, screenX, barLeft, barRight);
-        _toggle(notificationPopoutLoader);
+        togglePanel("notifications");
     }
 
     function toggleAudioPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && volumeItem) {
-            var coords = _getCoordinatesFromItem(volumeItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(audioPopoutLoader, screenX, barLeft, barRight);
-        _toggle(audioPopoutLoader);
+        togglePanel("audio");
     }
 
     function togglePowerPopout(screenX, barLeft, barRight) {
-        _applyAnchors(powerPopoutLoader, screenX, barLeft, barRight);
-        _toggle(powerPopoutLoader);
+        togglePanel("power");
     }
-
-    // --- OPEN ACTIONS (FOR HOVER) ---
-    function openNotificationPopout() {
-        var sx, bl, br;
-        if (notificationsItem) {
-            var c = _getCoordinatesFromItem(notificationsItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(notificationPopoutLoader, sx, bl, br);
-    }
-
-    function openAudioPopout() {
-        var sx, bl, br;
-        if (volumeItem) {
-            var c = _getCoordinatesFromItem(volumeItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(audioPopoutLoader, sx, bl, br);
-    }
-
-
-    function openPowerPopout() {
-        _ensureOpen(powerPopoutLoader);
-    }
-
-    function openDashboardPopout() {
-        var sx, bl, br;
-        if (dashboardItem) {
-            var c = _getCoordinatesFromItem(dashboardItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(dashboardPopoutLoader, sx, bl, br);
-    }
-
-    function openNetworkPopout() {
-        var sx, bl, br;
-        if (networkItem) {
-            var c = _getCoordinatesFromItem(networkItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(networkPopoutLoader, sx, bl, br);
-    }
-
-    function openBluetoothPopout() {
-        var sx, bl, br;
-        if (bluetoothItem) {
-            var c = _getCoordinatesFromItem(bluetoothItem);
-            if (c) { sx = c.screenX; bl = c.barLeft; br = c.barRight; }
-        }
-        _ensureOpen(bluetoothPopoutLoader, sx, bl, br);
-    }
-
-
 
     function toggleNetworkPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && networkItem) {
-            var coords = _getCoordinatesFromItem(networkItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(networkPopoutLoader, screenX, barLeft, barRight);
-        _toggle(networkPopoutLoader);
+        toggleSettings("NetworkPage");
     }
 
     function toggleBluetoothPopout(screenX, barLeft, barRight) {
-        if (screenX === undefined && bluetoothItem) {
-            var coords = _getCoordinatesFromItem(bluetoothItem);
-            if (coords) { screenX = coords.screenX; barLeft = coords.barLeft; barRight = coords.barRight; }
-        }
-        _applyAnchors(bluetoothPopoutLoader, screenX, barLeft, barRight);
-        _toggle(bluetoothPopoutLoader);
+        toggleSettings("Bluetooth");
     }
 
-    function _applyAnchors(loader, screenX, barLeft, barRight) {
-        if (!loader) return;
-        loader.runWhenReady(() => {
-            var item = loader.item;
-            item.anchorX = (screenX !== undefined) ? screenX : -1;
-            item.anchorMinX = (barLeft !== undefined) ? barLeft : -1;
-            item.anchorMaxX = (barRight !== undefined) ? barRight : -1;
-        });
-    }
-
-    function _toggle(loader) {
-        if (!loader) return;
-        TrayService.closeCurrentMenu();
-        if (activePanelLoader === loader) {
-            loader.toggle();
-            activePanelLoader = null;
-            return;
-        }
-        if (activePanelLoader) activePanelLoader.close();
-        loader.toggle();
-        activePanelLoader = loader;
-    }
-
-    function _ensureOpen(loader, screenX, barLeft, barRight) {
-        if (!loader) return;
-        
-        // If the current active panel was closed independently (e.g. Escape or click outside),
-        // reset the pointer so we can re-open it or open a new one.
-        if (activePanelLoader && activePanelLoader.item && 
-            activePanelLoader.item.panelState !== "Open" && 
-            activePanelLoader.item.panelState !== "Opening") {
-            activePanelLoader = null;
-        }
-
-        if (activePanelLoader === loader) return; // Already open
-
-        TrayService.closeCurrentMenu();
-        if (activePanelLoader) activePanelLoader.close();
-
-        _applyAnchors(loader, screenX, barLeft, barRight);
-        loader.active = true;
-        loader.runWhenReady(() => {
-            if (loader.item.panelState !== "Open" && loader.item.panelState !== "Opening") {
-                loader.item.open();
-            }
-        });
-        activePanelLoader = loader;
-    }
-
-    function closeAll() {
-        if (activePanelLoader) { activePanelLoader.close(); activePanelLoader = null; }
-    }
 }

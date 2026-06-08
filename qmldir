@@ -12,13 +12,9 @@ singleton ProcessService services/ProcessService.qml
 singleton Zenity services/Zenity.qml
 singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
-singleton Niri services/compositor/Niri.qml
-singleton Hyprland services/compositor/Hyprland.qml
-singleton Mango services/compositor/Mango.qml
-singleton Compositor services/compositor/Compositor.qml
+singleton Hyprland services/Hyprland.qml
 singleton PopoutService services/PopoutService.qml
 singleton Power services/Power.qml
-singleton TrayService services/TrayService.qml
 singleton Stats services/Stats.qml
 singleton Preferences services/Preferences.qml
 singleton SystemInfo services/SystemInfo.qml
@@ -44,7 +40,7 @@ BaseButton shared/BaseButton.qml
 BaseMultiButton shared/BaseMultiButton.qml
 BaseIcon shared/BaseIcon.qml
 BaseInput shared/BaseInput.qml
-BasePopoutWindow shared/BasePopoutWindow.qml
+BaseIsland shared/BaseIsland.qml
 BaseFloatingWindow shared/BaseFloatingWindow.qml
 BaseScrollBar shared/BaseScrollBar.qml
 BaseScroller shared/BaseScroller.qml
@@ -90,7 +86,7 @@ Indicators modules/bar/components/Indicators.qml
 
 # Dashboard
 DashboardPage modules/dashboard/DashboardPage.qml
-DashboardPopout modules/dashboard/DashboardPopout.qml
+Dashboard modules/dashboard/Dashboard.qml
 DashboardCalendar modules/dashboard/components/DashboardCalendar.qml
 DashboardWeather modules/dashboard/components/DashboardWeather.qml
 DashboardMedia modules/dashboard/components/DashboardMedia.qml
@@ -98,11 +94,8 @@ DashboardUserPanel modules/dashboard/components/DashboardUserPanel.qml
 DashboardClock modules/dashboard/components/DashboardClock.qml
 DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
 
-# Popouts
-NotificationPopout modules/panels/NotificationPopout.qml
-AudioPopout modules/panels/AudioPopout.qml
-TrayPopout modules/panels/TrayPopout.qml
-PowerPopout modules/panels/PowerPopout.qml
-NetworkPopout modules/panels/connectivity/NetworkPopout.qml
-BluetoothPopout modules/panels/connectivity/BluetoothPopout.qml
+# Panels
+NotificationsPanel modules/notifications/Notifications.qml
+Audio modules/audio/Audio.qml
+PowerPanel modules/power/Power.qml
 

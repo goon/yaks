@@ -17,7 +17,6 @@ QtObject {
 
     // --- State ---
     property bool processing: false
-    property string lastProcessedWallpaper: "" // To avoid reprocessing loops
 
     // --- Dependencies ---
     property bool enabled: Preferences.gowallEnabled
@@ -47,9 +46,7 @@ QtObject {
 
 
     
-    property string lastTarget: ""
-    
-    // ...
+
 
     function writeGowallConfig() {
         if (!currentColors) {
@@ -92,7 +89,6 @@ QtObject {
         var fileName = baseName + "_" + currentThemeId + "." + ext;
         
         var targetPath = cacheDir + "/" + fileName;
-        root.lastTarget = targetPath;
     
         // Strategy: Detached Execution via Helper Script
         // We runs scripts/gowall.sh in the background to avoid blocking the UI.
@@ -156,7 +152,6 @@ QtObject {
     }
 
     // --- Logic ---
-    property bool initialized: true 
 
     // Watch for changes
     onEnabledChanged: update()

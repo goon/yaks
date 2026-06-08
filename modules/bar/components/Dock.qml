@@ -7,7 +7,7 @@ BaseBlock {
     id: root
 
     function syncModel() {
-        const source = Compositor.windows;
+        const source = Hyprland.windows;
         if (!source)
             return ;
 
@@ -50,7 +50,7 @@ BaseBlock {
         }
     }
 
-    visible: Compositor.windows.length > 0
+    visible: Hyprland.windows.length > 0
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
     backgroundColor: Theme.colors.transparent
@@ -76,7 +76,7 @@ BaseBlock {
             debounceTimer.restart();
         }
 
-        target: Compositor
+        target: Hyprland
     }
 
     ListView {
@@ -135,7 +135,7 @@ BaseBlock {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: Compositor.focusWindow(model.id)
+                onClicked: Hyprland.focusWindow(model.id)
             }
 
         }

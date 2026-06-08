@@ -19,8 +19,8 @@ QtObject {
     property bool wallpaperParallaxEnabled: false
     property double wallpaperParallaxStrength: 20.0
 
-    property double blurOpacity: 0.5
-    property double blockOpacity: 0.7
+    property double backgroundOpacity: 0.5
+    property double surfaceOpacity: 0.7
     property double themedAppsOpacity: 1.0
     // Theme Configuration
     property string currentTheme: "solaris"
@@ -107,8 +107,8 @@ QtObject {
             "wallpaperParallaxEnabled": root.wallpaperParallaxEnabled,
             "wallpaperParallaxStrength": root.wallpaperParallaxStrength,
 
-            "blurOpacity": root.blurOpacity,
-            "blockOpacity": root.blockOpacity,
+            "backgroundOpacity": root.backgroundOpacity,
+            "surfaceOpacity": root.surfaceOpacity,
             "themedAppsOpacity": root.themedAppsOpacity,
             "currentTheme": root.currentTheme,
             "themeMode": root.themeMode,
@@ -181,8 +181,8 @@ QtObject {
             "barCenterComponents": JSON.parse(JSON.stringify(root.barCenterComponents)),
             "barRightComponents": JSON.parse(JSON.stringify(root.barRightComponents)),
 
-            "blurOpacity": root.blurOpacity,
-            "blockOpacity": root.blockOpacity,
+            "backgroundOpacity": root.backgroundOpacity,
+            "surfaceOpacity": root.surfaceOpacity,
             "themedAppsOpacity": root.themedAppsOpacity
         };
         root.presets = newPresets;
@@ -212,8 +212,8 @@ QtObject {
         if (preset.hasOwnProperty("barCenterComponents")) root.barCenterComponents = preset.barCenterComponents;
         if (preset.hasOwnProperty("barRightComponents")) root.barRightComponents = preset.barRightComponents;
 
-        if (preset.hasOwnProperty("blurOpacity")) root.blurOpacity = preset.blurOpacity;
-        if (preset.hasOwnProperty("blockOpacity")) root.blockOpacity = preset.blockOpacity;
+        if (preset.hasOwnProperty("backgroundOpacity")) root.backgroundOpacity = preset.backgroundOpacity;
+        if (preset.hasOwnProperty("surfaceOpacity")) root.surfaceOpacity = preset.surfaceOpacity;
         if (preset.hasOwnProperty("themedAppsOpacity")) root.themedAppsOpacity = preset.themedAppsOpacity;
         
         requestSave("loadPreset");
@@ -292,8 +292,8 @@ QtObject {
     onWallpaperParallaxEnabledChanged: requestSave("wallpaperParallaxEnabled")
     onWallpaperParallaxStrengthChanged: requestSave("wallpaperParallaxStrength")
 
-    onBlurOpacityChanged: requestSave("blurOpacity")
-    onBlockOpacityChanged: requestSave("blockOpacity")
+    onBackgroundOpacityChanged: requestSave("backgroundOpacity")
+    onSurfaceOpacityChanged: requestSave("surfaceOpacity")
     onThemedAppsOpacityChanged: requestSave("themedAppsOpacity")
     onCurrentThemeChanged: requestSave("currentTheme")
     onThemeModeChanged: requestSave("themeMode")
@@ -397,11 +397,11 @@ QtObject {
 
 
 
-                    if (data.hasOwnProperty("blurOpacity"))
-                        root.blurOpacity = data.blurOpacity;
+                    if (data.hasOwnProperty("backgroundOpacity"))
+                        root.backgroundOpacity = data.backgroundOpacity;
 
-                    if (data.hasOwnProperty("blockOpacity"))
-                        root.blockOpacity = data.blockOpacity;
+                    if (data.hasOwnProperty("surfaceOpacity"))
+                        root.surfaceOpacity = data.surfaceOpacity;
 
                     if (data.hasOwnProperty("themedAppsOpacity"))
                         root.themedAppsOpacity = data.themedAppsOpacity;

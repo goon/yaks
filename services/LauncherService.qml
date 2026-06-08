@@ -580,9 +580,9 @@ QtObject {
             else if (item.app)
                 item.app.execute();
         } else if (item.type === "workspace")
-            Compositor.switchToWorkspace(item.workspaceIdx);
+            Hyprland.switchToWorkspace(item.workspaceIdx);
         else if (item.type === "window")
-            Compositor.focusWindow(item.windowId);
+            Hyprland.focusWindow(item.windowId);
         else if (item.type === "command" && item.action)
             item.action();
         else if (item.type === "command" && item.command)

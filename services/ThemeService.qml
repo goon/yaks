@@ -11,7 +11,6 @@ Item {
     property bool ready: false
     property var currentColors: ({})
     property var allThemes: []
-    readonly property alias availableStockThemes: root.allThemes
     readonly property string themesDir: Config.themesDir
     readonly property string scriptsDir: Config.scriptsDir
     property var stockThemeIds: ["catppuccin", "kanagawa", "everforest", "gruvbox", "horizon", "solaris"]
@@ -196,8 +195,6 @@ Item {
 
     function updateGtk2Config(key, value) {
         var gtk2File = "~/.gtkrc-2.0";
-        var cmd = ["sh", "-c", "sed -i 's|^" + key + " =.*|" + key + " = \"" + value + "\";|' " + gtk2File];
-        ProcessService.runDetached(cmd);
         var robustCmd = ["sh", "-c", "sed -i 's|^" + key + "\\s*=\\s*.*|" + key + " = \"" + value + "\";|' " + gtk2File];
         ProcessService.runDetached(robustCmd);
     }
@@ -259,17 +256,6 @@ Item {
         ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", newScheme], function() {
             refreshThemeService();
         });
-    }
-
-    function findIndexCaseInsensitive(list, value) {
-        if (!list || !value) return -1;
-        var lowerValue = value.toLowerCase();
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].toLowerCase() === lowerValue) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     property var allFontFamilies: []

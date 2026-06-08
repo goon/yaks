@@ -12,7 +12,7 @@ BaseBlock {
     implicitWidth: 300
 
     borderEnabled: false
-    backgroundColor: Theme.alpha(Theme.colors.surface, Theme.blur.surfaceOpacity)
+    backgroundColor: Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
     hoverEnabled: false
 
 
@@ -35,7 +35,7 @@ BaseBlock {
         Item {
             id: albumArtWrapper
             Layout.fillWidth: true
-            implicitHeight: width  // Always square
+            implicitHeight: root.implicitWidth - (root.paddingHorizontal * 2)
 
             readonly property int visualBarsCount: 96
             readonly property real barWidth: (Math.PI * (albumArtCircle.width + 8) / visualBarsCount) * 0.45

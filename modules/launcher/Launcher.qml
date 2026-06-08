@@ -5,103 +5,90 @@ import Quickshell
 import Quickshell.Wayland
 import qs
 
-BasePopoutWindow {
+FocusScope {
     id: root
     
-    fixedWidth: 600
-    panelNamespace: "quickshell:launcher"
-    openScaleFrom: 0.05
-    closeScaleTo: 0.05
+    property string panelState: "Closed"
+
+    implicitWidth: 560
+    implicitHeight: {
+        var searchHeight = Theme.dimensions.launcherSearchHeight;
+        var padLarge = Theme.geometry.spacing.large;
+
+        if (root.isWallpaperActive) {
+            return 660;
+        }
+
+        var count = root.activeListCount;
+        var maxItems = 8;
+        var visibleItems = Math.min(count, maxItems);
+        
+        var itemHeight = Theme.dimensions.launcherItemHeight;
+
+        if (visibleItems === 0) {
+            return searchHeight;
+        }
+
+        // Calculation based on ColumnLayout spacing and Loader margins:
+        // searchHeight (50) 
+        // + columnSpacing (12) 
+        // + resultsArea (loader margins 12 top/bottom + listContent)
+        var listHeight = (visibleItems * itemHeight) + (Math.max(0, visibleItems - 1) * padLarge);
+        return searchHeight + (3 * padLarge) + listHeight;
+    }
+
+    property Item initialFocusItem: searchBar
 
     function switchToTab(index) {
-        if (root.bodyItem)
-            root.bodyItem.switchTab(index);
+        root.switchTab(index);
     }
     
     property int currentTabIndex: 0
-    property int activeListCount: (bodyItem && bodyItem.activeTabObject) ? bodyItem.activeTabObject.listCount : 0
-    readonly property var activeTab: (bodyItem && bodyItem.activeTabObject) ? bodyItem.activeTabObject : null
+    property int activeListCount: root.activeTabObject ? root.activeTabObject.listCount : 0
+    readonly property var activeTab: root.activeTabObject
 
-    body: FocusScope {
-        id: mainScope
+    function opening() {
+        LauncherService.resetInputStates();
+        LauncherService.activeUtilityMode = "";
+        LauncherService.lastInputMethod = "keyboard";
+        searchBar.text = "";
         
-        Connections {
-            target: root
-            function onOpening() {
-                LauncherService.resetInputStates();
-                LauncherService.activeUtilityMode = "";
-                LauncherService.lastInputMethod = "keyboard";
-                searchBar.text = "";
-                
-                root.currentTabIndex = 0;
-                mainScope.currentItem = null;
-                
-                 for (var i = 0; i < mainScope.tabModel.length; i++) {
-                    var tab = mainScope.getTab(i);
-                    if (tab) tab.isActive = (i === 0);
-                    mainScope.resetTabToTop(i);
-                }
-                
-                Qt.callLater(() => {
-                    searchBar.focusInput();
-                });
-            }
-            
-            function onClosing() {
-                for (var i = 0; i < mainScope.tabModel.length; i++) {
-                    var tab = mainScope.getTab(i);
-                    if (tab && tab.onLauncherClosed) tab.onLauncherClosed();
-                    mainScope.resetTabToTop(i);
-                }
-            }
-        }
+        root.currentTabIndex = 0;
+        root.currentItem = null;
         
-        implicitWidth: 600
-        implicitHeight: {
-            var searchHeight = Theme.dimensions.launcherSearchHeight;
-            var padLarge = Theme.geometry.spacing.large;
-
-            if (mainScope.isWallpaperActive) {
-                return 700;
-            }
-
-            var count = root.activeListCount;
-            var maxItems = 8;
-            var visibleItems = Math.min(count, maxItems);
-            
-            var itemHeight = Theme.dimensions.launcherItemHeight;
-
-            if (visibleItems === 0) {
-                return searchHeight;
-            }
-
-            // Calculation based on ColumnLayout spacing and Loader margins:
-            // searchHeight (50) 
-            // + columnSpacing (12) 
-            // + resultsArea (loader margins 12 top/bottom + listContent)
-            var listHeight = (visibleItems * itemHeight) + (Math.max(0, visibleItems - 1) * padLarge);
-            return searchHeight + (3 * padLarge) + listHeight;
+        for (var i = 0; i < root.tabModel.length; i++) {
+            var tab = root.getTab(i);
+            if (tab) tab.isActive = (i === 0);
+            root.resetTabToTop(i);
         }
-
-
-        // Bind currentItem
-        Binding {
-            target: mainScope
-            property: "currentItem"
-            value: root.activeTab ? root.activeTab.currentItem : null
+    }
+    
+    function closing() {
+        for (var i = 0; i < root.tabModel.length; i++) {
+            var tab = root.getTab(i);
+            if (tab && tab.onLauncherClosed) tab.onLauncherClosed();
+            root.resetTabToTop(i);
         }
+    }
 
-        property var currentItem: null
-        
-        property var tabModel: [
-            { icon: "dashboard", key: "", component: "AppList.qml", placeholder: "Search..." },
-            { icon: "content_paste", key: "", component: "ClipboardHistory.qml", placeholder: "Search clipboard..." },
-            { icon: "image", key: "", component: "wallpaper/WallpaperSwitcher.qml", placeholder: "Search wallpapers...", isWallpaper: true },
-            { icon: "palette", key: "", component: "ThemeSwitcher.qml", placeholder: "Search themes..." }
-        ]
+    // Bind currentItem
+    Binding {
+        target: root
+        property: "currentItem"
+        value: root.activeTab ? root.activeTab.currentItem : null
+    }
 
-        readonly property var activeTabObject: (tabRepeater && root.currentTabIndex >= 0 && root.currentTabIndex < tabRepeater.count) ? tabRepeater.itemAt(root.currentTabIndex).item : null
-        readonly property bool isWallpaperActive: (root.currentTabIndex >= 0 && root.currentTabIndex < tabModel.length) ? !!tabModel[root.currentTabIndex].isWallpaper : false
+    property var currentItem: null
+    
+    property var tabModel: [
+        { icon: "dashboard", key: "", component: "AppList.qml", placeholder: "Search..." },
+        { icon: "content_paste", key: "", component: "ClipboardHistory.qml", placeholder: "Search clipboard..." },
+        { icon: "image", key: "", component: "wallpaper/WallpaperSwitcher.qml", placeholder: "Search wallpapers...", isWallpaper: true },
+        { icon: "palette", key: "", component: "ThemeSwitcher.qml", placeholder: "Search themes..." }
+    ]
+
+    readonly property var activeTabObject: (tabRepeater && root.currentTabIndex >= 0 && root.currentTabIndex < tabRepeater.count) ? tabRepeater.itemAt(root.currentTabIndex).item : null
+    readonly property bool isWallpaperActive: (root.currentTabIndex >= 0 && root.currentTabIndex < tabModel.length) ? !!tabModel[root.currentTabIndex].isWallpaper : false
 
         property string currentPlaceholder: {
             if (root.currentTabIndex === 0) {
@@ -147,7 +134,7 @@ BasePopoutWindow {
             if (!tab) return;
             
             // Bypass reset for Wallpaper tab to preserve randomized starting position
-            if (mainScope.tabModel[index].isWallpaper) return;
+            if (root.tabModel[index].isWallpaper) return;
 
             var listView = getTabListView(tab);
             if (listView && listView.count > 0) {
@@ -160,7 +147,7 @@ BasePopoutWindow {
         }
 
         function switchTab(newIndex) {
-            if (newIndex < 0 || newIndex >= mainScope.tabModel.length) return;
+            if (newIndex < 0 || newIndex >= root.tabModel.length) return;
 
             LauncherService.resetInputStates();
             LauncherService.activeUtilityMode = "";
@@ -171,24 +158,24 @@ BasePopoutWindow {
             if (oldTab) oldTab.isActive = false;
 
             root.currentTabIndex = newIndex;
-            mainScope.resetTabToTop(newIndex);
+            root.resetTabToTop(newIndex);
             
             // Activate new tab
             var newTab = getTab(newIndex);
             if (newTab) {
                 newTab.isActive = true;
-                mainScope.currentItem = newTab.currentItem;
+                root.currentItem = newTab.currentItem;
             }
 
             searchBar.focusInput();
         }
 
         function nextTab() {
-            mainScope.switchTab((root.currentTabIndex + 1) % mainScope.tabModel.length);
+            root.switchTab((root.currentTabIndex + 1) % root.tabModel.length);
         }
 
         function prevTab() {
-            mainScope.switchTab((root.currentTabIndex - 1 + mainScope.tabModel.length) % mainScope.tabModel.length);
+            root.switchTab((root.currentTabIndex - 1 + root.tabModel.length) % root.tabModel.length);
         }
 
         function navigateHorizontal(dir) {
@@ -266,7 +253,7 @@ BasePopoutWindow {
                 activateCurrentItem();
                 event.accepted = true;
             } else if (event.key === Qt.Key_Escape) {
-                root.close();
+                PopoutService.closeAll();
                 event.accepted = true;
             } else if (listView && listView.activeFocus) {
                 if (event.key === Qt.Key_Delete) {
@@ -290,12 +277,12 @@ BasePopoutWindow {
 
         Shortcut {
             sequence: "Tab"
-            onActivated: mainScope.nextTab()
+            onActivated: root.nextTab()
         }
 
         Shortcut {
             sequence: "Shift+Tab"
-            onActivated: mainScope.prevTab()
+            onActivated: root.prevTab()
         }
 
         ColumnLayout {
@@ -308,42 +295,42 @@ BasePopoutWindow {
                 property alias searchField: searchBar
                 
                 // Dynamic Placeholder Binding
-                placeholderText: mainScope.currentPlaceholder
+                placeholderText: root.currentPlaceholder
 
                 activePageHints: {
-                    var tab = mainScope.getTab(root.currentTabIndex);
+                    var tab = root.getTab(root.currentTabIndex);
                     return (tab && tab.pageHints) ? tab.pageHints : [];
                 }
                 clickable: true
                 Layout.fillWidth: true
-                tabModel: mainScope.tabModel
+                tabModel: root.tabModel
                 currentIndex: root.currentTabIndex
                 onTabClicked: (index) => {
-                    return mainScope.switchTab(index);
+                    return root.switchTab(index);
                 }
                 
-                visible: !mainScope.isWallpaperActive
+                visible: !root.isWallpaperActive
                 Layout.preferredHeight: visible ? Theme.dimensions.launcherSearchHeight : 0
 
                 
                 inputItem.Keys.onLeftPressed: (event) => {
-                    if (mainScope.isWallpaperActive) {
-                        mainScope.navigateHorizontal(-1);
+                    if (root.isWallpaperActive) {
+                        root.navigateHorizontal(-1);
                         event.accepted = true;
                     } else {
                         event.accepted = false;
                     }
                 }
                 inputItem.Keys.onRightPressed: (event) => {
-                     if (mainScope.isWallpaperActive) {
-                        mainScope.navigateHorizontal(1);
+                     if (root.isWallpaperActive) {
+                        root.navigateHorizontal(1);
                         event.accepted = true;
                     } else {
                         event.accepted = false;
                     }
                 }
 
-                onDownPressed: mainScope.navigateDown()
+                onDownPressed: root.navigateDown()
                 onPressedSignal: {
                     LauncherService.resetInputStates();
                     searchBar.focusInput();
@@ -352,14 +339,14 @@ BasePopoutWindow {
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                visible: mainScope.isWallpaperActive || root.activeListCount > 0
+                visible: root.isWallpaperActive || root.activeListCount > 0
 
                 // Page Background
                 BaseBlock {
                     anchors.fill: parent
-                    backgroundColor: mainScope.isWallpaperActive ? 
-                        Theme.alpha(Theme.colors.background, Theme.blur.backgroundOpacity) : 
-                        Theme.alpha(Theme.colors.surface, Theme.blur.surfaceOpacity)
+                    backgroundColor: root.isWallpaperActive ? 
+                        Theme.alpha(Theme.colors.background, Theme.opacity.background) : 
+                        Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
                     borderEnabled: false
                     z: -1
                 }
@@ -372,7 +359,7 @@ BasePopoutWindow {
                     
                     Repeater {
                         id: tabRepeater
-                        model: mainScope.tabModel
+                        model: root.tabModel
                         
                         Loader {
                             id: tabLoader
@@ -399,14 +386,14 @@ BasePopoutWindow {
                             onLoaded: {
                                 if (item) {
                                     // Connect signals
-                                    item.closeRequested.connect(root.close);
+                                    item.closeRequested.connect(PopoutService.closeAll);
                                     item.mouseMoveRequested.connect((index, mouse) => {
-                                         mainScope.handleListMouseMove(item.listView, index, mouse);
+                                         root.handleListMouseMove(item.listView, index, mouse);
                                     });
                                     item.tabRedirectRequested.connect((targetIndex) => {
                                          Qt.callLater(() => {
-                                            searchBar.text = "";
-                                            mainScope.switchTab(targetIndex);
+                                             searchBar.text = "";
+                                             root.switchTab(targetIndex);
                                          });
                                     });
                                     if (typeof item.searchTextUpdateRequested !== 'undefined') {
@@ -426,7 +413,7 @@ BasePopoutWindow {
                                 target: tabLoader.item || null
                                 function onCurrentItemChanged() {
                                     if (root.currentTabIndex === index) {
-                                        mainScope.currentItem = tabLoader.item.currentItem;
+                                        root.currentItem = tabLoader.item.currentItem;
                                     }
                                 }
                             }
@@ -436,4 +423,3 @@ BasePopoutWindow {
             }
         }
     }
-}

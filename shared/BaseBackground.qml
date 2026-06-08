@@ -11,16 +11,19 @@ import qs
 Item {
     id: root
 
-    property color color: Theme.alpha(Theme.colors.background, Theme.blur.backgroundOpacity)
+    property color color: Theme.alpha(Theme.colors.background, Theme.opacity.background)
+    property color borderColor: Theme.colors.transparent
+    property real borderWidth: 1
     property real radius: Theme.geometry.radius
-    property bool clip: true
+    clip: true
 
-    anchors.fill: parent
 
     Rectangle {
         anchors.fill: parent
         color: root.color
         radius: root.radius
         clip: root.clip
+        border.color: root.borderColor
+        border.width: root.borderWidth
     }
 }

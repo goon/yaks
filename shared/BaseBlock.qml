@@ -10,7 +10,7 @@ Rectangle {
 
     // Styling
     // Styling
-    property color backgroundColor: Theme.alpha(Theme.colors.surface, Theme.blur.surfaceOpacity)
+    property color backgroundColor: Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
     property color hoverColor: Theme.colors.transparent
     property bool borderEnabled: true
     property color borderColor: Theme.colors.background

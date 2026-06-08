@@ -7,19 +7,19 @@ import qs
 Item {
     id: root
 
-    // Centralized state from Compositor service
+    // Centralized state from Hyprland service
     readonly property var workspaces: {
-        var rawList = Compositor.workspaces || [];
+        var rawList = Hyprland.workspaces || [];
         return rawList;
     }
-    readonly property int activeWorkspaceId: localActiveId !== -1 ? localActiveId : Compositor.activeWorkspaceId
+    readonly property int activeWorkspaceId: localActiveId !== -1 ? localActiveId : Hyprland.activeWorkspaceId
     property int localActiveId: -1
 
     // Instantly sync local state when the compositor's event arrives
     Connections {
-        target: Compositor
+        target: Hyprland
         function onActiveWorkspaceIdChanged() {
-            if (Compositor.activeWorkspaceId === localActiveId) {
+            if (Hyprland.activeWorkspaceId === localActiveId) {
                 localActiveId = -1;
             }
         }
@@ -138,7 +138,7 @@ Item {
                         } else {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();
-                            Compositor.switchToWorkspace(modelData.idx || modelData.id);
+                            Hyprland.switchToWorkspace(modelData.idx || modelData.id);
                         }
                     }
                 }

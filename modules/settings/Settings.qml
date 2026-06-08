@@ -7,41 +7,33 @@ import Quickshell.Wayland
 import qs.services
 import qs
 
-BasePopoutWindow {
+FocusScope {
     id: root
+
+    property string panelState: "Closed"
+
+    readonly property var popupWindow: Window.window
+
+    implicitWidth: 1060
     
-    panelNamespace: "quickshell:settings"
-    fixedWidth: 1100
-    floating: false
-    openScaleFrom: 0.05
-    closeScaleTo: 0.05
+    readonly property real maxHeight: (root.popupWindow && root.popupWindow.screen) 
+        ? Math.min(860, root.popupWindow.screen.height * 0.9 - 40)
+        : 760
 
+    implicitHeight: Math.max(460, Math.min(maxHeight, mainLayout.implicitHeight))
 
-    body: Item {
-        id: mainContainer
-        implicitWidth: root.fixedWidth
-        
-        readonly property real maxHeight: (root.popupWindow && root.popupWindow.screen) 
-            ? Math.min(900, root.popupWindow.screen.height * 0.9)
-            : 800
+    property string selectedPage: "About"
+    property alias pageStack: pageStack
+    property Item selectedButtonItem: null
 
-        implicitHeight: Math.max(500, Math.min(maxHeight, mainLayout.implicitHeight))
+    function changePage(pageName) {
+        selectedPage = pageName;
+        pageStack.replace("views/" + pageName + ".qml");
+    }
 
-        property string selectedPage: "About"
-        property alias pageStack: pageStack
-        property Item selectedButtonItem: null
-
-        function changePage(pageName) {
-            selectedPage = pageName;
-            pageStack.replace("views/" + pageName + ".qml");
-        }
-
-        Connections {
-            target: root
-            function onClosed() {
-                mainContainer.changePage("About");
-            }
-        }
+    function closed() {
+        root.changePage("About");
+    }
 
 
         // MAIN LAYOUT
@@ -57,7 +49,7 @@ BasePopoutWindow {
                 Layout.fillWidth: false
                 Layout.fillHeight: true
                 padding: Theme.geometry.spacing.medium
-                backgroundColor: Theme.alpha(Theme.colors.background, Theme.blur.backgroundOpacity)
+                backgroundColor: Theme.alpha(Theme.colors.background, Theme.opacity.background)
                 borderEnabled: true
                 borderColor: Theme.colors.divider
 
@@ -70,19 +62,19 @@ BasePopoutWindow {
                     height: 20
 
                     property real targetY: {
-                        if (!mainContainer.selectedButtonItem) return 0;
-                        var btnYInLayout = mainContainer.selectedButtonItem.y + (mainContainer.selectedButtonItem.parent ? mainContainer.selectedButtonItem.parent.y : 0);
-                        return sidebar.paddingVertical + btnYInLayout + (mainContainer.selectedButtonItem.height - height) / 2;
+                        if (!root.selectedButtonItem) return 0;
+                        var btnYInLayout = root.selectedButtonItem.y + (root.selectedButtonItem.parent ? root.selectedButtonItem.parent.y : 0);
+                        return sidebar.paddingVertical + btnYInLayout + (root.selectedButtonItem.height - height) / 2;
                     }
 
                     // Position relative to sidebar coordinate space
                     x: {
-                        if (!mainContainer.selectedButtonItem) return 0;
-                        var btnXInLayout = mainContainer.selectedButtonItem.x + (mainContainer.selectedButtonItem.parent ? mainContainer.selectedButtonItem.parent.x : 0);
+                        if (!root.selectedButtonItem) return 0;
+                        var btnXInLayout = root.selectedButtonItem.x + (root.selectedButtonItem.parent ? root.selectedButtonItem.parent.x : 0);
                         return sidebar.paddingHorizontal + btnXInLayout + 8;
                     }
                     y: targetY
-                    visible: mainContainer.selectedButtonItem !== null
+                    visible: root.selectedButtonItem !== null
 
                     // Glow Effect applied to the entire combined liquid shape
                     layer.enabled: true
@@ -211,7 +203,7 @@ BasePopoutWindow {
                                 Layout.fillWidth: true
                                 text: modelData.text || ""
                                 icon: modelData.icon || ""
-                                selected: modelData.page === mainContainer.selectedPage
+                                selected: modelData.page === root.selectedPage
                                 gradient: false
                                 hoverGradient: false
                                 textColor: selected ? Theme.colors.primary : (containsMouse ? Theme.colors.primary : Theme.colors.text)
@@ -230,17 +222,17 @@ BasePopoutWindow {
 
                                 onSelectedChanged: {
                                     if (selected) {
-                                        mainContainer.selectedButtonItem = navBtn;
+                                        root.selectedButtonItem = navBtn;
                                     }
                                 }
                                 Component.onCompleted: {
                                     if (selected) {
-                                        mainContainer.selectedButtonItem = navBtn;
+                                        root.selectedButtonItem = navBtn;
                                     }
                                 }
 
                                 onClicked: {
-                                    mainContainer.changePage(modelData.page);
+                                    root.changePage(modelData.page);
                                 }
                             }
                         }
@@ -306,4 +298,3 @@ BasePopoutWindow {
             }
         }
     }
-}

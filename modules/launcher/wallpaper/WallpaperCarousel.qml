@@ -92,7 +92,7 @@ PathView {
     Keys.onEscapePressed: root.closeRequested()
     Keys.onReturnPressed: {
         if (currentIndex >= 0 && model && model.length > currentIndex) {
-            Wallpaper.applyWallpaper(model[currentIndex]);
+            Wallpaper.setWallpaper(model[currentIndex]);
             root.closeRequested();
         }
     }

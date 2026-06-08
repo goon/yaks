@@ -16,14 +16,11 @@ BaseBlock {
     hoverEnabled: false
     clickable: true
     
-    Component.onCompleted: PopoutService.clockItem = root
-    Component.onDestruction: PopoutService.clockItem = null
-
     onClicked: {
         PopoutService.toggleDashboardPopout();
     }
     popoutOnHover: true
-    onHoverAction: PopoutService.openDashboardPopout
+    onHoverAction: () => PopoutService.openPanel("dashboard")
 
     SystemClock {
         id: systemClock

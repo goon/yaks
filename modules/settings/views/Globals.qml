@@ -121,24 +121,24 @@ SettingsPage {
             spacing: Theme.geometry.spacing.large
 
             BaseSlider {
-                id: blurOpacitySlider
+                id: backgroundOpacitySlider
                 Layout.fillWidth: true
                 from: 0.3
                 to: 1.0
                 stepSize: 0.05
-                value: Preferences.blurOpacity
-                onMoved: Preferences.blurOpacity = value
+                value: Preferences.backgroundOpacity
+                onMoved: Preferences.backgroundOpacity = value
             }
 
             BaseText {
-                text: Math.round(blurOpacitySlider.value * 100) + "%"
+                text: Math.round(backgroundOpacitySlider.value * 100) + "%"
                 Layout.preferredWidth: 40
                 horizontalAlignment: Text.AlignRight
             }
         }
 
         BaseText {
-            text: "Block Opacity:"
+            text: "Surface Opacity:"
             pixelSize: Theme.typography.size.medium
         }
 
@@ -147,17 +147,17 @@ SettingsPage {
             spacing: Theme.geometry.spacing.large
 
             BaseSlider {
-                id: blockOpacitySlider
+                id: surfaceOpacitySlider
                 Layout.fillWidth: true
                 from: 0.3
                 to: 1.0
                 stepSize: 0.05
-                value: Preferences.blockOpacity
-                onMoved: Preferences.blockOpacity = value
+                value: Preferences.surfaceOpacity
+                onMoved: Preferences.surfaceOpacity = value
             }
 
             BaseText {
-                text: Math.round(blockOpacitySlider.value * 100) + "%"
+                text: Math.round(surfaceOpacitySlider.value * 100) + "%"
                 Layout.preferredWidth: 40
                 horizontalAlignment: Text.AlignRight
             }

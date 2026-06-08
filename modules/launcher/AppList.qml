@@ -93,7 +93,7 @@ LauncherTab {
         var appResults = [];
 
         if (root.includeWindows) {
-            Compositor.queryWorkspaces((workspaces) => {
+            Hyprland.queryWorkspaces((workspaces) => {
                 appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, workspaces, Config.launcherMaxResults || 100);
                 finalizeModel(calcResult, appResults, queryChanged);
             });

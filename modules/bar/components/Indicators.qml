@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
-import Quickshell.Services.SystemTray
 import qs
 import qs.services
 
@@ -10,10 +9,6 @@ Item {
     id: root
 
     property var barWindow: null
-
-    property Component trayMenuComponent: Component {
-        TrayPopout {}
-    }
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
@@ -23,15 +18,8 @@ Item {
     readonly property int itemWidth: Theme.dimensions.iconBase + 8
     readonly property int spacing: Theme.geometry.spacing.small
 
-    readonly property bool isTrayVisible: Preferences.indicatorsShowTray && TrayService.itemCount > 0
-
     // Calculate final target width for each key
     function getItemWidth(key) {
-        if (key === "tray") {
-            if (!isTrayVisible) return 0;
-            if (!Preferences.indicatorsTrayExpanded) return 32;
-            return 32 + spacing + (TrayService.itemCount * 24) + ((TrayService.itemCount - 1) * spacing);
-        }
         if (key === "volume") {
             if (!Preferences.indicatorsShowVolume) return 0;
             return root.itemWidth;
@@ -57,11 +45,6 @@ Item {
         let w = 0;
         let hasVisibleItem = false;
 
-        if (isTrayVisible) {
-            w += trayItem.width;
-            hasVisibleItem = true;
-        }
-
         for (let i = 0; i < visibleKeys.length; i++) {
             let k = visibleKeys[i];
             let itemW = 0;
@@ -81,13 +64,7 @@ Item {
 
     // Get current animating X coordinate for positioning items in flow
     function getActualX(key) {
-        if (key === "tray") return 0;
-
         let x = 0;
-        if (isTrayVisible) {
-            x += trayItem.width + spacing;
-        }
-
         let idx = visibleKeys.indexOf(key);
         if (idx === -1) return x;
 
@@ -103,13 +80,7 @@ Item {
 
     // Get static target position for drag and swap math
     function getTargetX(key) {
-        if (key === "tray") return 0;
-
         let x = 0;
-        if (isTrayVisible) {
-            x += getItemWidth("tray") + spacing;
-        }
-
         let idx = visibleKeys.indexOf(key);
         if (idx === -1) return x;
 
@@ -136,28 +107,6 @@ Item {
             implicitWidth: root.contentWidth
             implicitHeight: Theme.dimensions.barItemHeight
             height: parent.height
-
-            // Non-draggable static System Tray item anchored to the left (x = 0)
-            Item {
-                id: trayItem
-                visible: root.isTrayVisible
-                height: parent.height
-                x: 0
-                clip: true
-
-                width: visible ? getItemWidth("tray") : 0
-                Behavior on width {
-                    BaseAnimation {
-                        duration: Theme.animations.normal
-                    }
-                }
-
-                Loader {
-                    id: trayLoader
-                    anchors.fill: parent
-                    sourceComponent: trayComponent
-                }
-            }
 
             DraggableStatusItem {
                 id: wifiItem
@@ -230,29 +179,6 @@ Item {
 
             // Pass containsMouse to the child
             property bool containsMouse: dragArea.containsMouse
-
-            onLoaded: {
-                if (itemKey === "wifi") PopoutService.networkItem = item;
-                else if (itemKey === "bluetooth") PopoutService.bluetoothItem = item;
-                else if (itemKey === "volume") PopoutService.volumeItem = item;
-                else if (itemKey === "notifications") PopoutService.notificationsItem = item;
-            }
-        }
-
-        Component.onDestruction: {
-            if (itemKey === "wifi") {
-                if (PopoutService.networkItem === contentLoader.item)
-                    PopoutService.networkItem = null;
-            } else if (itemKey === "bluetooth") {
-                if (PopoutService.bluetoothItem === contentLoader.item)
-                    PopoutService.bluetoothItem = null;
-            } else if (itemKey === "volume") {
-                if (PopoutService.volumeItem === contentLoader.item)
-                    PopoutService.volumeItem = null;
-            } else if (itemKey === "notifications") {
-                if (PopoutService.notificationsItem === contentLoader.item)
-                    PopoutService.notificationsItem = null;
-            }
         }
 
         Timer {
@@ -261,10 +187,10 @@ Item {
             repeat: false
             onTriggered: {
                 if (itemRoot.isDragging) return;
-                if (itemKey === "wifi") PopoutService.openNetworkPopout();
-                else if (itemKey === "bluetooth") PopoutService.openBluetoothPopout();
-                else if (itemKey === "volume") PopoutService.openAudioPopout();
-                else if (itemKey === "notifications") PopoutService.openNotificationPopout();
+                if (itemKey === "wifi") PopoutService.toggleSettings("NetworkPage");
+                else if (itemKey === "bluetooth") PopoutService.toggleSettings("Bluetooth");
+                else if (itemKey === "volume") PopoutService.openPanel("audio");
+                else if (itemKey === "notifications") PopoutService.openPanel("notifications");
             }
         }
 
@@ -411,7 +337,7 @@ Item {
             height: parent ? parent.height : Theme.dimensions.barItemHeight
 
             readonly property bool dndActive: Preferences.notificationMode === 1
-            readonly property bool hasUnread: PopoutService.notificationManager ? PopoutService.notificationManager.unreadCount > 0 : false
+            readonly property bool hasUnread: Notifications.unreadCount > 0
 
             BaseIcon {
                 anchors.centerIn: parent
@@ -430,135 +356,7 @@ Item {
         }
     }
 
-    Component {
-        id: trayComponent
-        Item {
-            anchors.fill: parent
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: Theme.geometry.spacing.small
-
-                // Custom expand / collapse button
-                BaseButton {
-                    id: expandButton
-                    implicitWidth: 32
-                    implicitHeight: 32
-                    customRadius: Theme.geometry.radius
-                    hoverEnabled: true
-
-                    onClicked: {
-                        Preferences.indicatorsTrayExpanded = !Preferences.indicatorsTrayExpanded;
-                    }
-
-                    BaseIcon {
-                        anchors.centerIn: parent
-                        icon: Preferences.indicatorsTrayExpanded ? "last_page" : "first_page"
-                        size: Theme.dimensions.iconMedium + 4
-                        weight: Theme.typography.weights.bold
-                        color: expandButton.containsMouse ? Theme.colors.primary : Theme.colors.text
-                    }
-                }
-
-                // Row containing actual tray icons
-                RowLayout {
-                    id: trayLayout
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: Theme.geometry.spacing.small
-                    clip: true
-                    opacity: Preferences.indicatorsTrayExpanded ? 1.0 : 0.0
-
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: Theme.animations.normal
-                        }
-                    }
-
-                    Repeater {
-                        model: SystemTray.items.values
-                        delegate: Item {
-                            id: delegateRoot
-                            readonly property var trayData: modelData
-
-                            implicitWidth: Theme.dimensions.iconBase
-                            implicitHeight: Theme.dimensions.iconBase
-
-                            Image {
-                                id: trayIcon
-                                anchors.fill: parent
-                                source: {
-                                    if (!trayData) return "";
-                                    var resolved = LauncherService.resolveIcon(trayData.id);
-                                    if (resolved) return resolved;
-                                    return LauncherService.resolveIcon(trayData.icon) || "";
-                                }
-                                sourceSize: Qt.size(48, 48)
-                                fillMode: Image.PreserveAspectFit
-                                smooth: true
-                                asynchronous: true
-
-                                layer.enabled: true
-                                layer.effect: MultiEffect {
-                                    colorization: 1.0
-                                    colorizationColor: trayMouseArea.containsMouse ? Theme.colors.primary : Theme.colors.text
-
-                                    Behavior on colorizationColor {
-                                        ColorAnimation {
-                                            duration: Theme.animations.fast
-                                        }
-                                    }
-                                }
-                            }
-
-                            MouseArea {
-                                id: trayMouseArea
-                                anchors.fill: parent
-                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: (mouse) => {
-                                    if (!trayData) return;
-                                    if (mouse.button === Qt.LeftButton) {
-                                        trayData.activate();
-                                    } else if (mouse.button === Qt.RightButton) {
-                                        if (trayData.menu) {
-                                            TrayService.closeCurrentMenu();
-                                            PopoutService.closeAll();
-                                            if (trayMenuComponent.status === Component.Ready) {
-                                                var iconGlobalPos = trayIcon.mapToItem(null, 0, 0);
-                                                var barWidth = root.barWindow ? root.barWindow.width : 0;
-                                                var screen = Quickshell.screens[0];
-                                                var barScreenX = 0;
-                                                if (root.barWindow) {
-                                                    if (Preferences.barFitToContent)
-                                                        barScreenX = (screen.width - barWidth) / 2;
-                                                    else
-                                                        barScreenX = Preferences.barMarginSide;
-                                                }
-                                                var menu = trayMenuComponent.createObject(root, {
-                                                    "trayItem": trayData,
-                                                    "anchorX": barScreenX + iconGlobalPos.x + (trayIcon.width / 2),
-                                                    "anchorMinX": barScreenX,
-                                                    "anchorMaxX": barScreenX + barWidth
-                                                });
-                                                if (menu) {
-                                                    menu.open();
-                                                    TrayService.openMenu(menu, trayData, Qt.point(iconGlobalPos.x, iconGlobalPos.y));
-                                                }
-                                            }
-                                        }
-                                    } else if (mouse.button === Qt.MiddleButton) {
-                                        trayData.secondaryActivate();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     Component {
         id: volumeComponent
