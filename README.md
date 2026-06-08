@@ -23,7 +23,7 @@
 
 Unfortunately I do not keep track of dependencies of which there are many, nor do I provide an install script. Cloning this repository and running the shell without the various dependencies will result in a failure to launch and, or countless features not to function as expected.
 
-Honestly, just fuck around and find out - *it works on my machine*
+Honestly, just fuck around and find out - *it works on [my machine](https://github.com/goon/nixos)*
 
 ## Credits 
 
