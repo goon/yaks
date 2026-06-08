@@ -25,14 +25,6 @@ BaseBlock {
     popoutOnHover: true
     onHoverAction: PopoutService.openDashboardPopout
 
-    onMiddleClicked: {
-        Weather.fetchWeather();
-    }
-
-    onRightClicked: {
-        PopoutService.toggleSettings("Bar");
-    }
-
     SystemClock {
         id: systemClock
         precision: SystemClock.Minutes
@@ -42,7 +34,6 @@ BaseBlock {
     component TimeSegment: Item {
         id: segment
         property string text: ""
-        property bool bold: false
         property color textColor: root.containsMouse ? Theme.colors.primary : Theme.colors.text
         
         implicitWidth: widthDummy.implicitWidth
@@ -52,8 +43,8 @@ BaseBlock {
         BaseText {
             id: widthDummy
             visible: false
-            text: segment.bold ? "<b>00</b>" : "00"
-            textFormat: Text.RichText
+            text: "00"
+            
             pixelSize: Theme.typography.size.large
             weight: Theme.typography.weights.normal
         }
@@ -71,8 +62,8 @@ BaseBlock {
             id: currentText
             anchors.horizontalCenter: segment.horizontalCenter
             y: segment.centerY
-            text: segment.bold ? "<b>" + segment.displayedText + "</b>" : segment.displayedText
-            textFormat: Text.RichText
+            text: segment.displayedText
+            
             pixelSize: Theme.typography.size.large
             weight: Theme.typography.weights.normal
             color: segment.textColor
@@ -83,8 +74,8 @@ BaseBlock {
             anchors.horizontalCenter: segment.horizontalCenter
             y: segment.centerY - segment.height
             opacity: 0
-            text: segment.bold ? "<b>" + segment.text + "</b>" : segment.text
-            textFormat: Text.RichText
+            text: segment.text
+            
             pixelSize: Theme.typography.size.large
             weight: Theme.typography.weights.normal
             color: segment.textColor
@@ -156,7 +147,6 @@ BaseBlock {
 
                 TimeSegment {
                     text: Qt.formatDateTime(systemClock.date, "hh")
-                    bold: true
                 }
 
                 TimeSegment {
@@ -164,23 +154,6 @@ BaseBlock {
                 }
             }
 
-            BaseSeparator {
-                orientation: BaseSeparator.Vertical
-                fill: false
-                thickness: 1
-                Layout.preferredHeight: Theme.dimensions.iconSmall
-                Layout.preferredWidth: 1
-                opacity: 0.3
-                color: Theme.colors.text
             }
-
-            // Temperature
-            BaseText {
-                text: Weather.temperature
-                pixelSize: Theme.typography.size.large
-                weight: Theme.typography.weights.normal
-                color: root.containsMouse ? Theme.colors.primary : Theme.colors.text
-            }
-        }
     }
 }

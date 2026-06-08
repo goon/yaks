@@ -378,7 +378,7 @@ Item {
             BaseIcon {
                 anchors.centerIn: parent
                 icon: "wifi"
-                size: Theme.dimensions.iconBase
+                size: Theme.dimensions.iconMedium
                 color: parent.containsMouse ? Theme.colors.primary : Theme.colors.text
             }
         }
@@ -392,9 +392,14 @@ Item {
 
             BaseIcon {
                 anchors.centerIn: parent
-                icon: Bluetooth.powered ? "bluetooth" : "bluetooth_disabled"
-                size: Theme.dimensions.iconBase
-                color: parent.containsMouse ? Theme.colors.primary : Theme.colors.text
+                icon: "bluetooth"
+                size: Theme.dimensions.iconMedium
+                color: {
+                    if (parent.containsMouse) return Theme.colors.primary;
+                    if (!Bluetooth.powered) return Theme.colors.muted;
+                    if (Bluetooth.connectedCount > 0) return Theme.colors.success;
+                    return Theme.colors.primary;
+                }
             }
         }
     }
@@ -419,7 +424,7 @@ Item {
 
                     return "notifications";
                 }
-                size: Theme.dimensions.iconBase
+                size: Theme.dimensions.iconMedium
                 color: parent.containsMouse ? Theme.colors.primary : (parent.dndActive ? Theme.colors.error : Theme.colors.text)
             }
         }
@@ -449,7 +454,7 @@ Item {
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: Preferences.indicatorsTrayExpanded ? "last_page" : "first_page"
-                        size: Theme.dimensions.iconBase + 4
+                        size: Theme.dimensions.iconMedium + 4
                         weight: Theme.typography.weights.bold
                         color: expandButton.containsMouse ? Theme.colors.primary : Theme.colors.text
                     }
@@ -577,7 +582,7 @@ Item {
             BaseIcon {
                 anchors.centerIn: parent
                 icon: Volume.volumeIcon
-                size: Theme.dimensions.iconBase
+                size: Theme.dimensions.iconMedium
                 color: Theme.colors.text
                 opacity: volItemRoot.containsMouse ? 0.0 : 1.0
                 Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }

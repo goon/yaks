@@ -124,9 +124,9 @@ QtObject {
     readonly property QtObject
     dimensions: QtObject {
         readonly property int barItemHeight: 32
-        readonly property int iconSmall: 14
+        readonly property int iconSmall: 16
         readonly property int iconBase: 18
-        readonly property int iconMedium: 22
+        readonly property int iconMedium: 20
         readonly property int iconLarge: 32
         readonly property int iconExtraLarge: 48
         readonly property int toastWidth: 400
@@ -166,7 +166,7 @@ QtObject {
             readonly property int small: 10
             readonly property int base: 12
             readonly property int medium: 14
-            readonly property int large: 16
+            readonly property int large: 18
             readonly property int display: 48
         }
 
