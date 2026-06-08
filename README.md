@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![yaks](assets/yak.png)
+<img src="assets/yak.png" width="500" alt="yaks">
 
 </div>
 
