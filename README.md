@@ -30,10 +30,15 @@ Honestly, just fuck around and find out - *it works on my machine*
 Thank you to the countless shells that I ~~copied~~ took inspiration from.
 
 — [Noctalia](https://noctalia.dev/) 
+
 — [Caelestia](https://github.com/caelestia-dots/shell) 
+
 — [DMS](https://danklinux.com/) 
-— [end4](https://github.com/end-4/dots-hyprland) 
+
+— [end4](https://github.com/end-4/dots-hyprland)
+
 — [Nucleus](https://github.com/nucleus-hq/nucleus-shell) 
+
 
 ...and the many others I am forgetting. 
 
