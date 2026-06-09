@@ -36,7 +36,7 @@ SettingsPage {
             model: [
                 { "label": "English (1)", "value": 0 },
                 { "label": "Roman (I)",   "value": 1 },
-                { "label": "Kanji (一)",   "value": 2 }
+                { "label": "Kanji (\u4E00)",   "value": 2 }
             ]
             currentIndex: {
                 for (var i = 0; i < model.length; i++) {
@@ -48,6 +48,46 @@ SettingsPage {
             onActivated: (index) => {
                 Preferences.workspaceStyle = model[index].value;
             }
+        }
+
+        BaseText {
+            text: "Workspace Count:"
+            pixelSize: Theme.typography.size.medium
+        }
+
+        BaseSpinBox {
+            Layout.fillWidth: true
+            from: 1
+            to: 20
+            value: Preferences.workspaceCount
+            onValueChanged: Preferences.workspaceCount = value
+        }
+
+        BaseText {
+            text: "Overview Columns:"
+            pixelSize: Theme.typography.size.medium
+        }
+
+        BaseSpinBox {
+            Layout.fillWidth: true
+            from: 2
+            to: 10
+            value: Preferences.overviewColumns
+            onValueChanged: Preferences.overviewColumns = value
+        }
+
+        BaseText {
+            text: "Preview Scale:"
+            pixelSize: Theme.typography.size.medium
+        }
+
+        BaseSlider {
+            Layout.fillWidth: true
+            from: 0.08
+            to: 0.30
+            stepSize: 0.01
+            value: Preferences.overviewScale
+            onMoved: Preferences.overviewScale = value
         }
     }
 }

@@ -29,29 +29,30 @@ singleton Display services/Display.qml
 singleton Notifications services/Notifications.qml
 singleton Gowall services/Gowall.qml
 singleton Cava services/Cava.qml
+singleton OverviewService services/OverviewService.qml
 
 # Services (Types)
 Commander services/Commander.qml
 
-# Shared Base Components
-BaseBackground shared/BaseBackground.qml
-BaseActiveBackground shared/BaseActiveBackground.qml
-BaseHeader shared/BaseHeader.qml
-BaseBlock shared/BaseBlock.qml
-BaseButton shared/BaseButton.qml
-BaseIcon shared/BaseIcon.qml
-BaseInput shared/BaseInput.qml
+# Components
+BaseBackground components/BaseBackground.qml
+BaseActiveBackground components/BaseActiveBackground.qml
+BaseHeader components/BaseHeader.qml
+BaseBlock components/BaseBlock.qml
+BaseButton components/BaseButton.qml
+BaseIcon components/BaseIcon.qml
+BaseInput components/BaseInput.qml
 Island modules/Island.qml
-BaseScrollBar shared/BaseScrollBar.qml
-BaseScroller shared/BaseScroller.qml
-BaseSeparator shared/BaseSeparator.qml
-BaseSlider shared/BaseSlider.qml
-BaseText shared/BaseText.qml
-BaseComboBox shared/BaseComboBox.qml
-BaseSwitch shared/BaseSwitch.qml
-BaseAnimation shared/BaseAnimation.qml
-BaseSpinBox shared/BaseSpinBox.qml
-BaseGraph shared/BaseGraph.qml
+BaseScrollBar components/BaseScrollBar.qml
+BaseScroller components/BaseScroller.qml
+BaseSeparator components/BaseSeparator.qml
+BaseSlider components/BaseSlider.qml
+BaseText components/BaseText.qml
+BaseComboBox components/BaseComboBox.qml
+BaseSwitch components/BaseSwitch.qml
+BaseAnimation components/BaseAnimation.qml
+BaseSpinBox components/BaseSpinBox.qml
+BaseGraph components/BaseGraph.qml
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml
@@ -99,3 +100,9 @@ HubSliders modules/nexus/HubSliders.qml
 HubQuickActions modules/nexus/HubQuickActions.qml
 HubPower modules/nexus/HubPower.qml
 HubNotifications modules/nexus/HubNotifications.qml
+
+# Overview
+Overview modules/overview/Overview.qml
+OverviewGrid modules/overview/OverviewGrid.qml
+OverviewWorkspace modules/overview/OverviewWorkspace.qml
+OverviewWindow modules/overview/OverviewWindow.qml

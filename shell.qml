@@ -35,4 +35,6 @@ ShellRoot {
             screen: modelData
         }
     }
+
+    property var _overview: OverviewService
 }

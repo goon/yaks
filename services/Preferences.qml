@@ -33,6 +33,13 @@ QtObject {
     property int notificationDensity: 1 // 0: Compact, 1: Comfortable
     property int workspaceStyle: 0 // 0: Arabic, 1: Roman, 2: Kanji
     property int popoutTrigger: 0 // 0: Click, 1: Hover
+    property int workspaceCount: 10
+
+    // Overview Configuration
+    property int overviewRows: 2
+    property int overviewColumns: 5
+    property real overviewScale: 0.16
+    property bool overviewCloseOnFocusLoss: true
 
     // State Persistence (Shared with Theme/Wallpaper services)
     property var currentThemeColors: ({})
@@ -135,6 +142,11 @@ QtObject {
             "currentThemeColors": root.currentThemeColors,
             "currentWallpaper": root.currentWallpaper,
             "workspaceStyle": root.workspaceStyle,
+            "workspaceCount": root.workspaceCount,
+            "overviewRows": root.overviewRows,
+            "overviewColumns": root.overviewColumns,
+            "overviewScale": root.overviewScale,
+            "overviewCloseOnFocusLoss": root.overviewCloseOnFocusLoss,
             "presets": root.presets,
             "indicatorsShowWifi": root.indicatorsShowWifi,
             "indicatorsShowBluetooth": root.indicatorsShowBluetooth,
@@ -270,6 +282,11 @@ QtObject {
     }
     onNotificationDensityChanged: requestSave("notificationDensity")
     onWorkspaceStyleChanged: requestSave("workspaceStyle")
+    onWorkspaceCountChanged: requestSave("workspaceCount")
+    onOverviewRowsChanged: requestSave("overviewRows")
+    onOverviewColumnsChanged: requestSave("overviewColumns")
+    onOverviewScaleChanged: requestSave("overviewScale")
+    onOverviewCloseOnFocusLossChanged: requestSave("overviewCloseOnFocusLoss")
     onPopoutTriggerChanged: requestSave("popoutTrigger")
 
     onBarHeightChanged: requestSave("barHeight")
@@ -563,6 +580,17 @@ QtObject {
                         root.workspaceStyle = data.workspaceStyle;
                     else if (data.hasOwnProperty("romanNumerals") && data.romanNumerals === true)
                         root.workspaceStyle = 1;
+
+                    if (data.hasOwnProperty("overviewRows"))
+                        root.overviewRows = data.overviewRows;
+                    if (data.hasOwnProperty("overviewColumns"))
+                        root.overviewColumns = data.overviewColumns;
+                    if (data.hasOwnProperty("overviewScale"))
+                        root.overviewScale = data.overviewScale;
+                    if (data.hasOwnProperty("overviewCloseOnFocusLoss"))
+                        root.overviewCloseOnFocusLoss = data.overviewCloseOnFocusLoss;
+                    if (data.hasOwnProperty("workspaceCount"))
+                        root.workspaceCount = data.workspaceCount;
 
                     if (data.hasOwnProperty("presets"))
                         root.presets = data.presets;

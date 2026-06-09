@@ -140,47 +140,37 @@ Item {
             var x = lineWidth / 2;
             var y = lineWidth / 2;
             
-            var segments = [
+            var totalLength = 2*(w - 2*r) + 2*(h - 2*r) + 2*Math.PI*r;
+            var halfLen = totalLength / 2;
+            var d = halfLen * root.activeHoldProgress;
+            
+            var leftSegments = [
+                { len: (w - 2*r)/2, draw: function(ctx, p) { ctx.lineTo(x + w/2 - p, y); } },
+                { len: Math.PI/2 * r, draw: function(ctx, p) {
+                    var angle = -Math.PI/2 - (p / (Math.PI/2 * r)) * (Math.PI/2);
+                    ctx.arc(x + r, y + r, r, -Math.PI/2, angle, true);
+                }},
+                { len: h - 2*r, draw: function(ctx, p) { ctx.lineTo(x, y + r + p); } },
+                { len: Math.PI/2 * r, draw: function(ctx, p) {
+                    var angle = Math.PI - (p / (Math.PI/2 * r)) * (Math.PI/2);
+                    ctx.arc(x + r, y + h - r, r, Math.PI, angle, true);
+                }},
+                { len: (w - 2*r)/2, draw: function(ctx, p) { ctx.lineTo(x + r + p, y + h); } }
+            ];
+            
+            var rightSegments = [
                 { len: (w - 2*r)/2, draw: function(ctx, p) { ctx.lineTo(x + w/2 + p, y); } },
-                { len: Math.PI/2 * r, draw: function(ctx, p) { 
+                { len: Math.PI/2 * r, draw: function(ctx, p) {
                     var angle = -Math.PI/2 + (p / (Math.PI/2 * r)) * (Math.PI/2);
                     ctx.arc(x + w - r, y + r, r, -Math.PI/2, angle, false);
                 }},
                 { len: h - 2*r, draw: function(ctx, p) { ctx.lineTo(x + w, y + r + p); } },
-                { len: Math.PI/2 * r, draw: function(ctx, p) { 
+                { len: Math.PI/2 * r, draw: function(ctx, p) {
                     var angle = 0 + (p / (Math.PI/2 * r)) * (Math.PI/2);
                     ctx.arc(x + w - r, y + h - r, r, 0, angle, false);
                 }},
-                { len: w - 2*r, draw: function(ctx, p) { ctx.lineTo(x + w - r - p, y + h); } },
-                { len: Math.PI/2 * r, draw: function(ctx, p) { 
-                    var angle = Math.PI/2 + (p / (Math.PI/2 * r)) * (Math.PI/2);
-                    ctx.arc(x + r, y + h - r, r, Math.PI/2, angle, false);
-                }},
-                { len: h - 2*r, draw: function(ctx, p) { ctx.lineTo(x, y + h - r - p); } },
-                { len: Math.PI/2 * r, draw: function(ctx, p) { 
-                    var angle = Math.PI + (p / (Math.PI/2 * r)) * (Math.PI/2);
-                    ctx.arc(x + r, y + r, r, Math.PI, angle, false);
-                }},
-                { len: (w - 2*r)/2, draw: function(ctx, p) { ctx.lineTo(x + r + p, y); } }
+                { len: (w - 2*r)/2, draw: function(ctx, p) { ctx.lineTo(x + w - r - p, y + h); } }
             ];
-            
-            var totalLength = 2*(w - 2*r) + 2*(h - 2*r) + 2*Math.PI*r;
-            var d = totalLength * root.activeHoldProgress;
-            
-            ctx.beginPath();
-            ctx.moveTo(x + w/2, y); // Start at top center
-            
-            for (var i = 0; i < segments.length; i++) {
-                if (d <= 0) break;
-                var seg = segments[i];
-                if (d >= seg.len) {
-                    seg.draw(ctx, seg.len);
-                    d -= seg.len;
-                } else {
-                    seg.draw(ctx, d);
-                    d = 0;
-                }
-            }
             
             var grad = ctx.createLinearGradient(0, 0, width, height);
             grad.addColorStop(0.0, root.activeActionColor);
@@ -189,6 +179,29 @@ Item {
             ctx.strokeStyle = grad;
             ctx.lineWidth = lineWidth;
             ctx.lineCap = "round";
+            
+            function drawPath(segments, length) {
+                var remaining = length;
+                for (var i = 0; i < segments.length; i++) {
+                    if (remaining <= 0) break;
+                    var seg = segments[i];
+                    if (remaining >= seg.len) {
+                        seg.draw(ctx, seg.len);
+                        remaining -= seg.len;
+                    } else {
+                        seg.draw(ctx, remaining);
+                        remaining = 0;
+                    }
+                }
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(x + w/2, y);
+            drawPath(leftSegments, d);
+            
+            ctx.moveTo(x + w/2, y);
+            drawPath(rightSegments, d);
+            
             ctx.stroke();
         }
         

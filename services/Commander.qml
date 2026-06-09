@@ -90,6 +90,11 @@ Item {
     }
 
     IpcHandler {
+        function toggle() { IslandService.toggleOverview(); }
+        target: "overview"
+    }
+
+    IpcHandler {
         function toggle() { IslandService.toggleNexusPopout(); }
         target: "nexus"
     }

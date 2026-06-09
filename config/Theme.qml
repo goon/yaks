@@ -143,6 +143,13 @@ QtObject {
             readonly property int pillHeight: 15
         }
 
+        readonly property QtObject
+        overview: QtObject {
+            readonly property int spacing: 8
+            readonly property int windowRadius: 12
+            readonly property int topMargin: 100
+        }
+
     }
 
     /*

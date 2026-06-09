@@ -124,6 +124,7 @@ Item {
         "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
         "nexus":         { source: "../modules/nexus/Nexus.qml" },
+        "overview":      { source: "../modules/overview/Overview.qml", width: 800, height: 400 },
         "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
         "notificationtoast": { source: "../modules/toasts/NotificationToast.qml" }
     })

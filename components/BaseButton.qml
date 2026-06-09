@@ -209,7 +209,7 @@ Item {
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
-                enabled: root.interactive
+                enabled: root.interactive && root.actionInteractive
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
                     if (root.buttonMode === "toggle") {
