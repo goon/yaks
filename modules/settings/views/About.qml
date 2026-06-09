@@ -160,118 +160,13 @@ SettingsPage {
                     spacing: Theme.geometry.spacing.small
 
                     // OS
-                    BaseBlock {
-                        id: osBlock
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        paddingVertical: 8
-                        paddingHorizontal: Theme.geometry.spacing.dynamicPadding
-                        backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                        clickable: true
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            spacing: Theme.geometry.spacing.medium
-
-                            BaseIcon {
-                                icon: "cloud"
-                                size: Theme.dimensions.iconBase
-                                color: osBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                            }
-
-                            BaseText {
-                                text: "OS"
-                                color: osBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.medium
-                            }
-
-                            Item { Layout.fillWidth: true }
-
-                            BaseText {
-                                text: SystemInfo.osName || "Unknown"
-                                color: osBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.base
-                                horizontalAlignment: Text.AlignRight
-                            }
-                        }
-                    }
+                    InfoBlock { icon: "cloud"; label: "OS"; value: SystemInfo.osName || "Unknown" }
 
                     // Kernel
-                    BaseBlock {
-                        id: kernelBlock
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        paddingVertical: 8
-                        paddingHorizontal: Theme.geometry.spacing.dynamicPadding
-                        backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                        clickable: true
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            spacing: Theme.geometry.spacing.medium
-
-                            BaseIcon {
-                                icon: "terminal"
-                                size: Theme.dimensions.iconBase
-                                color: kernelBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                            }
-
-                            BaseText {
-                                text: "Kernel"
-                                color: kernelBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.medium
-                            }
-
-                            Item { Layout.fillWidth: true }
-
-                            BaseText {
-                                text: (SystemInfo.kernelVersion ? SystemInfo.kernelVersion.split('-')[0] : "Unknown")
-                                color: kernelBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.base
-                                horizontalAlignment: Text.AlignRight
-                            }
-                        }
-                    }
+                    InfoBlock { icon: "terminal"; label: "Kernel"; value: SystemInfo.kernelVersion ? SystemInfo.kernelVersion.split('-')[0] : "Unknown" }
 
                     // Uptime
-                    BaseBlock {
-                        id: uptimeBlock
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        paddingVertical: 8
-                        paddingHorizontal: Theme.geometry.spacing.dynamicPadding
-                        backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                        clickable: true
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            spacing: Theme.geometry.spacing.medium
-
-                            BaseIcon {
-                                icon: "schedule"
-                                size: Theme.dimensions.iconBase
-                                color: uptimeBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                            }
-
-                            BaseText {
-                                text: "Uptime"
-                                color: uptimeBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.medium
-                            }
-
-                            Item { Layout.fillWidth: true }
-
-                            BaseText {
-                                text: SystemInfo.uptime
-                                color: uptimeBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.base
-                                horizontalAlignment: Text.AlignRight
-                            }
-                        }
-                    }
+                    InfoBlock { icon: "schedule"; label: "Uptime"; value: SystemInfo.uptime }
                 }
 
                 // NixOS Logo Block
@@ -310,191 +205,67 @@ SettingsPage {
             spacing: Theme.geometry.spacing.small
 
                 // Compositor
-                BaseBlock {
-                    id: compositorBlock
-                    Layout.fillWidth: true
-                    padding: Theme.geometry.spacing.dynamicPadding
-                    backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                    clickable: true
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: Theme.geometry.spacing.medium
-
-                        BaseIcon {
-                            icon: "layers"
-                            size: Theme.dimensions.iconBase
-                            color: compositorBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                        }
-
-                        BaseText {
-                            text: "Compositor"
-                            color: compositorBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.medium
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        BaseText {
-                            text: (SystemInfo.de !== "N/A" ? SystemInfo.de : SystemInfo.wm) || "Unknown"
-                            color: compositorBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.base
-                            horizontalAlignment: Text.AlignRight
-                        }
-                    }
-                }
+                InfoBlock { icon: "layers"; label: "Compositor"; value: (SystemInfo.de !== "N/A" ? SystemInfo.de : SystemInfo.wm) || "Unknown" }
 
                 // Memory
-                BaseBlock {
-                    id: memBlock
-                    Layout.fillWidth: true
-                    padding: Theme.geometry.spacing.dynamicPadding
-                    backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                    clickable: true
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: Theme.geometry.spacing.medium
-
-                        BaseIcon {
-                            icon: "memory"
-                            size: Theme.dimensions.iconBase
-                            color: memBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                        }
-
-                        BaseText {
-                            text: "Memory"
-                            color: memBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.medium
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        BaseText {
-                            text: Stats.totalRam || "..."
-                            color: memBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.base
-                            horizontalAlignment: Text.AlignRight
-                        }
-                    }
-                }
+                InfoBlock { icon: "memory"; label: "Memory"; value: Stats.totalRam || "..." }
 
                 // CPU
-                BaseBlock {
-                    id: cpuBlock
-                    Layout.fillWidth: true
-                    padding: Theme.geometry.spacing.dynamicPadding
-                    backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                    clickable: true
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: Theme.geometry.spacing.medium
-
-                        BaseIcon {
-                            icon: "developer_board"
-                            size: Theme.dimensions.iconBase
-                            color: cpuBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                        }
-
-                        BaseText {
-                            text: "CPU"
-                            color: cpuBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.medium
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        BaseText {
-                            text: SystemInfo.cpuModel || "..."
-                            color: cpuBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.base
-                            horizontalAlignment: Text.AlignRight
-                            Layout.maximumWidth: 350
-                            elide: Text.ElideLeft
-                        }
-                    }
-                }
+                InfoBlock { icon: "developer_board"; label: "CPU"; value: SystemInfo.cpuModel || "..." }
 
                 // GPU
-                BaseBlock {
-                    id: gpuBlock
-                    Layout.fillWidth: true
-                    padding: Theme.geometry.spacing.dynamicPadding
-                    backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                    clickable: true
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: Theme.geometry.spacing.medium
-
-                        BaseIcon {
-                            icon: "videogame_asset"
-                            size: Theme.dimensions.iconBase
-                            color: gpuBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                        }
-
-                        BaseText {
-                            text: "GPU"
-                            color: gpuBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.medium
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        BaseText {
-                            text: SystemInfo.gpuModel || "..."
-                            color: gpuBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                            pixelSize: Theme.typography.size.base
-                            horizontalAlignment: Text.AlignRight
-                            Layout.maximumWidth: 350
-                            elide: Text.ElideLeft
-                        }
-                    }
-                }
+                InfoBlock { icon: "videogame_asset"; label: "GPU"; value: SystemInfo.gpuModel || "..." }
 
                 // Displays
                 Repeater {
                     model: Quickshell.screens
 
-                    BaseBlock {
-                        id: displayBlock
-                        Layout.fillWidth: true
-                        padding: Theme.geometry.spacing.dynamicPadding
-                        backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
-                        clickable: true
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: Theme.geometry.spacing.medium
-
-                            BaseIcon {
-                                icon: "desktop_windows"
-                                size: Theme.dimensions.iconBase
-                                color: displayBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
-                            }
-
-                            BaseText {
-                                text: (modelData.name || "Display")
-                                color: displayBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.medium
-                            }
-
-                            Item { Layout.fillWidth: true }
-
-                            BaseText {
-                                text: modelData.width + "x" + modelData.height
-                                color: displayBlock.containsMouse ? Theme.colors.textLighter : Theme.colors.text
-                                pixelSize: Theme.typography.size.base
-                                horizontalAlignment: Text.AlignRight
-                            }
-                        }
-                    }
+                    InfoBlock { icon: "desktop_windows"; label: modelData.name || "Display"; value: modelData.width + "x" + modelData.height }
                 }
         }
 
     }
 
+    component InfoBlock : BaseBlock {
+        id: blockRoot
+        property string icon: ""
+        property string label: ""
+        property string value: ""
+
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        paddingVertical: 8
+        paddingHorizontal: Theme.geometry.spacing.dynamicPadding
+        backgroundColor: Theme.alpha(Theme.colors.appBackground, 0.5)
+        clickable: true
+
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: Theme.geometry.spacing.medium
+
+            BaseIcon {
+                icon: blockRoot.icon
+                size: Theme.dimensions.iconBase
+                color: blockRoot.containsMouse ? Theme.colors.textLighter : Theme.colors.primary
+            }
+
+            BaseText {
+                text: blockRoot.label
+                color: blockRoot.containsMouse ? Theme.colors.textLighter : Theme.colors.text
+                pixelSize: Theme.typography.size.medium
+            }
+
+            Item { Layout.fillWidth: true }
+
+            BaseText {
+                text: blockRoot.value
+                color: blockRoot.containsMouse ? Theme.colors.textLighter : Theme.colors.text
+                pixelSize: Theme.typography.size.base
+                horizontalAlignment: Text.AlignRight
+                Layout.maximumWidth: 350
+                elide: Text.ElideLeft
+            }
+        }
+    }
 }

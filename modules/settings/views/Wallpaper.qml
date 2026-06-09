@@ -94,27 +94,17 @@ SettingsPage {
             enabled: Preferences.wallpaperParallaxEnabled
         }
 
-        RowLayout {
+        BaseSlider {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.large
+            from: 5
+            to: 100
+            stepSize: 1
+            value: Preferences.wallpaperParallaxStrength
+            externalLabel: true
+            externalSuffix: "px"
             opacity: enabled ? 1.0 : 0.5
             enabled: Preferences.wallpaperParallaxEnabled
-
-            BaseSlider {
-                id: parallaxSlider
-                Layout.fillWidth: true
-                from: 5
-                to: 100
-                stepSize: 1
-                value: Preferences.wallpaperParallaxStrength
-                onMoved: Preferences.wallpaperParallaxStrength = value
-            }
-
-            BaseText {
-                text: Math.round(parallaxSlider.value) + "px"
-                Layout.preferredWidth: 40
-                horizontalAlignment: Text.AlignRight
-            }
+            onMoved: Preferences.wallpaperParallaxStrength = value
         }
 
         BaseSeparator {

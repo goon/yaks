@@ -502,11 +502,14 @@ BaseBlock {
             spacing: 24
 
             BaseButton {
+            buttonMode: "action"
                 id: prevBtn
-                size: Theme.dimensions.iconBase
-                hoverGradient: true
                 icon: "skip_previous"
-                enabled: Media.canGoPrevious
+                interactive: Media.canGoPrevious
+                opacity: interactive ? 1.0 : 0.5
+                actionColor: Theme.colors.primary
+                inactiveBackgroundColor: Theme.colors.background
+                inactiveBackgroundOpacity: 0.5
                 onClicked: {
                     prevAnim.restart()
                     Media.previous()
@@ -705,11 +708,14 @@ BaseBlock {
             }
 
             BaseButton {
+            buttonMode: "action"
                 id: nextBtn
-                size: Theme.dimensions.iconBase
-                hoverGradient: true
                 icon: "skip_next"
-                enabled: Media.canGoNext
+                interactive: Media.canGoNext
+                opacity: interactive ? 1.0 : 0.5
+                actionColor: Theme.colors.primary
+                inactiveBackgroundColor: Theme.colors.background
+                inactiveBackgroundOpacity: 0.5
                 onClicked: {
                     nextAnim.restart()
                     Media.next()

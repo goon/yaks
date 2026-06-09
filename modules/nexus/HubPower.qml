@@ -16,7 +16,8 @@ Item {
         return Theme.colors.primary;
     }
 
-    component PowerButton: BaseButtonHold {
+    component PowerButton: BaseButton {
+        buttonMode: "hold"
         id: btn
 
         Layout.fillWidth: true
@@ -33,108 +34,20 @@ Item {
         property string actionLabel: ""
         property color actionColor: Theme.colors.text
 
-        property real breathScale: 1.0
-        SequentialAnimation {
-            loops: Animation.Infinite
-            running: btn.containsMouse
-            onStopped: btn.breathScale = 1.0
 
-            NumberAnimation {
-                target: btn; property: "breathScale"
-                to: 1.1; duration: 900; easing.type: Easing.InOutSine
-            }
-            NumberAnimation {
-                target: btn; property: "breathScale"
-                to: 1.0; duration: 900; easing.type: Easing.InOutSine
-            }
-        }
-
-        property real bubbleAlpha: 0.18
-        SequentialAnimation {
-            loops: Animation.Infinite
-            running: btn.containsMouse
-            onStopped: btn.bubbleAlpha = 0.18
-
-            NumberAnimation {
-                target: btn; property: "bubbleAlpha"
-                to: 0.38; duration: 800; easing.type: Easing.InOutSine
-            }
-            NumberAnimation {
-                target: btn; property: "bubbleAlpha"
-                to: 0.18; duration: 800; easing.type: Easing.InOutSine
-            }
-        }
 
         ColumnLayout {
             anchors.centerIn: parent
             spacing: Theme.geometry.spacing.small
 
-            Item {
+            BaseButton {
+            buttonMode: "action"
                 Layout.alignment: Qt.AlignHCenter
-                width: 48
-                height: 48
-
-                Canvas {
-                    id: ringCanvas
-                    anchors.fill: parent
-                    opacity: btn.containsMouse ? 1.0 : 0.0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: Theme.animations.fast }
-                    }
-
-                    property int cornerRadius: Theme.geometry.radius
-                    onCornerRadiusChanged: requestPaint()
-
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.clearRect(0, 0, width, height);
-                        var lw = 1.5;
-                        var bw = 36, bh = 36;
-                        var bx = (width - bw) / 2;
-                        var by = (height - bh) / 2;
-                        var r = Math.min(Theme.geometry.radius, bw / 2, bh / 2);
-                        ctx.beginPath();
-                        ctx.moveTo(bx + r, by);
-                        ctx.lineTo(bx + bw - r, by);
-                        ctx.arcTo(bx + bw, by, bx + bw, by + r, r);
-                        ctx.lineTo(bx + bw, by + bh - r);
-                        ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
-                        ctx.lineTo(bx + r, by + bh);
-                        ctx.arcTo(bx, by + bh, bx, by + bh - r, r);
-                        ctx.lineTo(bx, by + r);
-                        ctx.arcTo(bx, by, bx + r, by, r);
-                        ctx.closePath();
-                        var grad = ctx.createLinearGradient(0, 0, width, height);
-                        grad.addColorStop(0.0, btn.actionColor);
-                        grad.addColorStop(1.0, Theme.colors.secondary);
-                        ctx.strokeStyle = grad;
-                        ctx.lineWidth = lw;
-                        ctx.stroke();
-                    }
-
-                    Connections {
-                        target: btn
-                        function onContainsMouseChanged() { ringCanvas.requestPaint(); }
-                    }
-                }
-
-                Rectangle {
-                    width: 36; height: 36
-                    radius: Theme.geometry.radius
-                    anchors.centerIn: parent
-                    scale: btn.breathScale
-                    color: Theme.alpha(btn.actionColor, btn.bubbleAlpha)
-
-                    Behavior on scale { NumberAnimation { duration: Theme.animations.fast } }
-
-                    BaseIcon {
-                        anchors.centerIn: parent
-                        icon: btn.actionIcon
-                        size: Theme.dimensions.iconBase
-                        color: btn.actionColor
-                    }
-                }
+                icon: btn.actionIcon
+                actionColor: btn.actionColor
+                inactiveColor: btn.actionColor
+                hovered: btn.containsMouse
+                interactive: false
             }
         }
     }

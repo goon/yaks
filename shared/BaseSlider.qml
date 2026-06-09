@@ -36,6 +36,11 @@ Item {
     property color suffixColor: Theme.colors.muted
     property int iconSize: Theme.dimensions.iconMedium
     property int fontSize: 11
+    
+    // External Label
+    property bool externalLabel: false
+    property string externalSuffix: ""
+    property bool externalPercentage: false
 
     // Internal computed values
     property real _animatedValue: value
@@ -45,7 +50,7 @@ Item {
     }
     
     readonly property real normalizedValue: (_animatedValue - from) / (to - from)
-    readonly property real fillSize: root.orientation === Qt.Horizontal ? root.width * root.normalizedValue : root.height * root.normalizedValue
+    readonly property real fillSize: root.orientation === Qt.Horizontal ? track.width * root.normalizedValue : track.height * root.normalizedValue
     readonly property bool bigMode: trackHeight >= 20
 
     // Coolness Controls
@@ -74,9 +79,19 @@ Item {
     Rectangle {
         id: track
 
-        anchors.centerIn: parent
-        width: root.orientation === Qt.Horizontal ? parent.width : root.trackHeight
-        height: root.orientation === Qt.Horizontal ? root.trackHeight : parent.height
+        anchors.verticalCenter: root.orientation === Qt.Horizontal ? parent.verticalCenter : undefined
+        anchors.horizontalCenter: root.orientation === Qt.Vertical ? parent.horizontalCenter : undefined
+
+        anchors.left: root.orientation === Qt.Horizontal ? parent.left : undefined
+        anchors.right: root.orientation === Qt.Horizontal ? (root.externalLabel ? externalLabelText.left : parent.right) : undefined
+        anchors.rightMargin: root.externalLabel ? Theme.geometry.spacing.large : 0
+        
+        anchors.top: root.orientation === Qt.Vertical ? parent.top : undefined
+        anchors.bottom: root.orientation === Qt.Vertical ? parent.bottom : undefined
+
+        width: root.orientation === Qt.Horizontal ? undefined : root.trackHeight
+        height: root.orientation === Qt.Horizontal ? root.trackHeight : undefined
+        
         radius: root.bigMode ? Theme.geometry.radius : Math.max(2, Theme.geometry.radius * 0.5)
         color: trackColor
         border.width: 0
@@ -152,10 +167,12 @@ Item {
         radius: root.bigMode ? Theme.geometry.radius : Math.max(2, Theme.geometry.radius * 0.5)
         
         // Synchronize movement: knob and fill edge move together for big sliders, center for normal ones
-        x: root.bigMode ? (root.orientation === Qt.Horizontal ? (4 + (root.width - width - 8) * root.normalizedValue) : (root.width - width) / 2)
-                        : (root.orientation === Qt.Horizontal ? Math.max(0, Math.min(root.width - width, root.fillSize - width / 2)) : (root.width - width) / 2)
-        y: root.bigMode ? (root.orientation === Qt.Vertical ? (4 + (root.height - height - 8) * (1.0 - root.normalizedValue)) : (root.height - height) / 2)
-                        : (root.orientation === Qt.Vertical ? Math.max(0, Math.min(root.height - height, root.fillSize - height / 2)) : (root.height - height) / 2)
+        x: root.orientation === Qt.Horizontal 
+             ? (root.bigMode ? (4 + (track.width - width - 8) * root.normalizedValue) : Math.max(0, Math.min(track.width - width, root.fillSize - width / 2)))
+             : (root.width - width) / 2
+        y: root.orientation === Qt.Vertical
+             ? (root.bigMode ? (4 + (track.height - height - 8) * (1.0 - root.normalizedValue)) : Math.max(0, Math.min(track.height - height, root.fillSize - height / 2)))
+             : (root.height - height) / 2
         
         color: root.bigMode ? Theme.alpha(handleColor, 0.95) : handleColor
         border.color: Theme.alpha(handleBorderColor, (root.isActive && root.bigMode ? 0.3 : 0.15))
@@ -264,6 +281,17 @@ Item {
         }
     }
 
+    // External Text Label
+    BaseText {
+        id: externalLabelText
+        visible: root.externalLabel && root.orientation === Qt.Horizontal
+        text: root.externalPercentage ? Math.round(root.value * 100) + root.externalSuffix : Math.round(root.value) + root.externalSuffix
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        width: 40
+        horizontalAlignment: Text.AlignRight
+    }
+
     // Mouse area for interaction
     MouseArea {
         id: mouseArea
@@ -282,7 +310,8 @@ Item {
             root.valueChangedByUser();
         }
 
-        anchors.fill: parent
+        anchors.fill: track
+        anchors.margins: -root.handleSize / 2
         enabled: root.interactive
         hoverEnabled: true
         preventStealing: pressed

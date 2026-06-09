@@ -35,9 +35,10 @@ Commander services/Commander.qml
 
 # Shared Base Components
 BaseBackground shared/BaseBackground.qml
+BaseActiveBackground shared/BaseActiveBackground.qml
+BaseHeader shared/BaseHeader.qml
 BaseBlock shared/BaseBlock.qml
 BaseButton shared/BaseButton.qml
-BaseButtonHold shared/BaseButtonHold.qml
 BaseIcon shared/BaseIcon.qml
 BaseInput shared/BaseInput.qml
 Island modules/Island.qml

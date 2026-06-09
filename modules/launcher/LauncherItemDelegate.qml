@@ -45,58 +45,13 @@ Item {
         radius: Theme.geometry.radius
         color: Theme.colors.transparent
         
-        // Premium Selection Gradient Border
-        Item {
+        BaseActiveBackground {
             anchors.fill: parent
-            opacity: root.selected ? 1.0 : 0
-            visible: opacity > 0
-            
-            Behavior on opacity { BaseAnimation {} }
-
-            // The Gradient "Border"
-            Rectangle {
-                anchors.fill: parent
-                radius: parent.parent.radius
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0; color: Theme.colors.primary }
-                    GradientStop { position: 1; color: Theme.colors.secondary }
-                }
-            }
-
-            // Inner "Cutout" to create the border effect
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1.5 // Slightly thicker for visibility
-                radius: parent.parent.radius - 1.5
-                color: Theme.colors.surface
-                
-                // Add the selection tint overlay inside the cutout
-                Rectangle {
-                    anchors.fill: parent
-                    radius: parent.radius
-                    color: Qt.alpha(Theme.colors.primary, 0.08)
-                    visible: root.selected
-                }
-            }
-        }
-
-        // Inner highlight for "glass" look
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 1
-            radius: parent.radius - 1
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: Theme.alpha(Theme.colors.text, 0.05) }
-                GradientStop { position: 1.0; color: Theme.colors.transparent }
-            }
-            visible: root.selected
-        }
-
-        Behavior on color {
-            BaseAnimation {
-                duration: Theme.animations.fast
-            }
+            radius: parent.radius
+            baseColor: Theme.colors.surface
+            hovered: mouseArea.containsMouse
+            premiumActive: root.selected
+            hoverEnabled: false // Hover logic in Launcher is handled externally via 'selected'
         }
 
         RowLayout {

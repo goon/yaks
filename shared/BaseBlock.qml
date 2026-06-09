@@ -16,12 +16,7 @@ Rectangle {
     property color borderColor: Theme.colors.background
     property int borderWidth: 0
     property int blockRadius: Theme.geometry.radius
-    // Header
-    property string title: ""
-    property string icon: ""
-    property color iconColor: Theme.colors.primary
-    property Component header: null
-    property Component headerItem: null
+    // Removed header properties
     // Layout
     property real padding: Theme.geometry.spacing.dynamicPadding
     property real paddingHorizontal: padding
@@ -81,75 +76,16 @@ Rectangle {
     }
 
     // State Layer
-    Rectangle {
+    BaseActiveBackground {
         id: stateLayer
-
         anchors.fill: parent
         radius: parent.radius
-        color: "transparent"
-
-        // Premium Selection Gradient Border
-        Item {
-            anchors.fill: parent
-            opacity: (root.premiumActive || (root.premiumHover && mouseArea.containsMouse)) ? 1.0 : 0.0
-            visible: opacity > 0.0 || root.premiumActive || (root.premiumHover && mouseArea.containsMouse)
-            
-            Behavior on opacity {
-                BaseAnimation {
-                    speed: "fast"
-                }
-            }
-            
-            // The Gradient "Border"
-            Rectangle {
-                anchors.fill: parent
-                radius: parent.parent.radius
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0; color: Theme.colors.primary }
-                    GradientStop { position: 1; color: Theme.colors.secondary }
-                }
-            }
-
-            // Inner "Cutout" to create the border effect
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1.5
-                radius: parent.parent.radius - 1.5
-                color: root.backgroundColor
-                
-                // Add the selection tint overlay inside the cutout
-                Rectangle {
-                    anchors.fill: parent
-                    radius: parent.radius
-                    color: Qt.alpha(Theme.colors.primary, 0.08)
-                }
-            }
-        }
-
-        // Standard Hover Layer (fallback)
-        Rectangle {
-            anchors.fill: parent
-            radius: parent.radius
-            color: {
-                if (!root.hoverEnabled || root.premiumHover || root.premiumActive)
-                    return Theme.colors.transparent;
-
-                if (root.hoverColor !== Theme.colors.transparent && mouseArea.containsMouse)
-                    return root.hoverColor;
-
-                if (mouseArea.containsMouse)
-                    return Theme.colors.background;
-
-                return Theme.colors.transparent;
-            }
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: Theme.animations.fast
-                }
-            }
-        }
+        baseColor: root.backgroundColor
+        hoverColor: root.hoverColor
+        hovered: mouseArea.containsMouse
+        hoverEnabled: root.hoverEnabled
+        premiumActive: root.premiumActive
+        premiumHover: root.premiumHover
     }
 
     MouseArea {
@@ -184,41 +120,7 @@ Rectangle {
         anchors.bottomMargin: root.paddingVertical
         spacing: root.spacing
 
-        // Built-in Header
-        RowLayout {
-            visible: root.title !== "" || root.icon !== ""
-            spacing: Theme.geometry.spacing.small
-            Layout.fillWidth: true
-
-            BaseIcon {
-                visible: root.icon !== ""
-                icon: root.icon
-                color: root.iconColor
-                size: Theme.geometry.spacing.medium + 2
-            }
-
-            BaseText {
-                text: root.title
-                weight: Theme.typography.weights.bold
-                pixelSize: Theme.typography.size.large
-                Layout.fillWidth: true
-            }
-
-            Loader {
-                id: customHeaderItemLoader
-                visible: root.headerItem !== null
-                sourceComponent: root.headerItem
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            }
-
-        }
-
-        // Custom Header Component
-        Loader {
-            visible: root.header !== null
-            sourceComponent: root.header
-            Layout.fillWidth: true
-        }
+        // Removed built-in header layout
 
         ColumnLayout {
             id: contentContainer

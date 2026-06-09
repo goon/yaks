@@ -42,7 +42,6 @@ Item {
                 gradient: true
                 selected: !Volume.muted
                 normalColor: expandedSide === "output" ? Theme.alpha(Theme.colors.surface, 0.6) : Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
-                hoverColor: Theme.colors.background
                 onClicked: expandedSide = (expandedSide === "output") ? "" : "output"
 
                 RowLayout {
@@ -51,83 +50,14 @@ Item {
                     anchors.rightMargin: Theme.geometry.spacing.large
                     spacing: Theme.geometry.spacing.medium
 
-                    Item {
-                        width: 48
-                        height: 48
-                        property bool active: !Volume.muted
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Volume.toggleMute()
-                        }
-
-                        property real breathScale: 1.0
-                        SequentialAnimation {
-                            loops: Animation.Infinite
-                            running: parent.active
-                            paused: !parent.active
-
-                            NumberAnimation { target: parent; property: "breathScale"; to: 1.08; duration: 1200; easing.type: Easing.InOutSine }
-                            NumberAnimation { target: parent; property: "breathScale"; to: 1.0;  duration: 1200; easing.type: Easing.InOutSine }
-                        }
-
-                        Canvas {
-                            id: outRingCanvas
-                            anchors.centerIn: parent
-                            width: 48
-                            height: 48
-                            visible: parent.active
-
-                            property int cornerRadius: Theme.geometry.radius
-                            onCornerRadiusChanged: requestPaint()
-
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.clearRect(0, 0, width, height);
-                                var lw = 1.5;
-                                var bw = 36, bh = 36;
-                                var bx = (width - bw) / 2;
-                                var by = (height - bh) / 2;
-                                var r = Math.min(Theme.geometry.radius, bw / 2, bh / 2);
-                                ctx.beginPath();
-                                ctx.moveTo(bx + r, by);
-                                ctx.lineTo(bx + bw - r, by);
-                                ctx.arcTo(bx + bw, by, bx + bw, by + r, r);
-                                ctx.lineTo(bx + bw, by + bh - r);
-                                ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
-                                ctx.lineTo(bx + r, by + bh);
-                                ctx.arcTo(bx, by + bh, bx, by + bh - r, r);
-                                ctx.lineTo(bx, by + r);
-                                ctx.arcTo(bx, by, bx + r, by, r);
-                                ctx.closePath();
-                                var grad = ctx.createLinearGradient(0, 0, width, height);
-                                grad.addColorStop(0.0, Theme.colors.primary);
-                                grad.addColorStop(1.0, Theme.colors.secondary);
-                                ctx.strokeStyle = grad;
-                                ctx.lineWidth = lw;
-                                ctx.stroke();
-                            }
-
-                            onWidthChanged: requestPaint()
-                            onHeightChanged: requestPaint()
-                        }
-
-                        Rectangle {
-                            width: 36
-                            height: 36
-                            radius: Theme.geometry.radius
-                            anchors.centerIn: parent
-                            scale: parent.breathScale
-                            color: parent.active ? Theme.alpha(Theme.colors.primary, 0.15) : Theme.alpha(Theme.colors.text, 0.1)
-                            
-                            BaseIcon {
-                                anchors.centerIn: parent
-                                icon: Volume.volumeIcon
-                                size: Theme.dimensions.iconBase
-                                color: parent.parent.active ? Theme.colors.primary : Theme.colors.text
-                            }
-                        }
+                    BaseButton {
+            buttonMode: "action"
+                        icon: Volume.volumeIcon
+                        active: !Volume.muted
+                        inactiveColor: Theme.colors.text
+                        inactiveBackgroundColor: Theme.colors.text
+                        inactiveBackgroundOpacity: 0.1
+                        onClicked: Volume.toggleMute()
                     }
 
                     ColumnLayout {
@@ -177,7 +107,6 @@ Item {
                 gradient: true
                 selected: !Volume.inputMuted
                 normalColor: expandedSide === "input" ? Theme.alpha(Theme.colors.surface, 0.6) : Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
-                hoverColor: Theme.colors.background
                 onClicked: expandedSide = (expandedSide === "input") ? "" : "input"
 
                 RowLayout {
@@ -216,83 +145,14 @@ Item {
                         }
                     }
 
-                    Item {
-                        width: 48
-                        height: 48
-                        property bool active: !Volume.inputMuted
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Volume.toggleInputMute()
-                        }
-
-                        property real breathScale: 1.0
-                        SequentialAnimation {
-                            loops: Animation.Infinite
-                            running: parent.active
-                            paused: !parent.active
-
-                            NumberAnimation { target: parent; property: "breathScale"; to: 1.08; duration: 1200; easing.type: Easing.InOutSine }
-                            NumberAnimation { target: parent; property: "breathScale"; to: 1.0;  duration: 1200; easing.type: Easing.InOutSine }
-                        }
-
-                        Canvas {
-                            id: inRingCanvas
-                            anchors.centerIn: parent
-                            width: 48
-                            height: 48
-                            visible: parent.active
-
-                            property int cornerRadius: Theme.geometry.radius
-                            onCornerRadiusChanged: requestPaint()
-
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.clearRect(0, 0, width, height);
-                                var lw = 1.5;
-                                var bw = 36, bh = 36;
-                                var bx = (width - bw) / 2;
-                                var by = (height - bh) / 2;
-                                var r = Math.min(Theme.geometry.radius, bw / 2, bh / 2);
-                                ctx.beginPath();
-                                ctx.moveTo(bx + r, by);
-                                ctx.lineTo(bx + bw - r, by);
-                                ctx.arcTo(bx + bw, by, bx + bw, by + r, r);
-                                ctx.lineTo(bx + bw, by + bh - r);
-                                ctx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
-                                ctx.lineTo(bx + r, by + bh);
-                                ctx.arcTo(bx, by + bh, bx, by + bh - r, r);
-                                ctx.lineTo(bx, by + r);
-                                ctx.arcTo(bx, by, bx + r, by, r);
-                                ctx.closePath();
-                                var grad = ctx.createLinearGradient(0, 0, width, height);
-                                grad.addColorStop(0.0, Theme.colors.primary);
-                                grad.addColorStop(1.0, Theme.colors.secondary);
-                                ctx.strokeStyle = grad;
-                                ctx.lineWidth = lw;
-                                ctx.stroke();
-                            }
-
-                            onWidthChanged: requestPaint()
-                            onHeightChanged: requestPaint()
-                        }
-
-                        Rectangle {
-                            width: 36
-                            height: 36
-                            radius: Theme.geometry.radius
-                            anchors.centerIn: parent
-                            scale: parent.breathScale
-                            color: parent.active ? Theme.alpha(Theme.colors.primary, 0.15) : Theme.alpha(Theme.colors.text, 0.1)
-                            
-                            BaseIcon {
-                                anchors.centerIn: parent
-                                icon: Volume.inputMuted ? "mic_off" : "mic"
-                                size: Theme.dimensions.iconBase
-                                color: parent.parent.active ? Theme.colors.primary : Theme.colors.text
-                            }
-                        }
+                    BaseButton {
+            buttonMode: "action"
+                        icon: Volume.inputMuted ? "mic_off" : "mic"
+                        active: !Volume.inputMuted
+                        inactiveColor: Theme.colors.text
+                        inactiveBackgroundColor: Theme.colors.text
+                        inactiveBackgroundOpacity: 0.1
+                        onClicked: Volume.toggleInputMute()
                     }
                 }
             }

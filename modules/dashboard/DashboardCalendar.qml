@@ -263,46 +263,12 @@ BaseBlock {
                                 }
                             }
 
-                            // Today/Selection Highlight (Matches LauncherItemDelegate)
-                            Item {
+                            BaseActiveBackground {
                                 anchors.fill: parent
-                                visible: modelData.isToday
-
-                                // 1. Premium Selection Gradient Border
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: Theme.geometry.radius
-                                    gradient: Gradient {
-                                        orientation: Gradient.Horizontal
-                                        GradientStop { position: 0; color: Theme.colors.primary }
-                                        GradientStop { position: 1; color: Theme.colors.secondary }
-                                    }
-                                }
-
-                                // 2. Inner "Cutout" and Selection Tint
-                                Rectangle {
-                                    anchors.fill: parent
-                                    anchors.margins: 1.5
-                                    radius: Theme.geometry.radius - 1.5
-                                    color: Theme.colors.surface
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        radius: parent.radius
-                                        color: Qt.alpha(Theme.colors.primary, 0.08)
-                                    }
-                                }
-
-                                // 3. Permanent Inner Glass Highlight
-                                Rectangle {
-                                    anchors.fill: parent
-                                    anchors.margins: 1
-                                    radius: Theme.geometry.radius - 1
-                                    gradient: Gradient {
-                                        GradientStop { position: 0.0; color: Theme.alpha(Theme.colors.text, 0.05) }
-                                        GradientStop { position: 1.0; color: Theme.colors.transparent }
-                                    }
-                                }
+                                radius: Theme.geometry.radius
+                                baseColor: Theme.colors.surface
+                                premiumActive: modelData.isToday
+                                hoverEnabled: false
                             }
 
                             BaseText {
