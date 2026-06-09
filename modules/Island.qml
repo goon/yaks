@@ -438,6 +438,13 @@ Item {
                 when: panelLoader.item !== null
             }
 
+            Binding {
+                target: panelLoader.item
+                property: "barWindow"
+                value: islandRoot.barWindow
+                when: panelLoader.item !== null && typeof panelLoader.item.barWindow !== "undefined"
+            }
+
             opacity: islandRoot.isMorphed && status === Loader.Ready ? 1.0 : 0.0
             visible: opacity > 0.0
             Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }

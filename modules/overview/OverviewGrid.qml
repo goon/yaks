@@ -22,6 +22,8 @@ Item {
     required property var monitor
     required property real monitorW
     required property real monitorH
+    required property real monitorX
+    required property real monitorY
 
     readonly property real availableW: monitorW - reservedLeft
 
@@ -126,6 +128,8 @@ Item {
                 gridTotalHeight: root.height
                 monitorW: root.monitorW
                 monitorH: root.monitorH
+                monitorX: root.monitorX
+                monitorY: root.monitorY
             }
         }
     }

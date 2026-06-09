@@ -26,11 +26,13 @@ Item {
     required property real gridTotalHeight
     required property real monitorW
     required property real monitorH
+    required property real monitorX
+    required property real monitorY
 
     readonly property bool isFocused: windowData ? windowData.isFocused : false
 
-    readonly property real rawX: windowData && windowData.at ? (windowData.at[0] - reservedLeft) * overviewScale : 0
-    readonly property real rawY: windowData && windowData.at ? (windowData.at[1] - reservedTop) * overviewScale : 0
+    readonly property real rawX: windowData && windowData.at ? (windowData.at[0] - monitorX - reservedLeft) * overviewScale : 0
+    readonly property real rawY: windowData && windowData.at ? (windowData.at[1] - monitorY - reservedTop) * overviewScale : 0
     readonly property real rawW: windowData && windowData.size ? windowData.size[0] * overviewScale : wsWidth * 0.5
     readonly property real rawH: windowData && windowData.size ? windowData.size[1] * overviewScale : wsHeight * 0.5
     readonly property bool isFullscreen: windowData ? (windowData.fullscreen > 0 || windowData.fullscreen === true) : false
@@ -52,13 +54,46 @@ Item {
         return path || "";
     }
 
-    x: relX + tileX
-    y: relY + tileY
+    property bool isDragging: false
+    property point dragStartPos: Qt.point(0, 0)
+    property point dragOffset: Qt.point(0, 0)
+
+    Drag.active: isDragging
+    Drag.source: root
+    Drag.keys: ["window"]
+    Drag.hotSpot.x: dragStartPos.x
+    Drag.hotSpot.y: dragStartPos.y
+
+    x: isDragging ? dragOffset.x : (relX + tileX)
+    y: isDragging ? dragOffset.y : (relY + tileY)
     width: isFullscreen ? wsWidth : Math.max(1, Math.min(rawW, availW))
     height: isFullscreen ? wsHeight : Math.max(1, Math.min(rawH, availH))
 
+    z: isDragging ? 100 : (isFocused ? 2 : 1)
+
+    Behavior on x { enabled: !root.isDragging; BaseAnimation { speed: "fast" } }
+    Behavior on y { enabled: !root.isDragging; BaseAnimation { speed: "fast" } }
+
     property bool hovered: false
     property bool pressed: false
+
+    property int lastWorkspaceId: -1
+
+    function onDroppedOnWorkspace(targetWsId) {
+        dragResetTimer.stop();
+        root.isDragging = false;
+        Compositor.dragInProgress = false;
+    }
+
+    Timer {
+        id: dragResetTimer
+        interval: 300
+        repeat: false
+        onTriggered: {
+            root.isDragging = false;
+            Compositor.dragInProgress = false;
+        }
+    }
 
     Rectangle {
         id: windowBg
@@ -176,19 +211,76 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.isDragging ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 
         onEntered: root.hovered = true
         onExited: root.hovered = false
-        onPressed: root.pressed = true
-        onReleased: root.pressed = false
+        
+        onPressed: (mouse) => {
+            if (mouse.button === Qt.LeftButton) {
+                root.pressed = true;
+                root.dragStartPos = Qt.point(mouse.x, mouse.y);
+                root.lastWorkspaceId = root.windowData ? (root.windowData.workspaceId || -1) : -1;
+            }
+        }
+
+        onPositionChanged: (mouse) => {
+            if (root.pressed && !root.isDragging) {
+                var distance = Math.sqrt(Math.pow(mouse.x - root.dragStartPos.x, 2) + Math.pow(mouse.y - root.dragStartPos.y, 2));
+                if (distance > 8) { // Drag threshold
+                    root.isDragging = true;
+                    Compositor.dragInProgress = true;
+                }
+            }
+            if (root.isDragging) {
+                var mapped = windowMouseArea.mapToItem(root.parent, mouse.x, mouse.y);
+                root.dragOffset = Qt.point(mapped.x - root.dragStartPos.x, mapped.y - root.dragStartPos.y);
+            }
+        }
+
+        onReleased: (mouse) => {
+            root.pressed = false;
+            if (root.isDragging) {
+                Compositor.dragInProgress = false;
+                root.Drag.drop();
+                dragResetTimer.restart();
+            }
+        }
 
         onClicked: (mouse) => {
-            if (mouse.button === Qt.MiddleButton) {
-                Compositor.closeWindow(root.address);
-            } else {
-                Compositor.focusWindow(root.address);
-                IslandService.closeAll();
+            if (!root.isDragging) {
+                if (mouse.button === Qt.MiddleButton) {
+                    Compositor.closeWindow(root.address);
+                } else if (mouse.button === Qt.LeftButton) {
+                    Compositor.focusWindow(root.address);
+                    IslandService.closeAll();
+                }
+            }
+        }
+    }
+
+    DropArea {
+        id: windowDropArea
+        anchors.fill: parent
+        keys: ["window"]
+        enabled: !root.isDragging
+
+        onEntered: (drag) => {
+            drag.accept();
+        }
+
+        onDropped: (drop) => {
+            drop.accept();
+            var draggedWindow = drop.source;
+            if (draggedWindow && draggedWindow.address && draggedWindow.address !== root.address) {
+                if (draggedWindow.lastWorkspaceId === root.windowData.workspaceId) {
+                    Compositor.swapWindows(draggedWindow.address, root.address);
+                } else {
+                    Compositor.moveToWorkspace(draggedWindow.address, root.windowData.workspaceId);
+                }
+                if (typeof draggedWindow.onDroppedOnWorkspace === "function") {
+                    draggedWindow.onDroppedOnWorkspace(root.windowData.workspaceId);
+                }
             }
         }
     }

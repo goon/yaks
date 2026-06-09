@@ -9,9 +9,9 @@ FocusScope {
     id: root
 
     property string panelState: "Closed"
+    property var barWindow: null
 
-    readonly property var popupWindow: Window.window
-    readonly property var monitor: popupWindow ? Hyprland.monitorFor(popupWindow.screen) : null
+    readonly property var monitor: barWindow ? Hyprland.monitorFor(barWindow.screen) : null
 
     readonly property int columns: Preferences.overviewColumns
     readonly property int workspaceCount: Preferences.workspaceCount
@@ -25,6 +25,8 @@ FocusScope {
 
     readonly property real monitorW: monitor ? monitor.width / monitor.scale : 1920
     readonly property real monitorH: monitor ? monitor.height / monitor.scale : 1080
+    readonly property real monitorX: monitor ? monitor.x : 0
+    readonly property real monitorY: monitor ? monitor.y : 0
     readonly property real availableW: monitorW - reservedLeft - reservedRight
     readonly property real availableH: monitorH - reservedTop - reservedBottom
 
@@ -35,7 +37,7 @@ FocusScope {
     readonly property int effectiveActiveWorkspaceId: Math.max(1, Compositor.activeWorkspaceId)
 
     implicitWidth: columns * wsWidth + (columns - 1) * gridSpacing
-    implicitHeight: rows * wsHeight + (rows - 1) * gridSpacing
+    implicitHeight: rows * wsHeight + (rows - 1) * gridSpacing + 35
 
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Escape) {
@@ -94,7 +96,10 @@ FocusScope {
 
     OverviewGrid {
         id: grid
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: rows * wsHeight + (rows - 1) * gridSpacing
 
         columns: root.columns
         rows: root.rows
@@ -109,5 +114,18 @@ FocusScope {
         monitor: root.monitor
         monitorW: root.monitorW
         monitorH: root.monitorH
+        monitorX: root.monitorX
+        monitorY: root.monitorY
+    }
+
+    BaseText {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Theme.geometry.spacing.small
+        text: "Windows can be dragged/dropped to move between workspaces or reposition/reorder on same workspace."
+        color: Theme.colors.textMuted
+        pixelSize: Theme.typography.size.small
+        weight: Theme.typography.weights.normal
+        opacity: 0.8
     }
 }

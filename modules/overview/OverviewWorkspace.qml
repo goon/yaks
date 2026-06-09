@@ -37,13 +37,34 @@ Item {
         return n.toString();
     }
 
+    DropArea {
+        id: dropArea
+        anchors.fill: parent
+        keys: ["window"]
+
+        onEntered: (drag) => {
+            drag.accept();
+        }
+
+        onDropped: (drop) => {
+            drop.accept();
+            var draggedWindow = drop.source;
+            if (draggedWindow && draggedWindow.address) {
+                Compositor.moveToWorkspace(draggedWindow.address, root.wsId);
+                if (typeof draggedWindow.onDroppedOnWorkspace === "function") {
+                    draggedWindow.onDroppedOnWorkspace(root.wsId);
+                }
+            }
+        }
+    }
+
     Rectangle {
         id: wsBackground
         anchors.fill: parent
         radius: Theme.geometry.radius
         color: Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
-        border.width: root.isWsActive ? 2 : (mouseArea.containsMouse ? 1 : 0)
-        border.color: root.isWsActive ? Theme.colors.primary : Theme.colors.divider
+        border.width: root.isWsActive || dropArea.containsDrag ? 2 : (mouseArea.containsMouse ? 1 : 0)
+        border.color: dropArea.containsDrag ? Theme.colors.success : (root.isWsActive ? Theme.colors.primary : Theme.colors.divider)
 
         Behavior on border.width { BaseAnimation { speed: "fast" } }
         Behavior on border.color { BaseAnimation { speed: "fast" } }
