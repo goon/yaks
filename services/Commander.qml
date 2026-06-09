@@ -80,12 +80,17 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { IslandService.togglePowerPopout(); }
+        function toggle() { IslandService.toggleNexusPopout(); }
         target: "power"
     }
 
     IpcHandler {
         function toggle() { IslandService.toggleDashboardPopout(); }
         target: "dashboard"
+    }
+
+    IpcHandler {
+        function toggle() { IslandService.toggleNexusPopout(); }
+        target: "nexus"
     }
 }

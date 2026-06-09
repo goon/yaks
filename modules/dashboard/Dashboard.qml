@@ -20,71 +20,97 @@ FocusScope {
         ? Math.min(860, root.popupWindow.screen.height * 0.9 - 40)
         : 760
 
-    implicitHeight: Math.min(maxHeight, pageStack.implicitHeight)
+    implicitHeight: Math.min(maxHeight, mainRow.implicitHeight)
 
-    onImplicitHeightChanged: console.log("DEBUG: root implicitHeight changed to:", implicitHeight, "pageStack implicitHeight:", pageStack.implicitHeight, "currentItem:", pageStack.currentItem)
+    // CONTENT AREA
+    Item {
+        anchors.fill: parent
 
-    property alias pageStack: pageStack
+        // Mask for rounded clipping
+        Rectangle {
+            id: contentMask
+            anchors.fill: parent
+            radius: Theme.geometry.radius
+            color: "white"
+            visible: false
+            layer.enabled: true
+        }
 
-    function closed() {
-        pageStack.replace("views/Dashboard.qml");
-    }
-
-        // CONTENT AREA
+        // Clipped container
         Item {
             anchors.fill: parent
-
-            // Mask for rounded clipping
-            Rectangle {
-                id: contentMask
-                anchors.fill: parent
-                radius: Theme.geometry.radius
-                color: "white"
-                visible: false
-                layer.enabled: true
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                maskEnabled: true
+                maskSource: contentMask
             }
 
-            // Clipped container
-            Item {
+            BaseScroller {
+                id: contentScroller
                 anchors.fill: parent
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: contentMask
-                }
+                clip: false
 
-                BaseScroller {
-                    id: contentScroller
-                    anchors.fill: parent
-                    clip: false
+                ColumnLayout {
+                    id: centeredContainer
+                    width: parent.width
+                    spacing: 0
 
-                    ColumnLayout {
-                        id: centeredContainer
-                        width: parent.width
-                        spacing: 0
+                    RowLayout {
+                        id: mainRow
+                        Layout.fillWidth: true
+                        spacing: Theme.geometry.spacing.large
 
-                        StackView {
-                            id: pageStack
+                        // Left + Middle Column Group
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            implicitHeight: currentItem ? currentItem.implicitHeight : 0
-                            initialItem: "views/Dashboard.qml"
+                            Layout.fillHeight: true
+                            spacing: Theme.geometry.spacing.large
 
-                            onCurrentItemChanged: console.log("DEBUG: pageStack currentItem changed to:", currentItem, "currentItem implicitHeight:", currentItem ? currentItem.implicitHeight : "null")
-                            onImplicitHeightChanged: console.log("DEBUG: pageStack implicitHeight changed to:", implicitHeight)
+                            // Top Row: Weather & User Panel
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 160
+                                spacing: Theme.geometry.spacing.large
 
-                            replaceEnter: Transition {
-                                ParallelAnimation {
-                                    BaseAnimation { property: "opacity"; from: 0; to: 1; speed: "normal"; easing.type: Easing.OutQuad }
-                                    BaseAnimation { property: "scale"; from: 0.98; to: 1; speed: "normal"; easing.type: Easing.OutQuad }
+                                DashboardUserPanel {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
+
+                                DashboardWeather {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
                                 }
                             }
 
-                            replaceExit: Transition {
-                                BaseAnimation { property: "opacity"; from: 1; to: 0; speed: "normal"; easing.type: Easing.OutQuad }
+                            // Bottom Row: Clock & Calendar & Resource Bars
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 320
+                                spacing: Theme.geometry.spacing.large
+
+                                DashboardClock {
+                                    Layout.fillHeight: true
+                                }
+
+                                DashboardCalendar {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
+
+                                DashboardResourceBars {
+                                    Layout.fillHeight: true
+                                }
                             }
+                        }
+
+                        // Right Column: Media Player
+                        DashboardMedia {
+                            Layout.fillHeight: true
                         }
                     }
                 }
             }
         }
     }
+}

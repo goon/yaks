@@ -133,10 +133,6 @@ QtObject {
         toggleSettings("Audio");
     }
 
-    function togglePowerPopout(screenX, barLeft, barRight) {
-        togglePanel("power");
-    }
-
     function toggleNetworkPopout(screenX, barLeft, barRight) {
         toggleSettings("NetworkPage");
     }
@@ -145,4 +141,45 @@ QtObject {
         toggleSettings("Bluetooth");
     }
 
+    function toggleNexusPopout(screenX, barLeft, barRight) {
+        togglePanel("nexus");
+    }
+
+    // --- Volume Toast Logic ---
+    property bool _startupDelayFinished: false
+    property Timer _startupTimer: Timer {
+        running: true
+        interval: 1000
+        onTriggered: _startupDelayFinished = true
+    }
+
+    property Timer _volumeToastTimer: Timer {
+        interval: 2000
+        onTriggered: {
+            if (activePanelName === "volumetoast") {
+                closeAll();
+            }
+        }
+    }
+
+    property Connections _volumeConnections: Connections {
+        target: Volume
+        function onVolumeChanged() {
+            if (!_startupDelayFinished) return;
+            
+            // Only open toast if no other panel is open, or if the toast is already open
+            if (activePanelName === "" || activePanelName === "volumetoast") {
+                openPanel("volumetoast");
+                _volumeToastTimer.restart();
+            }
+        }
+        function onMutedChanged() {
+            if (!_startupDelayFinished) return;
+            
+            if (activePanelName === "" || activePanelName === "volumetoast") {
+                openPanel("volumetoast");
+                _volumeToastTimer.restart();
+            }
+        }
+    }
 }

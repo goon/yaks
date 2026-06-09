@@ -38,7 +38,13 @@ Item {
     property int fontSize: 11
 
     // Internal computed values
-    readonly property real normalizedValue: (value - from) / (to - from)
+    property real _animatedValue: value
+    Behavior on _animatedValue {
+        enabled: !mouseArea.pressed
+        BaseAnimation { duration: Theme.animations.fast }
+    }
+    
+    readonly property real normalizedValue: (_animatedValue - from) / (to - from)
     readonly property real fillSize: root.orientation === Qt.Horizontal ? root.width * root.normalizedValue : root.height * root.normalizedValue
     readonly property bool bigMode: trackHeight >= 20
 
@@ -93,16 +99,6 @@ Item {
                 orientation: root.orientation === Qt.Horizontal ? Gradient.Horizontal : Gradient.Vertical
                 GradientStop { position: 0.0; color: Theme.colors.primary }
                 GradientStop { position: 1.0; color: Theme.colors.secondary }
-            }
-
-            Behavior on width {
-                enabled: !root.bigMode && root.orientation === Qt.Horizontal && !mouseArea.pressed
-                BaseAnimation { duration: Theme.animations.fast }
-            }
-
-            Behavior on height {
-                enabled: !root.bigMode && root.orientation === Qt.Vertical && !mouseArea.pressed
-                BaseAnimation { duration: Theme.animations.fast }
             }
         }
 
@@ -230,16 +226,6 @@ Item {
                 opacity: (root.hovered || root.pressed) ? 1 : 0
                 Behavior on opacity { BaseAnimation { duration: 400; easing.type: Easing.InOutQuad } }
             }
-        }
-
-        Behavior on x {
-            enabled: root.orientation === Qt.Horizontal && !mouseArea.pressed
-            BaseAnimation { duration: Theme.animations.fast }
-        }
-
-        Behavior on y {
-            enabled: root.orientation === Qt.Vertical && !mouseArea.pressed
-            BaseAnimation { duration: Theme.animations.fast }
         }
 
         // Tactile Shimmer Effect

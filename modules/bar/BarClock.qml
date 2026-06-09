@@ -13,6 +13,7 @@ BaseBlock {
     implicitWidth: layout.implicitWidth + (paddingHorizontal * 2)
     implicitHeight: Theme.dimensions.barItemHeight
     paddingVertical: 0
+    paddingHorizontal: Theme.geometry.spacing.medium
     hoverEnabled: false
     clickable: true
     
@@ -43,7 +44,7 @@ BaseBlock {
             text: "00"
             
             pixelSize: Theme.typography.size.large
-            weight: Theme.typography.weights.normal
+            weight: Theme.typography.weights.bold
         }
 
         readonly property real centerY: (segment.height - currentText.height) / 2
@@ -62,7 +63,7 @@ BaseBlock {
             text: segment.displayedText
             
             pixelSize: Theme.typography.size.large
-            weight: Theme.typography.weights.normal
+            weight: Theme.typography.weights.bold
             color: segment.textColor
         }
 
@@ -74,7 +75,7 @@ BaseBlock {
             text: segment.text
             
             pixelSize: Theme.typography.size.large
-            weight: Theme.typography.weights.normal
+            weight: Theme.typography.weights.bold
             color: segment.textColor
         }
 

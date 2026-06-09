@@ -118,14 +118,15 @@ Item {
         : (barWindow.height - normalCapsuleHeight - Preferences.barMarginTop)
 
 
-    // Central registry for panel paths and dimensions
     readonly property var panelRegistry: ({
         "launcher":      { source: "../modules/launcher/Launcher.qml" },
         "settings":      { source: "../modules/settings/Settings.qml" },
         "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
         "notifications": { source: "../modules/notifications/Notifications.qml" },
-        "power":         { source: "../modules/power/Power.qml" },
-        "wallpaper":     { source: "../modules/wallpaper/WallpaperPanel.qml" }
+        "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
+        "nexus":         { source: "../modules/nexus/Nexus.qml" },
+        "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
+        "notificationtoast": { source: "../modules/toasts/NotificationToast.qml" }
     })
 
     // Expected fallback dimensions during transition before component load completes

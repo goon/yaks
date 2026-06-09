@@ -15,10 +15,10 @@ PanelWindow {
 
     function resolveComponentSource(name) {
         const map = {
-            "workspaces": Qt.resolvedUrl("components/Workspaces.qml"),
-            "clock": Qt.resolvedUrl("components/Clock.qml"),
-            "dock": Qt.resolvedUrl("components/Dock.qml"),
-            "indicators": Qt.resolvedUrl("components/Indicators.qml"),
+            "workspaces": Qt.resolvedUrl("BarWorkspaces.qml"),
+            "clock": Qt.resolvedUrl("BarClock.qml"),
+            "dock": Qt.resolvedUrl("BarDock.qml"),
+            "indicators": Qt.resolvedUrl("BarIndicators.qml"),
         };
         return map[name] || "";
     }

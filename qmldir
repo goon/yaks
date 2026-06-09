@@ -31,12 +31,12 @@ singleton Cava services/Cava.qml
 
 # Services (Types)
 Commander services/Commander.qml
-NotificationOverlay modules/notifications/NotificationOverlay.qml
 
 # Shared Base Components
 BaseBackground shared/BaseBackground.qml
 BaseBlock shared/BaseBlock.qml
 BaseButton shared/BaseButton.qml
+BaseButtonHold shared/BaseButtonHold.qml
 BaseIcon shared/BaseIcon.qml
 BaseInput shared/BaseInput.qml
 Island modules/Island.qml
@@ -53,8 +53,8 @@ BaseGraph shared/BaseGraph.qml
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml
-NotificationToast modules/notifications/NotificationToast.qml
-VolumeToast modules/notifications/VolumeToast.qml
+NotificationToast modules/toasts/NotificationToast.qml
+VolumeToast modules/toasts/VolumeToast.qml
 
 # Launcher
 Launcher modules/launcher/Launcher.qml
@@ -73,23 +73,26 @@ SettingsPage modules/settings/SettingsPage.qml
 # Bar
 WallpaperBackground modules/wallpaper/WallpaperBackground.qml
 Bar modules/bar/Bar.qml
-Clock modules/bar/components/Clock.qml
-Workspaces modules/bar/components/Workspaces.qml
-BarDock modules/bar/components/Dock.qml
-Indicators modules/bar/components/Indicators.qml
+BarClock modules/bar/BarClock.qml
+BarWorkspaces modules/bar/BarWorkspaces.qml
+BarDock modules/bar/BarDock.qml
+BarIndicators modules/bar/BarIndicators.qml
 
 # Dashboard
-DashboardPage modules/dashboard/DashboardPage.qml
 Dashboard modules/dashboard/Dashboard.qml
-DashboardCalendar modules/dashboard/components/DashboardCalendar.qml
-DashboardWeather modules/dashboard/components/DashboardWeather.qml
-DashboardMedia modules/dashboard/components/DashboardMedia.qml
-DashboardUserPanel modules/dashboard/components/DashboardUserPanel.qml
-DashboardClock modules/dashboard/components/DashboardClock.qml
-DashboardResourceBars modules/dashboard/components/DashboardResourceBars.qml
+DashboardCalendar modules/dashboard/DashboardCalendar.qml
+DashboardWeather modules/dashboard/DashboardWeather.qml
+DashboardMedia modules/dashboard/DashboardMedia.qml
+DashboardUserPanel modules/dashboard/DashboardUserPanel.qml
+DashboardClock modules/dashboard/DashboardClock.qml
+DashboardResourceBars modules/dashboard/DashboardResourceBars.qml
 
 # Panels
 NotificationsPanel modules/notifications/Notifications.qml
-PowerPanel modules/power/Power.qml
-WallpaperPanel modules/wallpaper/WallpaperPanel.qml
+WallpaperPanel modules/wallpaper/Wallpaper.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
+NexusPanel modules/nexus/Nexus.qml
+HubSliders modules/nexus/HubSliders.qml
+HubQuickActions modules/nexus/HubQuickActions.qml
+HubPower modules/nexus/HubPower.qml
+HubNotifications modules/nexus/HubNotifications.qml

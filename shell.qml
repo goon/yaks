@@ -19,9 +19,6 @@ ShellRoot {
         id: commander
     }
 
-    NotificationOverlay {
-        id: notificationOverlay
-    }
 
     Instantiator {
         model: Quickshell.screens
