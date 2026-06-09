@@ -106,7 +106,7 @@ Singleton {
 
         id: availabilityProcess
 
-        command: ["pactl", "--format=json", "list"]
+        command: ["sh", "-c", "command -v pactl >/dev/null && pactl --format=json list || true"]
         running: false
 
         stdout: StdioCollector {

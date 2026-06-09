@@ -134,11 +134,45 @@ QtObject {
     }
 
     function toggleNetworkPopout(screenX, barLeft, barRight) {
-        toggleSettings("NetworkPage");
+        var isCurrentlyOpen = (activePanelName === "nexus");
+        
+        if (isCurrentlyOpen) {
+            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.currentItem && activePanelItem.pageStack.currentItem.objectName === "views/NexusNetwork.qml") {
+                closeAll();
+            } else {
+                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
+                    activePanelItem.pushPage("network");
+                }
+            }
+        } else {
+            openPanel("nexus");
+            runWhenPanelReady(() => {
+                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
+                    activePanelItem.pushPage("network");
+                }
+            });
+        }
     }
 
     function toggleBluetoothPopout(screenX, barLeft, barRight) {
-        toggleSettings("Bluetooth");
+        var isCurrentlyOpen = (activePanelName === "nexus");
+        
+        if (isCurrentlyOpen) {
+            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.currentItem && activePanelItem.pageStack.currentItem.objectName === "views/NexusBluetooth.qml") {
+                closeAll();
+            } else {
+                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
+                    activePanelItem.pushPage("bluetooth");
+                }
+            }
+        } else {
+            openPanel("nexus");
+            runWhenPanelReady(() => {
+                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
+                    activePanelItem.pushPage("bluetooth");
+                }
+            });
+        }
     }
 
     function toggleNexusPopout(screenX, barLeft, barRight) {

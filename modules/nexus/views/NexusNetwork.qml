@@ -3,8 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs
 
-SettingsPage {
+BaseScroller {
     id: root
+    clip: true
 
     // Auto-scan while page is open and Wi-Fi is enabled
     Timer {
@@ -17,8 +18,11 @@ SettingsPage {
     }
 
     ColumnLayout {
-        Layout.fillWidth: true
+        width: root.availableWidth
         spacing: Theme.geometry.spacing.large
+        
+        // Add a bit of padding at the top since it's directly under the header
+        Item { Layout.preferredHeight: Theme.geometry.spacing.small }
 
         // --- SECTION 1: HERO CONNECTION STATUS & TRAFFIC GRAPH CARD ---
         BaseBlock {
@@ -30,100 +34,91 @@ SettingsPage {
             backgroundColor: Theme.colors.surface
             premiumActive: Network.ethernetConnected || Network.connected
 
-            Item {
+            ColumnLayout {
                 Layout.fillWidth: true
-                implicitHeight: 100
+                spacing: Theme.geometry.spacing.large
 
-                // Glowing Icon taking full height of container
-                Rectangle {
-                    id: iconRect
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    width: height // Makes it 100x100 square
-                    radius: Theme.geometry.radius
-                    color: Theme.alpha(
-                        (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning,
-                        0.15
-                    )
+                // Top: Active Connection Details
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Theme.geometry.spacing.large
 
-                    BaseIcon {
-                        anchors.centerIn: parent
-                        icon: {
-                            if (Network.ethernetConnected) return "lan";
-                            if (Network.connected) return "wifi";
-                            return "wifi_off";
-                        }
-                        size: 32
-                        color: (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning
-                    }
-                }
+                    // Glowing Icon
+                    Rectangle {
+                        id: iconRect
+                        width: 64
+                        height: 64
+                        radius: Theme.geometry.radius
+                        color: Theme.alpha(
+                            (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning,
+                            0.15
+                        )
 
-                // Left Column: Active Connection Details
-                ColumnLayout {
-                    id: leftColumn
-                    anchors.left: iconRect.right
-                    anchors.leftMargin: Theme.geometry.spacing.large
-                    anchors.right: (Network.ethernetConnected || Network.connected) ? verticalDivider.left : parent.right
-                    anchors.rightMargin: Theme.geometry.spacing.large
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-
-                    BaseText {
-                        text: {
-                            if (Network.ethernetConnected) return "Wired Connection";
-                            if (Network.connected) return Network.ssid;
-                            return "Offline";
-                        }
-                        weight: Theme.typography.weights.bold
-                        pixelSize: Theme.typography.size.large + 2
-                        color: Theme.colors.textLighter
-                    }
-
-                    BaseText {
-                        text: {
-                            if (Network.ethernetConnected || Network.connected) {
-                                var ip = Network.ipv4 ? Network.ipv4 : "No IP Address";
-                                var speed = (Network.ethernetConnected && Network.wiredDevice && Network.wiredDevice.linkSpeed > 0)
-                                    ? " • " + Network.wiredDevice.linkSpeed + " Mbps"
-                                    : "";
-                                var strength = (Network.connected && !Network.ethernetConnected && Network.signalStrength > 0)
-                                    ? " • Signal: " + Network.signalStrength + "%"
-                                    : "";
-                                return ip + speed + strength;
+                        BaseIcon {
+                            anchors.centerIn: parent
+                            icon: {
+                                if (Network.ethernetConnected) return "lan";
+                                if (Network.connected) return "wifi";
+                                return "wifi_off";
                             }
-                            return "No active internet connection detected.";
+                            size: 32
+                            color: (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning
                         }
-                        color: Theme.colors.text
-                        pixelSize: Theme.typography.size.medium
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+
+                        BaseText {
+                            text: {
+                                if (Network.ethernetConnected) return "Wired Connection";
+                                if (Network.connected) return Network.ssid;
+                                return "Offline";
+                            }
+                            weight: Theme.typography.weights.bold
+                            pixelSize: Theme.typography.size.large
+                            color: Theme.colors.textLighter
+                        }
+
+                        BaseText {
+                            text: {
+                                if (Network.ethernetConnected || Network.connected) {
+                                    var ip = Network.ipv4 ? Network.ipv4 : "No IP Address";
+                                    var speed = (Network.ethernetConnected && Network.wiredDevice && Network.wiredDevice.linkSpeed > 0)
+                                        ? " • " + Network.wiredDevice.linkSpeed + " Mbps"
+                                        : "";
+                                    var strength = (Network.connected && !Network.ethernetConnected && Network.signalStrength > 0)
+                                        ? " • Signal: " + Network.signalStrength + "%"
+                                        : "";
+                                    return ip + speed + strength;
+                                }
+                                return "No active internet connection detected.";
+                            }
+                            color: Theme.colors.text
+                            pixelSize: Theme.typography.size.small
+                            Layout.fillWidth: true
+                            wrapMode: Text.Wrap
+                        }
                     }
                 }
 
-                // Vertical Divider Line (only when connected)
-                Rectangle {
-                    id: verticalDivider
-                    anchors.right: graphColumn.left
-                    anchors.rightMargin: Theme.geometry.spacing.large
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    width: 1
-                    color: Theme.colors.border
+                // Horizontal Divider (only when connected)
+                BaseSeparator {
+                    Layout.fillWidth: true
                     visible: Network.ethernetConnected || Network.connected
+                    opacity: 0.1
                 }
 
-                // Right Column: Live Speed Metrics & Traffic Graph (only when connected)
+                // Bottom: Live Speed Metrics & Traffic Graph (only when connected)
                 ColumnLayout {
-                    id: graphColumn
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    width: 320
+                    Layout.fillWidth: true
                     spacing: Theme.geometry.spacing.small
                     visible: Network.ethernetConnected || Network.connected
 
                     // Live Throughput speed metrics row
                     RowLayout {
-                        Layout.alignment: Qt.AlignRight
+                        Layout.fillWidth: true
                         spacing: 16
 
                         RowLayout {
@@ -145,6 +140,8 @@ SettingsPage {
                                 color: Theme.colors.muted
                             }
                         }
+
+                        Item { Layout.fillWidth: true }
 
                         RowLayout {
                             spacing: 4
@@ -170,7 +167,7 @@ SettingsPage {
                     // Graph container
                     Item {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        Layout.preferredHeight: 120
 
                         BaseGraph {
                             anchors.fill: parent
@@ -219,6 +216,7 @@ SettingsPage {
 
                     ColumnLayout {
                         spacing: 2
+                        Layout.fillWidth: true
 
                         BaseText {
                             text: "Ethernet"
@@ -228,6 +226,8 @@ SettingsPage {
                         }
 
                         BaseText {
+                            Layout.fillWidth: true
+                            wrapMode: Text.Wrap
                             text: {
                                 if (!Network.ethernetEnabled) return "No ethernet hardware interface found";
                                 if (Network.ethernetConnected) return "Interface enabled and connected";
@@ -242,8 +242,6 @@ SettingsPage {
                             pixelSize: Theme.typography.size.base
                         }
                     }
-
-                    Item { Layout.fillWidth: true }
 
                     BaseSwitch {
                         checked: Network.ethernetConnected
@@ -273,6 +271,7 @@ SettingsPage {
 
                     ColumnLayout {
                         spacing: 2
+                        Layout.fillWidth: true
 
                         BaseText {
                             text: "Wireless"
@@ -282,6 +281,8 @@ SettingsPage {
                         }
 
                         BaseText {
+                            Layout.fillWidth: true
+                            wrapMode: Text.Wrap
                             text: Network.wifiEnabled
                                 ? (Network.scanning ? "Scanning for nearby access points..." : "Interface enabled")
                                 : "Interface disabled"
@@ -289,8 +290,6 @@ SettingsPage {
                             pixelSize: Theme.typography.size.base
                         }
                     }
-
-                    Item { Layout.fillWidth: true }
 
                     BaseSwitch {
                         checked: Network.wifiEnabled
@@ -565,5 +564,7 @@ SettingsPage {
                 Layout.topMargin: 20
             }
         }
+        
+        Item { Layout.preferredHeight: Theme.geometry.spacing.large }
     }
 }

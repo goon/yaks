@@ -126,7 +126,7 @@ Singleton {
     // --- Event-Driven Updates via rawEvent ---
     // This is the reliable mechanism — ObjectModel doesn't have usable change signals.
     Connections {
-        target: Compositor
+        target: Hyprland
         function onRawEvent(event) {
             switch (event.type) {
                 // Workspace events

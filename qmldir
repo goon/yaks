@@ -92,6 +92,7 @@ NotificationsPanel modules/notifications/Notifications.qml
 WallpaperPanel modules/wallpaper/Wallpaper.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 NexusPanel modules/nexus/Nexus.qml
+NexusMain modules/nexus/NexusMain.qml
 HubSliders modules/nexus/HubSliders.qml
 HubQuickActions modules/nexus/HubQuickActions.qml
 HubPower modules/nexus/HubPower.qml

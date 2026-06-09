@@ -165,9 +165,7 @@ FocusScope {
                             { text: "Wallpaper",  icon: "image",            page: "Wallpaper"              },
                             { category: "System"                                                           },
                             { text: "Appearance", icon: "palette",          page: "Appearance"             },
-                            { text: "Audio",      icon: "volume_up",        page: "Audio"                  },
-                            { text: "Network",    icon: "wifi",             page: "NetworkPage"            },
-                            { text: "Bluetooth",  icon: "bluetooth",        page: "Bluetooth"              }
+                            { text: "Audio",      icon: "volume_up",        page: "Audio"                  }
                         ]
 
                         delegate: ColumnLayout {
