@@ -22,6 +22,7 @@ QtObject {
     property double backgroundOpacity: 0.5
     property double surfaceOpacity: 0.7
     property double themedAppsOpacity: 1.0
+    property bool islandOutline: true
     // Theme Configuration
     property string currentTheme: "solaris"
     property string themeMode: "dark"
@@ -106,6 +107,7 @@ QtObject {
             "backgroundOpacity": root.backgroundOpacity,
             "surfaceOpacity": root.surfaceOpacity,
             "themedAppsOpacity": root.themedAppsOpacity,
+            "islandOutline": root.islandOutline,
             "currentTheme": root.currentTheme,
             "themeMode": root.themeMode,
             "barPosition": root.barPosition,
@@ -179,7 +181,8 @@ QtObject {
 
             "backgroundOpacity": root.backgroundOpacity,
             "surfaceOpacity": root.surfaceOpacity,
-            "themedAppsOpacity": root.themedAppsOpacity
+            "themedAppsOpacity": root.themedAppsOpacity,
+            "islandOutline": root.islandOutline
         };
         root.presets = newPresets;
         requestSave("savePreset");
@@ -211,6 +214,7 @@ QtObject {
         if (preset.hasOwnProperty("backgroundOpacity")) root.backgroundOpacity = preset.backgroundOpacity;
         if (preset.hasOwnProperty("surfaceOpacity")) root.surfaceOpacity = preset.surfaceOpacity;
         if (preset.hasOwnProperty("themedAppsOpacity")) root.themedAppsOpacity = preset.themedAppsOpacity;
+        if (preset.hasOwnProperty("islandOutline")) root.islandOutline = preset.islandOutline;
         
         requestSave("loadPreset");
     }
@@ -253,6 +257,7 @@ QtObject {
     onBackgroundOpacityChanged: requestSave("backgroundOpacity")
     onSurfaceOpacityChanged: requestSave("surfaceOpacity")
     onThemedAppsOpacityChanged: requestSave("themedAppsOpacity")
+    onIslandOutlineChanged: requestSave("islandOutline")
     onCurrentThemeChanged: requestSave("currentTheme")
     onThemeModeChanged: requestSave("themeMode")
     onBarPositionChanged: requestSave("barPosition")
@@ -363,6 +368,9 @@ QtObject {
 
                     if (data.hasOwnProperty("themedAppsOpacity"))
                         root.themedAppsOpacity = data.themedAppsOpacity;
+
+                    if (data.hasOwnProperty("islandOutline"))
+                        root.islandOutline = data.islandOutline;
 
                     if (data.hasOwnProperty("currentTheme"))
                         root.currentTheme = data.currentTheme;

@@ -59,12 +59,12 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { IslandService.toggleNotificationPopout(); }
+        function toggle() { IslandService.toggleNexusPopout(); }
         target: "notifications"
     }
 
     IpcHandler {
-        function toggle() { IslandService.toggleAudioPopout(); }
+        function toggle() { IslandService.toggleNexusPopout(); }
         target: "volume"
     }
 

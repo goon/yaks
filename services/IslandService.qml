@@ -125,14 +125,6 @@ QtObject {
         togglePanel("dashboard");
     }
 
-    function toggleNotificationPopout(screenX, barLeft, barRight) {
-        togglePanel("notifications");
-    }
-
-    function toggleAudioPopout(screenX, barLeft, barRight) {
-        toggleSettings("Audio");
-    }
-
     function toggleNetworkPopout(screenX, barLeft, barRight) {
         var isCurrentlyOpen = (activePanelName === "nexus");
         

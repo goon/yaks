@@ -163,5 +163,16 @@ SettingsPage {
             }
         }
 
+        BaseText {
+            text: "Island Outline:"
+            pixelSize: Theme.typography.size.medium
+        }
+
+        BaseSwitch {
+            Layout.fillWidth: true
+            checked: Preferences.islandOutline
+            onToggled: Preferences.islandOutline = checked
+        }
+
     }
 }

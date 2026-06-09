@@ -122,7 +122,6 @@ Item {
         "launcher":      { source: "../modules/launcher/Launcher.qml" },
         "settings":      { source: "../modules/settings/Settings.qml" },
         "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
-        "notifications": { source: "../modules/notifications/Notifications.qml" },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
         "nexus":         { source: "../modules/nexus/Nexus.qml" },
         "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
@@ -187,7 +186,8 @@ Item {
         z: 2
         
         color: Theme.alpha(Theme.colors.background, Theme.opacity.background)
-        borderColor: Theme.colors.transparent
+        borderColor: Preferences.islandOutline ? Theme.alpha(Theme.colors.border, 0.4) : Theme.colors.transparent
+        borderWidth: Preferences.islandOutline ? 1 : 0
         radius: Preferences.cornerRadius || Theme.geometry.radius
         clip: true
 
