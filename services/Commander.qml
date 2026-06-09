@@ -93,4 +93,9 @@ Item {
         function toggle() { IslandService.toggleNexusPopout(); }
         target: "nexus"
     }
+
+    IpcHandler {
+        function toggle() { Recording.toggle(); }
+        target: "recording"
+    }
 }

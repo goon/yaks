@@ -163,9 +163,7 @@ FocusScope {
                             { text: "Bar",        icon: "border_top",       page: "Bar"                    },
                             { text: "Launcher",   icon: "rocket_launch",    page: "Launcher"               },
                             { text: "Wallpaper",  icon: "image",            page: "Wallpaper"              },
-                            { category: "System"                                                           },
-                            { text: "Appearance", icon: "palette",          page: "Appearance"             },
-                            { text: "Audio",      icon: "volume_up",        page: "Audio"                  }
+                            { text: "Appearance", icon: "palette",          page: "Appearance"             }
                         ]
 
                         delegate: ColumnLayout {

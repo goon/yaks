@@ -125,7 +125,7 @@ Item {
                                 anchors.centerIn: parent
                                 icon: Volume.volumeIcon
                                 size: Theme.dimensions.iconBase
-                                color: parent.active ? Theme.colors.primary : Theme.colors.text
+                                color: parent.parent.active ? Theme.colors.primary : Theme.colors.text
                             }
                         }
                     }
@@ -290,7 +290,7 @@ Item {
                                 anchors.centerIn: parent
                                 icon: Volume.inputMuted ? "mic_off" : "mic"
                                 size: Theme.dimensions.iconBase
-                                color: parent.active ? Theme.colors.primary : Theme.colors.text
+                                color: parent.parent.active ? Theme.colors.primary : Theme.colors.text
                             }
                         }
                     }

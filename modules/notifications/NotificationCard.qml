@@ -113,33 +113,39 @@ BaseBlock {
 
                     // 3. Material Symbol (Custom Fallback)
                     // Visible if appIcon or image starts with 'symbol:'
-                    Text {
-                        id: symbolIcon
+                    Rectangle {
+                        id: symbolIconContainer
                         anchors.centerIn: parent
-                        font.pixelSize: Theme.dimensions.iconMedium
-                        font.family: Theme.typography.iconFamily
-                        text: {
-                            if (!root.notification) return "";
-                            if (root.isScreenshot) return "image";
-                            const ai = root.notification.appIcon || "";
-                            const img = root.notification.image || "";
-                            
-                            function extract(s) {
-                                if (s.startsWith("symbol:")) return s.substring(7);
-                                const idx = s.indexOf("symbol:");
-                                if (idx !== -1) return s.substring(idx + 7);
-                                return "";
-                            }
-                            
-                            const res = extract(ai);
-                            if (res) return res;
-                            return extract(img);
-                        }
-                        visible: text !== ""
-                        color: Theme.colors.primary
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                        width: 36
+                        height: 36
+                        radius: Theme.geometry.radius
+                        color: Theme.alpha(Theme.colors.primary, 0.15)
+                        visible: symbolIcon.icon !== ""
                         z: 10
+
+                        BaseIcon {
+                            id: symbolIcon
+                            anchors.centerIn: parent
+                            size: Theme.dimensions.iconBase
+                            icon: {
+                                if (!root.notification) return "";
+                                if (root.isScreenshot) return "image";
+                                const ai = root.notification.appIcon || "";
+                                const img = root.notification.image || "";
+                                
+                                function extract(s) {
+                                    if (s.startsWith("symbol:")) return s.substring(7);
+                                    const idx = s.indexOf("symbol:");
+                                    if (idx !== -1) return s.substring(idx + 7);
+                                    return "";
+                                }
+                                
+                                const res = extract(ai);
+                                if (res) return res;
+                                return extract(img);
+                            }
+                            color: Theme.colors.primary
+                        }
                     }
 
                     // 4. Icon Fallback (Lowest Priority)

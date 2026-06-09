@@ -14,6 +14,7 @@ singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
 singleton Compositor services/Compositor.qml
 singleton IslandService services/IslandService.qml
+singleton Recording services/Recording.qml
 singleton Power services/Power.qml
 singleton Stats services/Stats.qml
 singleton Preferences services/Preferences.qml
