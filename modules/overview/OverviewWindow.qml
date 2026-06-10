@@ -79,6 +79,18 @@ Item {
 
     property int lastWorkspaceId: -1
 
+    Timer {
+        id: pendingFocusTimer
+        interval: 400
+        repeat: false
+        onTriggered: {
+            if (root.isDragging === false && root.pressed === false) {
+                Compositor.focusWindow(root.address);
+                IslandService.closeAll();
+            }
+        }
+    }
+
     function onDroppedOnWorkspace(targetWsId) {
         dragResetTimer.stop();
         root.isDragging = false;
@@ -90,8 +102,10 @@ Item {
         interval: 300
         repeat: false
         onTriggered: {
-            root.isDragging = false;
-            Compositor.dragInProgress = false;
+            if (root.isDragging) {
+                root.isDragging = false;
+                Compositor.dragInProgress = false;
+            }
         }
     }
 
@@ -221,13 +235,16 @@ Item {
                 root.pressed = true;
                 root.dragStartPos = Qt.point(mouse.x, mouse.y);
                 root.lastWorkspaceId = root.windowData ? (root.windowData.workspaceId || -1) : -1;
+                pendingFocusTimer.restart();
             }
         }
 
         onPositionChanged: (mouse) => {
             if (root.pressed && !root.isDragging) {
                 var distance = Math.sqrt(Math.pow(mouse.x - root.dragStartPos.x, 2) + Math.pow(mouse.y - root.dragStartPos.y, 2));
-                if (distance > 8) { // Drag threshold
+                if (distance > 8) {
+                    pendingFocusTimer.stop();
+                    root.dragOffset = Qt.point(relX + tileX, relY + tileY);
                     root.isDragging = true;
                     Compositor.dragInProgress = true;
                 }
@@ -239,10 +256,11 @@ Item {
         }
 
         onReleased: (mouse) => {
+            pendingFocusTimer.stop();
             root.pressed = false;
             if (root.isDragging) {
-                Compositor.dragInProgress = false;
                 root.Drag.drop();
+                Compositor.dragInProgress = false;
                 dragResetTimer.restart();
             }
         }
@@ -251,9 +269,6 @@ Item {
             if (!root.isDragging) {
                 if (mouse.button === Qt.MiddleButton) {
                     Compositor.closeWindow(root.address);
-                } else if (mouse.button === Qt.LeftButton) {
-                    Compositor.focusWindow(root.address);
-                    IslandService.closeAll();
                 }
             }
         }
@@ -277,6 +292,9 @@ Item {
                     Compositor.swapWindows(draggedWindow.address, root.address);
                 } else {
                     Compositor.moveToWorkspace(draggedWindow.address, root.windowData.workspaceId);
+                    if (draggedWindow.lastWorkspaceId >= 1) {
+                        Compositor.moveToWorkspace(root.address, draggedWindow.lastWorkspaceId);
+                    }
                 }
                 if (typeof draggedWindow.onDroppedOnWorkspace === "function") {
                     draggedWindow.onDroppedOnWorkspace(root.windowData.workspaceId);

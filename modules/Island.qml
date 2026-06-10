@@ -462,6 +462,9 @@ Item {
                         islandRoot.notifyPanel("opening");
                         openTimer.start();
                     }
+                    if (item.forceActiveFocus && item !== islandRoot) {
+                        item.forceActiveFocus();
+                    }
                 }
             }
         }

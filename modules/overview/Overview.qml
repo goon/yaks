@@ -7,6 +7,7 @@ import qs.services
 
 FocusScope {
     id: root
+    focus: true
 
     property string panelState: "Closed"
     property var barWindow: null

@@ -37,10 +37,10 @@ Item {
     function findToplevel(addr) {
         if (!addr) return null;
         var target = Compositor.normalizeAddress(addr);
-        var tlList = ToplevelManager.toplevels.values;
+        var tlList = Hyprland.toplevels.values;
         for (var i = 0; i < tlList.length; i++) {
             var tl = tlList[i];
-            var tlAddr = Compositor.normalizeAddress(tl.HyprlandToplevel ? tl.HyprlandToplevel.address : "");
+            var tlAddr = Compositor.normalizeAddress(tl.address || "");
             if (tlAddr === target) return tl;
         }
         return null;

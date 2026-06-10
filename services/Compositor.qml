@@ -480,14 +480,23 @@ Singleton {
                       "  end " +
                       "end)()");
         } else {
-            // Non-Lua fallback using hyprctl --batch, restoring original focus
+            var currentWsId = root.activeWorkspaceId;
             var activeAddr = Hyprland.activeToplevel ? Hyprland.activeToplevel.address : "";
+            var restoreAddr = "";
+
             if (activeAddr) {
                 if (!activeAddr.startsWith("0x")) activeAddr = "0x" + activeAddr;
+                var activeInfo = root.windowByAddress[activeAddr];
+                if (activeInfo && activeInfo.workspace && activeInfo.workspace.id === currentWsId) {
+                    restoreAddr = activeAddr;
+                }
+            }
+
+            if (restoreAddr) {
                 ProcessService.run([
                     "hyprctl",
                     "--batch",
-                    "dispatch focuswindow address:" + addrA + " ; dispatch swapwindow address:" + addrB + " ; dispatch focuswindow address:" + activeAddr
+                    "dispatch focuswindow address:" + addrA + " ; dispatch swapwindow address:" + addrB + " ; dispatch focuswindow address:" + restoreAddr
                 ]);
             } else {
                 ProcessService.run([
