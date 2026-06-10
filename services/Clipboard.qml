@@ -10,10 +10,7 @@ QtObject {
     property ListModel history
     readonly property string cliphistDb: "/home/michael/.cache/cliphist/db"
     readonly property string imagesDir: Config.cacheDir + "/cliphist-thumbnails"
-    
-    // A FileView to watch the cliphist database
-    property FileView dbWatcher
-    property Timer throttleTimer
+    property bool cliphistAvailable: false
 
     function reloadCliphist() {
         ProcessService.run(["sh", "-c", "cliphist list | head -n 50"], function(out) {
@@ -88,12 +85,12 @@ QtObject {
 
     // copyToClipboard but natively via cliphist (fixes image pasting)
     function pasteCliphistItem(rawLine) {
-        if (!rawLine) return;
+        if (!rawLine || !root.cliphistAvailable) return;
         ProcessService.runDetached(["sh", "-c", "printf '%s\n' \"$1\" | cliphist decode | wl-copy", "--", rawLine]);
     }
 
     function deleteCliphistItem(rawLine) {
-        if (!rawLine) return;
+        if (!rawLine || !root.cliphistAvailable) return;
         
         // Optimistic UI removal
         for (var i = 0; i < history.count; i++) {
@@ -115,11 +112,18 @@ QtObject {
     }
 
     function clearHistory() {
+        if (!root.cliphistAvailable) return;
         ProcessService.runDetached(["sh", "-c", "cliphist wipe"]);
     }
 
     Component.onCompleted: {
-        reloadCliphist();
+        ProcessService.run(["sh", "-c", "command -v cliphist"], function(out, exitCode) {
+            if (exitCode === 0) {
+                root.cliphistAvailable = true;
+                ProcessService.runDetached(["systemctl", "--user", "start", "cliphist.service", "cliphist-images.service"]);
+                root.reloadCliphist();
+            }
+        });
     }
 
     history: ListModel {
@@ -130,7 +134,7 @@ QtObject {
     property Timer pollTimer: Timer {
         interval: 1000
         repeat: true
-        running: true
+        running: root.cliphistAvailable
         onTriggered: {
             ProcessService.run(["sh", "-c", "cliphist list | head -n 1"], function(out) {
                 if (out && out !== "") {
