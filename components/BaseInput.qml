@@ -16,6 +16,7 @@ TextField {
     color: Theme.colors.text
     font.family: Theme.typography.family
     font.pixelSize: Theme.typography.size.base
+    font.letterSpacing: (root.echoMode === TextInput.Password && root.text.length > 0) ? 4 : 0
     placeholderTextColor: Theme.colors.muted
     leftPadding: inputPadding
     rightPadding: inputPadding
