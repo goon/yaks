@@ -6,7 +6,7 @@
 THEME_PATH="$2"
 THEME_DIR=$(dirname "$THEME_PATH")
 TEMPLATE_FILE="$THEME_DIR/steam.css"
-QUICK_CSS_PATH="$HOME/.config/millennium/quickcss.css"
+QUICK_CSS_PATH="$HOME/.config/millennium/quick.css"
 COLORS_FILE="$THEME_PATH/colors.json"
 
 # Check if Millennium is installed
@@ -53,6 +53,7 @@ awk -v json_file="$COLORS_FILE" -v font="$FONT" '
         if (colors["base"] == "") colors["base"] = colors["base00"]
         if (colors["background"] == "") colors["background"] = colors["base00"]
         if (colors["surface"] == "") colors["surface"] = colors["base01"]
+        if (colors["surfaceAlt"] == "") colors["surfaceAlt"] = colors["base02"]
         if (colors["text"] == "") colors["text"] = colors["base05"]
         if (colors["textDim"] == "") colors["textDim"] = colors["base04"]
         if (colors["muted"] == "") colors["muted"] = colors["base04"]
