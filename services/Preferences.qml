@@ -67,7 +67,7 @@ QtObject {
         "firefox": false,
         "gowall": true,
         "steam": false,
-        "qt6ct": false
+        "vscodium": false
     })
 
     // Functional Configuration
