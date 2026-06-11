@@ -9,7 +9,7 @@ FocusScope {
 
     implicitWidth: 500
     // Dynamic height based on current item
-    implicitHeight: Math.max(header.height + (pageStack.currentItem ? pageStack.currentItem.implicitHeight : 0), 100)
+    implicitHeight: pageStack.currentItem ? pageStack.currentItem.implicitHeight : 0
 
     property string panelState: "Closed"
 
@@ -44,35 +44,6 @@ FocusScope {
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
-
-        // Navigation Header (only visible when deeper than 1)
-        Item {
-            id: header
-            Layout.fillWidth: true
-            Layout.preferredHeight: pageStack.depth > 1 ? 52 : 0
-            visible: pageStack.depth > 1
-            clip: true
-
-            Behavior on Layout.preferredHeight { BaseAnimation { duration: Theme.animations.fast } }
-
-            RowLayout {
-                anchors.fill: parent
-                spacing: Theme.geometry.spacing.medium
-
-                BaseButton {
-                    icon: "arrow_back"
-                    text: "Back"
-                    Layout.preferredHeight: 36
-                    normalColor: Theme.colors.transparent
-                    hoverColor: Theme.alpha(Theme.colors.text, 0.1)
-                    textColor: Theme.colors.text
-                    iconColor: Theme.colors.text
-                    onClicked: root.popPage()
-                }
-
-                Item { Layout.fillWidth: true }
-            }
-        }
 
         StackView {
             id: pageStack

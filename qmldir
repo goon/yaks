@@ -52,7 +52,7 @@ BaseComboBox components/BaseComboBox.qml
 BaseSwitch components/BaseSwitch.qml
 BaseAnimation components/BaseAnimation.qml
 BaseSpinBox components/BaseSpinBox.qml
-BaseGraph components/BaseGraph.qml
+
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml
@@ -101,3 +101,4 @@ HubQuickActions modules/nexus/HubQuickActions.qml
 HubPower modules/nexus/HubPower.qml
 HubNotifications modules/nexus/HubNotifications.qml
 
+BaseDevice components/BaseDevice.qml
