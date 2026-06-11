@@ -13,8 +13,13 @@ if [ ! -f "$COLORS_FILE" ] || [ ! -f "$TEMPLATE_FILE" ]; then
 fi
 
 SETTINGS_FILE="$HOME/.config/VSCodium/User/settings.json"
-if [ ! -f "$SETTINGS_FILE" ] || ! command -v jq >/dev/null 2>&1; then
+if ! command -v jq >/dev/null 2>&1; then
     exit 1
+fi
+
+if [ ! -f "$SETTINGS_FILE" ]; then
+    mkdir -p "$(dirname "$SETTINGS_FILE")"
+    echo "{}" > "$SETTINGS_FILE"
 fi
 
 TMP_THEME="/tmp/vscodium_theme_$$.json"
@@ -54,7 +59,12 @@ awk -v json_file="$COLORS_FILE" '
 # Inject into settings.json securely
 jq --slurpfile theme "$TMP_THEME" '
   .["workbench.colorCustomizations"] = $theme[0].colors |
-  .["editor.tokenColorCustomizations"] = { "textMateRules": $theme[0].tokenColors }
+  .["editor.tokenColorCustomizations"] = { "textMateRules": $theme[0].tokenColors } |
+  .["window.titleBarStyle"] = "custom" |
+  .["window.menuBarVisibility"] = "hidden" |
+  .["workbench.statusBar.visible"] = false |
+  .["editor.minimap.enabled"] = false |
+  .["breadcrumbs.enabled"] = false
 ' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp" && mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
 
 rm -f "$TMP_THEME"
