@@ -34,30 +34,17 @@ Singleton {
     }
 
     function connectDevice(address) {
-        var dev = findDevice(address);
-        if (dev) {
-            dev.trusted = true; // Ensure persistent record
-            if (!dev.paired && !dev.bonded) {
-                dev.pair();
-            } else {
-                dev.connect();
-            }
-        }
-
+        // Quickshell's BlueZ wrapper lacks a proper DBus Agent for PipeWire A2DP authorization.
+        // Shelled out to bluetoothctl which properly spawns an agent and handles pairing/connecting.
+        ProcessService.runDetached(["bluetoothctl", "connect", address]);
     }
 
     function disconnectDevice(address) {
-        var dev = findDevice(address);
-        if (dev)
-            dev.disconnect();
-
+        ProcessService.runDetached(["bluetoothctl", "disconnect", address]);
     }
 
     function removeDevice(address) {
-        var dev = findDevice(address);
-        if (dev)
-            dev.forget();
-
+        ProcessService.runDetached(["bluetoothctl", "remove", address]);
     }
 
     function findDevice(address) {

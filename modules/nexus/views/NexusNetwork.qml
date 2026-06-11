@@ -6,23 +6,170 @@ import qs
 BaseScroller {
     id: root
     clip: true
+    implicitHeight: mainLayout.implicitHeight
 
-    // Auto-scan while page is open and Wi-Fi is enabled
-    Timer {
-        id: scanTimer
-        interval: 10000 // 10 seconds
-        repeat: true
-        running: root.visible && Network.wifiEnabled
-        triggeredOnStart: true
-        onTriggered: Network.scan()
-    }
+
 
     ColumnLayout {
+        id: mainLayout
         width: root.availableWidth
-        spacing: Theme.geometry.spacing.large
-        
-        // Add a bit of padding at the top since it's directly under the header
-        Item { Layout.preferredHeight: Theme.geometry.spacing.small }
+        spacing: Theme.geometry.spacing.medium
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Theme.geometry.spacing.medium
+
+            // Left side: Wi-Fi toggle (acts as back)
+            BaseButton {
+                Layout.preferredWidth: (parent.width - parent.spacing) / 2
+                Layout.fillWidth: true
+                buttonMode: "toggle"
+                title: "Wi-Fi"
+                subtitle: Network.wifiEnabled ? "On" : "Off"
+                icon: active ? "wifi" : "wifi_off"
+                active: Network.wifiEnabled
+                mirrored: true
+                onClicked: {
+                    if (root.StackView.view)
+                        root.StackView.view.pop();
+                }
+                onActionClicked: Network.toggleWifi()
+            }
+
+            // Search Button
+            BaseButton {
+                id: searchButton
+
+                property real scanProgress: 0
+
+                Layout.preferredWidth: (parent.width - parent.spacing) / 2
+                Layout.fillWidth: true
+                Layout.preferredHeight: 64
+                hoverEnabled: false
+                text: ""
+                icon: ""
+                onClicked: {
+                    if (Network.scanning) {
+                        if (Network.wifiDevice) Network.wifiDevice.scannerEnabled = false;
+                    } else {
+                        Network.scan();
+                    }
+                }
+                visible: !!Network.wifiEnabled
+                customRadius: Theme.geometry.radius * 1.5
+
+                Item {
+                    anchors.fill: parent
+                    z: -2
+                    
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: Theme.geometry.radius * 1.5
+                        gradient: Gradient {
+                            orientation: Gradient.Horizontal
+                            GradientStop { position: 0; color: Theme.colors.primary }
+                            GradientStop { position: 1; color: Theme.colors.secondary }
+                        }
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 1.5
+                        radius: (Theme.geometry.radius * 1.5) - 1.5
+                        color: Theme.colors.surface
+                        
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: parent.radius
+                            color: Qt.alpha(Theme.colors.primary, 0.08)
+                        }
+                    }
+                }
+
+                BaseText {
+                    id: idleLabel
+                    anchors.centerIn: parent
+                    text: "Search"
+                    color: Theme.colors.text
+                    pixelSize: searchButton.textSize
+                    weight: searchButton.weight
+                    opacity: Network.scanning ? 0.0 : 1.0
+                    visible: opacity > 0
+                    
+                    Behavior on opacity {
+                        BaseAnimation { duration: Theme.animations.normal }
+                    }
+                }
+
+                BaseAnimation {
+                    target: searchButton
+                    property: "scanProgress"
+                    from: 0
+                    to: 1
+                    duration: 15000
+                    running: Network.scanning
+                    easing.type: Easing.Linear
+                    onFinished: {
+                        if (Network.scanning && Network.wifiDevice)
+                            Network.wifiDevice.scannerEnabled = false;
+                    }
+                }
+
+                Canvas {
+                    id: scanCanvas
+                    anchors.fill: parent
+                    z: -1
+                    opacity: Network.scanning ? 1 : 0
+                    visible: opacity > 0
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        var r = Math.min(Theme.geometry.radius * 1.5, height / 2, width / 2);
+                        ctx.beginPath();
+                        ctx.moveTo(r, 0);
+                        ctx.lineTo(width - r, 0);
+                        ctx.arcTo(width, 0, width, r, r);
+                        ctx.lineTo(width, height - r);
+                        ctx.arcTo(width, height, width - r, height, r);
+                        ctx.lineTo(r, height);
+                        ctx.arcTo(0, height, 0, height - r, r);
+                        ctx.lineTo(0, r);
+                        ctx.arcTo(0, 0, r, 0, r);
+                        ctx.closePath();
+                        ctx.clip();
+
+                        var fillHeight = height * searchButton.scanProgress;
+                        var surfaceY = height - fillHeight;
+                        ctx.beginPath();
+                        ctx.moveTo(-10, height + 10);
+                        ctx.lineTo(-10, surfaceY);
+                        var amplitude = 6 * Math.sin(searchButton.scanProgress * Math.PI);
+                        for (var x = -10; x <= width + 10; x += 5) {
+                            var sine = Math.sin(x / 15 + Date.now() / 150) * amplitude;
+                            ctx.lineTo(x, surfaceY + sine);
+                        }
+                        ctx.lineTo(width + 10, height + 10);
+                        ctx.closePath();
+                        var grad = ctx.createLinearGradient(0, 0, width, 0);
+                        grad.addColorStop(0, Theme.colors.primary);
+                        grad.addColorStop(1, Theme.colors.secondary);
+                        ctx.fillStyle = grad;
+                        ctx.fill();
+                    }
+
+                    Timer {
+                        interval: 16
+                        repeat: true
+                        running: scanCanvas.visible
+                        onTriggered: scanCanvas.requestPaint()
+                    }
+
+                    Behavior on opacity {
+                        BaseAnimation { duration: 500 }
+                    }
+                }
+            }
+        }
 
         // --- SECTION 1: HERO CONNECTION STATUS & TRAFFIC GRAPH CARD ---
         BaseBlock {
@@ -36,33 +183,34 @@ BaseScroller {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Theme.geometry.spacing.large
+                spacing: Theme.geometry.spacing.medium
 
                 // Top: Active Connection Details
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.geometry.spacing.large
+                    spacing: Theme.geometry.spacing.medium
 
-                    // Glowing Icon
-                    Rectangle {
-                        id: iconRect
+                    // Glowing Icon / Ethernet Toggle
+                    BaseButton {
                         width: 64
                         height: 64
-                        radius: Theme.geometry.radius
-                        color: Theme.alpha(
-                            (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning,
-                            0.15
-                        )
+                        
+                        // Original visual styling
+                        customRadius: Theme.geometry.radius
+                        icon: {
+                            if (Network.ethernetConnected) return "lan";
+                            if (Network.connected) return "wifi";
+                            return "wifi_off";
+                        }
+                        size: 32
+                        iconColor: (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning
+                        normalColor: Theme.alpha(iconColor, 0.15)
+                        hoverColor: Theme.alpha(iconColor, 0.25)
 
-                        BaseIcon {
-                            anchors.centerIn: parent
-                            icon: {
-                                if (Network.ethernetConnected) return "lan";
-                                if (Network.connected) return "wifi";
-                                return "wifi_off";
+                        onClicked: {
+                            if (Network.wiredDevice) {
+                                Network.toggleEthernet();
                             }
-                            size: 32
-                            color: (Network.ethernetConnected || Network.connected) ? Theme.colors.primary : Theme.colors.warning
                         }
                     }
 
@@ -164,147 +312,19 @@ BaseScroller {
                         }
                     }
 
-                    // Graph container
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 120
 
-                        BaseGraph {
-                            anchors.fill: parent
-                            modelData: Stats.networkRxHistory
-                            lineColor: Theme.colors.primary
-                            maxValue: 1024 * 1024
-                            autoScale: true
-                            drawProgress: 1.0
-                        }
-
-                        BaseGraph {
-                            anchors.fill: parent
-                            modelData: Stats.networkTxHistory
-                            lineColor: Theme.colors.secondary
-                            maxValue: 1024 * 1024
-                            autoScale: true
-                            drawProgress: 1.0
-                        }
-                    }
                 }
             }
         }
 
-        // --- SECTION 2: UNIFIED INTERFACE CONTROLLERS CARD ---
-        BaseBlock {
-            Layout.fillWidth: true
-            padding: Theme.geometry.spacing.dynamicPadding
-            borderWidth: 1
-            borderColor: Theme.colors.border
-            backgroundColor: Theme.alpha(Theme.colors.surface, 0.4)
 
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: Theme.geometry.spacing.large
-
-                // --- ETHERNET ROW ---
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Theme.geometry.spacing.medium
-
-                    BaseIcon {
-                        icon: "lan"
-                        size: Theme.dimensions.iconBase + 2
-                        color: Network.ethernetConnected ? Theme.colors.primary : Theme.colors.muted
-                    }
-
-                    ColumnLayout {
-                        spacing: 2
-                        Layout.fillWidth: true
-
-                        BaseText {
-                            text: "Ethernet"
-                            weight: Theme.typography.weights.bold
-                            pixelSize: Theme.typography.size.medium
-                            color: Theme.colors.textLighter
-                        }
-
-                        BaseText {
-                            Layout.fillWidth: true
-                            wrapMode: Text.Wrap
-                            text: {
-                                if (!Network.ethernetEnabled) return "No ethernet hardware interface found";
-                                if (Network.ethernetConnected) return "Interface enabled and connected";
-                                if (Network.wiredDevice && Network.wiredDevice.hasLink) return "Cable connected (ready)";
-                                return "Cable unplugged";
-                            }
-                            color: {
-                                if (Network.ethernetConnected) return Theme.colors.success;
-                                if (Network.wiredDevice && !Network.wiredDevice.hasLink) return Theme.colors.warning;
-                                return Theme.colors.muted;
-                            }
-                            pixelSize: Theme.typography.size.base
-                        }
-                    }
-
-                    BaseSwitch {
-                        checked: Network.ethernetConnected
-                        enabled: Network.ethernetEnabled && (Network.wiredDevice ? Network.wiredDevice.hasLink : true)
-                        onToggled: Network.toggleEthernet()
-                    }
-                }
-
-                BaseSeparator {
-                    fill: true
-                    thickness: 1
-                    color: Theme.alpha(Theme.colors.border, 0.3)
-                    Layout.topMargin: 4
-                    Layout.bottomMargin: 4
-                }
-
-                // --- WI-FI ROW ---
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Theme.geometry.spacing.medium
-
-                    BaseIcon {
-                        icon: Network.wifiEnabled ? "wifi" : "wifi_off"
-                        size: Theme.dimensions.iconBase + 2
-                        color: Network.wifiEnabled ? Theme.colors.primary : Theme.colors.muted
-                    }
-
-                    ColumnLayout {
-                        spacing: 2
-                        Layout.fillWidth: true
-
-                        BaseText {
-                            text: "Wireless"
-                            weight: Theme.typography.weights.bold
-                            pixelSize: Theme.typography.size.medium
-                            color: Theme.colors.textLighter
-                        }
-
-                        BaseText {
-                            Layout.fillWidth: true
-                            wrapMode: Text.Wrap
-                            text: Network.wifiEnabled
-                                ? (Network.scanning ? "Scanning for nearby access points..." : "Interface enabled")
-                                : "Interface disabled"
-                            color: Network.wifiEnabled ? Theme.colors.success : Theme.colors.muted
-                            pixelSize: Theme.typography.size.base
-                        }
-                    }
-
-                    BaseSwitch {
-                        checked: Network.wifiEnabled
-                        onToggled: Network.toggleWifi()
-                    }
-                }
-            }
-        }
 
         // --- SECTION 3: AVAILABLE NETWORKS ---
-        ColumnLayout {
+        BaseBlock {
             id: wifiListSection
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.medium
-            visible: Network.wifiEnabled
+            clip: true
+            visible: Network.wifiEnabled && availableList.length > 0
 
             readonly property var availableList: {
                 var list = [];
@@ -312,259 +332,64 @@ BaseScroller {
                     var net = Network.availableNetworks[i];
                     if (!net.active) list.push(net);
                 }
+                list.sort(function(a, b) {
+                    return b.signal - a.signal;
+                });
                 return list;
             }
 
-            // Section Header Row
-            RowLayout {
+            ColumnLayout {
+                spacing: Theme.geometry.spacing.medium
                 Layout.fillWidth: true
-                Layout.topMargin: Theme.geometry.spacing.small
 
+                // Section Header
                 BaseText {
                     text: "Available Networks"
                     weight: Theme.typography.weights.bold
                     color: Theme.colors.primary
-                    pixelSize: Theme.typography.size.medium
                     Layout.fillWidth: true
+                    Layout.topMargin: Theme.geometry.spacing.medium
                 }
 
-                // Custom premium rotating scan button
-                Item {
-                    width: 32
-                    height: 32
-                    Layout.alignment: Qt.AlignVCenter
-                    visible: Network.wifiEnabled
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 4
 
-                    Rectangle {
-                        id: refreshBg
-                        anchors.fill: parent
-                        radius: 16
-                        color: refreshMouse.containsMouse ? Theme.alpha(Theme.colors.text, 0.06) : Theme.colors.transparent
-                        border.color: refreshMouse.containsMouse ? Theme.alpha(Theme.colors.border, 0.15) : Theme.colors.transparent
-                        border.width: 1
+                    // Networks List Repeater
+                    Repeater {
+                        model: wifiListSection.availableList
 
-                        Behavior on color { ColorAnimation { duration: 150 } }
-                    }
-
-                    BaseIcon {
-                        id: refreshIcon
-                        anchors.centerIn: parent
-                        icon: "refresh"
-                        size: 16
-                        color: refreshMouse.containsMouse ? Theme.colors.primary : Theme.colors.textLighter
-
-                        RotationAnimation on rotation {
-                            from: 0
-                            to: 360
-                            duration: 1000
-                            loops: Animation.Infinite
-                            running: Network.scanning
-                        }
-                    }
-
-                    MouseArea {
-                        id: refreshMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (Network.scanning) {
-                                if (Network.wifiDevice) Network.wifiDevice.scannerEnabled = false;
-                            } else {
-                                Network.scan();
+                        delegate: BaseDevice {
+                            deviceType: "wifi"
+                            title: modelData.ssid
+                            subtitle: ""
+                            iconName: {
+                                var sig = modelData.signal;
+                                if (sig > 75) return "wifi";
+                                if (sig > 50) return "network_wifi_3_bar";
+                                if (sig > 25) return "network_wifi_2_bar";
+                                return "network_wifi_1_bar";
                             }
-                        }
-                    }
-                }
-            }
+                            iconOpacity: 1.0
+                            signalText: modelData.signal + "%"
+                            isSecured: modelData.secured
+                            isKnown: modelData.known
+                            isConnected: false
 
-            // Networks List Repeater
-            Repeater {
-                model: wifiListSection.availableList
-
-                delegate: ColumnLayout {
-                    id: delegateRoot
-                    property bool expanded: false
-                    Layout.fillWidth: true
-                    spacing: 0
-
-                    // Network Row Card
-                    BaseBlock {
-                        id: networkItem
-                        Layout.fillWidth: true
-                        paddingHorizontal: Theme.geometry.spacing.dynamicPadding
-                        paddingVertical: Theme.geometry.spacing.medium
-                        borderWidth: 1
-                        borderColor: containsMouse || delegateRoot.expanded ? Theme.alpha(Theme.colors.primary, 0.4) : Theme.colors.border
-                        backgroundColor: containsMouse || delegateRoot.expanded
-                            ? Theme.alpha(Theme.colors.primary, 0.06)
-                            : Theme.alpha(Theme.colors.surface, 0.2)
-                        clickable: true
-
-                        onClicked: {
-                            if (modelData.secured) {
-                                delegateRoot.expanded = !delegateRoot.expanded;
-                                if (delegateRoot.expanded)
-                                    passwordInput.forceActiveFocus();
-                            } else {
+                            onConnectClicked: function(password) {
+                                Network.connect(modelData.ssid, password);
+                            }
+                            onActionClicked: {
                                 Network.connect(modelData.ssid, "");
                             }
-                        }
-
-                        RowLayout {
-                            width: networkItem.width - (networkItem.paddingHorizontal * 2)
-                            spacing: Theme.geometry.spacing.medium
-
-                            BaseIcon {
-                                icon: "wifi"
-                                size: Theme.dimensions.iconMedium
-                                color: (networkItem.containsMouse || delegateRoot.expanded) ? Theme.colors.primary : Theme.colors.text
-                                opacity: 0.4 + 0.6 * (modelData.signal / 100.0)
-                            }
-
-                            ColumnLayout {
-                                spacing: 2
-                                Layout.fillWidth: true
-
-                                BaseText {
-                                    text: modelData.ssid
-                                    weight: (networkItem.containsMouse || delegateRoot.expanded) ? Theme.typography.weights.bold : Theme.typography.weights.normal
-                                    color: (networkItem.containsMouse || delegateRoot.expanded) ? Theme.colors.textLighter : Theme.colors.text
-                                    pixelSize: Theme.typography.size.base
-                                }
-
-                                BaseText {
-                                    text: modelData.secured ? "Secured WPA/WPA2" : "Open Network"
-                                    pixelSize: Theme.typography.size.small
-                                    color: Theme.colors.muted
-                                }
-                            }
-
-                            RowLayout {
-                                spacing: Theme.geometry.spacing.medium
-                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                                BaseText {
-                                    text: modelData.signal + "%"
-                                    pixelSize: Theme.typography.size.small
-                                    color: Theme.colors.muted
-                                }
-
-                                BaseIcon {
-                                    icon: "lock"
-                                    size: 14
-                                    color: Theme.colors.muted
-                                    visible: modelData.secured
-                                }
-
-                                BaseIcon {
-                                    icon: delegateRoot.expanded ? "expand_less" : "expand_more"
-                                    size: 16
-                                    color: Theme.colors.muted
-                                    visible: modelData.secured
-                                }
+                            onForgetClicked: {
+                                Network.forget(modelData.ssid);
                             }
                         }
-                    }
-
-                    // Expandable Password Form Drawer
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: delegateRoot.expanded ? passwordBox.implicitHeight + 16 : 0
-                        state: delegateRoot.expanded ? "expanded" : "collapsed"
-                        clip: true
-
-                        BaseBlock {
-                            id: passwordBox
-                            anchors.top: parent.top
-                            anchors.topMargin: 8
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            backgroundColor: Theme.alpha(Theme.colors.surface, 0.4)
-                            borderWidth: 1
-                            borderColor: Theme.colors.border
-                            padding: Theme.geometry.spacing.dynamicPadding
-                            spacing: Theme.geometry.spacing.medium
-
-                            BaseInput {
-                                id: passwordInput
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                placeholderText: "Enter Wi-Fi network password..."
-                                echoMode: TextInput.Password
-                                onAccepted: connectBtn.clicked()
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Theme.geometry.spacing.medium
-
-                                // Spacer to push buttons to the right
-                                Item { Layout.fillWidth: true }
-
-                                // Cancel Button
-                                BaseButton {
-                                    text: "Cancel"
-                                    Layout.preferredHeight: 32
-                                    paddingHorizontal: 16
-                                    normalColor: Theme.alpha(Theme.colors.text, 0.06)
-                                    textColor: Theme.colors.text
-                                    onClicked: {
-                                        delegateRoot.expanded = false;
-                                        passwordInput.text = "";
-                                    }
-                                }
-
-                                // Forget Button
-                                BaseButton {
-                                    text: "Forget"
-                                    visible: modelData.known
-                                    Layout.preferredHeight: 32
-                                    paddingHorizontal: 16
-                                    normalColor: Theme.alpha(Theme.colors.error, 0.15)
-                                    textColor: Theme.colors.error
-                                    borderColor: Theme.alpha(Theme.colors.error, 0.3)
-                                    borderWidth: 1
-                                    onClicked: {
-                                        Network.forget(modelData.ssid);
-                                        delegateRoot.expanded = false;
-                                    }
-                                }
-
-                                // Connect Button
-                                BaseButton {
-                                    id: connectBtn
-                                    text: "Connect"
-                                    Layout.preferredHeight: 32
-                                    paddingHorizontal: 20
-                                    normalColor: Theme.colors.primary
-                                    textColor: Theme.colors.text
-                                    textWeight: Theme.typography.weights.bold
-                                    onClicked: {
-                                        Network.connect(modelData.ssid, passwordInput.text);
-                                        delegateRoot.expanded = false;
-                                        passwordInput.text = "";
-                                    }
-                                }
-                            }
-                        }
-
-                        Behavior on Layout.preferredHeight { BaseAnimation { duration: 200 } }
                     }
                 }
             }
-
-            // No Networks Found Placeholder
-            BaseText {
-                visible: !Network.scanning && wifiListSection.availableList.length === 0
-                text: "No wireless networks found nearby."
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
-                color: Theme.colors.muted
-                Layout.topMargin: 20
-            }
         }
-        
-        Item { Layout.preferredHeight: Theme.geometry.spacing.large }
+
     }
 }

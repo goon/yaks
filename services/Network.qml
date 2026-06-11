@@ -81,10 +81,14 @@ QtObject {
             root.availableNetworks = [];
             return;
         }
-        var nets = [];
         var nativeNets = wifiDevice.networks.values;
+        
+        var nets = [];
+        var seenSsids = {};
+
         for (var i = 0; i < nativeNets.length; i++) {
             var net = nativeNets[i];
+            if (net.name) seenSsids[net.name] = true;
             nets.push({
                 "ssid": net.name,
                 "signal": Math.round(net.signalStrength * 100),
@@ -95,6 +99,19 @@ QtObject {
                 "native": net
             });
         }
+
+        // If scanning is disabled, NetworkManager often drops unconnected networks.
+        // We preserve them here so the UI doesn't suddenly empty out.
+        if (!scanning) {
+            for (var j = 0; j < root.availableNetworks.length; j++) {
+                var oldNet = root.availableNetworks[j];
+                if (oldNet.ssid && !seenSsids[oldNet.ssid]) {
+                    oldNet.active = false; // It's definitely not connected if it was dropped
+                    nets.push(oldNet);
+                }
+            }
+        }
+
         nets.sort((a, b) => b.signal - a.signal);
         root.availableNetworks = nets;
     }
