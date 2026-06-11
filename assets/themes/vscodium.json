@@ -25,6 +25,7 @@
 		"editor.wordHighlightBackground": "{{base02}}",
 		"editor.wordHighlightStrongBackground": "{{base03}}",
 		"editorCursor.foreground": "{{base05}}",
+		"editorGutter.background": "{{base00}}",
 		"editorGroup.border": "{{base01}}",
 		"editorGroupHeader.tabsBackground": "{{base00}}",
 		"editorHoverWidget.background": "{{base01}}",
