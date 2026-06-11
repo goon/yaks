@@ -16,7 +16,6 @@ QtObject {
     property string weatherUnit: "celsius" // "celsius" or "fahrenheit"
     property bool gowallEnabled: false // Global Toggle
     property string customAvatar: ""
-    property bool wallpaperParallaxEnabled: false
     property double wallpaperParallaxStrength: 20.0
 
     property double backgroundOpacity: 0.5
@@ -102,7 +101,6 @@ QtObject {
             "weatherUnit": root.weatherUnit,
             "gowallEnabled": root.gowallEnabled,
             "customAvatar": root.customAvatar,
-            "wallpaperParallaxEnabled": root.wallpaperParallaxEnabled,
             "wallpaperParallaxStrength": root.wallpaperParallaxStrength,
 
             "backgroundOpacity": root.backgroundOpacity,
@@ -254,7 +252,6 @@ QtObject {
     onWeatherUnitChanged: requestSave("weatherUnit")
     onGowallEnabledChanged: requestSave("gowallEnabled")
     onCustomAvatarChanged: requestSave("customAvatar")
-    onWallpaperParallaxEnabledChanged: requestSave("wallpaperParallaxEnabled")
     onWallpaperParallaxStrengthChanged: requestSave("wallpaperParallaxStrength")
 
     onBackgroundOpacityChanged: requestSave("backgroundOpacity")
@@ -356,9 +353,6 @@ QtObject {
 
                     if (data.hasOwnProperty("customAvatar"))
                         root.customAvatar = data.customAvatar;
-
-                    if (data.hasOwnProperty("wallpaperParallaxEnabled"))
-                        root.wallpaperParallaxEnabled = data.wallpaperParallaxEnabled;
 
                     if (data.hasOwnProperty("wallpaperParallaxStrength"))
                         root.wallpaperParallaxStrength = data.wallpaperParallaxStrength;

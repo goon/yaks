@@ -77,33 +77,18 @@ SettingsPage {
         }
 
         BaseText {
-            text: "Enable Parallax:"
-            pixelSize: Theme.typography.size.medium
-        }
-
-        BaseSwitch {
-            checked: Preferences.wallpaperParallaxEnabled
-            onToggled: Preferences.wallpaperParallaxEnabled = checked
-            Layout.alignment: Qt.AlignLeft
-        }
-
-        BaseText {
             text: "Parallax Strength:"
             pixelSize: Theme.typography.size.medium
-            opacity: enabled ? 1.0 : 0.5
-            enabled: Preferences.wallpaperParallaxEnabled
         }
 
         BaseSlider {
             Layout.fillWidth: true
-            from: 5
+            from: 0
             to: 100
             stepSize: 1
             value: Preferences.wallpaperParallaxStrength
             externalLabel: true
             externalSuffix: "px"
-            opacity: enabled ? 1.0 : 0.5
-            enabled: Preferences.wallpaperParallaxEnabled
             onMoved: Preferences.wallpaperParallaxStrength = value
         }
 

@@ -119,18 +119,18 @@ PanelWindow {
     Item {
         id: parallaxContainer
         
-        property real strength: Preferences.wallpaperParallaxEnabled ? Preferences.wallpaperParallaxStrength : 0
+        property real strength: Preferences.wallpaperParallaxStrength
         
         x: -currentOffsetX
         y: -currentOffsetY
         width: root.width + (2 * strength)
         height: root.height + (2 * strength)
 
-        property real currentOffsetX: (mouseArea.containsMouse && Preferences.wallpaperParallaxEnabled)
+        property real currentOffsetX: (mouseArea.containsMouse && strength > 0)
             ? (mouseArea.mouseX / Math.max(1, root.width)) * 2 * strength
             : strength
             
-        property real currentOffsetY: (mouseArea.containsMouse && Preferences.wallpaperParallaxEnabled)
+        property real currentOffsetY: (mouseArea.containsMouse && strength > 0)
             ? (mouseArea.mouseY / Math.max(1, root.height)) * 2 * strength
             : strength
             
