@@ -89,10 +89,7 @@ Item {
         target: "dashboard"
     }
 
-    IpcHandler {
-        function toggle() { IslandService.toggleOverview(); }
-        target: "overview"
-    }
+
 
     IpcHandler {
         function toggle() { IslandService.toggleNexusPopout(); }

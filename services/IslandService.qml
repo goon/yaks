@@ -171,9 +171,7 @@ QtObject {
         togglePanel("nexus");
     }
 
-    function toggleOverview() {
-        togglePanel("overview");
-    }
+
 
     // --- Volume Toast Logic ---
     property bool _startupDelayFinished: false

@@ -63,31 +63,6 @@ SettingsPage {
             onValueChanged: Preferences.workspaceCount = value
         }
 
-        BaseText {
-            text: "Overview Columns:"
-            pixelSize: Theme.typography.size.medium
-        }
 
-        BaseSpinBox {
-            Layout.fillWidth: true
-            from: 2
-            to: 10
-            value: Preferences.overviewColumns
-            onValueChanged: Preferences.overviewColumns = value
-        }
-
-        BaseText {
-            text: "Preview Scale:"
-            pixelSize: Theme.typography.size.medium
-        }
-
-        BaseSlider {
-            Layout.fillWidth: true
-            from: 0.08
-            to: 0.30
-            stepSize: 0.01
-            value: Preferences.overviewScale
-            onMoved: Preferences.overviewScale = value
-        }
     }
 }

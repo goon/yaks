@@ -15,15 +15,7 @@ Singleton {
     property var specialWorkspaces: []
     property int activeWorkspaceId: -1
     property var activeWindow: ({ "title": "Desktop", "app": "" })
-    property bool dragInProgress: false
 
-    onDragInProgressChanged: {
-        if (!dragInProgress) {
-            _updateWorkspaces();
-            _updateWindows();
-            _refreshClients();
-        }
-    }
 
     // --- Workspace Mapping ---
     function _mapWorkspaces() {
@@ -151,7 +143,6 @@ Singleton {
 
     // --- Internal Update Helpers ---
     function _updateWorkspaces() {
-        if (root.dragInProgress) return;
         var data = _mapWorkspaces();
         root.workspaces = data.list;
         root.activeWorkspaceId = data.activeId;
@@ -177,7 +168,6 @@ Singleton {
     }
 
     function _updateWindows() {
-        if (root.dragInProgress) return;
         root.windows = _mapWindows();
     }
 
@@ -294,6 +284,8 @@ Singleton {
         return raw.startsWith("0x") ? raw : ("0x" + raw);
     }
 
+    property bool usingLua: true
+
     // --- Public Actions ---
 
     function _dispatch(cmd) {
@@ -301,7 +293,7 @@ Singleton {
     }
 
     function switchToWorkspace(workspaceIdx) {
-        if (Hyprland.usingLua) {
+        if (root.usingLua) {
             _dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
         } else {
             _dispatch("workspace " + workspaceIdx.toString());
@@ -312,227 +304,14 @@ Singleton {
         var addr = windowId.toString();
         if (!addr.startsWith("0x")) addr = "0x" + addr;
 
-        if (Hyprland.usingLua) {
+        if (root.usingLua) {
             _dispatch("(function() for _, w in ipairs(hl.get_windows()) do if w.address == \"" + addr + "\" then return hl.dsp.focus({ window = w }) end end end)()");
         } else {
             _dispatch("focuswindow address:" + addr);
         }
     }
 
-    function moveToWorkspace(windowId, workspaceId) {
-        var addr = windowId.toString();
-        if (!addr.startsWith("0x")) addr = "0x" + addr;
 
-        // Optimistically update local cache to prevent spring-back
-        var oldWsId = -1;
-        if (root.windowByAddress[addr]) {
-            if (root.windowByAddress[addr]["workspace"]) {
-                oldWsId = root.windowByAddress[addr]["workspace"].id;
-            } else {
-                root.windowByAddress[addr]["workspace"] = {};
-            }
-            root.windowByAddress[addr]["workspace"].id = workspaceId;
-        }
-
-        // Optimistically update workspaces state using a new array assignment so QML detects the changes
-        if (oldWsId !== -1 && oldWsId !== workspaceId) {
-            var updatedWorkspaces = [];
-            for (var i = 0; i < root.workspaces.length; i++) {
-                var wsCopy = Object.assign({}, root.workspaces[i]);
-                if (wsCopy.id === oldWsId) {
-                    var wsWindowsCount = 0;
-                    for (var j = 0; j < root.windows.length; j++) {
-                        if (root.windows[j].workspaceId === oldWsId && root.windows[j].id !== addr) {
-                            wsWindowsCount++;
-                        }
-                    }
-                    wsCopy.hasWindows = wsWindowsCount > 0;
-                }
-                if (wsCopy.id === workspaceId) {
-                    wsCopy.hasWindows = true;
-                }
-                updatedWorkspaces.push(wsCopy);
-            }
-            root.workspaces = updatedWorkspaces;
-        }
-
-        // Optimistically update the window geometry (at/size) for layout changes
-        var oldWsWindows = [];
-        var targetWsWindows = [];
-        for (var addrKey in root.windowByAddress) {
-            var cachedWin = root.windowByAddress[addrKey];
-            if (!cachedWin || !cachedWin.workspace) continue;
-            
-            var wsId = cachedWin.workspace.id;
-            if (addrKey === addr) {
-                wsId = workspaceId;
-            }
-            
-            if (wsId === oldWsId) {
-                oldWsWindows.push(cachedWin);
-            } else if (wsId === workspaceId) {
-                targetWsWindows.push(cachedWin);
-            }
-        }
-
-        var getMonitorInfo = function(wsId) {
-            var targetMonitor = null;
-            var wsList = Hyprland.workspaces.values;
-            for (var i = 0; i < wsList.length; i++) {
-                if (wsList[i].id === wsId) {
-                    targetMonitor = wsList[i].monitor;
-                    break;
-                }
-            }
-            if (!targetMonitor) targetMonitor = Hyprland.focusedMonitor;
-            if (!targetMonitor) return null;
-            
-            var scale = targetMonitor.scale || 1.0;
-            var rLeft = targetMonitor.reserved ? targetMonitor.reserved.left : 0;
-            var rRight = targetMonitor.reserved ? targetMonitor.reserved.right : 0;
-            var rTop = targetMonitor.reserved ? targetMonitor.reserved.top : 0;
-            var rBottom = targetMonitor.reserved ? targetMonitor.reserved.bottom : 0;
-            return {
-                x: targetMonitor.x,
-                y: targetMonitor.y,
-                width: (targetMonitor.width / scale) - rLeft - rRight,
-                height: (targetMonitor.height / scale) - rTop - rBottom,
-                rLeft: rLeft,
-                rTop: rTop
-            };
-        };
-
-        if (oldWsId !== -1) {
-            var mInfo = getMonitorInfo(oldWsId);
-            if (mInfo) {
-                if (oldWsWindows.length === 1) {
-                    oldWsWindows[0].at = [mInfo.x + mInfo.rLeft, mInfo.y + mInfo.rTop];
-                    oldWsWindows[0].size = [mInfo.width, mInfo.height];
-                } else if (oldWsWindows.length === 2) {
-                    oldWsWindows[0].at = [mInfo.x + mInfo.rLeft, mInfo.y + mInfo.rTop];
-                    oldWsWindows[0].size = [mInfo.width * 0.5, mInfo.height];
-                    oldWsWindows[1].at = [mInfo.x + mInfo.rLeft + mInfo.width * 0.5, mInfo.y + mInfo.rTop];
-                    oldWsWindows[1].size = [mInfo.width * 0.5, mInfo.height];
-                }
-            }
-        }
-
-        var mInfoT = getMonitorInfo(workspaceId);
-        if (mInfoT) {
-            if (targetWsWindows.length === 1) {
-                targetWsWindows[0].at = [mInfoT.x + mInfoT.rLeft, mInfoT.y + mInfoT.rTop];
-                targetWsWindows[0].size = [mInfoT.width, mInfoT.height];
-            } else if (targetWsWindows.length === 2) {
-                targetWsWindows[0].at = [mInfoT.x + mInfoT.rLeft, mInfoT.y + mInfoT.rTop];
-                targetWsWindows[0].size = [mInfoT.width * 0.5, mInfoT.height];
-                targetWsWindows[1].at = [mInfoT.x + mInfoT.rLeft + mInfoT.width * 0.5, mInfoT.y + mInfoT.rTop];
-                targetWsWindows[1].size = [mInfoT.width * 0.5, mInfoT.height];
-            }
-        }
-
-        if (Hyprland.usingLua) {
-            _dispatch("hl.dsp.window.move({ workspace = " + workspaceId.toString() + ", follow = false, window = \"address:" + addr + "\" })");
-        } else {
-            _dispatch("movetoworkspacesilent " + workspaceId.toString() + ",address:" + addr);
-        }
-
-        root._updateWindows();
-        wsDebounce.restart();
-        clientsDebounce.restart();
-    }
-
-    function swapWindows(windowIdA, windowIdB) {
-        var addrA = windowIdA.toString();
-        if (!addrA.startsWith("0x")) addrA = "0x" + addrA;
-        var addrB = windowIdB.toString();
-        if (!addrB.startsWith("0x")) addrB = "0x" + addrB;
-
-        // Optimistically swap coordinates, sizes and states in local cache to prevent spring-back/delays
-        if (root.windowByAddress[addrA] && root.windowByAddress[addrB]) {
-            var tempAt = root.windowByAddress[addrA]["at"];
-            root.windowByAddress[addrA]["at"] = root.windowByAddress[addrB]["at"];
-            root.windowByAddress[addrB]["at"] = tempAt;
-
-            var tempSize = root.windowByAddress[addrA]["size"];
-            root.windowByAddress[addrA]["size"] = root.windowByAddress[addrB]["size"];
-            root.windowByAddress[addrB]["size"] = tempSize;
-
-            var tempFloating = root.windowByAddress[addrA]["floating"];
-            root.windowByAddress[addrA]["floating"] = root.windowByAddress[addrB]["floating"];
-            root.windowByAddress[addrB]["floating"] = tempFloating;
-
-            var tempFullscreen = root.windowByAddress[addrA]["fullscreen"];
-            root.windowByAddress[addrA]["fullscreen"] = root.windowByAddress[addrB]["fullscreen"];
-            root.windowByAddress[addrB]["fullscreen"] = tempFullscreen;
-        }
-
-        if (Hyprland.usingLua) {
-            // Self-invoking Lua function executes focus and swap atomically within the same evaluation, restoring original focus
-            _dispatch("(function() " +
-                      "  local active = hl.get_active_window(); " +
-                      "  for _, w in ipairs(hl.get_windows()) do " +
-                      "    if w.address == \"" + addrA + "\" then " +
-                      "      hl.dispatch(hl.dsp.focus({ window = w })); " +
-                      "      hl.dispatch(hl.dsp.window.swap({ target = \"address:" + addrB + "\" })); " +
-                      "      if active then hl.dispatch(hl.dsp.focus({ window = active })); end " +
-                      "      return; " +
-                      "    end " +
-                      "  end " +
-                      "end)()");
-        } else {
-            var currentWsId = root.activeWorkspaceId;
-            var activeAddr = Hyprland.activeToplevel ? Hyprland.activeToplevel.address : "";
-            var restoreAddr = "";
-
-            if (activeAddr) {
-                if (!activeAddr.startsWith("0x")) activeAddr = "0x" + activeAddr;
-                var activeInfo = root.windowByAddress[activeAddr];
-                if (activeInfo && activeInfo.workspace && activeInfo.workspace.id === currentWsId) {
-                    restoreAddr = activeAddr;
-                }
-            }
-
-            if (restoreAddr) {
-                ProcessService.run([
-                    "hyprctl",
-                    "--batch",
-                    "dispatch focuswindow address:" + addrA + " ; dispatch swapwindow address:" + addrB + " ; dispatch focuswindow address:" + restoreAddr
-                ]);
-            } else {
-                ProcessService.run([
-                    "hyprctl",
-                    "--batch",
-                    "dispatch focuswindow address:" + addrA + " ; dispatch swapwindow address:" + addrB
-                ]);
-            }
-        }
-
-        root._updateWindows();
-        clientsDebounce.restart();
-    }
-
-    function closeWindow(windowId) {
-        var addr = windowId.toString();
-        if (!addr.startsWith("0x")) addr = "0x" + addr;
-
-        if (Hyprland.usingLua) {
-            _dispatch("hl.dsp.window.close('address:" + addr + "')");
-        } else {
-            _dispatch("closewindow address:" + addr);
-        }
-    }
-
-    function toggleSpecialWorkspace(name) {
-        if (Hyprland.usingLua) {
-            _dispatch("hl.dsp.workspace.toggle_special('" + name + "')");
-        } else {
-            _dispatch("togglespecialworkspace " + name);
-        }
-    }
-
-    function quit() {
-        _dispatch("exit");
-    }
 
     Component.onCompleted: {
         Hyprland.refreshWorkspaces();
