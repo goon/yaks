@@ -23,6 +23,12 @@ Item {
     // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
     readonly property bool isIslandMorphed: shouldBeMorphed || capsule.height > normalCapsuleHeight + 1
 
+    // Determine whether the island should grab keyboard focus (toasts shouldn't)
+    readonly property bool grabsFocus: isIslandMorphed && 
+        loadedPanelName !== "volumetoast" && 
+        loadedPanelName !== "notificationtoast" && 
+        loadedPanelName !== ""
+
     // Helper functions to safely call lifecycle methods and set properties on loaded views
     function notifyPanel(funcName) {
         if (panelLoader.item && typeof panelLoader.item[funcName] === "function") {
