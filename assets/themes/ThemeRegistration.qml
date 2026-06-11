@@ -54,8 +54,8 @@ Item {
         },
         {
             "id": "steam",
-            "name": "Steam",
-            "binary": "command -v steam",
+            "name": "Steam / Millennium",
+            "binary": "command -v steam && test -d ~/.config/millennium",
             "script": "steam.sh",
             "path": "~/.config/millenium"
         },
@@ -67,11 +67,11 @@ Item {
             "path": "Wallpaper Gen"
         },
         {
-            "id": "qt6ct",
-            "name": "Qt6ct",
-            "binary": "command -v qt6ct",
-            "script": "qt6ct.sh",
-            "path": "~/.config/qt6ct"
+            "id": "vscodium",
+            "name": "VSCode",
+            "binary": "command -v codium || command -v vscodium",
+            "script": "vscodium.sh",
+            "path": "~/.vscode-oss/extensions"
         }
     ]
 
