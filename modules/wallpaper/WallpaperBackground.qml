@@ -90,7 +90,7 @@ PanelWindow {
     // --- Layout Shell Config ---
     WlrLayershell.layer: WlrLayer.Background
     WlrLayershell.namespace: root.namespace
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.exclusiveZone: root.exclusiveZone
     visible: true
     color: Theme.colors.background
