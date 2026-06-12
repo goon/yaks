@@ -133,10 +133,10 @@ Item {
             if (root.activeHoldProgress <= 0.0) return;
             
             var lineWidth = 2.5;
-            var r = Math.max(0, globalRadius - lineWidth / 2);
-            
             var w = width - lineWidth;
             var h = height - lineWidth;
+            var r = Math.min(Math.max(0, globalRadius - lineWidth / 2), w / 2, h / 2);
+            
             var x = lineWidth / 2;
             var y = lineWidth / 2;
             
