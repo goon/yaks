@@ -32,7 +32,7 @@ SettingsPage {
         BaseComboBox {
             Layout.fillWidth: true
             textRole: "name"
-            model: ThemeService.availableStockThemes
+            model: ThemeService.allThemes
             currentIndex: {
                 if (!model)
                     return -1;
