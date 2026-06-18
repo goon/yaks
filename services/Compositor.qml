@@ -311,6 +311,10 @@ Singleton {
         }
     }
 
+    function quit() {
+        _dispatch("exit");
+    }
+
 
 
     Component.onCompleted: {
