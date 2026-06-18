@@ -18,6 +18,13 @@ Item {
             "path": "~/.config/gtk-4.0"
         },
         {
+            "id": "qt",
+            "name": "Qt",
+            "binary": "test -d ~/.config/Kvantum",
+            "script": "qt.sh",
+            "path": "~/.config/Kvantum"
+        },
+        {
             "id": "kitty",
             "name": "Kitty",
             "binary": "command -v kitty",
