@@ -100,4 +100,11 @@ Item {
         function toggle() { Recording.toggle(); }
         target: "recording"
     }
+
+    IpcHandler {
+        function reload(hard: bool): void {
+            Quickshell.reload(hard);
+        }
+        target: "shell"
+    }
 }
