@@ -23,6 +23,10 @@ Item {
     // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
     readonly property bool isIslandMorphed: shouldBeMorphed || capsule.height > normalCapsuleHeight + 1
 
+    // Identify toast-like panels that should not capture full screen mouse inputs
+    readonly property bool isToast: loadedPanelName === "volumetoast" || loadedPanelName === "notificationtoast" ||
+                                    activePanelName === "volumetoast" || activePanelName === "notificationtoast"
+
     // Determine whether the island should grab keyboard focus (toasts shouldn't)
     readonly property bool grabsFocus: isIslandMorphed && 
         loadedPanelName !== "volumetoast" && 

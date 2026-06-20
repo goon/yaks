@@ -64,8 +64,8 @@ PanelWindow {
         right: 0
     }
 
-    // Input mask: Lock clicks to the capsule when not morphed, allowing the sides to be click-through.
-    mask: island.isIslandMorphed ? null : capsuleRegion
+    // Input mask: Lock clicks to the capsule when not morphed or when showing a toast, allowing the sides to be click-through.
+    mask: (island.isIslandMorphed && !island.isToast) ? null : capsuleRegion
 
     Region {
         id: capsuleRegion
