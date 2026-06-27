@@ -5,12 +5,14 @@ import qs
 BaseContainer {
     id: root
 
-    property color backgroundColor: Globals.alpha(Globals.colors.surface, 1.0)
+    property color backgroundColor: Globals.alpha(Globals.colors.surface, 0.25)
     property color hoverColor: Globals.colors.transparent
     property int blockRadius: Globals.geometry.innerRadius.medium
 
     property bool premiumHover: false
     property bool premiumActive: false
+    
+    padding: Globals.geometry.padding.medium
 
     Rectangle {
         parent: root
@@ -18,6 +20,8 @@ BaseContainer {
         anchors.fill: parent
         color: root.backgroundColor
         radius: root.blockRadius
+        border.color: Globals.alpha(Globals.colors.border, 0.75)
+        border.width: 1
 
         BaseActiveBackground {
             anchors.fill: parent

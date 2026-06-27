@@ -99,7 +99,7 @@ Dashboard modules/dashboard/Dashboard.qml
 DashboardCalendar modules/dashboard/DashboardCalendar.qml
 DashboardWeather modules/dashboard/DashboardWeather.qml
 DashboardMedia modules/dashboard/DashboardMedia.qml
-DashboardUserPanel modules/dashboard/DashboardUserPanel.qml
+
 DashboardClock modules/dashboard/DashboardClock.qml
 DashboardResourceBars modules/dashboard/DashboardResourceBars.qml
 

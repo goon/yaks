@@ -57,10 +57,6 @@ FocusScope {
                                 Layout.preferredHeight: 160
                                 spacing: Globals.geometry.spacing.large
 
-                                DashboardUserPanel {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                }
 
                                 DashboardWeather {
                                     Layout.fillWidth: true

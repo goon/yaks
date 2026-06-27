@@ -7,9 +7,7 @@ BaseBento {
     implicitWidth: 120
     implicitHeight: 320
 
-    padding: Globals.geometry.spacing.large
-    paddingHorizontal: padding
-    paddingVertical: padding
+
 
     RowLayout {
         Layout.fillWidth: true

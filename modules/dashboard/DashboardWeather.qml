@@ -6,8 +6,8 @@ import qs
 
 BaseBento {
     id: weather
-    implicitWidth: 360
-    implicitHeight: 160
+    implicitWidth: 360 + (paddingHorizontal * 2)
+    implicitHeight: 160 + (paddingVertical * 2)
 
     ColumnLayout {
         id: weatherWidget

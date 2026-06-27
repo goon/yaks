@@ -6,8 +6,8 @@ import qs
 BaseBento {
     id: root
 
-    implicitWidth: 120
-    implicitHeight: 320
+    implicitWidth: 120 + (paddingHorizontal * 2)
+    implicitHeight: 320 + (paddingVertical * 2)
 
     component TimeSegment: Item {
         id: segment
@@ -104,18 +104,14 @@ BaseBento {
         }
     }
 
-    Item {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+    SystemClock {
+        id: systemClock
+        precision: SystemClock.Seconds
+    }
 
-        SystemClock {
-            id: systemClock
-            precision: SystemClock.Seconds
-        }
-
-        Column {
-            anchors.centerIn: parent
-            spacing: 8
+    Column {
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        spacing: 8
 
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -171,7 +167,6 @@ BaseBento {
                 pixelSize: Globals.typography.size.large * 1.8
                 fontWeight: Globals.typography.weights.bold
                 textColor: Globals.colors.primary
-            }
         }
     }
 }

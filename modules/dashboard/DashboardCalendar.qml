@@ -6,19 +6,14 @@ import qs
 
 BaseBento {
     id: cal
-    implicitWidth: 330
+    implicitWidth: Globals.dimensions.calendarBlockWidth + (paddingHorizontal * 2)
     implicitHeight: 320
 
-    Item {
-        id: calendarWidget
+    Column {
+        id: contentColumn
         Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        Column {
-            id: contentColumn
-            anchors.centerIn: parent
-            spacing: Globals.geometry.spacing.medium
-            width: Globals.dimensions.calendarBlockWidth
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        spacing: Globals.geometry.spacing.medium
 
             // Month navigation header
             Item {
@@ -279,4 +274,3 @@ BaseBento {
             }
         }
     }
-}

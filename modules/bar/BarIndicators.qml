@@ -29,7 +29,6 @@ Item {
         { key: "settings", icon: "settings" },
         { key: "instantmix", icon: "instant_mix" },
         { key: "power", icon: "power_settings_new" },
-        { key: "screencast", icon: "browse_activity" },
         { key: "clipboard", icon: "content_paste" },
     ]
 

@@ -9,7 +9,7 @@ import qs
 BaseBento {
     id: root
 
-    implicitWidth: 300
+    implicitWidth: 300 + (paddingHorizontal * 2)
     hoverEnabled: false
 
 

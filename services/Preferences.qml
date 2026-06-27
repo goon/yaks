@@ -114,7 +114,7 @@ QtObject {
     }
 
     property QtObject indicators: QtObject {
-        property var order: ["notifications", "clipboard", "screencast", "wifi", "instantmix", "settings", "power"]
+        property var order: ["notifications", "clipboard", "wifi", "instantmix", "settings", "power"]
 
         onOrderChanged: root.requestSave()
     }
@@ -139,11 +139,9 @@ QtObject {
 
     property string currentTheme: "pure"
     property string currentWallpaper: ""
-    property string customAvatar: ""
 
     onCurrentThemeChanged: root.requestSave()
     onCurrentWallpaperChanged: root.requestSave()
-    onCustomAvatarChanged: root.requestSave()
 
     // ── SCHEMA ───────────────────────────────────────────────────────────
 
@@ -183,8 +181,7 @@ QtObject {
         ["clipboard", "displayLimit"],
         ["animations", "speedMultiplier"],
         ["currentTheme"],
-        ["currentWallpaper"],
-        ["customAvatar"],
+        ["currentWallpaper"]
     ]
 
     function _get(path) {
