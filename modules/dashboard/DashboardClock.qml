@@ -8,6 +8,7 @@ BaseBento {
 
     implicitWidth: 120 + (paddingHorizontal * 2)
     implicitHeight: 320 + (paddingVertical * 2)
+    hoverEnabled: true
 
     component TimeSegment: Item {
         id: segment
@@ -133,7 +134,16 @@ BaseBento {
                         radius: 3
                         color: Globals.colors.secondary
                         opacity: 0.8
-                    }
+                        property int itemIndex: index
+
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            running: true
+                            PauseAnimation { duration: itemIndex * 150 }
+                            NumberAnimation { to: 0.2; duration: 400; easing.type: Easing.InOutSine }
+                            NumberAnimation { to: 0.8; duration: 400; easing.type: Easing.InOutSine }
+                            PauseAnimation { duration: (2 - itemIndex) * 150 + 500 }
+                        }                    }
                 }
             }
 
@@ -157,6 +167,16 @@ BaseBento {
                         radius: 3
                         color: Globals.colors.secondary
                         opacity: 0.8
+                        property int itemIndex: index
+
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            running: true
+                            PauseAnimation { duration: itemIndex * 150 }
+                            NumberAnimation { to: 0.2; duration: 400; easing.type: Easing.InOutSine }
+                            NumberAnimation { to: 0.8; duration: 400; easing.type: Easing.InOutSine }
+                            PauseAnimation { duration: (2 - itemIndex) * 150 + 500 }
+                        }
                     }
                 }
             }

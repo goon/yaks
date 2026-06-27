@@ -135,6 +135,12 @@ QtObject {
         onSpeedMultiplierChanged: root.requestSave()
     }
 
+    property QtObject timedate: QtObject {
+        property string format: "24" // "12" or "24"
+
+        onFormatChanged: root.requestSave()
+    }
+
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
     property string currentTheme: "pure"
@@ -180,6 +186,7 @@ QtObject {
         ["clipboard", "cleanupDays"],
         ["clipboard", "displayLimit"],
         ["animations", "speedMultiplier"],
+        ["timedate", "format"],
         ["currentTheme"],
         ["currentWallpaper"]
     ]

@@ -40,54 +40,39 @@ FocusScope {
                     width: parent.width
                     spacing: 0
 
-                    RowLayout {
+                    ColumnLayout {
                         id: mainRow
                         Layout.fillWidth: true
                         spacing: Globals.geometry.spacing.large
 
-                        // Left + Middle Column Group
-                        ColumnLayout {
+                        // Top Row: Weather
+                        DashboardWeather {
                             Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            spacing: Globals.geometry.spacing.large
-
-                            // Top Row: Weather & User Panel
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 160
-                                spacing: Globals.geometry.spacing.large
-
-
-                                DashboardWeather {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                }
-                            }
-
-                            // Bottom Row: Clock & Calendar & Resource Bars
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 320
-                                spacing: Globals.geometry.spacing.large
-
-                                DashboardClock {
-                                    Layout.fillHeight: true
-                                }
-
-                                DashboardCalendar {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                }
-
-                                DashboardResourceBars {
-                                    Layout.fillHeight: true
-                                }
-                            }
+                            Layout.preferredHeight: 190
                         }
 
-                        // Right Column: Media Player
-                        DashboardMedia {
-                            Layout.fillHeight: true
+                        // Bottom Row: Clock & Calendar & Resource Bars & Media
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 320
+                            spacing: Globals.geometry.spacing.large
+
+                            DashboardClock {
+                                Layout.fillHeight: true
+                            }
+
+                            DashboardCalendar {
+                                Layout.fillHeight: true
+                            }
+
+                            DashboardResourceBars {
+                                Layout.fillHeight: true
+                            }
+
+                            DashboardMedia {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
                         }
                     }
                 }

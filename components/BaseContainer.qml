@@ -17,7 +17,13 @@ Item {
     property bool hoverEnabled: true
     property bool autoFillWidth: true
     
-    readonly property alias containsMouse: mouseArea.containsMouse
+    HoverHandler {
+        id: hoverHandler
+        enabled: root.hoverEnabled || root.clickable
+        cursorShape: (root.clickable && enabled) ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
+    readonly property bool containsMouse: hoverHandler.hovered
     readonly property alias pressed: mouseArea.pressed
 
     // Internal layout control
@@ -45,7 +51,6 @@ Item {
         anchors.fill: parent
         enabled: root.clickable || root.hoverEnabled
         hoverEnabled: true
-        cursorShape: (root.clickable && enabled) ? Qt.PointingHandCursor : Qt.ArrowCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.RightButton)

@@ -32,7 +32,7 @@ BaseBento {
         Item {
             id: albumArtWrapper
             Layout.fillWidth: true
-            implicitHeight: root.implicitWidth - (root.paddingHorizontal * 2)
+            Layout.fillHeight: true
 
             readonly property int visualBarsCount: 96
             readonly property real barWidth: (Math.PI * (albumArtCircle.width + 8) / visualBarsCount) * 0.45
@@ -52,7 +52,7 @@ BaseBento {
             Item {
                 id: albumArtCircle
                 anchors.centerIn: parent
-                width: parent.width - 84
+                width: Math.min(parent.width, parent.height) - 84
                 height: width
             }
 
@@ -225,6 +225,14 @@ BaseBento {
 
                         NumberAnimation { target: albumArtContainer; property: "breathScale"; to: 1.04; duration: 1200; easing.type: Easing.InOutSine }
                         NumberAnimation { target: albumArtContainer; property: "breathScale"; to: 1.0;  duration: 1200; easing.type: Easing.InOutSine }
+                    }
+
+                    RotationAnimation on rotation {
+                        from: 0
+                        to: 360
+                        duration: 16000
+                        loops: Animation.Infinite
+                        running: Media.playbackState === MprisPlaybackState.Playing
                     }
 
                     Image {

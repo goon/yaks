@@ -23,6 +23,7 @@ Item {
         { page: "Clipboard.qml",     title: "Clipboard",     subtitle: "History, sync, and behaviour.",          icon: "content_paste" },
         { page: "Launcher.qml",      title: "Launcher",      subtitle: "Launcher behaviour.",                    icon: "rocket_launch" },
         { page: "Animations.qml",    title: "Animations",    subtitle: "Speed, transitions, and motion.",        icon: "animation" },
+        { page: "TimeDate.qml",      title: "Time & Date",   subtitle: "Time formatting and location settings.", icon: "schedule" },
         { page: "Wallpaper.qml",     title: "Wallpaper",     subtitle: "Wallpaper and dynamic themeing.",        icon: "image" },
         { page: "Applications.qml",  title: "Applications",  subtitle: "Application theming.",                   icon: "apps" },
     ]

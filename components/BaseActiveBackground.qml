@@ -31,7 +31,7 @@ Rectangle {
     // Premium Selection Gradient Border Layer
     Item {
         anchors.fill: parent
-        opacity: root.isPremiumActive ? 1.0 : 0.0
+        opacity: root.premiumActive ? 1.0 : ((root.premiumHover && root.hovered) ? 0.05 : 0.0)
         visible: opacity > 0.0 || root.isPremiumActive
         layer.enabled: opacity < 1.0 && opacity > 0.0
         

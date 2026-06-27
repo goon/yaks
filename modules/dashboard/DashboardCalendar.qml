@@ -8,6 +8,7 @@ BaseBento {
     id: cal
     implicitWidth: Globals.dimensions.calendarBlockWidth + (paddingHorizontal * 2)
     implicitHeight: 320
+    hoverEnabled: true
 
     Column {
         id: contentColumn
@@ -28,7 +29,6 @@ BaseBento {
                     width: Globals.dimensions.calendarCellSize
                     height: parent.height
                     icon: "chevron_left"
-                    hoverColor: Globals.colors.surface
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
                     onClicked: {
@@ -105,7 +105,6 @@ BaseBento {
                     width: Globals.dimensions.calendarCellSize
                     height: parent.height
                     icon: "chevron_right"
-                    hoverColor: Globals.colors.surface
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
                     onClicked: {
@@ -245,7 +244,9 @@ BaseBento {
                                 anchors.fill: parent
                                 radius: Globals.geometry.radius
                                 premiumActive: modelData.isToday
-                                hoverEnabled: false
+                                premiumHover: true
+                                hoverEnabled: true
+                                hovered: dayMouseArea.containsMouse
                             }
 
                             BaseText {
@@ -264,7 +265,7 @@ BaseBento {
                             MouseArea {
                                 id: dayMouseArea
                                 anchors.fill: parent
-                                hoverEnabled: false
+                                hoverEnabled: true
                                 cursorShape: Qt.ArrowCursor
                                 enabled: modelData.isCurrentMonth
                             }

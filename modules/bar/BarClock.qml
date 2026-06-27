@@ -29,7 +29,7 @@ BaseContainer {
         BaseText {
             id: timeText
             anchors.centerIn: parent
-            text: Qt.formatDateTime(systemClock.date, "hh mm AP")
+            text: Preferences.timedate.format === "12" ? Qt.formatDateTime(systemClock.date, "hh mm AP") : Qt.formatDateTime(systemClock.date, "HH mm")
             pixelSize: 18
             weight: Globals.typography.weights.bold
         }

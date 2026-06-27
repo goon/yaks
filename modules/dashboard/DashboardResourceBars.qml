@@ -6,6 +6,7 @@ BaseBento {
     id: root
     implicitWidth: 120
     implicitHeight: 320
+    hoverEnabled: true
 
 
 

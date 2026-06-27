@@ -54,6 +54,30 @@ QtObject {
         xhr.send();
     }
 
+    function setClosestLocation(query) {
+        if (!query) return;
+        var xhr = new XMLHttpRequest();
+        var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(query) + "&count=1&language=en&format=json";
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    var results = json.results || [];
+                    if (results.length > 0) {
+                        var item = results[0];
+                        item.full_name = item.name + (item.admin1 ? (", " + item.admin1) : "") + (item.country ? (", " + item.country) : "");
+                        Preferences.weather.lat = item.latitude.toString();
+                        Preferences.weather.long = item.longitude.toString();
+                        Preferences.weather.locationName = item.full_name;
+                    }
+                } catch (e) {
+                }
+            }
+        };
+        xhr.open("GET", url);
+        xhr.send();
+    }
+
     function fetchWeather() {
         if (!latitude || !longitude)
             return ;
@@ -65,7 +89,8 @@ QtObject {
         var url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + 
                  "&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m" + 
                  "&hourly=temperature_2m,weather_code" +
-                 "&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto" + 
+                 "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,wind_speed_10m_max&timezone=auto" + 
+                 "&past_days=1" +
                  "&temperature_unit=celsius&wind_speed_unit=mph";
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
