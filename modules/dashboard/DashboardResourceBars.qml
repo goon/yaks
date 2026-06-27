@@ -7,19 +7,19 @@ BaseBento {
     implicitWidth: 120
     implicitHeight: 320
 
-    padding: Theme.geometry.spacing.large
+    padding: Globals.geometry.spacing.large
     paddingHorizontal: padding
     paddingVertical: padding
 
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Theme.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.medium
 
         component ResourceBar: ColumnLayout {
             id: barCol
             property real value: 0.0
-            property color color: Theme.colors.primary
+            property color color: Globals.colors.primary
             property string icon: ""
             property string label: ""
             property string tempText: ""
@@ -44,9 +44,9 @@ BaseBento {
                     id: trackBg
                     anchors.fill: parent
                     radius: width / 2
-                    color: Theme.colors.background
+                    color: Globals.colors.background
                     border.width: 1
-                    border.color: Theme.alpha(Theme.colors.border, 0.1)
+                    border.color: Globals.alpha(Globals.colors.border, 0.1)
                     clip: true
 
                     Rectangle {
@@ -69,9 +69,9 @@ BaseBento {
                     width: parent.width - 8
                     height: width
                     radius: width / 2
-                    color: Theme.colors.surface
+                    color: Globals.colors.surface
                     border.width: 1
-                    border.color: Theme.alpha(Theme.colors.border, 0.3)
+                    border.color: Globals.alpha(Globals.colors.border, 0.3)
                     
                     x: 4
                     y: (parent.height - height - 8) * (1.0 - barCol.value) + 4
@@ -87,7 +87,7 @@ BaseBento {
                         anchors.centerIn: parent
                         text: barCol.hovered && barCol.tempText !== "" ? barCol.tempText : Math.round(barCol.value * 100)
                         pixelSize: 9
-                        weight: Theme.typography.weights.bold
+                        weight: Globals.typography.weights.bold
                         color: barCol.color
                     }
                 }
@@ -97,14 +97,14 @@ BaseBento {
                 Layout.alignment: Qt.AlignHCenter
                 text: barCol.label
                 pixelSize: 9
-                weight: Theme.typography.weights.bold
-                color: Theme.alpha(Theme.colors.text, 0.4)
+                weight: Globals.typography.weights.bold
+                color: Globals.alpha(Globals.colors.text, 0.4)
             }
         }
 
         ResourceBar {
             value: Stats.currentCpu
-            color: Theme.colors.accent
+            color: Globals.colors.accent
             icon: "memory"
             label: "CPU"
             tempText: Stats.currentTemp + "°"
@@ -112,14 +112,14 @@ BaseBento {
 
         ResourceBar {
             value: Stats.currentRam
-            color: Theme.colors.success
+            color: Globals.colors.success
             icon: "sd_card"
             label: "RAM"
         }
 
         ResourceBar {
             value: Stats.currentGpu
-            color: Theme.colors.error
+            color: Globals.colors.error
             icon: "videogame_asset"
             label: "GPU"
             tempText: Stats.currentGpuTemp + "°"

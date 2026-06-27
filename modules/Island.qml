@@ -127,7 +127,7 @@ Item {
 
     Timer {
         id: collapseTimer
-        interval: Theme.animations.normal
+        interval: Globals.animations.normal
         repeat: false
         onTriggered: {
             if (!islandRoot.isMorphed) {
@@ -147,8 +147,8 @@ Item {
     // Expose the mask element to Bar.qml for input region
     readonly property alias maskItem: maskItem
 
-    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - (Theme.dimensions.barItemHeight * Theme.barScale)) / 2)
-    readonly property real normalCapsuleWidth: (pillClock.implicitWidth * Theme.barScale + normalSideMargin * 2)
+    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - (Globals.dimensions.barItemHeight * Globals.barScale)) / 2)
+    readonly property real normalCapsuleWidth: (pillClock.implicitWidth * Globals.barScale + normalSideMargin * 2)
     readonly property real normalCapsuleHeight: Preferences.bar.height
     readonly property real normalCapsuleX: (barWindow.width - normalCapsuleWidth) / 2
     readonly property real normalCapsuleY: Preferences.bar.position === "top"
@@ -167,8 +167,8 @@ Item {
         return (panel && panel.height) ? panel.height : 500;
     }
 
-    readonly property real totalWidthPadding: (Theme.geometry.padding.island * 2)
-    readonly property real totalHeightPadding: (Theme.geometry.padding.island * 2)
+    readonly property real totalWidthPadding: (Globals.geometry.padding.island * 2)
+    readonly property real totalHeightPadding: (Globals.geometry.padding.island * 2)
 
     // Target Dimensions when morphed
     property real activePanelWidth: activePanelItem ? (activePanelItem.implicitWidth || 0) + totalWidthPadding : getExpectedPanelWidth(activePanelName)
@@ -200,7 +200,7 @@ Item {
         if (IslandService.anchorX < 0) return (barWindow.width - actualPanelWidth) / 2;
         
         var x = IslandService.anchorX - (actualPanelWidth / 2);
-        var radiusInset = Theme.geometry.radius;
+        var radiusInset = Globals.geometry.radius;
         var minX = (IslandService.anchorMinX >= 0) ? (IslandService.anchorMinX + radiusInset) : 0;
         var maxX = (IslandService.anchorMaxX >= 0) ? (IslandService.anchorMaxX - actualPanelWidth - radiusInset) : (barWindow.width - actualPanelWidth);
         return Math.max(minX, Math.min(x, maxX));
@@ -250,15 +250,15 @@ Item {
         z: 2
         
 
-        borderColor: Preferences.globals.islandOutline ? Theme.alpha(Theme.colors.border, 0.4) : Theme.colors.transparent
+        borderColor: Preferences.globals.islandOutline ? Globals.alpha(Globals.colors.border, 0.4) : Globals.colors.transparent
         borderWidth: Preferences.globals.islandOutline ? 1 : 0
-        radius: Preferences.globals.cornerRadius || Theme.geometry.radius
+        radius: Preferences.globals.cornerRadius || Globals.geometry.radius
         clip: true
 
-        Behavior on x      { enabled: islandRoot._ready; BaseAnimation { duration: Theme.animations.normal; easing.type: Theme.animations.easingType } }
-        Behavior on y      { enabled: islandRoot._ready; BaseAnimation { duration: Theme.animations.normal; easing.type: Theme.animations.easingType } }
-        Behavior on width  { enabled: islandRoot._ready; BaseAnimation { duration: Theme.animations.normal; easing.type: Theme.animations.easingType } }
-        Behavior on height { enabled: islandRoot._ready; BaseAnimation { duration: Theme.animations.normal; easing.type: Theme.animations.easingType } }
+        Behavior on x      { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
+        Behavior on y      { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
+        Behavior on width  { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
+        Behavior on height { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
 
 
 
@@ -275,19 +275,19 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: implicitHeight
-                width: (pillClock.implicitWidth * Theme.barScale + normalSideMargin * 2) / Theme.barScale
-                spacing: normalSideMargin / Theme.barScale
+                width: (pillClock.implicitWidth * Globals.barScale + normalSideMargin * 2) / Globals.barScale
+                spacing: normalSideMargin / Globals.barScale
                 
                 opacity: islandRoot.isIslandMorphed ? 0.0 : 1.0
                 visible: opacity > 0.01
 
-                Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
+                Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
 
                 transform: Scale {
                     origin.x: contentLayout.width / 2
                     origin.y: contentLayout.height / 2
-                    xScale: Theme.barScale
-                    yScale: Theme.barScale
+                    xScale: Globals.barScale
+                    yScale: Globals.barScale
                 }
 
                 PillClock {
@@ -300,7 +300,7 @@ Item {
             Loader {
                 id: panelLoader
                 anchors.fill: parent
-                anchors.margins: islandRoot.loadedPanelName === "fullbar" ? 0 : Theme.geometry.padding.island
+                anchors.margins: islandRoot.loadedPanelName === "fullbar" ? 0 : Globals.geometry.padding.island
                 
                 active: islandRoot.loadedPanelName !== ""
                 focus: true
@@ -328,7 +328,7 @@ Item {
 
                 opacity: islandRoot.isMorphed && status === Loader.Ready ? 1.0 : 0.0
                 visible: opacity > 0.0
-                Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
+                Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
 
                 source: {
                     var panel = IslandService.panelRegistry[islandRoot.loadedPanelName];
@@ -352,7 +352,7 @@ Item {
 
             Timer {
                 id: openTimer
-                interval: Theme.animations.normal
+                interval: Globals.animations.normal
                 repeat: false
                 onTriggered: {
                     if (islandRoot.isMorphed && panelLoader.item) {

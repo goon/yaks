@@ -13,8 +13,8 @@ Rectangle {
 
     signal activated(int index, var value)
 
-    color: Theme.alpha(Theme.colors.surface, 0.5) // Deeper well look
-    radius: Theme.geometry.innerRadius.medium
+    color: Globals.alpha(Globals.colors.surface, 0.5) // Deeper well look
+    radius: Globals.geometry.innerRadius.medium
 
     implicitHeight: 36
     implicitWidth: rowLayout.implicitWidth + (padding * 2)
@@ -29,7 +29,7 @@ Rectangle {
         id: slidingIndicator
         y: root.padding
         height: root.height - (root.padding * 2)
-        radius: Theme.geometry.innerRadius.medium - root.padding
+        radius: Globals.geometry.innerRadius.medium - root.padding
         premiumActive: true
 
         opacity: root.isReady ? 1.0 : 0.0
@@ -63,7 +63,7 @@ Rectangle {
 
                 property bool isSelected: root.currentValue === (modelData[root.valueRole] !== undefined ? modelData[root.valueRole] : modelData)
 
-                radius: Theme.geometry.innerRadius.medium - root.padding
+                radius: Globals.geometry.innerRadius.medium - root.padding
                 color: "transparent"
                 
                 onIsSelectedChanged: {
@@ -85,7 +85,7 @@ Rectangle {
                 BaseText {
                     anchors.centerIn: parent
                     text: modelData[root.textRole] !== undefined ? modelData[root.textRole] : modelData
-                    color: itemRect.isSelected ? Theme.colors.textLighter : Theme.colors.text
+                    color: itemRect.isSelected ? Globals.colors.textLighter : Globals.colors.text
                 }
 
                 MouseArea {

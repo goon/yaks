@@ -20,6 +20,6 @@ Rectangle {
     Layout.fillWidth: orientation === BaseSeparator.Horizontal
     Layout.fillHeight: orientation === BaseSeparator.Vertical
     
-    color: Theme.colors.border
+    color: Globals.colors.border
     opacity: 0.3
 }

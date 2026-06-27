@@ -20,7 +20,7 @@ Singleton {
 
     Process {
         id: cavaProcess
-        command: ["stdbuf", "-oL", "cava", "-p", Config.rootDir + "/config/cava.conf"]
+        command: ["stdbuf", "-oL", "cava", "-p", Globals.rootDir + "/config/cava.conf"]
         running: true
 
         stdout: SplitParser {

@@ -30,8 +30,8 @@ BaseContainer {
             id: timeText
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatDateTime(systemClock.date, "hh:mm AP")
-            pixelSize: Theme.typography.size.large * 0.9
-            weight: Theme.typography.weights.bold
+            pixelSize: Globals.typography.size.large * 0.9
+            weight: Globals.typography.weights.bold
         }
 
         BaseText {
@@ -43,7 +43,7 @@ BaseContainer {
             // offset corrects this without any layout width arithmetic.
             anchors.horizontalCenterOffset: font.letterSpacing / 2
             text: Qt.formatDateTime(systemClock.date, "ddd dd MMM").toUpperCase()
-            pixelSize: Theme.typography.size.small * 0.9
+            pixelSize: Globals.typography.size.small * 0.9
             font.letterSpacing: 3
             muted: true
         }

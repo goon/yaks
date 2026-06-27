@@ -71,9 +71,9 @@ SpinBox {
             y: (parent.height - height) / 2
             
             text: root.textFromValue(root.value, root.locale)
-            color: Theme.colors.text
-            font.pixelSize: Theme.typography.size.medium
-            font.family: Theme.typography.family
+            color: Globals.colors.text
+            font.pixelSize: Globals.typography.size.medium
+            font.family: Globals.typography.family
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             readOnly: !root.editable
@@ -91,8 +91,8 @@ SpinBox {
             y: textInput.y + (textInput.height - height) / 2 + 1 // +1 for baseline adjustment
             text: root.suffix
             visible: root.suffix !== ""
-            pixelSize: Theme.typography.size.small
-            color: Theme.colors.muted
+            pixelSize: Globals.typography.size.small
+            color: Globals.colors.muted
         }
     }
 
@@ -100,7 +100,7 @@ SpinBox {
         x: root.width - width - 8
         y: (root.height - height) / 2
         icon: "add"
-        color: root.up.pressed ? Theme.colors.primary : Theme.colors.text
+        color: root.up.pressed ? Globals.colors.primary : Globals.colors.text
         opacity: root.expanded ? 1.0 : 0.0
         Behavior on opacity { BaseAnimation { } }
     }
@@ -109,7 +109,7 @@ SpinBox {
         x: 8
         y: (root.height - height) / 2
         icon: "remove"
-        color: root.down.pressed ? Theme.colors.primary : Theme.colors.text
+        color: root.down.pressed ? Globals.colors.primary : Globals.colors.text
         opacity: root.expanded ? 1.0 : 0.0
         Behavior on opacity { BaseAnimation { } }
     }

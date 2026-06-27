@@ -64,11 +64,11 @@ LauncherTab {
 
         if (root.includeWindows) {
             Hyprland.queryWorkspaces((workspaces) => {
-                appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, workspaces, Config.launcherMaxResults || 100);
+                appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, workspaces, 100);
                 finalizeModel(calcResult, appResults, queryChanged);
             });
         } else {
-            appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, null, Config.launcherMaxResults || 100);
+            appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, null, 100);
             finalizeModel(calcResult, appResults, queryChanged);
         }
     }

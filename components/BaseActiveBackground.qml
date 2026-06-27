@@ -6,8 +6,8 @@ Rectangle {
     id: root
 
     // Background configuration
-    property color baseColor: Theme.colors.surface
-    property color hoverColor: Theme.colors.transparent
+    property color baseColor: Globals.colors.surface
+    property color hoverColor: Globals.colors.transparent
     
     // Interaction states
     property bool hovered: false
@@ -22,10 +22,10 @@ Rectangle {
 
     color: (root.hoverEnabled && !root.isPremiumActive && root.hovered) 
            ? root.hoverColor 
-           : Theme.colors.transparent
+           : Globals.colors.transparent
 
     Behavior on color {
-        BaseAnimation { duration: Theme.animations.fast }
+        BaseAnimation { duration: Globals.animations.fast }
     }
 
     // Premium Selection Gradient Border Layer
@@ -35,7 +35,7 @@ Rectangle {
         visible: opacity > 0.0 || root.isPremiumActive
         layer.enabled: opacity < 1.0 && opacity > 0.0
         
-        Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
+        Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
         
         // Outer Gradient "Border"
         Rectangle {
@@ -43,8 +43,8 @@ Rectangle {
             radius: root.radius
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0; color: Theme.colors.primary }
-                GradientStop { position: 1; color: Theme.colors.secondary }
+                GradientStop { position: 0; color: Globals.colors.primary }
+                GradientStop { position: 1; color: Globals.colors.secondary }
             }
         }
 
@@ -53,7 +53,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: 1.5
             radius: Math.max(0, root.radius - 1.5)
-            color: Qt.tint(root.baseColor, Qt.alpha(Theme.colors.primary, 0.08))
+            color: Qt.tint(root.baseColor, Qt.alpha(Globals.colors.primary, 0.08))
         }
 
         // Inner glass highlight
@@ -62,8 +62,8 @@ Rectangle {
             anchors.margins: 1
             radius: Math.max(0, root.radius - 1)
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Theme.alpha(Theme.colors.text, 0.05) }
-                GradientStop { position: 1.0; color: Theme.colors.transparent }
+                GradientStop { position: 0.0; color: Globals.alpha(Globals.colors.text, 0.05) }
+                GradientStop { position: 1.0; color: Globals.colors.transparent }
             }
         }
     }

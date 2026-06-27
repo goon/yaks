@@ -13,8 +13,15 @@ QtObject {
 
     property QtObject notifications: QtObject {
         property int mode: 0 // 0: Normal, 1: DND (Silent)
+        property bool soundEnabled: true
+        property int soundVolume: 35
+
+        property int timeout: 5000
 
         onModeChanged: root.requestSave()
+        onSoundEnabledChanged: root.requestSave()
+        onSoundVolumeChanged: root.requestSave()
+        onTimeoutChanged: root.requestSave()
     }
 
     property QtObject bar: QtObject {
@@ -69,7 +76,7 @@ QtObject {
     }
 
     property QtObject launcher: QtObject {
-        property string webSearchUrl: Config.webSearchUrl
+        property string webSearchUrl: "https://duckduckgo.com/?q="
         property string globalPrefix: ">"
         property bool showAppDescriptions: false
 
@@ -84,12 +91,16 @@ QtObject {
         property int cornerRadius: 30
         property double backgroundOpacity: 1.0
         property bool islandOutline: true
+        property string dynamicSeedColor: "#7E9CD8"
+        property real dynamicBgLightness: 0.08
 
         onThemeModeChanged: root.requestSave()
         onShellFontChanged: root.requestSave()
         onCornerRadiusChanged: root.requestSave()
         onBackgroundOpacityChanged: root.requestSave()
         onIslandOutlineChanged: root.requestSave()
+        onDynamicSeedColorChanged: root.requestSave()
+        onDynamicBgLightnessChanged: root.requestSave()
     }
 
     property QtObject weather: QtObject {
@@ -116,20 +127,21 @@ QtObject {
 
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
-    property string currentTheme: "catppuccin"
+    property string currentTheme: "pure"
     property string currentWallpaper: ""
     property string customAvatar: ""
-    property var currentThemeColors: ({})
 
     onCurrentThemeChanged: root.requestSave()
     onCurrentWallpaperChanged: root.requestSave()
     onCustomAvatarChanged: root.requestSave()
-    onCurrentThemeColorsChanged: root.requestSave()
 
     // ── SCHEMA ───────────────────────────────────────────────────────────
 
     property var _schema: [
         ["notifications", "mode"],
+        ["notifications", "soundEnabled"],
+        ["notifications", "soundVolume"],
+        ["notifications", "timeout"],
         ["bar", "position"],
         ["bar", "density"],
         ["bar", "height"],
@@ -150,6 +162,8 @@ QtObject {
         ["globals", "cornerRadius"],
         ["globals", "backgroundOpacity"],
         ["globals", "islandOutline"],
+        ["globals", "dynamicSeedColor"],
+        ["globals", "dynamicBgLightness"],
         ["weather", "lat"],
         ["weather", "long"],
         ["weather", "locationName"],
@@ -158,7 +172,6 @@ QtObject {
         ["currentTheme"],
         ["currentWallpaper"],
         ["customAvatar"],
-        ["currentThemeColors"],
     ]
 
     function _get(path) {
@@ -191,7 +204,7 @@ QtObject {
 
     // ── PERSISTENCE ──────────────────────────────────────────────────────
 
-    readonly property string prefsFile: Config.prefsFile
+    readonly property string prefsFile: Globals.cacheDir + "/preferences.json"
 
     function save() {
         if (!loaded) return;
@@ -257,9 +270,22 @@ QtObject {
                         if (val !== undefined) _set(path, val);
                     }
 
-
-
-                    safetyTimer.stop();
+                    // ── MERGE DICTIONARIES ─────────────────────────────────
+                    var savedApps = _getData(data, ["applications", "themedApps"]);
+                    if (savedApps !== undefined && typeof savedApps === "object") {
+                        var currentApps = root.applications.themedApps;
+                        var appsChanged = false;
+                        for (var key in savedApps) {
+                            if (currentApps[key] !== savedApps[key]) {
+                                currentApps[key] = savedApps[key];
+                                appsChanged = true;
+                            }
+                        }
+                        if (appsChanged) {
+                            // Reassign to trigger property change
+                            root.applications.themedApps = Object.assign({}, currentApps);
+                        }
+                    }                    safetyTimer.stop();
                     root.loaded = true;
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);

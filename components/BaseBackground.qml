@@ -11,10 +11,10 @@ import qs
 Item {
     id: root
 
-    property color color: Theme.alpha(Theme.colors.background, Theme.opacity.background)
-    property color borderColor: Theme.colors.transparent
+    property color color: Globals.alpha(Globals.colors.background, Globals.opacity.background)
+    property color borderColor: Globals.colors.transparent
     property real borderWidth: 1
-    property real radius: Theme.geometry.radius
+    property real radius: Globals.geometry.radius
     clip: true
 
 

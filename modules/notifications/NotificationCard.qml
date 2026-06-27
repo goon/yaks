@@ -67,17 +67,17 @@ BaseContainer {
     // Top section: Icon, Info, Close
     RowLayout {
         Layout.fillWidth: true
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
         Layout.alignment: Qt.AlignTop
 
 
                 // App icon
                 Rectangle {
-                    Layout.preferredWidth: Theme.dimensions.iconLarge
+                    Layout.preferredWidth: Globals.dimensions.iconLarge
                     Layout.preferredHeight: Layout.preferredWidth
                     Layout.alignment: Qt.AlignTop
 
-                    color: Theme.colors.transparent
+                    color: Globals.colors.transparent
                     radius: 0
 
                     function resolveSource(src) {
@@ -89,7 +89,7 @@ BaseContainer {
                     Image {
                         id: specificImage
                         anchors.centerIn: parent
-                        width: Math.min(Theme.dimensions.iconLarge, parent.width - 4)
+                        width: Math.min(Globals.dimensions.iconLarge, parent.width - 4)
                         height: width
 
                         source: parent.resolveSource(root.notification ? root.notification.image : "")
@@ -105,7 +105,7 @@ BaseContainer {
                     Image {
                         id: appIconImage
                         anchors.centerIn: parent
-                        width: Math.min(Theme.dimensions.iconLarge, parent.width - 4)
+                        width: Math.min(Globals.dimensions.iconLarge, parent.width - 4)
                         height: width
 
                         source: parent.resolveSource(root.notification ? root.notification.appIcon : "")
@@ -122,15 +122,15 @@ BaseContainer {
                         anchors.centerIn: parent
                         width: 36
                         height: 36
-                        radius: Theme.geometry.radius
-                        color: Theme.alpha(Theme.colors.primary, 0.15)
+                        radius: Globals.geometry.radius
+                        color: Globals.alpha(Globals.colors.primary, 0.15)
                         visible: symbolIcon.icon !== ""
                         z: 10
 
                         BaseIcon {
                             id: symbolIcon
                             anchors.centerIn: parent
-                            size: Theme.dimensions.iconBase
+                            size: Globals.dimensions.iconBase
                             icon: {
                                 if (!root.notification) return "";
                                 if (root.isScreenshot) return "image";
@@ -149,7 +149,7 @@ BaseContainer {
                                 if (res) return res;
                                 return extract(img);
                             }
-                            color: Theme.colors.primary
+                            color: Globals.colors.primary
                         }
                     }
 
@@ -161,7 +161,7 @@ BaseContainer {
                         icon: "notifications_unread"
                         width: size
                         height: size
-                        color: Theme.colors.primary
+                        color: Globals.colors.primary
                     }
                 }
 
@@ -170,14 +170,14 @@ BaseContainer {
                     id: headerRow
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
-                    spacing: Theme.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.small
 
                     // Summary (Title)
                     BaseText {
                         id: summaryText
                         Layout.fillWidth: false
-                        pixelSize: Theme.typography.size.medium
-                        weight: Theme.typography.weights.bold
+                        pixelSize: Globals.typography.size.medium
+                        weight: Globals.typography.weights.bold
                         text: root.notification ? (root.notification.summary || "") : ""
                         maximumLineCount: 1
                         elide: Text.ElideRight
@@ -199,7 +199,7 @@ BaseContainer {
                         muted: true
                         visible: root.showTime
                         text: root.timeString
-                        pixelSize: Theme.typography.size.base
+                        pixelSize: Globals.typography.size.base
                         font.italic: true
                         elide: Text.ElideRight
                     }
@@ -211,14 +211,14 @@ BaseContainer {
                 }
 
                 BaseButton {
-                    Layout.preferredWidth: Theme.dimensions.iconMedium
-                    Layout.preferredHeight: Theme.dimensions.iconMedium
+                    Layout.preferredWidth: Globals.dimensions.iconMedium
+                    Layout.preferredHeight: Globals.dimensions.iconMedium
                     Layout.alignment: Qt.AlignTop
                     visible: root.showCloseButton
                     icon: "clear_all"
-                    iconColor: containsMouse ? Theme.colors.surface : Theme.colors.error
-                    hoverColor: Theme.colors.error
-                    size: Theme.typography.size.large
+                    iconColor: containsMouse ? Globals.colors.surface : Globals.colors.error
+                    hoverColor: Globals.colors.error
+                    size: Globals.typography.size.large
                     onClicked: root.closeClicked()
                 }
 

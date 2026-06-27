@@ -9,15 +9,15 @@ Item {
     
     property string panelState: "Closed"
     
-    implicitWidth: 300 - (Theme.geometry.spacing.large * 2)
-    implicitHeight: Math.max(0, Preferences.bar.height - (Theme.geometry.spacing.large * 2))
+    implicitWidth: 300 - (Globals.geometry.spacing.large * 2)
+    implicitHeight: Math.max(0, Preferences.bar.height - (Globals.geometry.spacing.large * 2))
     
     BaseSlider {
         id: slider
         anchors.fill: parent
         
         trackHeight: height
-        trackColor: Theme.alpha(Theme.colors.surface, 0.22)
+        trackColor: Globals.alpha(Globals.colors.surface, 0.22)
         
         icon: Volume.volumeIcon
         suffix: Volume.volumePercent + "%"

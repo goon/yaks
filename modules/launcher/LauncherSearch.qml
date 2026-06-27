@@ -23,8 +23,8 @@ BaseContainer {
     }
 
     Layout.fillWidth: true
-    Layout.preferredHeight: Theme.dimensions.launcherSearchHeight
-    paddingHorizontal: Theme.geometry.spacing.large
+    Layout.preferredHeight: Globals.dimensions.launcherSearchHeight
+    paddingHorizontal: Globals.geometry.spacing.large
     clickable: true
 
     RowLayout {
@@ -34,11 +34,11 @@ BaseContainer {
         Layout.rightMargin: 0
         Layout.topMargin: 0
         Layout.bottomMargin: 0
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         BaseIcon {
             icon: "search"
-            color: input.text.length > 0 ? Theme.colors.primary : Theme.colors.muted
+            color: input.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
             
             Behavior on color { BaseAnimation { } }
             
@@ -83,7 +83,7 @@ BaseContainer {
 
         RowLayout {
             id: hintsArea
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
             Layout.alignment: Qt.AlignVCenter
             
             Repeater {
@@ -91,7 +91,7 @@ BaseContainer {
                 
                 delegate: Item {
                     implicitWidth: modelData.implicitWidth
-                    Layout.preferredHeight: Theme.dimensions.iconLarge
+                    Layout.preferredHeight: Globals.dimensions.iconLarge
                     Layout.alignment: Qt.AlignVCenter
 
                     Component.onCompleted: {

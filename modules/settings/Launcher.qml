@@ -11,7 +11,7 @@ SettingsPage {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         SettingsGroup {
             Layout.fillWidth: true
@@ -56,22 +56,22 @@ SettingsPage {
                         opacity: prefixEditor.editing ? 0 : 1
                         visible: opacity > 0
                         enabled: !prefixEditor.editing
-                        spacing: Theme.geometry.spacing.small
+                        spacing: Globals.geometry.spacing.small
 
                         Behavior on opacity {
-                            NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuart }
+                            NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart }
                         }
 
                         BaseText {
                             text: Preferences.launcher.globalPrefix || "(none)"
-                            color: Preferences.launcher.globalPrefix ? Theme.colors.text : Theme.colors.muted
+                            color: Preferences.launcher.globalPrefix ? Globals.colors.text : Globals.colors.muted
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                         }
 
                         BaseIcon {
                             icon: "chevron_right"
-                            color: Theme.colors.muted
+                            color: Globals.colors.muted
                         }
                     }
 
@@ -83,7 +83,7 @@ SettingsPage {
                         enabled: prefixEditor.editing
 
                         Behavior on opacity {
-                            NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuart }
+                            NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart }
                         }
 
                         placeholderText: "e.g. >"

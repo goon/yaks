@@ -52,9 +52,9 @@ Item {
         target: "clipboard"
     }
 
-    // Theme
+    // Tokens
     IpcHandler {
-        function apply(id: string) { ThemeService.setTheme(id); }
+        function apply(id: string) { Theme.setTheme(id); }
         target: "theme"
     }
 

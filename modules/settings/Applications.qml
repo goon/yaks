@@ -10,23 +10,23 @@ SettingsPage {
     description: "Enabling applications inherit the current shell theme. This overrides various configuration files and can be destructive." 
 
     ColumnLayout {
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
         Layout.fillWidth: true
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
 
             BaseIcon {
                 icon: "warning"
-                color: Theme.colors.warning
+                color: Globals.colors.warning
                 Layout.alignment: Qt.AlignTop
             }
 
             BaseText {
                 text: "Enabling applications below inherit the currently applied theme. This overrides various configuration files and can be destructive."
-                pixelSize: Theme.typography.size.medium
-                color: Theme.colors.warning
+                pixelSize: Globals.typography.size.medium
+                color: Globals.colors.warning
                 Layout.fillWidth: true
             }
         }
@@ -56,30 +56,30 @@ SettingsPage {
 
         Flow {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
 
             Repeater {
-                model: ThemeRegistration.applications
+                model: Theme.applications
 
                 delegate: Item {
                     id: pill
 
-                    readonly property bool isInstalled: ThemeService.installedApps[modelData.id] !== false
+                    readonly property bool isInstalled: Theme.installedApps[modelData.id] !== false
                     readonly property bool isEnabled: (Preferences.applications.themedApps[modelData.id] || false) && isInstalled
 
-                    width: innerRow.width + Theme.geometry.spacing.medium * 2
-                    height: innerRow.height + Theme.geometry.spacing.small * 2
+                    width: innerRow.width + Globals.geometry.spacing.medium * 2
+                    height: innerRow.height + Globals.geometry.spacing.small * 2
                     opacity: isInstalled ? 1 : 0.5
 
                     // 1. Premium Selection Gradient Border (Active)
                     Rectangle {
                         anchors.fill: parent
-                        radius: Theme.geometry.radius
+                        radius: Globals.geometry.radius
                         visible: pill.isEnabled
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: Theme.colors.primary }
-                            GradientStop { position: 1; color: Theme.colors.secondary }
+                            GradientStop { position: 0; color: Globals.colors.primary }
+                            GradientStop { position: 1; color: Globals.colors.secondary }
                         }
                     }
 
@@ -87,25 +87,25 @@ SettingsPage {
                     Rectangle {
                         anchors.fill: parent
                         anchors.margins: 1.5
-                        radius: Theme.geometry.radius - 1.5
+                        radius: Globals.geometry.radius - 1.5
                         visible: pill.isEnabled
-                        color: Theme.colors.surface
+                        color: Globals.colors.surface
 
                         Rectangle {
                             anchors.fill: parent
                             radius: parent.radius
-                            color: Qt.alpha(Theme.colors.primary, 0.08)
+                            color: Qt.alpha(Globals.colors.primary, 0.08)
                         }
                     }
 
                     // 3. Inactive Border (Inactive)
                     Rectangle {
                         anchors.fill: parent
-                        radius: Theme.geometry.radius
+                        radius: Globals.geometry.radius
                         visible: !pill.isEnabled
-                        color: Theme.colors.transparent
+                        color: Globals.colors.transparent
                         border.width: 1
-                        border.color: Theme.colors.border
+                        border.color: Globals.colors.border
                     }
 
                     Row {
@@ -116,14 +116,14 @@ SettingsPage {
                         BaseIcon {
                             icon: pill.isEnabled ? "check_circle" : "circle"
                             size: 14
-                            color: pill.isEnabled ? Theme.colors.primary : Theme.colors.border
+                            color: pill.isEnabled ? Globals.colors.primary : Globals.colors.border
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
                         BaseText {
                             id: label
                             text: modelData.name
-                            color: pill.isEnabled ? Theme.colors.textLighter : Theme.colors.text
+                            color: pill.isEnabled ? Globals.colors.textLighter : Globals.colors.text
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }

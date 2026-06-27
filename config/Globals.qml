@@ -1,23 +1,26 @@
 import QtQuick
+import Quickshell
 import qs.services
 pragma Singleton
 
 QtObject {
     id: root
 
-    // Bind to the active theme palette from ThemeService
-    readonly property var activePalette: ThemeService.currentColors
-    // Scaling factor for Bar elements based on Density setting
+    // ── PATHS & EXTERNAL RESOURCES ───────────────────────────────────────
+    readonly property string homeDir: Quickshell.env("HOME")
+    readonly property string rootDir: homeDir + "/.config/quickshell"
+    readonly property string assetsDir: rootDir + "/assets"
+    readonly property string cacheDir: homeDir + "/.cache/quickshell"
+
+    readonly property var activePalette: Theme.currentColors
+
     readonly property real barScale: {
         if (Preferences.bar.density === 0)
             return 0.9;
- // Compact
         if (Preferences.bar.density === 1)
             return 1;
- // Default
         if (Preferences.bar.density === 2)
             return 1.1;
- // Comfortable
         return 1;
     }
     /*

@@ -36,13 +36,13 @@ Switch {
         Rectangle {
             id: outerBorder
             anchors.fill: parent
-            radius: Theme.geometry.innerRadius.small
+            radius: Globals.geometry.innerRadius.small
             
             // Gradient is active on checked OR hovered
             gradient: (control.checked || control.hovered) ? trackGradient : null
             
             // Standard border color when unchecked and not hovered
-            color: Theme.alpha(Theme.colors.border, 0.5)
+            color: Globals.alpha(Globals.colors.border, 0.5)
         }
 
         // Inner Fill/Cutout
@@ -53,8 +53,8 @@ Switch {
             
             color: {
                 if (control.checked) return "transparent"; // Let the gradient show through
-                if (!control.enabled) return Theme.alpha(Theme.colors.surface, 0.2);
-                return control.hovered ? Theme.alpha(Theme.colors.surface, 0.6) : Theme.alpha(Theme.colors.surface, 0.4);
+                if (!control.enabled) return Globals.alpha(Globals.colors.surface, 0.2);
+                return control.hovered ? Globals.alpha(Globals.colors.surface, 0.6) : Globals.alpha(Globals.colors.surface, 0.4);
             }
 
             Behavior on color { BaseAnimation { } }
@@ -66,16 +66,16 @@ Switch {
             GradientStop {
                 position: 0.0
                 color: {
-                    if (!control.enabled) return Theme.alpha(Theme.colors.surface, 0.2);
-                    return control.hovered ? Theme.alpha(Theme.colors.primary, 0.9) : Theme.colors.primary;
+                    if (!control.enabled) return Globals.alpha(Globals.colors.surface, 0.2);
+                    return control.hovered ? Globals.alpha(Globals.colors.primary, 0.9) : Globals.colors.primary;
                 }
             }
             GradientStop {
                 position: 1.0
                 color: {
-                    if (!control.enabled) return Theme.alpha(Theme.colors.surface, 0.2);
-                    var sec = Theme.colors.secondary;
-                    return control.hovered ? Theme.alpha(sec, 0.9) : sec;
+                    if (!control.enabled) return Globals.alpha(Globals.colors.surface, 0.2);
+                    var sec = Globals.colors.secondary;
+                    return control.hovered ? Globals.alpha(sec, 0.9) : sec;
                 }
             }
         }
@@ -100,14 +100,14 @@ Switch {
             y: 4
             width: baseWidth + travelStretch
             height: 16
-            radius: Math.max(0, Theme.geometry.innerRadius.small - 4)
+            radius: Math.max(0, Globals.geometry.innerRadius.small - 4)
             
             // Thumb Color (keeps the knob white when enabled)
-            color: control.enabled ? Theme.colors.textLighter : Theme.colors.muted
+            color: control.enabled ? Globals.colors.textLighter : Globals.colors.muted
 
             // Subtle border definition
             border.width: 1
-            border.color: control.checked ? Theme.alpha(Theme.colors.primary, 0.2) : Theme.alpha(Theme.colors.base, 0.1)
+            border.color: control.checked ? Globals.alpha(Globals.colors.primary, 0.2) : Globals.alpha(Globals.colors.base, 0.1)
 
             Behavior on color { BaseAnimation { } }
             Behavior on border.color { BaseAnimation { } }

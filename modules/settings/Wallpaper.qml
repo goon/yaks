@@ -12,7 +12,7 @@ SettingsPage {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         SettingsGroup {
             Layout.fillWidth: true
@@ -48,13 +48,13 @@ SettingsPage {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.small
 
                     BaseText {
                         Layout.fillWidth: true
                         wrapMode: Text.NoWrap
                         text: Preferences.wallpaper.directory || "No directory selected"
-                        color: Preferences.wallpaper.directory ? Theme.colors.text : Theme.colors.muted
+                        color: Preferences.wallpaper.directory ? Globals.colors.text : Globals.colors.muted
                         elide: Text.ElideMiddle
                     }
 
@@ -75,17 +75,17 @@ SettingsPage {
         RowLayout {
             visible: Preferences.wallpaper.directory === ""
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
 
             BaseIcon {
                 icon: "warning"
-                color: Theme.colors.warning
+                color: Globals.colors.warning
             }
 
             BaseText {
                 text: "No Wallpaper Directory Set: The wallpaper gallery is disabled until you select a folder containing images."
-                pixelSize: Theme.typography.size.medium
-                color: Theme.colors.warning
+                pixelSize: Globals.typography.size.medium
+                color: Globals.colors.warning
                 Layout.fillWidth: true
             }
         }

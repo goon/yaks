@@ -26,9 +26,11 @@ Item {
     property string displayWallpaper: (Preferences.wallpaper.gowallEnabled && processedWallpaper !== "") ? processedWallpaper : currentWallpaper
 
     // ── CHILD COMPONENTS ────────────────────────────────────────────
+    readonly property string wallpaperListFile: Globals.cacheDir + "/wallpaper.json"
+
     FileView {
         id: listCacheView
-        path: Config.wallpaperListFile
+        path: root.wallpaperListFile
         onLoadedChanged: {
             if (loaded && !root.hasScanned) {
                 try {
@@ -115,7 +117,7 @@ Item {
 
     // Expand $HOME and ~ in a path string to the actual home directory
     function expandPath(path) {
-        var home = Config.homeDir;
+        var home = Globals.homeDir;
         if (path.indexOf("$HOME") === 0) return home + path.substring(5);
         if (path.indexOf("~") === 0) return home + path.substring(1);
         return path;
@@ -147,7 +149,7 @@ Item {
             root.shuffleWallpapers();
             
             // Sync list cache
-            ProcessService.runDetached(["sh", "-c", "printf '%s' \"$1\" > \"$2\"", "--", JSON.stringify(list), Config.wallpaperListFile]);
+            ProcessService.runDetached(["sh", "-c", "printf '%s' \"$1\" > \"$2\"", "--", JSON.stringify(list), root.wallpaperListFile]);
             
             if (root.currentWallpaper === "" && list.length > 0) {
                 setWallpaper(list[Math.floor(Math.random() * list.length)]);

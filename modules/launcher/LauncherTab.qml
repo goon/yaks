@@ -41,7 +41,7 @@ FocusScope {
     
     Behavior on opacity {
         BaseAnimation {
-            duration: Theme.animations.normal
+            duration: Globals.animations.normal
         }
     }
 

@@ -93,7 +93,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.exclusiveZone: root.exclusiveZone
     visible: true
-    color: Theme.colors.background
+    color: Globals.colors.background
 
     anchors {
         top: true
@@ -181,7 +181,7 @@ PanelWindow {
             property Item sourceNew
             property int type: 0
             property bool running: false
-            property int duration: Theme.animations.slow * 2 // Long crossfade
+            property int duration: Globals.animations.slow * 2 // Long crossfade
 
             signal finished()
 

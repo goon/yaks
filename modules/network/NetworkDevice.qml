@@ -87,7 +87,7 @@ Item {
             RowLayout {
                 id: innerRowLayout
                 anchors.fill: parent
-                spacing: Theme.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.medium
 
                 // Icon Slot
                 Item {
@@ -98,7 +98,7 @@ Item {
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: root.iconName
-                        color: root.isConnected ? Theme.colors.success : (root.deviceType === "bluetooth" && root.isKnown ? Theme.colors.warning : (root.isHovered ? Theme.colors.primary : Theme.colors.text))
+                        color: root.isConnected ? Globals.colors.success : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.warning : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
                         opacity: root.iconOpacity
                         Behavior on color { BaseAnimation { } }
                     }
@@ -112,8 +112,8 @@ Item {
 
                     BaseText {
                         text: root.title
-                        weight: root.isConnected ? Theme.typography.weights.bold : Theme.typography.weights.medium
-                        color: root.isConnected ? Theme.colors.primary : (root.isHovered ? Theme.colors.primary : Theme.colors.text)
+                        weight: root.isConnected ? Globals.typography.weights.bold : Globals.typography.weights.medium
+                        color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap
                         Layout.fillWidth: true
@@ -123,7 +123,7 @@ Item {
                     BaseText {
                         text: root.subtitle
                         visible: root.subtitle !== ""
-                        pixelSize: Theme.typography.size.small
+                        pixelSize: Globals.typography.size.small
                         muted: true
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap
@@ -137,10 +137,10 @@ Item {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     Layout.preferredHeight: 28
                     Layout.preferredWidth: 48
-                    radius: Theme.geometry.innerRadius.medium
-                    color: Theme.alpha(Theme.colors.text, 0.05)
+                    radius: Globals.geometry.innerRadius.medium
+                    color: Globals.alpha(Globals.colors.text, 0.05)
                     border.width: 1
-                    border.color: Theme.alpha(Theme.colors.text, 0.1)
+                    border.color: Globals.alpha(Globals.colors.text, 0.1)
 
                     RowLayout {
                         anchors.centerIn: parent
@@ -164,29 +164,29 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Theme.geometry.padding.medium : 0
+            Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Globals.geometry.padding.medium : 0
             clip: true
             visible: deviceType === "wifi" && root.isSecured && !root.isConnected && !root.isKnown
 
             Rectangle {
                 id: drawerBox
                 anchors.top: parent.top
-                anchors.topMargin: Theme.geometry.padding.medium
+                anchors.topMargin: Globals.geometry.padding.medium
                 anchors.left: parent.left
                 anchors.right: parent.right
-                color: Theme.colors.background
+                color: Globals.colors.background
                 border.width: 1
-                border.color: Theme.alpha(Theme.colors.border, 0.5)
-                radius: Theme.geometry.innerRadius.medium
-                implicitHeight: innerLayout.implicitHeight + (Theme.geometry.spacing.large * 2)
+                border.color: Globals.alpha(Globals.colors.border, 0.5)
+                radius: Globals.geometry.innerRadius.medium
+                implicitHeight: innerLayout.implicitHeight + (Globals.geometry.spacing.large * 2)
 
                 RowLayout {
                     id: innerLayout
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.margins: Theme.geometry.spacing.large
-                    spacing: Theme.geometry.spacing.medium
+                    anchors.margins: Globals.geometry.spacing.large
+                    spacing: Globals.geometry.spacing.medium
 
                     // Password Input
                     BaseInput {

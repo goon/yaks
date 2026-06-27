@@ -5,14 +5,14 @@ import qs
 Item {
     id: root
 
-    implicitHeight: Math.max(Theme.dimensions.listItemHeight, layout.implicitHeight)
+    implicitHeight: Math.max(Globals.dimensions.listItemHeight, layout.implicitHeight)
     implicitWidth: layout.implicitWidth
 
     property string title: ""
-    property int titleSize: Theme.typography.size.medium
-    property string titleFamily: Theme.typography.family
+    property int titleSize: Globals.typography.size.medium
+    property string titleFamily: Globals.typography.family
     property string subtitle: ""
-    property int subtitleSize: Theme.typography.size.base
+    property int subtitleSize: Globals.typography.size.base
     property bool showSubtitleOnHover: false
     
     property string leftIcon: ""
@@ -54,7 +54,7 @@ Item {
     RowLayout {
         id: layout
         anchors.fill: parent
-        spacing: Theme.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.medium
 
         // Active / Hover Notch
         Rectangle {
@@ -66,8 +66,8 @@ Item {
             radius: 1.5
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Theme.colors.primary }
-                GradientStop { position: 1.0; color: Theme.colors.secondary }
+                GradientStop { position: 0.0; color: Globals.colors.primary }
+                GradientStop { position: 1.0; color: Globals.colors.secondary }
             }
         }
 
@@ -84,8 +84,8 @@ Item {
                 visible: root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: Theme.dimensions.iconMedium
-                iconColor: root.leftIconActive ? Theme.colors.primary : Theme.colors.text
+                size: Globals.dimensions.iconMedium
+                iconColor: root.leftIconActive ? Globals.colors.primary : Globals.colors.text
                 onClicked: root.leftIconClicked()
                 z: 2 // Sit above the main MouseArea
             }
@@ -94,8 +94,8 @@ Item {
                 visible: !root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: Theme.dimensions.iconMedium
-                color: root.selected ? Theme.colors.primary : (root.containsMouse ? Theme.colors.primary : Theme.colors.text)
+                size: Globals.dimensions.iconMedium
+                color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.primary : Globals.colors.text)
                 Behavior on color { BaseAnimation { } }
             }
         }
@@ -104,8 +104,8 @@ Item {
             visible: root.showVerticalSeparator
             orientation: BaseSeparator.Vertical
             Layout.fillHeight: true
-            Layout.topMargin: Theme.geometry.spacing.medium
-            Layout.bottomMargin: Theme.geometry.spacing.medium
+            Layout.topMargin: Globals.geometry.spacing.medium
+            Layout.bottomMargin: Globals.geometry.spacing.medium
             opacity: 0.3
         }
 
@@ -120,8 +120,8 @@ Item {
                 text: root.title
                 pixelSize: root.titleSize
                 family: root.titleFamily
-                weight: root.selected ? Theme.typography.weights.bold : Theme.typography.weights.medium
-                color: root.selected ? Theme.colors.primary : (root.containsMouse ? Theme.colors.primary : Theme.colors.text)
+                weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.medium
+                color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.primary : Globals.colors.text)
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
@@ -156,7 +156,7 @@ Item {
         BaseIcon {
             visible: root.rightIconVisible && root.rightIcon !== ""
             icon: root.rightIcon
-            color: root.selected ? Theme.colors.primary : (root.containsMouse ? Theme.colors.text : Theme.colors.muted)
+            color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.text : Globals.colors.muted)
             Behavior on color { BaseAnimation { } }
             Layout.alignment: Qt.AlignVCenter
         }

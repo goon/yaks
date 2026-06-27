@@ -10,7 +10,7 @@ Item {
     property real padding: 0
     property real paddingHorizontal: padding
     property real paddingVertical: padding
-    property real spacing: Theme.geometry.spacing.medium
+    property real spacing: Globals.geometry.spacing.medium
 
     // Interactivity
     property bool clickable: false
@@ -35,7 +35,7 @@ Item {
 
     scale: (root.clickable && pressed) ? 0.98 : 1.0
 
-    Behavior on scale { BaseAnimation { duration: Theme.animations.fast } }
+    Behavior on scale { BaseAnimation { duration: Globals.animations.fast } }
 
 
 

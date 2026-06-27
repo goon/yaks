@@ -10,20 +10,20 @@ Rectangle {
     property string text: ""
     property string icon: ""
     property color iconColor: {
-        return (root.pressed || root.containsMouse) ? Theme.colors.primary : Theme.colors.text;
+        return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
     }
     property color textColor: {
-        return (root.pressed || root.containsMouse) ? Theme.colors.primary : Theme.colors.text;
+        return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
     }
-    property int size: Theme.dimensions.iconBase
+    property int size: Globals.dimensions.iconBase
     property real iconRotation: 0
-    property int weight: Theme.typography.weights.normal
-    property color hoverColor: Theme.colors.transparent
+    property int weight: Globals.typography.weights.normal
+    property color hoverColor: Globals.colors.transparent
     property real customRadius: -1
     property bool hoverEnabled: true
     property bool clickRotate: false
-    property int paddingHorizontal: text !== "" ? Theme.geometry.padding.medium : Theme.geometry.spacing.medium
-    property int paddingVertical: Theme.geometry.spacing.medium
+    property int paddingHorizontal: text !== "" ? Globals.geometry.padding.medium : Globals.geometry.spacing.medium
+    property int paddingVertical: Globals.geometry.spacing.medium
 
     // ── STATE PROXIES ─────────────────────────────────────────────────
     readonly property bool containsMouse: mouseArea.containsMouse
@@ -37,15 +37,15 @@ Rectangle {
 
     radius: {
         if (root.customRadius >= 0) return root.customRadius;
-        return Theme.geometry.innerRadius.medium;
+        return Globals.geometry.innerRadius.medium;
     }
-    color: Theme.colors.transparent
+    color: Globals.colors.transparent
     
     implicitWidth: childrenLayout.implicitWidth + (root.paddingHorizontal * 2)
     implicitHeight: childrenLayout.implicitHeight + (root.paddingVertical * 2)
     scale: pressed ? 0.98 : 1.0
 
-    Behavior on scale { BaseAnimation { duration: Theme.animations.fast } }
+    Behavior on scale { BaseAnimation { duration: Globals.animations.fast } }
 
     BaseActiveBackground {
         id: stateLayer
@@ -59,7 +59,7 @@ Rectangle {
     RowLayout {
         id: childrenLayout
         anchors.centerIn: parent
-        spacing: root.text !== "" && root.icon !== "" ? Theme.geometry.spacing.medium : 0
+        spacing: root.text !== "" && root.icon !== "" ? Globals.geometry.spacing.medium : 0
 
         BaseIcon {
             icon: root.icon
@@ -72,7 +72,7 @@ Rectangle {
         BaseText {
             text: root.text
             color: root.textColor
-            pixelSize: Theme.typography.size.base
+            pixelSize: Globals.typography.size.base
             weight: root.weight
             visible: root.text !== ""
         }
@@ -102,7 +102,7 @@ Rectangle {
             target: root
             property: "iconRotation"
             from: 0; to: 360
-            duration: Theme.animations.normal
+            duration: Globals.animations.normal
             easing.type: Easing.OutBack
         }
         PropertyAction { target: root; property: "iconRotation"; value: 0 }

@@ -11,7 +11,7 @@ SettingsPage {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         SettingsGroup {
             Layout.fillWidth: true

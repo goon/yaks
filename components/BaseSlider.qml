@@ -18,15 +18,15 @@ Item {
 
     // Visual customization
 
-    property color trackColor: Theme.alpha(Theme.colors.surface, Theme.opacity.background)
-    property color fillColor: Theme.colors.primary
+    property color trackColor: Globals.alpha(Globals.colors.surface, Globals.opacity.background)
+    property color fillColor: Globals.colors.primary
     property int trackHeight: 38
 
     // Content properties
     property string icon: ""
     property string suffix: ""
-    property color iconColor: Theme.colors.text
-    property color suffixColor: Theme.colors.text
+    property color iconColor: Globals.colors.text
+    property color suffixColor: Globals.colors.text
 
     // Internal computed values
     property real _animatedValue: value
@@ -72,7 +72,7 @@ Item {
 
         height: root.trackHeight
         
-        radius: Theme.geometry.innerRadius.medium
+        radius: Globals.geometry.innerRadius.medium
         color: trackColor
         clip: true
 
@@ -89,8 +89,8 @@ Item {
             
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0.0; color: Theme.colors.primary }
-                GradientStop { position: 1.0; color: Theme.colors.secondary }
+                GradientStop { position: 0.0; color: Globals.colors.primary }
+                GradientStop { position: 1.0; color: Globals.colors.secondary }
             }
         }
 
@@ -103,14 +103,14 @@ Item {
         visible: root.interactive
         width: root.trackHeight - 8
         height: root.trackHeight - 8
-        radius: Theme.geometry.innerRadius.medium
+        radius: Globals.geometry.innerRadius.medium
         
         // Synchronize movement: knob and fill edge move together for big sliders
         x: 4 + (track.width - width - 8) * root.normalizedValue
         y: (root.height - height) / 2
         
-        color: Theme.alpha(Theme.colors.surface, 0.95)
-        border.color: Theme.alpha(Theme.colors.border, (root.isActive ? 0.3 : 0.15))
+        color: Globals.alpha(Globals.colors.surface, 0.95)
+        border.color: Globals.alpha(Globals.colors.border, (root.isActive ? 0.3 : 0.15))
         border.width: 1
         z: 10
 
@@ -124,7 +124,7 @@ Item {
             radius: parent.radius + 4
             color: "transparent"
             border.width: 2
-            border.color: Theme.alpha(root.fillColor, 0.3)
+            border.color: Globals.alpha(root.fillColor, 0.3)
             visible: root.isActive
             z: -2
             
@@ -143,7 +143,7 @@ Item {
             radius: parent.radius
             color: "transparent"
             border.width: 1
-            border.color: Theme.alpha(Theme.colors.background, 0.2)
+            border.color: Globals.alpha(Globals.colors.background, 0.2)
             z: -1
         }
 
@@ -155,7 +155,7 @@ Item {
             BaseIcon {
                 anchors.centerIn: parent
                 icon: root.icon
-                size: Math.min(parent.width, Theme.dimensions.iconMedium)
+                size: Math.min(parent.width, Globals.dimensions.iconMedium)
                 color: root.iconColor
                 opacity: !root.isActive ? 1 : 0
                 Behavior on opacity { BaseAnimation { duration: 400; easing.type: Easing.InOutQuad } }
@@ -171,7 +171,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.NoWrap
-                font.weight: Theme.typography.weights.bold
+                font.weight: Globals.typography.weights.bold
                 opacity: root.isActive ? 1 : 0
                 Behavior on opacity { BaseAnimation { duration: 400; easing.type: Easing.InOutQuad } }
             }
@@ -182,15 +182,15 @@ Item {
             id: shimmer
             anchors.fill: parent
             radius: parent.radius
-            color: Theme.colors.text
+            color: Globals.colors.text
             opacity: 0
             clip: true
 
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Theme.colors.transparent }
-                GradientStop { position: 0.5; color: Theme.alpha(Theme.colors.text, 0.4) }
-                GradientStop { position: 1.0; color: Theme.colors.transparent }
+                GradientStop { position: 0.0; color: Globals.colors.transparent }
+                GradientStop { position: 0.5; color: Globals.alpha(Globals.colors.text, 0.4) }
+                GradientStop { position: 1.0; color: Globals.colors.transparent }
             }
 
             BaseAnimation {

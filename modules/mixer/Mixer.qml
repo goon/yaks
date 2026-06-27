@@ -9,7 +9,7 @@ BaseContainer {
     id: root
 
     implicitWidth: 400
-    spacing: Theme.geometry.spacing.large * 1.5
+    spacing: Globals.geometry.spacing.large * 1.5
 
     property string panelState: "Closed"
     property string expandedSide: "" // "", "output", "input"
@@ -43,13 +43,13 @@ BaseContainer {
             readonly property string sectionType: modelData.type
 
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.medium
+            spacing: Globals.geometry.spacing.medium
 
             BaseSeparator {
                 Layout.fillWidth: true
                 visible: index > 0
-                Layout.topMargin: Theme.geometry.spacing.large * 0.75
-                Layout.bottomMargin: Theme.geometry.spacing.large * 0.75
+                Layout.topMargin: Globals.geometry.spacing.large * 0.75
+                Layout.bottomMargin: Globals.geometry.spacing.large * 0.75
             }
 
             // ── HEADER ──────────────────────────────────────────────────
@@ -96,15 +96,15 @@ BaseContainer {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 48
                 visible: modelData.hasDevices
-                customRadius: Theme.geometry.radius
-                hoverColor: Theme.alpha(Theme.colors.surface, 0.4)
+                customRadius: Globals.geometry.radius
+                hoverColor: Globals.alpha(Globals.colors.surface, 0.4)
                 onClicked: root.expandedSide = (root.expandedSide === modelData.type) ? "" : modelData.type
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: Theme.geometry.spacing.small
-                    anchors.rightMargin: Theme.geometry.spacing.small
-                    spacing: Theme.geometry.spacing.medium
+                    anchors.leftMargin: Globals.geometry.spacing.small
+                    anchors.rightMargin: Globals.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.medium
 
                     BaseIcon { icon: modelData.deviceIcon }
 
@@ -115,14 +115,14 @@ BaseContainer {
                             text: modelData.type === "output"
                                 ? Volume.getNodeName(Volume.audioSink)
                                 : Volume.getNodeName(Volume.audioSource)
-                            weight: Theme.typography.weights.medium
+                            weight: Globals.typography.weights.medium
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
                         BaseText {
                             text: modelData.deviceLabel
-                            pixelSize: Theme.typography.size.small
-                            color: Theme.alpha(Theme.colors.text, 0.5)
+                            pixelSize: Globals.typography.size.small
+                            color: Globals.alpha(Globals.colors.text, 0.5)
                         }
                     }
 
@@ -150,7 +150,7 @@ BaseContainer {
                     id: deviceListCol
                     width: parent.width
                     spacing: 4
-                    Layout.topMargin: Theme.geometry.spacing.small
+                    Layout.topMargin: Globals.geometry.spacing.small
 
                     Repeater {
                         model: sectionCol.sectionType === "output" ? Volume.sinks : Volume.sources
@@ -160,9 +160,9 @@ BaseContainer {
                             required property var modelData
                             Layout.fillWidth: true
                             Layout.preferredHeight: 40
-                            hoverColor: Theme.alpha(Theme.colors.surface, 0.4)
-                            customRadius: Theme.geometry.radius
-                            paddingHorizontal: Theme.geometry.spacing.small
+                            hoverColor: Globals.alpha(Globals.colors.surface, 0.4)
+                            customRadius: Globals.geometry.radius
+                            paddingHorizontal: Globals.geometry.spacing.small
                             onClicked: {
                                 if (sectionCol.sectionType === "output")
                                     Volume.selectSink(modelData.id);
@@ -175,7 +175,7 @@ BaseContainer {
                                 anchors.fill: parent
                                 anchors.leftMargin: parent.paddingHorizontal
                                 anchors.rightMargin: parent.paddingHorizontal
-                                spacing: Theme.geometry.spacing.medium
+                                spacing: Globals.geometry.spacing.medium
 
                                 BaseIcon {
                                     readonly property bool isActive: sectionCol.sectionType === "output"
@@ -183,8 +183,8 @@ BaseContainer {
                                         : (Volume.audioSource && Volume.audioSource.id === modelData.id)
                                     icon: isActive ? "task_alt" : "circle"
                                     fill: isActive
-                                    color: isActive ? Theme.colors.primary : Theme.colors.muted
-                                    size: Theme.dimensions.iconSmall
+                                    color: isActive ? Globals.colors.primary : Globals.colors.muted
+                                    size: Globals.dimensions.iconSmall
                                 }
 
                                 BaseText {
@@ -193,9 +193,9 @@ BaseContainer {
                                         var isCur = sectionCol.sectionType === "output"
                                             ? (Volume.audioSink && Volume.audioSink.id === modelData.id)
                                             : (Volume.audioSource && Volume.audioSource.id === modelData.id);
-                                        if (isCur) return Theme.colors.primary;
-                                        if (deviceButton.containsMouse) return Theme.colors.text;
-                                        return Theme.colors.muted;
+                                        if (isCur) return Globals.colors.primary;
+                                        if (deviceButton.containsMouse) return Globals.colors.text;
+                                        return Globals.colors.muted;
                                     }
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true

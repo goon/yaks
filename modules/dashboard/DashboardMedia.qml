@@ -26,7 +26,7 @@ BaseBento {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         // 1. CIRCULAR ALBUM ART with CAVA Equalizer
         Item {
@@ -122,7 +122,7 @@ BaseBento {
                                 color: {
                                     var factor = index / albumArtWrapper.visualBarsCount;
                                     var symFactor = Math.abs(0.5 - factor) * 2;
-                                    return albumArtWrapper.interpolateColor(Theme.colors.secondary, Theme.colors.primary, symFactor);
+                                    return albumArtWrapper.interpolateColor(Globals.colors.secondary, Globals.colors.primary, symFactor);
                                 }
                             }
                         }
@@ -149,8 +149,8 @@ BaseBento {
                     ctx.arc(cx, cy, r, 0, 2 * Math.PI);
 
                     var grad = ctx.createLinearGradient(0, 0, width, height);
-                    grad.addColorStop(0.0, Theme.colors.primary);
-                    grad.addColorStop(1.0, Theme.colors.secondary);
+                    grad.addColorStop(0.0, Globals.colors.primary);
+                    grad.addColorStop(1.0, Globals.colors.secondary);
 
                     ctx.strokeStyle = grad;
                     ctx.lineWidth = lineWidth;
@@ -178,7 +178,7 @@ BaseBento {
                 height: albumArtCircle.height
                 anchors.centerIn: parent
                 radius: width / 2
-                color: Theme.colors.text
+                color: Globals.colors.text
                 visible: false
                 layer.enabled: true
                 layer.smooth: true
@@ -295,7 +295,7 @@ BaseBento {
                     anchors.fill: parent
                     radius: width / 2
                     color: "transparent"
-                    border.color: Theme.alpha(Theme.colors.text, 0.15)
+                    border.color: Globals.alpha(Globals.colors.text, 0.15)
                     border.width: 1.5
                 }
             }
@@ -305,14 +305,14 @@ BaseBento {
             Rectangle {
                 anchors.fill: albumArtCircle
                 radius: width / 2
-                color: Theme.alpha(Theme.colors.background, 0.6)
+                color: Globals.alpha(Globals.colors.background, 0.6)
                 visible: !Media.activePlayer || Media.albumArtUrl === ""
 
                 BaseIcon {
                     anchors.centerIn: parent
                     icon: "music_note"
-                    size: Theme.dimensions.iconExtraLarge
-                    color: Theme.alpha(Theme.colors.primary, 0.4)
+                    size: Globals.dimensions.iconExtraLarge
+                    color: Globals.alpha(Globals.colors.primary, 0.4)
                 }
             }
         }
@@ -320,15 +320,15 @@ BaseBento {
         // 2. TRACK TITLE + ARTIST
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
 
 
 
             BaseText {
                 Layout.fillWidth: true
                 text: Media.activePlayer ? Media.trackTitle : "No Media Playing"
-                pixelSize: Theme.typography.size.large
-                weight: Theme.typography.weights.bold
+                pixelSize: Globals.typography.size.large
+                weight: Globals.typography.weights.bold
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
             }
@@ -336,7 +336,7 @@ BaseBento {
             BaseText {
                 Layout.fillWidth: true
                 text: Media.activePlayer ? Media.trackArtist : "Standby"
-                pixelSize: Theme.typography.size.medium
+                pixelSize: Globals.typography.size.medium
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 muted: true
@@ -346,7 +346,7 @@ BaseBento {
         // 3. PROGRESS BAR
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
 
             Slider {
                 id: progressSlider
@@ -405,8 +405,8 @@ BaseBento {
                         property real progress: progressSlider.visualPosition
                         Behavior on progress { BaseAnimation.Spring { profile: "snappy" } }
 
-                        property color activeColor: Theme.colors.text
-                        property color inactiveColor: Theme.alpha(Theme.colors.text, 0.08)
+                        property color activeColor: Globals.colors.text
+                        property color inactiveColor: Globals.alpha(Globals.colors.text, 0.08)
                         property real phase: progressSlider.wavePhase
 
                         anchors.fill: parent
@@ -430,8 +430,8 @@ BaseBento {
                             ctx.beginPath();
                             if (progressX > 0) {
                                 var gradient = ctx.createLinearGradient(0, 0, progressX, 0);
-                                gradient.addColorStop(0, Theme.colors.primary);
-                                gradient.addColorStop(1, Theme.colors.secondary);
+                                gradient.addColorStop(0, Globals.colors.primary);
+                                gradient.addColorStop(1, Globals.colors.secondary);
                                 ctx.strokeStyle = gradient;
                             } else {
                                 ctx.strokeStyle = activeColor;
@@ -453,9 +453,9 @@ BaseBento {
                         x: 0
                         y: parent.height / 2 - 10
                         width: 4
-                        height: Theme.dimensions.iconMedium
-                        radius: Math.max(2, Theme.geometry.radius * 0.5)
-                        color: Theme.colors.text
+                        height: Globals.dimensions.iconMedium
+                        radius: Math.max(2, Globals.geometry.radius * 0.5)
+                        color: Globals.colors.text
                     }
                 }
 
@@ -466,9 +466,9 @@ BaseBento {
                     
                     y: progressSlider.topPadding + progressSlider.availableHeight / 2 - height / 2
                     width: 4
-                    height: Theme.dimensions.iconMedium
-                    radius: Math.max(2, Theme.geometry.radius * 0.5)
-                    color: Theme.colors.text
+                    height: Globals.dimensions.iconMedium
+                    radius: Math.max(2, Globals.geometry.radius * 0.5)
+                    color: Globals.colors.text
                 }
             }
 
@@ -477,7 +477,7 @@ BaseBento {
 
                 BaseText {
                     text: root.formatTime(Media.currentPosition)
-                    pixelSize: Theme.typography.size.small
+                    pixelSize: Globals.typography.size.small
                     muted: true
                 }
 
@@ -485,7 +485,7 @@ BaseBento {
 
                 BaseText {
                     text: root.formatTime(Media.trackLength / 1e+06)
-                    pixelSize: Theme.typography.size.small
+                    pixelSize: Globals.typography.size.small
                     muted: true
                 }
             }
@@ -525,7 +525,7 @@ BaseBento {
                 enabled: Media.activePlayer !== null
                 opacity: enabled ? 1.0 : 0.4
 
-                Behavior on opacity { NumberAnimation { duration: Theme.animations.fast } }
+                Behavior on opacity { NumberAnimation { duration: Globals.animations.fast } }
 
                 // Press scale feedback
                 property real pressScale: 1.0
@@ -538,10 +538,10 @@ BaseBento {
                     anchors.fill: parent
 
                     // Reactive repaint triggers
-                    property color fillColor:    Theme.alpha(Theme.colors.primary, 0.18)
-                    property color trackColor:   Theme.alpha(Theme.colors.secondary, 0.22)
-                    property color primaryColor: Theme.colors.primary
-                    property color secondaryColor: Theme.colors.secondary
+                    property color fillColor:    Globals.alpha(Globals.colors.primary, 0.18)
+                    property color trackColor:   Globals.alpha(Globals.colors.secondary, 0.22)
+                    property color primaryColor: Globals.colors.primary
+                    property color secondaryColor: Globals.colors.secondary
                     property bool  hovered:      scallopsMouseArea.containsMouse
                     property real  progress:       Media.progressRatio
                     // Animate toward the raw progress so MPRIS jumps are smoothed
@@ -610,8 +610,8 @@ BaseBento {
                         // 3. Fill
                         buildSmoothedClosedPath();
                         ctx.fillStyle = hovered
-                            ? Theme.alpha(Theme.colors.primary, 0.28)
-                            : Theme.alpha(Theme.colors.primary, 0.18);
+                            ? Globals.alpha(Globals.colors.primary, 0.28)
+                            : Globals.alpha(Globals.colors.primary, 0.18);
                         ctx.fill();
 
                         ctx.lineWidth = 2.5;
@@ -669,9 +669,9 @@ BaseBento {
                 // Play / Pause icon centered inside the scallop
                 Text {
                     anchors.centerIn: parent
-                    font.family:      Theme.typography.iconFamily
+                    font.family:      Globals.typography.iconFamily
                     font.pixelSize:   22
-                    color:            Theme.colors.primary
+                    color:            Globals.colors.primary
                     text:             Media.playbackState === MprisPlaybackState.Playing ? "\ue034" : "\ue037"
                     // pause = U+E034  play_arrow = U+E037  (Material Symbols codepoints)
 

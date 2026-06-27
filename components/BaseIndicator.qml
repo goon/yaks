@@ -47,11 +47,11 @@ Item {
     onXChanged: if (_effectiveTarget) _lastX = x
     onYChanged: if (_effectiveTarget) _lastY = y
 
-    Behavior on x { NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuart } }
-    Behavior on y { NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuart } }
+    Behavior on x { NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
+    Behavior on y { NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
 
     opacity: _effectiveTarget ? 1.0 : 0.0
-    Behavior on opacity { NumberAnimation { duration: Theme.animations.fast } }
+    Behavior on opacity { NumberAnimation { duration: Globals.animations.fast } }
 
     z: 10
 
@@ -63,8 +63,8 @@ Item {
         radius: width / 2
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: Theme.colors.primary }
-            GradientStop { position: 1.0; color: Theme.colors.secondary }
+            GradientStop { position: 0.0; color: Globals.colors.primary }
+            GradientStop { position: 1.0; color: Globals.colors.secondary }
         }
     }
 

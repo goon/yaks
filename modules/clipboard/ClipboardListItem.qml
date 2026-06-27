@@ -10,8 +10,8 @@ BaseListItem {
 
     showInternalIndicator: false
     rightIcon: ""
-    titleSize: Theme.typography.size.base
-    subtitleSize: Theme.typography.size.small
+    titleSize: Globals.typography.size.base
+    subtitleSize: Globals.typography.size.small
     leftIconInteractive: false
 
     leftIcon: {

@@ -18,7 +18,7 @@ Item {
 
     signal clicked()
 
-    implicitHeight: layout.implicitHeight + (showSeparator ? Theme.geometry.spacing.large * 2 + 1 : 0)
+    implicitHeight: layout.implicitHeight + (showSeparator ? Globals.geometry.spacing.large * 2 + 1 : 0)
     Layout.fillWidth: true
 
     MouseArea {
@@ -36,14 +36,14 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.leftMargin: Theme.geometry.spacing.medium
-        anchors.rightMargin: Theme.geometry.spacing.medium
+        anchors.leftMargin: Globals.geometry.spacing.medium
+        anchors.rightMargin: Globals.geometry.spacing.medium
         height: layout.implicitHeight
 
         RowLayout {
             id: layout
             anchors.fill: parent
-            spacing: Theme.geometry.spacing.medium
+            spacing: Globals.geometry.spacing.medium
 
             BaseIcon {
                 visible: root.icon !== ""
@@ -57,13 +57,13 @@ Item {
 
                 BaseText {
                     text: root.label
-                    pixelSize: Theme.typography.size.medium
-                    weight: Theme.typography.weights.medium
+                    pixelSize: Globals.typography.size.medium
+                    weight: Globals.typography.weights.medium
                 }
                 BaseText {
                     visible: root.description !== ""
                     text: root.description
-                    pixelSize: Theme.typography.size.small
+                    pixelSize: Globals.typography.size.small
                     muted: true
                 }
             }
@@ -72,7 +72,7 @@ Item {
                 id: controlContainer
                 Layout.preferredWidth: parent.width * 0.6
                 Layout.alignment: Qt.AlignRight
-                spacing: Theme.geometry.spacing.small
+                spacing: Globals.geometry.spacing.small
 
                 property bool hasFillWidthChild: {
                     for (var i = 0; i < children.length; i++) {
@@ -95,9 +95,9 @@ Item {
     BaseSeparator {
         visible: root.showSeparator
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Theme.geometry.spacing.large
+        anchors.bottomMargin: Globals.geometry.spacing.large
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: root.icon !== "" ? (Theme.geometry.spacing.medium + Theme.dimensions.iconMedium + Theme.geometry.spacing.medium) : Theme.geometry.spacing.medium
+        anchors.leftMargin: root.icon !== "" ? (Globals.geometry.spacing.medium + Globals.dimensions.iconMedium + Globals.geometry.spacing.medium) : Globals.geometry.spacing.medium
     }
 }

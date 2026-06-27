@@ -7,7 +7,7 @@ ListView {
 
     // Common Configuration
     clip: false
-    spacing: Theme.geometry.spacing.large
+    spacing: Globals.geometry.spacing.large
     activeFocusOnTab: false
     
     // Disable highlight animations for snappier feel

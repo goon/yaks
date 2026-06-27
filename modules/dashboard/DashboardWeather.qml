@@ -13,7 +13,7 @@ BaseBento {
         id: weatherWidget
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Theme.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.medium
 
         property bool editMode: false
         readonly property bool isDay: Weather.isDay
@@ -53,13 +53,13 @@ BaseBento {
                 RowLayout {
                     id: locationHeaderRow
                     anchors.fill: parent
-                    spacing: Theme.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.small
 
                     BaseIcon {
                         id: locIcon
                         icon: locationMouseArea.containsMouse ? "edit" : "location_on"
                         size: 18
-                        color: Theme.colors.primary
+                        color: Globals.colors.primary
 
                         onIconChanged: iconAnim.restart()
 
@@ -72,8 +72,8 @@ BaseBento {
 
                     BaseText {
                         text: Preferences.weather.locationName
-                        font.pixelSize: Theme.typography.size.medium
-                        weight: Theme.typography.weights.bold
+                        font.pixelSize: Globals.typography.size.medium
+                        weight: Globals.typography.weights.bold
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
@@ -132,32 +132,32 @@ BaseBento {
 
             RowLayout {
                 anchors.fill: parent
-                spacing: Theme.geometry.spacing.large
+                spacing: Globals.geometry.spacing.large
 
                 // Left Column: Humidity and Wind Details
                 ColumnLayout {
-                    spacing: Theme.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.small
                     Layout.alignment: Qt.AlignVCenter
 
                     // Humidity
                     RowLayout {
-                        spacing: Theme.geometry.spacing.small
-                        BaseIcon { icon: "humidity_mid"; size: 16; color: Theme.colors.primary }
+                        spacing: Globals.geometry.spacing.small
+                        BaseIcon { icon: "humidity_mid"; size: 16; color: Globals.colors.primary }
                         ColumnLayout {
                             spacing: 0
-                            BaseText { text: "Humidity"; font.pixelSize: 10; muted: true; weight: Theme.typography.weights.bold }
-                            BaseText { text: Weather.humidity; font.pixelSize: Theme.typography.size.medium; weight: Theme.typography.weights.bold }
+                            BaseText { text: "Humidity"; font.pixelSize: 10; muted: true; weight: Globals.typography.weights.bold }
+                            BaseText { text: Weather.humidity; font.pixelSize: Globals.typography.size.medium; weight: Globals.typography.weights.bold }
                         }
                     }
 
                     // Wind
                     RowLayout {
-                        spacing: Theme.geometry.spacing.small
-                        BaseIcon { icon: "air"; size: 16; color: Theme.colors.primary }
+                        spacing: Globals.geometry.spacing.small
+                        BaseIcon { icon: "air"; size: 16; color: Globals.colors.primary }
                         ColumnLayout {
                             spacing: 0
-                            BaseText { text: "Wind"; font.pixelSize: 10; muted: true; weight: Theme.typography.weights.bold }
-                            BaseText { text: Weather.windSpeed; font.pixelSize: Theme.typography.size.medium; weight: Theme.typography.weights.bold }
+                            BaseText { text: "Wind"; font.pixelSize: 10; muted: true; weight: Globals.typography.weights.bold }
+                            BaseText { text: Weather.windSpeed; font.pixelSize: Globals.typography.size.medium; weight: Globals.typography.weights.bold }
                         }
                     }
                 }
@@ -167,7 +167,7 @@ BaseBento {
 
                 // Right Column: Weather Icon & Temperature Details
                 RowLayout {
-                    spacing: Theme.geometry.spacing.large
+                    spacing: Globals.geometry.spacing.large
                     Layout.alignment: Qt.AlignVCenter
 
                     // Icon Container (handles animations)
@@ -181,7 +181,7 @@ BaseBento {
                             anchors.centerIn: parent
                             icon: weatherWidget.getIcon(weatherWidget.code, weatherWidget.isDay)
                             size: 64
-                            color: Theme.colors.primary
+                            color: Globals.colors.primary
                         }
 
                         // Rotation animation for sun icons
@@ -234,16 +234,16 @@ BaseBento {
                     }
 
                     ColumnLayout {
-                        spacing: -Theme.geometry.spacing.small
+                        spacing: -Globals.geometry.spacing.small
                         BaseText {
                             text: Weather.temperature
                             font.pixelSize: 42
-                            weight: Theme.typography.weights.bold
+                            weight: Globals.typography.weights.bold
                         }
                         BaseText {
                             text: "FEELS LIKE " + Weather.feelsLike
                             font.pixelSize: 11
-                            weight: Theme.typography.weights.bold
+                            weight: Globals.typography.weights.bold
                             muted: true
                         }
                     }
@@ -257,8 +257,8 @@ BaseBento {
             horizontalAlignment: Text.AlignHCenter
             text: Weather.error
             visible: Weather.error !== ""
-            font.pixelSize: Theme.typography.size.small
-            color: Theme.colors.error
+            font.pixelSize: Globals.typography.size.small
+            color: Globals.colors.error
         }
     }
 }

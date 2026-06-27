@@ -20,22 +20,22 @@ BaseContainer {
         hoverEnabled: false
 
         property string actionIcon: ""
-        property color actionColor: Theme.colors.text
+        property color actionColor: Globals.colors.text
 
         // Simple pop on hover
         scale: containsMouse ? (pressed ? 0.95 : 1.1) : 1.0
-        Behavior on scale { BaseAnimation { duration: Theme.animations.fast; easing.type: Easing.OutBack } }
+        Behavior on scale { BaseAnimation { duration: Globals.animations.fast; easing.type: Easing.OutBack } }
 
         Item {
             anchors.centerIn: parent
-            width: Theme.dimensions.iconLarge
-            height: Theme.dimensions.iconLarge
+            width: Globals.dimensions.iconLarge
+            height: Globals.dimensions.iconLarge
 
             BaseIcon {
                 anchors.centerIn: parent
                 icon: btn.actionIcon
-                size: Theme.dimensions.iconLarge
-                color: btn.containsMouse ? btn.actionColor : Theme.colors.muted
+                size: Globals.dimensions.iconLarge
+                color: btn.containsMouse ? btn.actionColor : Globals.colors.muted
 
                 Behavior on color { BaseAnimation { } }
             }
@@ -43,10 +43,10 @@ BaseContainer {
     }
 
     readonly property var _actions: [
-        { icon: "power_settings_new", color: Theme.colors.error,     onClicked: function() { IslandService.closeAll(); Power.shutdown(); } },
-        { icon: "restart_alt",        color: Theme.colors.text,      onClicked: function() { IslandService.closeAll(); Power.reboot(); } },
-        { icon: "bedtime",            color: Theme.colors.info,      onClicked: function() { IslandService.closeAll(); Power.suspend(); } },
-        { icon: "logout",             color: Theme.colors.secondary, onClicked: function() { IslandService.closeAll(); Power.logout(); } },
+        { icon: "power_settings_new", color: Globals.colors.error,     onClicked: function() { IslandService.closeAll(); Power.shutdown(); } },
+        { icon: "restart_alt",        color: Globals.colors.text,      onClicked: function() { IslandService.closeAll(); Power.reboot(); } },
+        { icon: "bedtime",            color: Globals.colors.info,      onClicked: function() { IslandService.closeAll(); Power.suspend(); } },
+        { icon: "logout",             color: Globals.colors.secondary, onClicked: function() { IslandService.closeAll(); Power.logout(); } },
     ]
 
     RowLayout {
@@ -66,18 +66,18 @@ BaseContainer {
 
         BaseSeparator {
             orientation: BaseSeparator.Vertical
-            Layout.topMargin: Theme.geometry.spacing.large
-            Layout.bottomMargin: Theme.geometry.spacing.large
+            Layout.topMargin: Globals.geometry.spacing.large
+            Layout.bottomMargin: Globals.geometry.spacing.large
         }
         BaseSeparator {
             orientation: BaseSeparator.Vertical
-            Layout.topMargin: Theme.geometry.spacing.large
-            Layout.bottomMargin: Theme.geometry.spacing.large
+            Layout.topMargin: Globals.geometry.spacing.large
+            Layout.bottomMargin: Globals.geometry.spacing.large
         }
         BaseSeparator {
             orientation: BaseSeparator.Vertical
-            Layout.topMargin: Theme.geometry.spacing.large
-            Layout.bottomMargin: Theme.geometry.spacing.large
+            Layout.topMargin: Globals.geometry.spacing.large
+            Layout.bottomMargin: Globals.geometry.spacing.large
         }
     }
 }

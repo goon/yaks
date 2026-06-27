@@ -12,9 +12,9 @@ BaseBento {
     component TimeSegment: Item {
         id: segment
         property string text: ""
-        property int pixelSize: Theme.typography.size.large * 1.8
-        property color textColor: Theme.colors.primary
-        property int fontWeight: Theme.typography.weights.bold
+        property int pixelSize: Globals.typography.size.large * 1.8
+        property color textColor: Globals.colors.primary
+        property int fontWeight: Globals.typography.weights.bold
 
         implicitWidth: widthDummy.implicitWidth
         implicitHeight: widthDummy.implicitHeight
@@ -120,9 +120,9 @@ BaseBento {
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDateTime(systemClock.date, "hh")
-                pixelSize: Theme.typography.size.large * 1.8
-                fontWeight: Theme.typography.weights.bold
-                textColor: Theme.colors.primary
+                pixelSize: Globals.typography.size.large * 1.8
+                fontWeight: Globals.typography.weights.bold
+                textColor: Globals.colors.primary
             }
 
             Row {
@@ -135,7 +135,7 @@ BaseBento {
                         width: 6
                         height: 6
                         radius: 3
-                        color: Theme.colors.secondary
+                        color: Globals.colors.secondary
                         opacity: 0.8
                     }
                 }
@@ -144,9 +144,9 @@ BaseBento {
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDateTime(systemClock.date, "mm")
-                pixelSize: Theme.typography.size.large * 1.8
-                fontWeight: Theme.typography.weights.bold
-                textColor: Theme.colors.primary
+                pixelSize: Globals.typography.size.large * 1.8
+                fontWeight: Globals.typography.weights.bold
+                textColor: Globals.colors.primary
             }
 
             Row {
@@ -159,7 +159,7 @@ BaseBento {
                         width: 6
                         height: 6
                         radius: 3
-                        color: Theme.colors.secondary
+                        color: Globals.colors.secondary
                         opacity: 0.8
                     }
                 }
@@ -168,9 +168,9 @@ BaseBento {
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDateTime(systemClock.date, "ss")
-                pixelSize: Theme.typography.size.large * 1.8
-                fontWeight: Theme.typography.weights.bold
-                textColor: Theme.colors.primary
+                pixelSize: Globals.typography.size.large * 1.8
+                fontWeight: Globals.typography.weights.bold
+                textColor: Globals.colors.primary
             }
         }
     }

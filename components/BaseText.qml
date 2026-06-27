@@ -10,17 +10,17 @@ Text {
     property alias bold: root.font.bold
     property alias family: root.font.family
     property alias weight: root.font.weight
-    // Muted text mode (overrides color to Theme.colors.muted)
+    // Muted text mode (overrides color to Globals.colors.muted)
     property bool muted: false
 
     // Shadow support
     property bool shadow: false
-    property color shadowColor: Theme.effects.shadow.color
-    property int shadowRadius: Theme.effects.shadow.radius
-    color: root.muted ? Theme.colors.muted : Theme.colors.text
-    font.family: Theme.typography.family
-    font.pixelSize: Theme.typography.size.base
-    font.weight: Theme.typography.weights.normal
+    property color shadowColor: Globals.effects.shadow.color
+    property int shadowRadius: Globals.effects.shadow.radius
+    color: root.muted ? Globals.colors.muted : Globals.colors.text
+    font.family: Globals.typography.family
+    font.pixelSize: Globals.typography.size.base
+    font.weight: Globals.typography.weights.normal
     wrapMode: Text.WordWrap
     layer.enabled: shadow
 
@@ -30,8 +30,8 @@ Text {
         shadowEnabled: true
         shadowColor: root.shadowColor
         shadowBlur: root.shadowRadius / 20.0
-        shadowHorizontalOffset: Theme.effects.shadow.offsetX
-        shadowVerticalOffset: Theme.effects.shadow.offsetY
+        shadowHorizontalOffset: Globals.effects.shadow.offsetX
+        shadowVerticalOffset: Globals.effects.shadow.offsetY
     }
 
 }

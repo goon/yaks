@@ -21,7 +21,7 @@ PanelWindow {
     }
 
     objectName: "bar"
-    color: Theme.colors.transparent
+    color: Globals.colors.transparent
     
     // Dynamic keyboard focus grabbing when morphed
     WlrLayershell.keyboardFocus: island.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None

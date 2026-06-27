@@ -8,10 +8,10 @@ ComboBox {
     id: root
 
     // Colors can be overridden
-    property color textColor: Theme.colors.text
-    property color backgroundColor: Theme.alpha(Theme.colors.surface, Theme.opacity.background)
-    property color borderColor: Theme.colors.border
-    property color borderActiveColor: Theme.colors.primary
+    property color textColor: Globals.colors.text
+    property color backgroundColor: Globals.alpha(Globals.colors.surface, Globals.opacity.background)
+    property color borderColor: Globals.colors.border
+    property color borderActiveColor: Globals.colors.primary
     // List limiting
     property int maxVisibleItems: 10
 
@@ -25,9 +25,9 @@ ComboBox {
     implicitHeight: 36
     implicitWidth: 200
 
-    font.family: Theme.typography.family
-    font.pixelSize: Theme.typography.size.base
-    font.weight: Theme.typography.weights.normal
+    font.family: Globals.typography.family
+    font.pixelSize: Globals.typography.size.base
+    font.weight: Globals.typography.weights.normal
     
     enabled: count > 0 || searchable
     opacity: enabled ? 1.0 : 0.5
@@ -50,8 +50,8 @@ ComboBox {
         contentItem: BaseText {
             id: delegateText
             text: (root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData
-            color: delegateRoot.highlighted || delegateRoot.hovered ? Theme.colors.text : root.textColor
-            weight: delegateRoot.highlighted || delegateRoot.hovered ? Theme.typography.weights.bold : Theme.typography.weights.normal
+            color: delegateRoot.highlighted || delegateRoot.hovered ? Globals.colors.text : root.textColor
+            weight: delegateRoot.highlighted || delegateRoot.hovered ? Globals.typography.weights.bold : Globals.typography.weights.normal
             
             // Lazy Font Loading
             property bool loadFont: !root.previewFonts
@@ -64,23 +64,23 @@ ComboBox {
             }
 
             // Only preview if not moving to save CPU during scroll
-            font.family: loadFont && root.previewFonts ? ((root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData) : Theme.typography.family
-            font.pixelSize: Theme.typography.size.base
-            font.weight: Theme.typography.weights.normal
+            font.family: loadFont && root.previewFonts ? ((root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData) : Globals.typography.family
+            font.pixelSize: Globals.typography.size.base
+            font.weight: Globals.typography.weights.normal
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
-            leftPadding: Theme.geometry.padding.small
-            rightPadding: Theme.geometry.padding.small
+            leftPadding: Globals.geometry.padding.small
+            rightPadding: Globals.geometry.padding.small
         }
 
         background: Rectangle {
             anchors.fill: parent
             anchors.margins: 2
-            radius: Theme.geometry.innerRadius.medium
+            radius: Globals.geometry.innerRadius.medium
             
             visible: parent.highlighted || parent.hovered
             
-            color: Theme.alpha(Theme.colors.surface, 0.5)
+            color: Globals.alpha(Globals.colors.surface, 0.5)
 
             // Hover Notch
             Rectangle {
@@ -88,13 +88,13 @@ ComboBox {
                 height: 20
                 radius: 1.5
                 anchors.left: parent.left
-                anchors.leftMargin: Theme.geometry.spacing.small
+                anchors.leftMargin: Globals.geometry.spacing.small
                 anchors.verticalCenter: parent.verticalCenter
                 
                 gradient: Gradient {
                     orientation: Gradient.Vertical
-                    GradientStop { position: 0.0; color: Theme.colors.primary }
-                    GradientStop { position: 1.0; color: Theme.colors.secondary }
+                    GradientStop { position: 0.0; color: Globals.colors.primary }
+                    GradientStop { position: 1.0; color: Globals.colors.secondary }
                 }
             }
         }
@@ -105,7 +105,7 @@ ComboBox {
             enabled: !listView.moving
             SequentialAnimation {
                 PauseAnimation { duration: Math.min(delegateRoot.index * 12, 100) }
-                BaseAnimation { duration: Theme.animations.fast }
+                BaseAnimation { duration: Globals.animations.fast }
             }
         }
     }
@@ -114,20 +114,20 @@ ComboBox {
     contentItem: BaseText {
         text: root.displayText
         color: root.textColor
-        font.family: Theme.typography.family
-        font.pixelSize: Theme.typography.size.base
-        font.weight: Theme.typography.weights.normal
+        font.family: Globals.typography.family
+        font.pixelSize: Globals.typography.size.base
+        font.weight: Globals.typography.weights.normal
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-        leftPadding: Theme.geometry.padding.small
-        rightPadding: root.indicator.width + Theme.geometry.spacing.small
+        leftPadding: Globals.geometry.padding.small
+        rightPadding: root.indicator.width + Globals.geometry.spacing.small
         visible: !comboPopup.visible
         opacity: visible ? 1.0 : 0.0
     }
 
     // Custom Chevron Indicator
     indicator: BaseIcon {
-        x: root.width - width - Theme.geometry.spacing.medium
+        x: root.width - width - Globals.geometry.spacing.medium
         y: (root.availableHeight - height) / 2
         icon: "expand_more"
         color: root.textColor
@@ -138,7 +138,7 @@ ComboBox {
     // Background (Closed state - floating)
     background: Rectangle {
         color: root.backgroundColor
-        radius: Theme.geometry.innerRadius.medium
+        radius: Globals.geometry.innerRadius.medium
         border.color: root.activeFocus ? root.borderActiveColor : root.borderColor
         border.width: 1
         antialiasing: true
@@ -149,20 +149,20 @@ ComboBox {
         y: 0
         width: root.width
         implicitHeight: contentLayout.implicitHeight + padding * 2
-        padding: Theme.geometry.spacing.medium
+        padding: Globals.geometry.spacing.medium
 
         // Seamless on-site transitions
         enter: Transition {
             ParallelAnimation {
-                BaseAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Theme.animations.fast }
-                BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Theme.animations.fast }
+                BaseAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Globals.animations.fast }
+                BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Globals.animations.fast }
             }
         }
 
         exit: Transition {
             ParallelAnimation {
-                BaseAnimation { property: "scale"; to: 0.95; duration: Theme.animations.fast; easing.type: Easing.InQuint }
-                BaseAnimation { property: "opacity"; to: 0; duration: Theme.animations.fast }
+                BaseAnimation { property: "scale"; to: 0.95; duration: Globals.animations.fast; easing.type: Easing.InQuint }
+                BaseAnimation { property: "opacity"; to: 0; duration: Globals.animations.fast }
             }
         }
 
@@ -183,7 +183,7 @@ ComboBox {
             BaseInput {
                 id: searchInput
                 Layout.fillWidth: true
-                Layout.margins: Theme.geometry.spacing.small
+                Layout.margins: Globals.geometry.spacing.small
                 Layout.preferredHeight: 36
                 placeholderText: "Search..."
                 visible: root.searchable
@@ -222,7 +222,7 @@ ComboBox {
             border.color: root.activeFocus ? root.borderActiveColor : root.borderColor
             border.width: 1
             antialiasing: true
-            radius: Theme.geometry.innerRadius.medium
+            radius: Globals.geometry.innerRadius.medium
         }
     }
 }

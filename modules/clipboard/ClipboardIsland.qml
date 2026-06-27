@@ -13,12 +13,12 @@ FocusScope {
     implicitWidth: 760
 
     readonly property int maxVisibleItems: 8
-    readonly property int listItemHeight: Theme.dimensions.listItemHeight
+    readonly property int listItemHeight: Globals.dimensions.listItemHeight
     readonly property int listGap: 0
     readonly property int headerHeight: 52
-    readonly property int searchHeight: Theme.dimensions.launcherSearchHeight
-    readonly property int containerSpacing: Theme.geometry.spacing.small
-    readonly property int paneSpacing: Theme.geometry.spacing.medium
+    readonly property int searchHeight: Globals.dimensions.launcherSearchHeight
+    readonly property int containerSpacing: Globals.geometry.spacing.small
+    readonly property int paneSpacing: Globals.geometry.spacing.medium
     readonly property int listAreaHeight: maxVisibleItems * listItemHeight
     readonly property int preferredHeight: headerHeight + containerSpacing + searchHeight + paneSpacing + listAreaHeight
 
@@ -124,7 +124,7 @@ FocusScope {
 
     BaseContainer {
         anchors.fill: parent
-        spacing: Theme.geometry.spacing.small
+        spacing: Globals.geometry.spacing.small
 
         // ── HEADER ──────────────────────────────────────────────────
         ColumnLayout {
@@ -133,8 +133,8 @@ FocusScope {
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.bottomMargin: Theme.geometry.spacing.large
-                spacing: Theme.geometry.spacing.small
+                Layout.bottomMargin: Globals.geometry.spacing.large
+                spacing: Globals.geometry.spacing.small
 
                 BaseHeader {
                     text: "CLIPBOARD"
@@ -144,7 +144,7 @@ FocusScope {
 
                 BaseButton {
                     icon: "delete_sweep"
-                    size: Theme.dimensions.iconMedium * 1.1
+                    size: Globals.dimensions.iconMedium * 1.1
                     Layout.alignment: Qt.AlignVCenter
                     enabled: Clipboard.history.count > 0
                     onClicked: Clipboard.clearHistory()
@@ -153,7 +153,7 @@ FocusScope {
 
             BaseSeparator {
                 Layout.fillWidth: true
-                Layout.bottomMargin: Theme.geometry.spacing.large
+                Layout.bottomMargin: Globals.geometry.spacing.large
             }
         }
 
@@ -161,7 +161,7 @@ FocusScope {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: Theme.geometry.spacing.large
+            spacing: Globals.geometry.spacing.large
 
             // Left pane ──────────────────────────────────────────────
             ColumnLayout {
@@ -169,21 +169,21 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 450
                 Layout.minimumWidth: 0
-                spacing: Theme.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.medium
 
                 BaseContainer {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Theme.dimensions.launcherSearchHeight
-                    paddingHorizontal: Theme.geometry.spacing.large
+                    Layout.preferredHeight: Globals.dimensions.launcherSearchHeight
+                    paddingHorizontal: Globals.geometry.spacing.large
 
                     RowLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        spacing: Theme.geometry.spacing.large
+                        spacing: Globals.geometry.spacing.large
 
                         BaseIcon {
                             icon: "search"
-                            color: searchInput.text.length > 0 ? Theme.colors.primary : Theme.colors.muted
+                            color: searchInput.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
                             Behavior on color { BaseAnimation { } }
                             scale: searchInput.text.length > 0 ? 1.1 : 1.0
                             Behavior on scale { BaseAnimation { } }
@@ -231,7 +231,7 @@ FocusScope {
                         }
 
                         delegate: ClipboardListItem {
-                            width: ListView.view ? ListView.view.width - Theme.geometry.spacing.small : 0
+                            width: ListView.view ? ListView.view.width - Globals.geometry.spacing.small : 0
                             itemData: model
                             selected: ListView.isCurrentItem
                             onClicked: listView.currentIndex = index
@@ -248,12 +248,12 @@ FocusScope {
                     ColumnLayout {
                         anchors.centerIn: parent
                         visible: listView.count === 0
-                        spacing: Theme.geometry.spacing.medium
+                        spacing: Globals.geometry.spacing.medium
                         BaseIcon {
                             Layout.alignment: Qt.AlignHCenter
                             icon: "content_paste_off"
-                            size: Theme.dimensions.iconExtraLarge
-                            color: Theme.colors.muted
+                            size: Globals.dimensions.iconExtraLarge
+                            color: Globals.colors.muted
                         }
                     }
                 }
@@ -271,11 +271,11 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 550
                 Layout.minimumWidth: 0
-                spacing: Theme.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.medium
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Theme.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.small
                     Layout.alignment: Qt.AlignRight
 
                     Item { Layout.fillWidth: true }

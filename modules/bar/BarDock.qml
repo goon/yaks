@@ -7,13 +7,13 @@ import qs
 BaseContainer {
     id: root
 
-    readonly property real _spacing: Theme.geometry.spacing.small
-    readonly property real _itemSize: Theme.dimensions.barItemHeight
+    readonly property real _spacing: Globals.geometry.spacing.small
+    readonly property real _itemSize: Globals.dimensions.barItemHeight
 
     visible: Compositor.hasDockWindows
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
-    paddingHorizontal: Theme.geometry.spacing.small
+    paddingHorizontal: Globals.geometry.spacing.small
     implicitHeight: _itemSize
 
     ListView {
@@ -47,7 +47,7 @@ BaseContainer {
             implicitWidth: isValid ? _itemSize + _spacing : 0
 
             Behavior on implicitWidth {
-                NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuad }
+                NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuad }
             }
 
             Image {
@@ -57,8 +57,8 @@ BaseContainer {
                 anchors.centerIn: parent
                 source: LauncherService.resolveIcon(windowItem.windowAppId) || "image://icon/application-x-executable"
                 sourceSize: Qt.size(64, 64)
-                width: Theme.dimensions.iconBase
-                height: Theme.dimensions.iconBase
+                width: Globals.dimensions.iconBase
+                height: Globals.dimensions.iconBase
                 fillMode: Image.PreserveAspectFit
                 smooth: true
                 mipmap: true
@@ -94,7 +94,7 @@ BaseContainer {
         move: Transition {
             NumberAnimation {
                 properties: "x,y"
-                duration: Theme.animations.normal
+                duration: Globals.animations.normal
                 easing.type: Easing.OutQuad
             }
 
@@ -105,14 +105,14 @@ BaseContainer {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: Theme.animations.fast
+                duration: Globals.animations.fast
             }
 
             NumberAnimation {
                 property: "scale"
                 from: 0
                 to: 1
-                duration: Theme.animations.fast
+                duration: Globals.animations.fast
                 easing.type: Easing.OutBack
             }
 
@@ -122,13 +122,13 @@ BaseContainer {
             NumberAnimation {
                 property: "opacity"
                 to: 0
-                duration: Theme.animations.fast
+                duration: Globals.animations.fast
             }
 
             NumberAnimation {
                 property: "scale"
                 to: 0
-                duration: Theme.animations.fast
+                duration: Globals.animations.fast
             }
 
         }
@@ -136,7 +136,7 @@ BaseContainer {
         displaced: Transition {
             NumberAnimation {
                 properties: "x,y"
-                duration: Theme.animations.normal
+                duration: Globals.animations.normal
                 easing.type: Easing.OutQuad
             }
 

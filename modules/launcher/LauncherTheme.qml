@@ -20,7 +20,7 @@ LauncherTab {
                 themeListView.currentIndex = 0;
         }
         if (themeListView && themeListView.currentIndex >= 0 && themeListView.currentIndex < themeListView.model.length) {
-            ThemeService.setTheme(themeListView.model[themeListView.currentIndex].id);
+            Theme.setTheme(themeListView.model[themeListView.currentIndex].id);
             root.closeRequested();
         }
     }
@@ -30,7 +30,7 @@ LauncherTab {
         anchors.fill: parent
         
         model: {
-            const allThemes = ThemeService.allThemes || [];
+            const allThemes = Theme.allThemes || [];
             if (!root.searchText)
                 return allThemes;
 
@@ -71,20 +71,20 @@ LauncherTab {
             // Custom Content Overlay
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Theme.geometry.padding.island
-                anchors.rightMargin: Theme.geometry.padding.island
-                spacing: Theme.geometry.spacing.medium
+                anchors.leftMargin: Globals.geometry.padding.island
+                anchors.rightMargin: Globals.geometry.padding.island
+                spacing: Globals.geometry.spacing.medium
 
                 BaseIcon {
                     icon: "palette"
-                    color: delegateItem.selected ? Theme.colors.primary : Theme.colors.muted
+                    color: delegateItem.selected ? Globals.colors.primary : Globals.colors.muted
                     Layout.alignment: Qt.AlignVCenter
                 }
 
                 BaseText {
                     text: (modelData && modelData.name) ? modelData.name : ""
-                    color: delegateItem.selected ? Theme.colors.text : Theme.colors.muted
-                    weight: delegateItem.selected ? Theme.typography.weights.bold : Theme.typography.weights.normal
+                    color: delegateItem.selected ? Globals.colors.text : Globals.colors.muted
+                    weight: delegateItem.selected ? Globals.typography.weights.bold : Globals.typography.weights.normal
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
                     elide: Text.ElideRight
@@ -101,13 +101,13 @@ LauncherTab {
                             return ["base00", "base01", pIdx, sIdx, "base0A"];
                         }
                         Rectangle {
-                            width: Theme.dimensions.iconSmall
-                            height: Theme.dimensions.iconSmall
+                            width: Globals.dimensions.iconSmall
+                            height: Globals.dimensions.iconSmall
                             radius: 7
-                            color: (delegateItem.themeColors && delegateItem.themeColors[modelData]) ? delegateItem.themeColors[modelData] : Theme.colors.transparent
+                            color: (delegateItem.themeColors && delegateItem.themeColors[modelData]) ? delegateItem.themeColors[modelData] : Globals.colors.transparent
                             visible: !!(delegateItem.themeColors && delegateItem.themeColors[modelData])
                             border.width: 1
-                            border.color: Qt.alpha(Theme.colors.text, 0.1)
+                            border.color: Qt.alpha(Globals.colors.text, 0.1)
                         }
                     }
                 }

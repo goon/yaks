@@ -42,7 +42,7 @@ FocusScope {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 0
-        spacing: Theme.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.medium
 
         Item {
             Layout.fillWidth: true
@@ -52,10 +52,10 @@ FocusScope {
             Rectangle {
                 id: mask
                 anchors.fill: parent
-                radius: Theme.geometry.radius
+                radius: Globals.geometry.radius
                 visible: false
                 layer.enabled: true
-                color: Theme.colors.text
+                color: Globals.colors.text
             }
 
             // Masked Container
@@ -71,7 +71,7 @@ FocusScope {
                     id: carousel
                     anchors.fill: parent
 
-                    borderRadius: Theme.geometry.radius
+                    borderRadius: Globals.geometry.radius
                     
                     centerWidth: parent.width * 0.5
                     sideWidth: ((parent.width * 0.5) / 2) - gap

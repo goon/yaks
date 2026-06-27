@@ -11,7 +11,7 @@ SettingsPage {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         SettingsGroup {
             Layout.fillWidth: true
@@ -119,12 +119,12 @@ SettingsPage {
             }
         }
 
-        property color primaryColor: Theme.colors.primary
+        property color primaryColor: Globals.colors.primary
         Layout.fillWidth: true
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.medium
+            spacing: Globals.geometry.spacing.medium
 
 
 
@@ -155,15 +155,15 @@ SettingsPage {
             readonly property bool isActive: dragHandler.containsMouse || dragHandler.drag.active
             readonly property bool isEnabled: Preferences.bar.componentsEnabled[itemRoot.componentId] === true
 
-            width:  innerLayout.width  + Theme.geometry.spacing.medium * 2
-            height: Theme.dimensions.iconBase + Theme.geometry.spacing.small  * 2
+            width:  innerLayout.width  + Globals.geometry.spacing.medium * 2
+            height: Globals.dimensions.iconBase + Globals.geometry.spacing.small  * 2
 
-            radius: Theme.geometry.radius
+            radius: Globals.geometry.radius
 
             // Outer border/color for inactive available components
-            color:        Theme.colors.transparent
+            color:        Globals.colors.transparent
             border.width: !rect.isEnabled ? 1 : 0
-            border.color: Theme.colors.border
+            border.color: Globals.colors.border
 
             // Premium gradient layer (visible for active sections OR when hovered/dragged)
             Rectangle {
@@ -172,8 +172,8 @@ SettingsPage {
                 visible: rect.isEnabled
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: Theme.colors.primary }
-                    GradientStop { position: 1.0; color: Theme.colors.secondary }
+                    GradientStop { position: 0.0; color: Globals.colors.primary }
+                    GradientStop { position: 1.0; color: Globals.colors.secondary }
                 }
             }
 
@@ -183,13 +183,13 @@ SettingsPage {
                 anchors.margins: 1.5
                 radius: parent.radius - anchors.margins
                 visible: rect.isEnabled
-                color: Theme.colors.surface
+                color: Globals.colors.surface
 
                 // Overlay primary tint for premium active section items
                 Rectangle {
                     anchors.fill: parent
                     radius: parent.radius
-                    color: Qt.alpha(Theme.colors.primary, 0.08)
+                    color: Qt.alpha(Globals.colors.primary, 0.08)
                 }
             }
 
@@ -218,14 +218,14 @@ SettingsPage {
 
                 BaseIcon {
                     icon:  barRoot.componentMetadata[itemRoot.componentId]?.icon || "extension"
-                    size:  Theme.dimensions.iconBase
-                    color: rect.isEnabled ? Theme.colors.primary : Theme.colors.text
+                    size:  Globals.dimensions.iconBase
+                    color: rect.isEnabled ? Globals.colors.primary : Globals.colors.text
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
                 BaseText {
                     text:  itemRoot.label
-                    color: rect.isEnabled ? Theme.colors.textLighter : Theme.colors.text
+                    color: rect.isEnabled ? Globals.colors.textLighter : Globals.colors.text
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }
@@ -256,15 +256,15 @@ SettingsPage {
         required property string sectionName
         required property var    components
 
-        spacing: Theme.geometry.spacing.small
+        spacing: Globals.geometry.spacing.small
 
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: Math.max(flow.height, 50)
-            color:        dropArea.containsDrag ? Theme.alpha(barRoot.primaryColor, 0.1) : Theme.colors.transparent
-            radius:       Theme.geometry.radius
+            color:        dropArea.containsDrag ? Globals.alpha(barRoot.primaryColor, 0.1) : Globals.colors.transparent
+            radius:       Globals.geometry.radius
             border.width: 1
-            border.color: dropArea.containsDrag ? Theme.colors.primary : Theme.colors.transparent
+            border.color: dropArea.containsDrag ? Globals.colors.primary : Globals.colors.transparent
 
             DropArea {
                 id: dropArea
@@ -286,7 +286,7 @@ SettingsPage {
                 anchors.left:  parent.left
                 anchors.right: parent.right
                 anchors.margins: 4
-                spacing: Theme.geometry.spacing.small
+                spacing: Globals.geometry.spacing.small
 
                 Repeater {
                     model: components

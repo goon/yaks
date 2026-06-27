@@ -12,8 +12,8 @@ FocusScope {
 
     implicitWidth: 500
     implicitHeight: {
-        var searchHeight = Theme.dimensions.launcherSearchHeight;
-        var padLarge = Theme.geometry.spacing.large;
+        var searchHeight = Globals.dimensions.launcherSearchHeight;
+        var padLarge = Globals.geometry.spacing.large;
 
         if (root.isWallpaperActive) {
             return 660;
@@ -23,7 +23,7 @@ FocusScope {
         var maxItems = 8;
         var visibleItems = Math.min(count, maxItems);
         
-        var itemHeight = Theme.dimensions.launcherItemHeight;
+        var itemHeight = Globals.dimensions.launcherItemHeight;
 
         if (visibleItems === 0) {
             return searchHeight + padLarge;
@@ -262,7 +262,7 @@ FocusScope {
 
         ColumnLayout {
             anchors.fill: parent
-            spacing: Theme.geometry.spacing.large // Precise 12px gap between search and results
+            spacing: Globals.geometry.spacing.large // Precise 12px gap between search and results
 
             LauncherSearch {
                 id: searchBar
@@ -284,7 +284,7 @@ FocusScope {
                 }
                 
                 visible: !root.isWallpaperActive
-                Layout.preferredHeight: visible ? Theme.dimensions.launcherSearchHeight : 0
+                Layout.preferredHeight: visible ? Globals.dimensions.launcherSearchHeight : 0
 
                 
                 inputItem.Keys.onLeftPressed: (event) => {

@@ -15,6 +15,7 @@ QtObject {
     property bool mouseSelectionEnabled: false
     property point lastMousePos: Qt.point(-1, -1)
     readonly property int moveThreshold: 10
+    readonly property string frequencyFile: Globals.cacheDir + "/launcher.json"
 
     // Terminal auto-discovery (priority: $TERMINAL > discovered > xterm)
     property var _availableTerminals: ["xterm"]
@@ -408,7 +409,7 @@ QtObject {
                 },
                 {
                     "type": "shortcut-option",
-                    "name": "Theme Switcher",
+                    "name": "Tokens Switcher",
                     "description": "Change your color theme",
                     "icon": "palette",
                     "mode": "tab-1"

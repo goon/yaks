@@ -86,21 +86,21 @@ BaseScrolling {
     ColumnLayout {
         id: mainLayout
         width: root.availableWidth
-        spacing: Theme.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.medium
 
         Item {
             Layout.fillWidth: true
-            Layout.bottomMargin: Theme.geometry.spacing.small / 2
+            Layout.bottomMargin: Globals.geometry.spacing.small / 2
             implicitHeight: Math.max(pageHeader.implicitHeight, 28)
 
             RowLayout {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.geometry.spacing.small
+                spacing: Globals.geometry.spacing.small
 
                 BaseIcon {
                     icon: "chevron_left"
-                    color: backMouseArea.containsMouse ? Theme.colors.primary : Theme.colors.text
+                    color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
                     Layout.alignment: Qt.AlignVCenter
                     Behavior on color { BaseAnimation { } }
 
@@ -127,14 +127,14 @@ BaseScrolling {
             RowLayout {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.geometry.spacing.small
+                spacing: Globals.geometry.spacing.small
 
                 BaseButton {
                     id: refreshButton
                     icon: "refresh"
                     width: 28
                     height: 28
-                    customRadius: Theme.geometry.innerRadius.medium
+                    customRadius: Globals.geometry.innerRadius.medium
                     hoverEnabled: false
                     onClicked: Bluetooth.scan()
 
@@ -171,8 +171,8 @@ BaseScrolling {
 
             BaseText {
                 text: "Searching devices..."
-                color: Theme.alpha(Theme.colors.text, 0.4)
-                font.pixelSize: Theme.typography.size.small
+                color: Globals.alpha(Globals.colors.text, 0.4)
+                font.pixelSize: Globals.typography.size.small
                 anchors.centerIn: parent
             }
         }
@@ -197,7 +197,7 @@ BaseScrolling {
                 id: childCol
                 anchors.left: parent.left
                 anchors.right: parent.right
-                spacing: Theme.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.medium
                 Layout.fillWidth: true
 
                 Item {

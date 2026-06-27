@@ -5,9 +5,9 @@ import qs
 BaseContainer {
     id: root
 
-    property color backgroundColor: Theme.alpha(Theme.colors.surface, 1.0)
-    property color hoverColor: Theme.colors.transparent
-    property int blockRadius: Theme.geometry.innerRadius.medium
+    property color backgroundColor: Globals.alpha(Globals.colors.surface, 1.0)
+    property color hoverColor: Globals.colors.transparent
+    property int blockRadius: Globals.geometry.innerRadius.medium
 
     property bool premiumHover: false
     property bool premiumActive: false

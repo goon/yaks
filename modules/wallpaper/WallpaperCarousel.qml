@@ -5,10 +5,10 @@ import qs
 PathView {
     id: root
 
-    property int borderRadius: Theme.geometry.radius
+    property int borderRadius: Globals.geometry.radius
     property int centerWidth: 500
     property int sideWidth: 250
-    property int gap: Theme.geometry.spacing.large
+    property int gap: Globals.geometry.spacing.large
     readonly property real centerX: root.width / 2
     readonly property real leftX: centerX - (centerWidth / 2) - gap - (sideWidth / 2)
     readonly property real rightX: centerX + (centerWidth / 2) + gap + (sideWidth / 2)
@@ -187,15 +187,15 @@ PathView {
         PathAttribute { name: "itemOpacity"; value: 0 }
         PathAttribute { name: "dimOpacity"; value: 0.5 }
         PathAttribute { name: "leftRadius"; value: 0 }
-        PathAttribute { name: "rightRadius"; value: Theme.geometry.radius * 1.5 }
+        PathAttribute { name: "rightRadius"; value: Globals.geometry.radius * 1.5 }
     }
 
     delegate: Item {
         id: delegateRoot
 
         property real dimLevel: (typeof PathView.dimOpacity !== 'undefined') ? PathView.dimOpacity : 0
-        property real leftRadius: (typeof PathView.leftRadius !== 'undefined') ? PathView.leftRadius : Theme.geometry.radius
-        property real rightRadius: (typeof PathView.rightRadius !== 'undefined') ? PathView.rightRadius : Theme.geometry.radius
+        property real leftRadius: (typeof PathView.leftRadius !== 'undefined') ? PathView.leftRadius : Globals.geometry.radius
+        property real rightRadius: (typeof PathView.rightRadius !== 'undefined') ? PathView.rightRadius : Globals.geometry.radius
         // Model data (file path)
         property string imageSource: modelData || ""
 
@@ -214,7 +214,7 @@ PathView {
 
             anchors.fill: effectContainer
             visible: false // Hidden, used as texture source
-            color: Theme.colors.text // Mask source
+            color: Globals.colors.text // Mask source
             topLeftRadius: delegateRoot.leftRadius
             topRightRadius: delegateRoot.rightRadius
             bottomLeftRadius: delegateRoot.leftRadius
@@ -236,7 +236,7 @@ PathView {
             // Placeholder / Loading State
             Rectangle {
                 anchors.fill: parent
-                color: Theme.colors.background
+                color: Globals.colors.background
                 opacity: 0.1
                 visible: imgSource.status !== Image.Ready
             }
@@ -255,15 +255,15 @@ PathView {
             // Dimming overlay
             Rectangle {
                 anchors.fill: parent
-                color: Theme.colors.base
+                color: Globals.colors.base
                 opacity: delegateRoot.dimLevel
             }
 
             // Highlight border for current item
             Rectangle {
                 anchors.fill: parent
-                color: Theme.colors.transparent
-                border.color: Theme.colors.primary
+                color: Globals.colors.transparent
+                border.color: Globals.colors.primary
                 border.width: PathView.isCurrentItem ? 2 : 0
                 radius: delegateRoot.leftRadius 
                 visible: PathView.isCurrentItem

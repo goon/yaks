@@ -5,7 +5,7 @@ import qs
 BaseContainer {
     id: root
     width: parent ? parent.width : 0
-    spacing: Theme.geometry.spacing.small
+    spacing: Globals.geometry.spacing.small
     
     property string title: ""
     property string icon: ""
@@ -19,16 +19,16 @@ BaseContainer {
 
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.bottomMargin: Theme.geometry.spacing.small / 2
-        spacing: Theme.geometry.spacing.small
+        Layout.bottomMargin: Globals.geometry.spacing.small / 2
+        spacing: Globals.geometry.spacing.small
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
 
             BaseIcon {
                 icon: "chevron_left"
-                color: backMouseArea.containsMouse ? Theme.colors.primary : Theme.colors.text
+                color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
                 Layout.alignment: Qt.AlignVCenter
                 Behavior on color { BaseAnimation { } }
 

@@ -19,7 +19,7 @@ BaseBento {
         // Inner column centered in the available space
         Column {
             anchors.centerIn: parent
-            spacing: Theme.geometry.spacing.medium
+            spacing: Globals.geometry.spacing.medium
 
             // Avatar Container
             Item {
@@ -46,8 +46,8 @@ BaseBento {
                         ctx.arc(cx, cy, r, 0, 2 * Math.PI);
 
                         var grad = ctx.createLinearGradient(0, 0, width, height);
-                        grad.addColorStop(0.0, Theme.colors.primary);
-                        grad.addColorStop(1.0, Theme.colors.secondary);
+                        grad.addColorStop(0.0, Globals.colors.primary);
+                        grad.addColorStop(1.0, Globals.colors.secondary);
 
                         ctx.strokeStyle = grad;
                         ctx.lineWidth = lineWidth;
@@ -88,7 +88,7 @@ BaseBento {
                     width: 74
                     height: 74
                     radius: 37
-                    color: Theme.alpha(Theme.colors.primary, 0.1)
+                    color: Globals.alpha(Globals.colors.primary, 0.1)
 
                     // Enable layering and mask with MultiEffect for perfect circular clip
                     layer.enabled: true
@@ -114,7 +114,7 @@ BaseBento {
                         anchors.centerIn: parent
                         icon: "person"
                         size: 38
-                        color: Theme.colors.primary
+                        color: Globals.colors.primary
                         visible: Preferences.customAvatar.toString() === "" && !avatarMouseArea.containsMouse
                     }
 
@@ -123,7 +123,7 @@ BaseBento {
                         anchors.centerIn: parent
                         icon: "edit"
                         size: 32
-                        color: Preferences.customAvatar.toString() !== "" ? "white" : Theme.colors.primary
+                        color: Preferences.customAvatar.toString() !== "" ? "white" : Globals.colors.primary
                         visible: avatarMouseArea.containsMouse
                         
                         onVisibleChanged: {
@@ -158,7 +158,7 @@ BaseBento {
                 BaseText {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: SystemInfo.username || "User"
-                    weight: Theme.typography.weights.bold
+                    weight: Globals.typography.weights.bold
                     pixelSize: 18
                 }
 

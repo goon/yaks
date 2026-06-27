@@ -21,7 +21,7 @@ SequentialAnimation {
     property int duration: -1
     
     readonly property int _dur: {
-        var base = (duration !== -1) ? duration : Theme.animations.normal;
+        var base = (duration !== -1) ? duration : Globals.animations.normal;
         return Math.max(0, Math.round(base / Preferences.animations.speedMultiplier));
     }
 
@@ -32,8 +32,8 @@ SequentialAnimation {
     PropertyAnimation {
         id: anim
         duration: root._dur
-        easing.type: Theme.animations.easingType
-        easing.bezierCurve: Theme.animations.bezierCurve
+        easing.type: Globals.animations.easingType
+        easing.bezierCurve: Globals.animations.bezierCurve
     }
 
     // Specialized Spring Component

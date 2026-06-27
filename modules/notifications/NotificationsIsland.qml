@@ -15,7 +15,7 @@ BaseContainer {
     property var notificationManager: Notifications
     property int notifCount: notificationManager ? notificationManager.notificationHistory.count : 0
 
-    spacing: Theme.geometry.spacing.large
+    spacing: Globals.geometry.spacing.large
 
     ColumnLayout {
         Layout.fillWidth: true
@@ -24,8 +24,8 @@ BaseContainer {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.bottomMargin: Theme.geometry.spacing.large
-            spacing: Theme.geometry.spacing.small
+            Layout.bottomMargin: Globals.geometry.spacing.large
+            spacing: Globals.geometry.spacing.small
 
             BaseHeader {
                 text: "NOTIFICATIONS (" + root.notifCount + ")"
@@ -62,13 +62,13 @@ BaseContainer {
         Layout.fillWidth: true
         implicitHeight: contentHeight
         model: root.notificationManager ? root.notificationManager.notificationHistory : null
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
         interactive: false
         visible: root.notifCount > 0
 
         delegate: Column {
             width: ListView.view.width
-            spacing: Theme.geometry.spacing.large
+            spacing: Globals.geometry.spacing.large
 
             NotificationCard {
                 width: parent.width
@@ -110,7 +110,7 @@ BaseContainer {
                 BaseText {
                     text: "you're"
                     muted: true
-                    pixelSize: Theme.typography.size.large
+                    pixelSize: Globals.typography.size.large
                     font.italic: true
                     Layout.alignment: Qt.AlignLeft
                     Layout.leftMargin: 8
@@ -128,7 +128,7 @@ BaseContainer {
                         text: "ALL CAUGHT"
                         opacity: 0.4
                         pixelSize: 48
-                        weight: Theme.typography.weights.bold
+                        weight: Globals.typography.weights.bold
                         font.letterSpacing: -1
                     }
                     
@@ -138,10 +138,10 @@ BaseContainer {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         text: "ALL CAUGHT"
-                        color: Theme.colors.primary
+                        color: Globals.colors.primary
                         opacity: 0.0
                         pixelSize: 48
-                        weight: Theme.typography.weights.bold
+                        weight: Globals.typography.weights.bold
                         font.letterSpacing: -1
                         
                         SequentialAnimation {
@@ -149,8 +149,8 @@ BaseContainer {
                             running: emptyPlaceholder.visible
                             
                             NumberAnimation { target: pulseText; property: "opacity"; to: 1.0; duration: 2000; easing.type: Easing.InOutQuad }
-                            ColorAnimation { target: pulseText; property: "color"; to: Theme.colors.secondary; duration: 2000; easing.type: Easing.InOutQuad }
-                            ColorAnimation { target: pulseText; property: "color"; to: Theme.colors.primary; duration: 2000; easing.type: Easing.InOutQuad }
+                            ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.secondary; duration: 2000; easing.type: Easing.InOutQuad }
+                            ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.primary; duration: 2000; easing.type: Easing.InOutQuad }
                             NumberAnimation { target: pulseText; property: "opacity"; to: 0.0; duration: 2000; easing.type: Easing.InOutQuad }
                             PauseAnimation { duration: 1000 }
                         }
@@ -159,8 +159,8 @@ BaseContainer {
                 
                 BaseText {
                     text: "up."
-                    color: Theme.colors.primary
-                    pixelSize: Theme.typography.size.large
+                    color: Globals.colors.primary
+                    pixelSize: Globals.typography.size.large
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: 8
                 }
@@ -169,8 +169,8 @@ BaseContainer {
             Canvas {
                 id: bounceContainer
                 z: -1 // CRITICAL: Explicitly layer the bell behind the text ColumnLayout
-                width: Theme.dimensions.iconExtraLarge
-                height: Theme.dimensions.iconExtraLarge
+                width: Globals.dimensions.iconExtraLarge
+                height: Globals.dimensions.iconExtraLarge
                 
                 property real vx: 1.5
                 property real vy: 1.2
@@ -208,12 +208,12 @@ BaseContainer {
                     var gradX2 = (width / 2) - (width / 2) * gradOffset;
                     
                     var grad = ctx.createLinearGradient(gradX1, 0, gradX2, height);
-                    grad.addColorStop(0.0, Theme.colors.primary);
-                    grad.addColorStop(1.0, Theme.colors.secondary);
+                    grad.addColorStop(0.0, Globals.colors.primary);
+                    grad.addColorStop(1.0, Globals.colors.secondary);
                     
                     ctx.fillStyle = grad;
-                    // Note: Theme.typography.iconFamily provides the Material font
-                    ctx.font = Theme.dimensions.iconExtraLarge + "px \"" + Theme.typography.iconFamily + "\"";
+                    // Note: Globals.typography.iconFamily provides the Material font
+                    ctx.font = Globals.dimensions.iconExtraLarge + "px \"" + Globals.typography.iconFamily + "\"";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
                     ctx.globalAlpha = 0.7; // Dim slightly per request

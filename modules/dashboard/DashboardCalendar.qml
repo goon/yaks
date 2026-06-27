@@ -17,8 +17,8 @@ BaseBento {
         Column {
             id: contentColumn
             anchors.centerIn: parent
-            spacing: Theme.geometry.spacing.medium
-            width: Theme.dimensions.calendarBlockWidth
+            spacing: Globals.geometry.spacing.medium
+            width: Globals.dimensions.calendarBlockWidth
 
             // Month navigation header
             Item {
@@ -30,10 +30,10 @@ BaseBento {
                 BaseButton {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    width: Theme.dimensions.calendarCellSize
+                    width: Globals.dimensions.calendarCellSize
                     height: parent.height
                     icon: "chevron_left"
-                    hoverColor: Theme.colors.surface
+                    hoverColor: Globals.colors.surface
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
                     onClicked: {
@@ -45,7 +45,7 @@ BaseBento {
                 Item {
                     id: headerContainer
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: parent.width - (Theme.dimensions.calendarCellSize * 2)
+                    width: parent.width - (Globals.dimensions.calendarCellSize * 2)
                     height: parent.height
                     scale: headerMouseArea.pressed ? 0.98 : 1.0
 
@@ -73,8 +73,8 @@ BaseBento {
                         anchors.horizontalCenterOffset: -20
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.verticalCenterOffset: -8
-                        weight: Theme.typography.weights.bold
-                        pixelSize: Theme.typography.size.display * 0.6 // Approximate for 28px
+                        weight: Globals.typography.weights.bold
+                        pixelSize: Globals.typography.size.display * 0.6 // Approximate for 28px
                         text: Calendar.monthNames[Calendar.displayMonth].toUpperCase()
                         z: 1
                         opacity: 1.0
@@ -88,16 +88,16 @@ BaseBento {
                         anchors.horizontalCenterOffset: 30
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.verticalCenterOffset: 12
-                        color: Theme.colors.primary
-                        weight: Theme.typography.weights.bold
-                        pixelSize: Theme.typography.size.display * 0.75 // Approximate for 36px
+                        color: Globals.colors.primary
+                        weight: Globals.typography.weights.bold
+                        pixelSize: Globals.typography.size.display * 0.75 // Approximate for 36px
                         text: Calendar.displayYear
                         z: 2
                         opacity: 0.85
 
                         // Cutout Effect
                         shadow: true
-                        shadowColor: Theme.colors.surface
+                        shadowColor: Globals.colors.surface
                         shadowRadius: 10
 
                         transform: Translate { id: yearTranslate }
@@ -107,10 +107,10 @@ BaseBento {
                 BaseButton {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    width: Theme.dimensions.calendarCellSize
+                    width: Globals.dimensions.calendarCellSize
                     height: parent.height
                     icon: "chevron_right"
-                    hoverColor: Theme.colors.surface
+                    hoverColor: Globals.colors.surface
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
                     onClicked: {
@@ -124,14 +124,14 @@ BaseBento {
                 id: dayHeaders
 
                 width: parent.width
-                spacing: Theme.geometry.spacing.small
+                spacing: Globals.geometry.spacing.small
 
                 Repeater {
                     model: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
                     Item {
-                        width: (parent.width - (6 * Theme.geometry.spacing.small)) / 7
-                        implicitHeight: headerText.implicitHeight + Theme.geometry.spacing.small
+                        width: (parent.width - (6 * Globals.geometry.spacing.small)) / 7
+                        implicitHeight: headerText.implicitHeight + Globals.geometry.spacing.small
                         height: implicitHeight
 
                         BaseText {
@@ -140,7 +140,7 @@ BaseBento {
                             anchors.centerIn: parent
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            color: new Date().getDay() === index ? Theme.colors.primary : Theme.colors.muted
+                            color: new Date().getDay() === index ? Globals.colors.primary : Globals.colors.muted
                             text: modelData
                         }
                     }
@@ -224,7 +224,7 @@ BaseBento {
 
                     width: parent.width
                     columns: 7
-                    spacing: Theme.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.small
                     
                     transform: Translate { id: gridTranslate }
 
@@ -235,8 +235,8 @@ BaseBento {
                             id: dayButton
                             required property var modelData
 
-                            width: (parent.width - (6 * Theme.geometry.spacing.small)) / 7
-                            implicitHeight: dayText.implicitHeight + Theme.geometry.spacing.medium
+                            width: (parent.width - (6 * Globals.geometry.spacing.small)) / 7
+                            implicitHeight: dayText.implicitHeight + Globals.geometry.spacing.medium
                             height: implicitHeight
 
                             scale: dayMouseArea.pressed ? 0.95 : 1.0
@@ -248,7 +248,7 @@ BaseBento {
 
                             BaseActiveBackground {
                                 anchors.fill: parent
-                                radius: Theme.geometry.radius
+                                radius: Globals.geometry.radius
                                 premiumActive: modelData.isToday
                                 hoverEnabled: false
                             }
@@ -258,11 +258,11 @@ BaseBento {
 
                                 anchors.centerIn: parent
                                 color: {
-                                    if (!modelData.isCurrentMonth) return Theme.colors.muted;
-                                    return Theme.colors.text;
+                                    if (!modelData.isCurrentMonth) return Globals.colors.muted;
+                                    return Globals.colors.text;
                                 }
-                                pixelSize: Theme.typography.size.medium - 1
-                                weight: modelData.isToday ? Theme.typography.weights.bold : Theme.typography.weights.normal
+                                pixelSize: Globals.typography.size.medium - 1
+                                weight: modelData.isToday ? Globals.typography.weights.bold : Globals.typography.weights.normal
                                 text: modelData.day < 10 ? "0" + modelData.day : modelData.day
                             }
 

@@ -14,9 +14,10 @@ QtObject {
     property bool firstSeenLoaded: false
     property int firstSeenVersion: 0
     property string _currentImageTemp: ""
+    readonly property string timestampFile: Globals.cacheDir + "/clipboard_timestamp.json"
 
     property FileView firstSeenFileView: FileView {
-        path: Config.clipboardFirstSeenFile
+        path: root.timestampFile
         watchChanges: false
         onLoadedChanged: {
             if (loaded) {
@@ -151,7 +152,7 @@ QtObject {
             root._currentImageTemp = "";
             ProcessService.runDetached(["sh", "-c",
                 "rm -f " + shellQuote(p)
-                + " && rmdir --ignore-fail-on-non-empty " + shellQuote(Config.cacheDir + "/cliphist") + " 2>/dev/null || true"
+                + " && rmdir --ignore-fail-on-non-empty " + shellQuote(Globals.cacheDir + "/cliphist") + " 2>/dev/null || true"
             ]);
         }
     }
@@ -159,7 +160,7 @@ QtObject {
     function decodeImage(rawLine, callback) {
         if (!rawLine || !root.cliphistAvailable) { callback(""); return; }
         root._cleanImageTemp();
-        var dir = Config.cacheDir + "/cliphist";
+        var dir = Globals.cacheDir + "/cliphist";
         var stamp = Date.now() + "_" + Math.floor(Math.random() * 1e9);
         var out = dir + "/img_" + stamp;
         var script = "mkdir -p " + shellQuote(dir)
@@ -204,9 +205,9 @@ QtObject {
             data[k] = root.firstSeenTimes[k].toISOString();
         }
         var jsonContent = JSON.stringify(data);
-        var tempFile = Config.clipboardFirstSeenFile + ".tmp";
+        var tempFile = root.timestampFile + ".tmp";
         var cmd = `printf '%s' "$1" > "$2" && mv "$2" "$3"`;
-        ProcessService.runDetached(["sh", "-c", cmd, "--", jsonContent, tempFile, Config.clipboardFirstSeenFile]);
+        ProcessService.runDetached(["sh", "-c", cmd, "--", jsonContent, tempFile, root.timestampFile]);
     }
 
     property Timer firstSeenSaveTimer: Timer {
@@ -303,7 +304,7 @@ QtObject {
     Component.onCompleted: {
         // Sweep leftover temp files from previous shell sessions.
         ProcessService.runDetached(["sh", "-c",
-            "rm -rf " + shellQuote(Config.cacheDir + "/cliphist") + " 2>/dev/null || true"
+            "rm -rf " + shellQuote(Globals.cacheDir + "/cliphist") + " 2>/dev/null || true"
         ]);
 
         ProcessService.run(["sh", "-c", "command -v cliphist"], function(out, exitCode) {

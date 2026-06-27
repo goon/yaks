@@ -1,12 +1,10 @@
 module qs
 
 # Singletons
-singleton Config config/Config.qml
-singleton Theme config/Theme.qml
+singleton Globals config/Globals.qml
 
 # Services (Singletons)
-singleton ThemeService services/ThemeService.qml
-singleton ThemeRegistration assets/themes/ThemeRegistration.qml
+singleton Theme services/Theme.qml
 singleton Calendar services/Calendar.qml
 singleton ProcessService services/ProcessService.qml
 singleton Zenity services/Zenity.qml
@@ -53,6 +51,7 @@ BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSwitch components/BaseSwitch.qml
 BaseAnimation components/BaseAnimation.qml
 BaseSpinBox components/BaseSpinBox.qml
+BaseColourPicker components/BaseColourPicker.qml
 BaseIndicator components/BaseIndicator.qml
 
 BaseStackView components/BaseStackView.qml

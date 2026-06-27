@@ -10,7 +10,7 @@ BaseContainer {
     Layout.fillWidth: false
     
     implicitWidth: 200
-    implicitHeight: Theme.dimensions.barItemHeight
+    implicitHeight: Globals.dimensions.barItemHeight
 
     hoverEnabled: false
     clickable: true
@@ -35,7 +35,7 @@ BaseContainer {
             verticalAlignment: Text.AlignVCenter
             text: Qt.formatDateTime(systemClock.date, "hh:mm AP")
             pixelSize: 22
-            weight: Theme.typography.weights.bold
+            weight: Globals.typography.weights.bold
         }
     }
 }

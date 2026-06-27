@@ -10,7 +10,7 @@ SettingsPage {
     description: "Select the primary font used throughout the shell."
 
     property string searchText: ""
-    property var allFonts: Array.from(ThemeService.allFontFamilies || [])
+    property var allFonts: Array.from(Theme.allFontFamilies || [])
     property string currentValue: Preferences.globals.shellFont
     property var onSelected: function(family) {
         Preferences.globals.shellFont = family;
@@ -24,21 +24,21 @@ SettingsPage {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Theme.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.medium
 
         BaseContainer {
             Layout.fillWidth: true
-            Layout.preferredHeight: Theme.dimensions.launcherSearchHeight || 48
-            paddingHorizontal: Theme.geometry.spacing.large
+            Layout.preferredHeight: Globals.dimensions.launcherSearchHeight || 48
+            paddingHorizontal: Globals.geometry.spacing.large
 
             RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                spacing: Theme.geometry.spacing.large
+                spacing: Globals.geometry.spacing.large
 
                 BaseIcon {
                     icon: "search"
-                    color: searchInput.text.length > 0 ? Theme.colors.primary : Theme.colors.muted
+                    color: searchInput.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
                     scale: searchInput.text.length > 0 ? 1.1 : 1.0
                     Behavior on color { BaseAnimation { } }
                     Behavior on scale { BaseAnimation { } }
@@ -62,7 +62,7 @@ SettingsPage {
             Layout.preferredHeight: Math.min(contentHeight, 600)
             clip: true
             model: root.fontModel
-            spacing: Theme.geometry.spacing.small
+            spacing: Globals.geometry.spacing.small
             
 
             delegate: BaseListItem {
@@ -80,7 +80,7 @@ SettingsPage {
                     running: root.visible && !listView.moving
                     onTriggered: loadFont = true
                 }
-                titleFamily: loadFont ? modelData : Theme.typography.family
+                titleFamily: loadFont ? modelData : Globals.typography.family
                 
                 onClicked: {
                     root.onSelected(modelData)

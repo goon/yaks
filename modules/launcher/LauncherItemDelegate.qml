@@ -12,7 +12,7 @@ Item {
     property string iconSource: "" // Glyph/Icon name
     property string imageSource: "" // Image path/url (takes precedence if valid)
     property bool selected: false
-    property color iconColor: Theme.colors.text // Default icon color
+    property color iconColor: Globals.colors.text // Default icon color
 
     property bool showFallbackIcon: false
     property string fallbackText: ""
@@ -23,7 +23,7 @@ Item {
     property int itemIndex: -1 // To be set by ListView
     
     width: ListView.view ? ListView.view.width : parent.width
-    height: Theme.dimensions.launcherItemHeight
+    height: Globals.dimensions.launcherItemHeight
     
     // Entry animation properties
     opacity: 0
@@ -42,8 +42,8 @@ Item {
     Rectangle {
         id: mainBackground
         anchors.fill: parent
-        radius: Theme.geometry.innerRadius.medium
-        color: Theme.colors.transparent
+        radius: Globals.geometry.innerRadius.medium
+        color: Globals.colors.transparent
         
         BaseActiveBackground {
             anchors.fill: parent
@@ -55,24 +55,24 @@ Item {
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: Theme.geometry.spacing.large * 2
-            anchors.rightMargin: Theme.geometry.spacing.large * 2
-            spacing: Theme.geometry.spacing.large
+            anchors.leftMargin: Globals.geometry.spacing.large * 2
+            anchors.rightMargin: Globals.geometry.spacing.large * 2
+            spacing: Globals.geometry.spacing.large
             
             scale: mouseArea.pressed ? 0.98 : 1.0
             Behavior on scale { BaseAnimation { } }
 
             // Icon Container
             Item {
-                Layout.preferredWidth: Theme.dimensions.iconLarge
-                Layout.preferredHeight: Theme.dimensions.iconLarge
+                Layout.preferredWidth: Globals.dimensions.iconLarge
+                Layout.preferredHeight: Globals.dimensions.iconLarge
                 Layout.alignment: Qt.AlignVCenter
 
                 BaseIcon {
                     anchors.fill: parent
                     icon: root.iconSource
-                    color: root.selected ? Theme.colors.primary : root.iconColor
-                    size: root.boxedIcon ? Theme.dimensions.iconLarge : Theme.dimensions.iconMedium
+                    color: root.selected ? Globals.colors.primary : root.iconColor
+                    size: root.boxedIcon ? Globals.dimensions.iconLarge : Globals.dimensions.iconMedium
                     visible: !root.imageSource && !root.showFallbackIcon
                 }
 
@@ -82,8 +82,8 @@ Item {
                     source: root.imageSource
                     asynchronous: false // Keeping consistent with previous LauncherApps behavior
                     fillMode: Image.PreserveAspectFit
-                    sourceSize.width: Theme.dimensions.iconLarge
-                    sourceSize.height: Theme.dimensions.iconLarge
+                    sourceSize.width: Globals.dimensions.iconLarge
+                    sourceSize.height: Globals.dimensions.iconLarge
                     mipmap: true
                     visible: !!root.imageSource && status === Image.Ready
                 }
@@ -91,16 +91,16 @@ Item {
                 // 3. Fallback (Text char)
                 Rectangle {
                     anchors.fill: parent
-                    radius: Theme.geometry.innerRadius.small
-                    color: Theme.colors.background
+                    radius: Globals.geometry.innerRadius.small
+                    color: Globals.colors.background
                     visible: root.showFallbackIcon
 
                     BaseText {
                         anchors.centerIn: parent
                         text: root.fallbackText ? root.fallbackText.charAt(0).toUpperCase() : "?"
                         color: root.iconColor
-                        pixelSize: Theme.dimensions.iconLarge * 0.6
-                        weight: Theme.typography.weights.bold
+                        pixelSize: Globals.dimensions.iconLarge * 0.6
+                        weight: Globals.typography.weights.bold
                     }
                 }
             }
@@ -114,8 +114,8 @@ Item {
                 BaseText {
                     Layout.fillWidth: true
                     text: root.text
-                    color: root.selected ? Theme.colors.text : Theme.colors.muted
-                    weight: root.selected ? Theme.typography.weights.bold : Theme.typography.weights.normal
+                    color: root.selected ? Globals.colors.text : Globals.colors.muted
+                    weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.normal
                     elide: Text.ElideRight
                 }
 
@@ -123,8 +123,8 @@ Item {
                     Layout.fillWidth: true
                     text: root.subText
                     visible: !!root.subText
-                    font.pixelSize: Theme.typography.size.small
-                    color: root.selected ? Theme.alpha(Theme.colors.text, 0.7) : Theme.colors.muted
+                    font.pixelSize: Globals.typography.size.small
+                    color: root.selected ? Globals.alpha(Globals.colors.text, 0.7) : Globals.colors.muted
                     elide: Text.ElideMiddle
                 }
             }

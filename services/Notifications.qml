@@ -44,11 +44,11 @@ Item {
 
             // Sound logic
             if (Preferences.notifications.mode === 0) {
-                if (Config.notificationSoundEnabled) {
+                if (Preferences.notifications.soundEnabled) {
                     ProcessService.runDetached([
                         "pw-play", 
-                        "--volume", (Config.notificationSoundVolume / 100.0).toString(), 
-                        Config.notificationSoundPath
+                        "--volume", (Preferences.notifications.soundVolume / 100.0).toString(), 
+                        Globals.assetsDir + "/ping.mp3"
                     ]);
                 }
                 
@@ -65,7 +65,7 @@ Item {
     
     Timer {
         id: toastTimer
-        interval: Config.notificationTimeout || 5000
+        interval: Preferences.notifications.timeout
         onTriggered: {
             root.closeActiveToast();
         }

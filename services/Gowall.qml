@@ -20,14 +20,14 @@ QtObject {
 
     // ── DEPENDENCIES ──────────────────────────────────────────────────
     property bool enabled: Preferences.wallpaper.gowallEnabled
-    property var currentColors: ThemeService.currentColors
+    property var currentColors: Theme.currentColors
     property string currentThemeId: Preferences.currentTheme
     property string currentWallpaper: Wallpaper.currentWallpaper
     
     // ── PATHS ─────────────────────────────────────────────────────────
-    readonly property string gowallConfigDir: Config.homeDir + "/.config/gowall"
+    readonly property string gowallConfigDir: Globals.homeDir + "/.config/gowall"
     readonly property string gowallConfigFile: gowallConfigDir + "/config.yml"
-    readonly property string cacheDir: Config.cacheDir + "/wallpapers"
+    readonly property string cacheDir: Globals.cacheDir + "/wallpapers"
 
     // ── COMPONENTS ────────────────────────────────────────────────────
 
@@ -100,14 +100,10 @@ QtObject {
         
         var targetPath = cacheDir + "/" + fileName;
     
-        // Strategy: Detached Execution via Helper Script
-        // We runs scripts/gowall.sh in the background to avoid blocking the UI.
-        // The script uses Unix pipes to safely stream data to/from gowall.
-        var realScriptPath = Config.scriptsDir + "/gowall.sh"; 
-        
+        // Strategy: Detached Execution via sh
         // Construct the detached command
         // Args: input_file, theme_id, output_path
-        var cmd = "nohup \"" + realScriptPath + "\" \"" + currentWallpaper + "\" \"" + currentThemeId + "\" \"" + targetPath + "\" > /dev/null 2>&1 &";
+        var cmd = "nohup sh -c 'cat \\\"" + currentWallpaper + "\\\" | gowall convert - - --theme \\\"" + currentThemeId + "\\\" > \\\"" + targetPath + "_temp." + ext + "\\\" && mv \\\"" + targetPath + "_temp." + ext + "\\\" \\\"" + targetPath + "\\\"' > /dev/null 2>&1 &";
         
         launcher.command = ["sh", "-c", cmd];
         launcher.running = true;

@@ -43,19 +43,19 @@ FocusScope {
                     RowLayout {
                         id: mainRow
                         Layout.fillWidth: true
-                        spacing: Theme.geometry.spacing.large
+                        spacing: Globals.geometry.spacing.large
 
                         // Left + Middle Column Group
                         ColumnLayout {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            spacing: Theme.geometry.spacing.large
+                            spacing: Globals.geometry.spacing.large
 
                             // Top Row: Weather & User Panel
                             RowLayout {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 160
-                                spacing: Theme.geometry.spacing.large
+                                spacing: Globals.geometry.spacing.large
 
                                 DashboardUserPanel {
                                     Layout.fillWidth: true
@@ -72,7 +72,7 @@ FocusScope {
                             RowLayout {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 320
-                                spacing: Theme.geometry.spacing.large
+                                spacing: Globals.geometry.spacing.large
 
                                 DashboardClock {
                                     Layout.fillHeight: true

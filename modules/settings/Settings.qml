@@ -44,7 +44,7 @@ FocusScope {
     BaseContainer {
         id: mainCol
         anchors.fill: parent
-        spacing: Theme.geometry.spacing.large
+        spacing: Globals.geometry.spacing.large
 
         // ── CONTENT AREA ──────────────────────────────────────────────
         Item {

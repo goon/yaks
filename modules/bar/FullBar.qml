@@ -9,14 +9,14 @@ Item {
     
     property var barWindow: null
     
-    readonly property real localBarScale: Theme.barScale
+    readonly property real localBarScale: Globals.barScale
     
     // Explicitly define height matching the pill clock capsule height
     implicitHeight: Preferences.bar.height
     implicitWidth: (contentLayout.implicitWidth || 0) * localBarScale + (dynamicEndMargin * 2)
     
     readonly property real normalSideMargin: 0
-    readonly property real dynamicEndMargin: Theme.geometry.padding.island
+    readonly property real dynamicEndMargin: Globals.geometry.padding.island
     readonly property real horizontalSpacing: 20 / localBarScale
 
     RowLayout {
@@ -65,7 +65,7 @@ Item {
                         Layout.preferredHeight: 30
                         Layout.preferredWidth: 1
                         Layout.alignment: Qt.AlignVCenter
-                        color: Theme.colors.border
+                        color: Globals.colors.border
                     }
 
                     Loader {

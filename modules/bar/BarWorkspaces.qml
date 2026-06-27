@@ -35,7 +35,7 @@ Item {
 
     Layout.fillWidth: false
     // Ensure standard bar height and vertical alignment
-    implicitHeight: Theme.dimensions.barItemHeight
+    implicitHeight: Globals.dimensions.barItemHeight
     implicitWidth: layout.implicitWidth
 
     RowLayout {
@@ -60,7 +60,7 @@ Item {
                 // Empty workspaces are shown at low opacity so the configured count is visible
                 readonly property real targetWidth: isActive ? 28 : 8
 
-                implicitHeight: Theme.dimensions.barItemHeight
+                implicitHeight: Globals.dimensions.barItemHeight
                 implicitWidth: targetWidth
 
                 // Update the active item reference
@@ -112,8 +112,8 @@ Item {
                     // Gradient fills the rounded shape — no clipping needed
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
-                        GradientStop { id: gs1; position: 0.0; color: Theme.colors.text }
-                        GradientStop { id: gs2; position: 1.0; color: Theme.colors.text }
+                        GradientStop { id: gs1; position: 0.0; color: Globals.colors.text }
+                        GradientStop { id: gs2; position: 1.0; color: Globals.colors.text }
                     }
 
                     // Left stop: primary → secondary → primary (loops)
@@ -122,9 +122,9 @@ Item {
                         loops: Animation.Infinite
                         running: indicator.isActive
                         // Snap to start colour so each loop begins correctly
-                        ColorAnimation { target: gs1; property: "color"; to: Theme.colors.primary; duration: 0 }
-                        ColorAnimation { target: gs1; property: "color"; to: Theme.colors.secondary; duration: 2000; easing.type: Easing.InOutSine }
-                        ColorAnimation { target: gs1; property: "color"; to: Theme.colors.primary; duration: 2000; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: 0 }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.secondary; duration: 2000; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: 2000; easing.type: Easing.InOutSine }
                         onRunningChanged: if (!running) fadeGs1.start()
                     }
 
@@ -133,15 +133,15 @@ Item {
                         id: wave2
                         loops: Animation.Infinite
                         running: indicator.isActive
-                        ColorAnimation { target: gs2; property: "color"; to: Theme.colors.secondary; duration: 0 }
-                        ColorAnimation { target: gs2; property: "color"; to: Theme.colors.primary; duration: 2000; easing.type: Easing.InOutSine }
-                        ColorAnimation { target: gs2; property: "color"; to: Theme.colors.secondary; duration: 2000; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: 0 }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.primary; duration: 2000; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: 2000; easing.type: Easing.InOutSine }
                         onRunningChanged: if (!running) fadeGs2.start()
                     }
 
                     // Fade back to solid text colour when deactivated
-                    ColorAnimation { id: fadeGs1; target: gs1; property: "color"; to: Theme.colors.text; duration: Theme.animations.fast }
-                    ColorAnimation { id: fadeGs2; target: gs2; property: "color"; to: Theme.colors.text; duration: Theme.animations.fast }
+                    ColorAnimation { id: fadeGs1; target: gs1; property: "color"; to: Globals.colors.text; duration: Globals.animations.fast }
+                    ColorAnimation { id: fadeGs2; target: gs2; property: "color"; to: Globals.colors.text; duration: Globals.animations.fast }
                 }
             }
         }

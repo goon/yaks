@@ -16,9 +16,9 @@ Item {
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
     implicitWidth: background.implicitWidth
-    implicitHeight: Theme.dimensions.barItemHeight
+    implicitHeight: Globals.dimensions.barItemHeight
 
-    readonly property int spacing: Theme.geometry.spacing.small
+    readonly property int spacing: Globals.geometry.spacing.small
     readonly property int indicatorItemWidth: 32
 
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
@@ -121,13 +121,13 @@ Item {
         id: background
 
         anchors.fill: parent
-        implicitHeight: Theme.dimensions.barItemHeight
+        implicitHeight: Globals.dimensions.barItemHeight
         hoverEnabled: false
 
         Item {
             id: container
             implicitWidth: root.contentWidth
-            implicitHeight: Theme.dimensions.barItemHeight
+            implicitHeight: Globals.dimensions.barItemHeight
             height: parent.height
 
 
@@ -168,7 +168,7 @@ Item {
         width: isVisible ? getItemWidth(itemKey) : 0
         Behavior on width {
             BaseAnimation {
-                duration: Theme.animations.normal
+                duration: Globals.animations.normal
             }
         }
 
@@ -194,7 +194,7 @@ Item {
         Behavior on x {
             enabled: !itemRoot.isDragging
             NumberAnimation {
-                duration: Theme.animations.normal
+                duration: Globals.animations.normal
                 easing.type: Easing.OutQuad
             }
         }
@@ -214,16 +214,16 @@ Item {
             anchors.centerIn: parent
             icon: itemRoot.iconName
             opacity: dragArea.containsMouse ? 1.0 : 0.8
-            Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
+            Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
 
             layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
-                shadowColor: dragArea.containsMouse ? Theme.alpha(Theme.colors.text, 0.1) : "transparent"
+                shadowColor: dragArea.containsMouse ? Globals.alpha(Globals.colors.text, 0.1) : "transparent"
                 shadowBlur: 0.8
                 shadowHorizontalOffset: 0
                 shadowVerticalOffset: 0
-                Behavior on shadowColor { ColorAnimation { duration: Theme.animations.fast } }
+                Behavior on shadowColor { ColorAnimation { duration: Globals.animations.fast } }
             }
         }
 

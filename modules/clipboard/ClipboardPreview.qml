@@ -42,13 +42,13 @@ Item {
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: Theme.geometry.spacing.medium
+            spacing: Globals.geometry.spacing.medium
 
             BaseIcon {
                 Layout.alignment: Qt.AlignHCenter
                 icon: "content_paste"
-                size: Theme.dimensions.iconExtraLarge
-                color: Theme.colors.muted
+                size: Globals.dimensions.iconExtraLarge
+                color: Globals.colors.muted
             }
         }
     }
@@ -111,14 +111,14 @@ Item {
         Text {
             anchors.fill: parent
             text: root.decodedText
-            font.family: root.isCodeItem ? "monospace" : Theme.typography.family
-            font.pixelSize: root.isCodeItem ? Theme.typography.size.small : Theme.typography.size.base
-            color: Theme.colors.text
+            font.family: root.isCodeItem ? "monospace" : Globals.typography.family
+            font.pixelSize: root.isCodeItem ? Globals.typography.size.small : Globals.typography.size.base
+            color: Globals.colors.text
             wrapMode: Text.Wrap
             elide: Text.ElideRight
-            leftPadding: Theme.geometry.padding.medium
-            rightPadding: Theme.geometry.padding.medium
-            topPadding: Theme.geometry.padding.medium
+            leftPadding: Globals.geometry.padding.medium
+            rightPadding: Globals.geometry.padding.medium
+            topPadding: Globals.geometry.padding.medium
         }
     }
 }

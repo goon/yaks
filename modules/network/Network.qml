@@ -55,7 +55,7 @@ BaseContainer {
                 BaseHeader {
                     text: "NETWORKING"
                     isActive: wifiItem.hovered || btItem.hovered
-                    Layout.bottomMargin: Theme.geometry.spacing.small
+                    Layout.bottomMargin: Globals.geometry.spacing.small
                 }
 
 
