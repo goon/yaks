@@ -14,10 +14,6 @@ ListView {
     highlightMoveDuration: 0
     highlightResizeDuration: 0
 
-    // Common ScrollBar
-    ScrollBar.vertical: BaseScrollBar {
-        policy: ScrollBar.AlwaysOff
-    }
 
     // Helper functions often used in tabs
     function safeIncrement() {

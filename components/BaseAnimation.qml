@@ -18,18 +18,15 @@ SequentialAnimation {
     
     // Extensions
     property int delay: 0
-    property string speed: Preferences.animations.profile || "normal" // fast, normal, slow
     property int duration: -1
     
     readonly property int _dur: {
-        if (duration !== -1) return duration;
-        if (speed === "fast") return Theme.animations.fast;
-        if (speed === "slow") return Theme.animations.slow;
-        return Theme.animations.normal;
+        var base = (duration !== -1) ? duration : Theme.animations.normal;
+        return Math.max(0, Math.round(base / Preferences.animations.speedMultiplier));
     }
 
     PauseAnimation {
-        duration: root.delay
+        duration: Math.max(0, Math.round(root.delay / Preferences.animations.speedMultiplier))
     }
 
     PropertyAnimation {
@@ -43,8 +40,11 @@ SequentialAnimation {
     component Spring: SpringAnimation {
         property string profile: "gooey" // gooey, snappy
         
-        spring: profile === "gooey" ? 4 : 2
-        damping: profile === "gooey" ? 0.7 : 0.5
+        // Physics scaling for global duration multiplier
+        property real _m: Preferences.animations.speedMultiplier
+        
+        spring: (profile === "gooey" ? 4 : 2) * (_m * _m)
+        damping: (profile === "gooey" ? 0.7 : 0.5) * _m
         mass: profile === "gooey" ? 0.8 : 1.0
     }
 }

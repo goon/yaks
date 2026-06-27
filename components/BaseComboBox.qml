@@ -10,7 +10,6 @@ ComboBox {
     // Colors can be overridden
     property color textColor: Theme.colors.text
     property color backgroundColor: Theme.alpha(Theme.colors.surface, Theme.opacity.background)
-    property color hoverColor: Theme.colors.muted
     property color borderColor: Theme.colors.border
     property color borderActiveColor: Theme.colors.primary
     // List limiting
@@ -22,19 +21,13 @@ ComboBox {
     property bool previewFonts: false
     property string searchText: ""
 
-    // Font settings
-    readonly property string currentFontFamily: Theme.typography.family
-    readonly property int currentFontPixelSize: Theme.typography.size.base
-    readonly property int currentFontWeight: Theme.typography.weights.normal
-
-    // Default sizing
     Layout.fillWidth: true
     implicitHeight: 36
     implicitWidth: 200
 
-    font.family: currentFontFamily
-    font.pixelSize: currentFontPixelSize
-    font.weight: currentFontWeight
+    font.family: Theme.typography.family
+    font.pixelSize: Theme.typography.size.base
+    font.weight: Theme.typography.weights.normal
     
     enabled: count > 0 || searchable
     opacity: enabled ? 1.0 : 0.5
@@ -71,9 +64,9 @@ ComboBox {
             }
 
             // Only preview if not moving to save CPU during scroll
-            font.family: loadFont && root.previewFonts ? ((root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData) : root.currentFontFamily
-            font.pixelSize: root.currentFontPixelSize
-            font.weight: root.currentFontWeight
+            font.family: loadFont && root.previewFonts ? ((root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData) : Theme.typography.family
+            font.pixelSize: Theme.typography.size.base
+            font.weight: Theme.typography.weights.normal
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
             leftPadding: Theme.geometry.padding.small
@@ -112,7 +105,7 @@ ComboBox {
             enabled: !listView.moving
             SequentialAnimation {
                 PauseAnimation { duration: Math.min(delegateRoot.index * 12, 100) }
-                NumberAnimation { duration: 150 }
+                BaseAnimation { duration: Theme.animations.fast }
             }
         }
     }
@@ -121,9 +114,9 @@ ComboBox {
     contentItem: BaseText {
         text: root.displayText
         color: root.textColor
-        font.family: root.currentFontFamily
-        font.pixelSize: root.currentFontPixelSize
-        font.weight: root.currentFontWeight
+        font.family: Theme.typography.family
+        font.pixelSize: Theme.typography.size.base
+        font.weight: Theme.typography.weights.normal
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         leftPadding: Theme.geometry.padding.small
@@ -160,13 +153,17 @@ ComboBox {
 
         // Seamless on-site transitions
         enter: Transition {
-            NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 200; easing.type: Easing.OutQuint }
-            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200 }
+            ParallelAnimation {
+                BaseAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Theme.animations.fast }
+                BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Theme.animations.fast }
+            }
         }
 
         exit: Transition {
-            NumberAnimation { property: "scale"; to: 0.95; duration: 150; easing.type: Easing.InQuint }
-            NumberAnimation { property: "opacity"; to: 0; duration: 150 }
+            ParallelAnimation {
+                BaseAnimation { property: "scale"; to: 0.95; duration: Theme.animations.fast; easing.type: Easing.InQuint }
+                BaseAnimation { property: "opacity"; to: 0; duration: Theme.animations.fast }
+            }
         }
 
         onOpened: {
@@ -217,8 +214,6 @@ ComboBox {
                 cacheBuffer: 100
                 reuseItems: true
 
-                ScrollBar.vertical: BaseScrollBar {
-                }
             }
         }
 

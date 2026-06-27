@@ -30,16 +30,12 @@ Item {
     signal releasedSignal()
 
     Layout.fillWidth: autoFillWidth
-    implicitWidth: mainLayout.implicitWidth + (paddingHorizontal * 2)
-    implicitHeight: mainLayout.implicitHeight + (paddingVertical * 2)
+    implicitWidth: contentContainer.implicitWidth + (paddingHorizontal * 2)
+    implicitHeight: contentContainer.implicitHeight + (paddingVertical * 2)
 
     scale: (root.clickable && pressed) ? 0.98 : 1.0
 
-    Behavior on scale {
-        BaseAnimation {
-            duration: Theme.animations.fast
-        }
-    }
+    Behavior on scale { BaseAnimation { duration: Theme.animations.fast } }
 
 
 
@@ -66,7 +62,7 @@ Item {
     }
 
     ColumnLayout {
-        id: mainLayout
+        id: contentContainer
 
         anchors.fill: parent
         anchors.leftMargin: root.paddingHorizontal
@@ -74,13 +70,5 @@ Item {
         anchors.topMargin: root.paddingVertical
         anchors.bottomMargin: root.paddingVertical
         spacing: root.spacing
-
-        ColumnLayout {
-            id: contentContainer
-
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: root.spacing
-        }
     }
 }

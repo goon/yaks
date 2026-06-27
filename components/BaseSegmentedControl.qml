@@ -15,8 +15,6 @@ Rectangle {
 
     color: Theme.alpha(Theme.colors.surface, 0.5) // Deeper well look
     radius: Theme.geometry.innerRadius.medium
-    border.color: "transparent" // Remove hard border
-    border.width: 0
 
     implicitHeight: 36
     implicitWidth: rowLayout.implicitWidth + (padding * 2)
@@ -41,11 +39,11 @@ Rectangle {
 
         Behavior on x {
             enabled: root.isReady
-            BaseAnimation { easing.type: Easing.OutQuint }
+            BaseAnimation { }
         }
         Behavior on width {
             enabled: root.isReady
-            BaseAnimation { easing.type: Easing.OutQuint }
+            BaseAnimation { }
         }
     }
 
@@ -64,7 +62,6 @@ Rectangle {
                 Layout.fillHeight: true
 
                 property bool isSelected: root.currentValue === (modelData[root.valueRole] !== undefined ? modelData[root.valueRole] : modelData)
-                property bool isHovered: mouseArea.containsMouse
 
                 radius: Theme.geometry.innerRadius.medium - root.padding
                 color: "transparent"

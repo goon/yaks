@@ -10,8 +10,6 @@ BaseBento {
     id: root
 
     implicitWidth: 300
-
-    borderEnabled: false
     hoverEnabled: false
 
 

@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs
 
-BaseScroller {
+BaseScrolling {
     id: root
     clip: true
     implicitHeight: mainLayout.implicitHeight

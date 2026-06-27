@@ -20,15 +20,22 @@ Rectangle {
     // Derived state
     readonly property bool isPremiumActive: premiumActive || (premiumHover && hovered)
 
-    color: "transparent"
+    color: (root.hoverEnabled && !root.isPremiumActive && root.hovered) 
+           ? root.hoverColor 
+           : Theme.colors.transparent
+
+    Behavior on color {
+        BaseAnimation { duration: Theme.animations.fast }
+    }
 
     // Premium Selection Gradient Border Layer
     Item {
         anchors.fill: parent
         opacity: root.isPremiumActive ? 1.0 : 0.0
         visible: opacity > 0.0 || root.isPremiumActive
+        layer.enabled: opacity < 1.0 && opacity > 0.0
         
-        Behavior on opacity { BaseAnimation { } }
+        Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
         
         // Outer Gradient "Border"
         Rectangle {
@@ -46,14 +53,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: 1.5
             radius: Math.max(0, root.radius - 1.5)
-            color: root.baseColor
-            
-            // Selection tint overlay
-            Rectangle {
-                anchors.fill: parent
-                radius: parent.radius
-                color: Qt.alpha(Theme.colors.primary, 0.08)
-            }
+            color: Qt.tint(root.baseColor, Qt.alpha(Theme.colors.primary, 0.08))
         }
 
         // Inner glass highlight
@@ -68,22 +68,5 @@ Rectangle {
         }
     }
 
-    // Standard Hover Layer
-    Rectangle {
-        anchors.fill: parent
-        radius: root.radius
-        color: {
-            if (!root.hoverEnabled || root.isPremiumActive)
-                return Theme.colors.transparent;
 
-            if (root.hoverColor !== Theme.colors.transparent && root.hovered)
-                return root.hoverColor;
-
-            return Theme.colors.transparent;
-        }
-
-        Behavior on color {
-            ColorAnimation { duration: Theme.animations.fast }
-        }
-    }
 }

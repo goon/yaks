@@ -209,7 +209,6 @@ FocusScope {
 
                     ListView {
                         id: listView
-                        readonly property int scrollbarThickness: ScrollBar.vertical ? ScrollBar.vertical.thickness : 0
                         anchors.fill: parent
                         model: filteredModel
                         clip: true
@@ -221,7 +220,6 @@ FocusScope {
                         highlightFollowsCurrentItem: false
                         currentIndex: -1
                         boundsBehavior: Flickable.StopAtBounds
-                        ScrollBar.vertical: BaseScrollBar {}
 
                         // Sliding hover indicator — delegates feed activeHover,
                         // the indicator derives its target from it via gap debounce.
@@ -233,7 +231,7 @@ FocusScope {
                         }
 
                         delegate: ClipboardListItem {
-                            width: ListView.view ? ListView.view.width - ListView.view.scrollbarThickness - Theme.geometry.spacing.small : 0
+                            width: ListView.view ? ListView.view.width - Theme.geometry.spacing.small : 0
                             itemData: model
                             selected: ListView.isCurrentItem
                             onClicked: listView.currentIndex = index

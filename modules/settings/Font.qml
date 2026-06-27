@@ -64,7 +64,6 @@ SettingsPage {
             model: root.fontModel
             spacing: Theme.geometry.spacing.small
             
-            ScrollBar.vertical: BaseScrollBar {}
 
             delegate: BaseListItem {
                 width: ListView.view.width

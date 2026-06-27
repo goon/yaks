@@ -109,9 +109,9 @@ QtObject {
     }
 
     property QtObject animations: QtObject {
-        property string profile: "normal" // slow, normal, fast
+        property real speedMultiplier: 1.0 // 0.5x - 2.5x
 
-        onProfileChanged: root.requestSave()
+        onSpeedMultiplierChanged: root.requestSave()
     }
 
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
@@ -154,7 +154,7 @@ QtObject {
         ["weather", "long"],
         ["weather", "locationName"],
         ["indicators", "order"],
-        ["animations", "profile"],
+        ["animations", "speedMultiplier"],
         ["currentTheme"],
         ["currentWallpaper"],
         ["customAvatar"],
@@ -257,54 +257,7 @@ QtObject {
                         if (val !== undefined) _set(path, val);
                     }
 
-                    // ── MIGRATIONS ──────────────────────────────────────────
 
-                    // gtk4 → gtk key rename in themedApps
-                    if (data.applications && data.applications.themedApps) {
-                        var defaults = {
-                            "gtk": false, "kitty": false, "vesktop": false, "obsidian": false,
-                            "nvim": false, "firefox": false, "gowall": false, "steam": false, "vscodium": false
-                        };
-                        var merged = {};
-                        for (var k in defaults) merged[k] = defaults[k];
-                        for (var k in data.applications.themedApps) {
-                            if (k === "gtk4") {
-                                if (!data.applications.themedApps.hasOwnProperty("gtk"))
-                                    merged["gtk"] = data.applications.themedApps[k];
-                                continue;
-                            }
-                            merged[k] = data.applications.themedApps[k];
-                        }
-                        root.applications.themedApps = merged;
-                    }
-
-                    // bar componentsEnabled auto-fill
-                    if (data.bar && data.bar.components && !data.bar.componentsEnabled) {
-                        var enabledMap = {};
-                        var allDefaults = ["workspaces", "dock", "indicators", "clock"];
-                        var migratedOrder = Array.from(root.bar.components);
-                        for (var ci = 0; ci < root.bar.components.length; ci++)
-                            enabledMap[root.bar.components[ci]] = true;
-                        for (var di = 0; di < allDefaults.length; di++) {
-                            var c = allDefaults[di];
-                            if (!migratedOrder.includes(c)) {
-                                migratedOrder.push(c);
-                                enabledMap[c] = false;
-                            }
-                        }
-                        root.bar.components = migratedOrder;
-                        root.bar.componentsEnabled = enabledMap;
-                    }
-
-                    // indicators order defaults fill-in
-                    if (data.indicators && data.indicators.order) {
-                        var indicatorDefaults = ["wifi", "notifications", "settings", "instantmix", "power", "screencast", "clipboard"];
-                        var order = root.indicators.order;
-                        for (var j = 0; j < indicatorDefaults.length; j++) {
-                            if (!order.includes(indicatorDefaults[j]))
-                                order.push(indicatorDefaults[j]);
-                        }
-                    }
 
                     safetyTimer.stop();
                     root.loaded = true;

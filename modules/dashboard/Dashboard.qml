@@ -30,7 +30,7 @@ FocusScope {
         Item {
             anchors.fill: parent
 
-            BaseScroller {
+            BaseScrolling {
                 id: contentScroller
                 anchors.fill: parent
                 clip: true

@@ -44,8 +44,7 @@ BaseIcon components/BaseIcon.qml
 BaseListItem components/BaseListItem.qml
 BaseInput components/BaseInput.qml
 Island modules/Island.qml
-BaseScrollBar components/BaseScrollBar.qml
-BaseScroller components/BaseScroller.qml
+BaseScrolling components/BaseScrolling.qml
 BaseSeparator components/BaseSeparator.qml
 BaseSlider components/BaseSlider.qml
 BaseText components/BaseText.qml
@@ -55,8 +54,7 @@ BaseSwitch components/BaseSwitch.qml
 BaseAnimation components/BaseAnimation.qml
 BaseSpinBox components/BaseSpinBox.qml
 BaseIndicator components/BaseIndicator.qml
-BaseIndicatorLine components/BaseIndicatorLine.qml
-BaseIndicatorDot components/BaseIndicatorDot.qml
+
 BaseStackView components/BaseStackView.qml
 
 
@@ -109,4 +107,5 @@ DashboardResourceBars modules/dashboard/DashboardResourceBars.qml
 # Panels
 WallpaperPanel modules/wallpaper/Wallpaper.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
-BaseDevice components/BaseDevice.qml
+NetworkDevice modules/network/NetworkDevice.qml
+
