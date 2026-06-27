@@ -23,19 +23,31 @@ BaseContainer {
         precision: SystemClock.Minutes
     }
 
-    RowLayout {
+    Item {
         id: layout
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        spacing: 0
+        anchors.centerIn: parent
+        implicitWidth: Math.max(timeText.implicitWidth, dateText.implicitWidth - dateText.font.letterSpacing)
+        implicitHeight: timeText.implicitHeight + dateText.implicitHeight - 2
 
         BaseText {
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            text: Qt.formatDateTime(systemClock.date, "hh:mm AP")
-            pixelSize: 22
+            id: timeText
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: font.letterSpacing / 2
+            text: Qt.formatDateTime(systemClock.date, "hh mm AP")
+            pixelSize: Globals.typography.size.large * 0.9
             weight: Globals.typography.weights.bold
+            font.letterSpacing: 3
+        }
+
+        BaseText {
+            id: dateText
+            anchors.top: timeText.bottom
+            anchors.topMargin: -2
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: font.letterSpacing / 2
+            text: Qt.formatDateTime(systemClock.date, "ddd dd MMM").toUpperCase()
+            pixelSize: Globals.typography.size.small * 0.9
+            font.letterSpacing: 3
         }
     }
 }
