@@ -64,38 +64,13 @@ BaseBento {
 
                     BaseText {
                         id: monthLabel
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.horizontalCenterOffset: -20
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -8
+                        anchors.centerIn: parent
                         weight: Globals.typography.weights.bold
                         pixelSize: Globals.typography.size.display * 0.6 // Approximate for 28px
+                        font.letterSpacing: 2.0
                         text: Calendar.monthNames[Calendar.displayMonth].toUpperCase()
-                        z: 1
-                        opacity: 1.0
 
                         transform: Translate { id: monthTranslate }
-                    }
-
-                    BaseText {
-                        id: yearLabel
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.horizontalCenterOffset: 30
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: 12
-                        color: Globals.colors.primary
-                        weight: Globals.typography.weights.bold
-                        pixelSize: Globals.typography.size.display * 0.75 // Approximate for 36px
-                        text: Calendar.displayYear
-                        z: 2
-                        opacity: 0.85
-
-                        // Cutout Effect
-                        shadow: true
-                        shadowColor: Globals.colors.surface
-                        shadowRadius: 10
-
-                        transform: Translate { id: yearTranslate }
                     }
                 }
 
@@ -167,12 +142,12 @@ BaseBento {
                             easing.type: Easing.OutCubic
                         }
                         BaseAnimation {
-                            targets: [grid, monthLabel, yearLabel]
+                            targets: [grid, monthLabel]
                             property: "opacity"
                             to: 0
                         }
                         BaseAnimation {
-                            targets: [monthLabel, yearLabel]
+                            target: monthLabel
                             property: "scale"
                             to: 0.7
                         }
@@ -201,12 +176,7 @@ BaseBento {
                             to: 1
                         }
                         BaseAnimation {
-                            target: yearLabel
-                            property: "opacity"
-                            to: 0.85
-                        }
-                        BaseAnimation {
-                            targets: [monthLabel, yearLabel]
+                            target: monthLabel
                             property: "scale"
                             to: 1.0
                         }

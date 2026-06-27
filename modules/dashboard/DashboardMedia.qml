@@ -33,8 +33,10 @@ BaseBento {
             id: albumArtWrapper
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.topMargin: Globals.geometry.spacing.large
+            Layout.bottomMargin: Globals.geometry.spacing.large
 
-            readonly property int visualBarsCount: 96
+            readonly property int visualBarsCount: 48
             readonly property real barWidth: (Math.PI * (albumArtCircle.width + 8) / visualBarsCount) * 0.45
 
             function interpolateColor(color1, color2, factor) {
@@ -52,7 +54,7 @@ BaseBento {
             Item {
                 id: albumArtCircle
                 anchors.centerIn: parent
-                width: Math.min(parent.width, parent.height) - 84
+                width: Math.min(parent.width, parent.height) - 16
                 height: width
             }
 
@@ -79,10 +81,10 @@ BaseBento {
                             var spec = Cava.spectrum;
                             if (!spec || spec.length < 48) return 0.0;
                             var bandIndex = 0;
-                            if (index < 48) {
-                                bandIndex = 47 - index;
+                            if (index < 24) {
+                                bandIndex = (23 - index) * 2;
                             } else {
-                                bandIndex = index - 48;
+                                bandIndex = (index - 24) * 2;
                             }
                             return spec[bandIndex];
                         }
@@ -96,7 +98,7 @@ BaseBento {
                             anchors.horizontalCenter: parent.horizontalCenter
                             y: parent.height / 2 - (albumArtCircle.width / 2 + 8) - height
                             width: parent.width
-                            height: Math.pow(delegateItem.barVal, 0.65) * 48
+                            height: Math.min(Math.pow(delegateItem.barVal, 0.65) * 24, 12)
                             opacity: Math.min(1.0, delegateItem.barVal * 6.0)
                             clip: true
 
@@ -159,16 +161,6 @@ BaseBento {
 
                 onWidthChanged: requestPaint()
                 onHeightChanged: requestPaint()
-
-                RotationAnimation {
-                    target: ringCanvas
-                    property: "rotation"
-                    from: 0
-                    to: 360
-                    duration: 12000 // 12 seconds per full rotation for a smooth, premium feel
-                    loops: Animation.Infinite
-                    running: true
-                }
             }
 
             // Mask for circular crop
@@ -197,6 +189,7 @@ BaseBento {
                     maskThresholdMin: 0.5
                     maskSpreadAtMin: 1.0
                 }
+
 
                 // Inner layer: images + blur background
                 Item {
@@ -227,13 +220,7 @@ BaseBento {
                         NumberAnimation { target: albumArtContainer; property: "breathScale"; to: 1.0;  duration: 1200; easing.type: Easing.InOutSine }
                     }
 
-                    RotationAnimation on rotation {
-                        from: 0
-                        to: 360
-                        duration: 16000
-                        loops: Animation.Infinite
-                        running: Media.playbackState === MprisPlaybackState.Playing
-                    }
+
 
                     Image {
                         id: art1
@@ -306,6 +293,32 @@ BaseBento {
                     border.color: Globals.alpha(Globals.colors.text, 0.15)
                     border.width: 1.5
                 }
+
+                // Interactive Play/Pause Overlay
+                Rectangle {
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: Globals.alpha(Globals.colors.background, 0.6)
+                    opacity: artMouseArea.containsMouse ? 1.0 : 0.0
+                    Behavior on opacity { BaseAnimation { } }
+
+                    BaseText {
+                        anchors.centerIn: parent
+                        text: Media.playbackState === MprisPlaybackState.Playing ? "PAUSE" : "PLAY"
+                        pixelSize: Globals.typography.size.large
+                        weight: Globals.typography.weights.bold
+                        font.letterSpacing: 1.5
+                        color: Globals.colors.text
+                    }
+                }
+
+                MouseArea {
+                    id: artMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Media.togglePlayPause()
+                }
             }
 
 
@@ -330,8 +343,6 @@ BaseBento {
             Layout.fillWidth: true
             spacing: Globals.geometry.spacing.small
 
-
-
             BaseText {
                 Layout.fillWidth: true
                 text: Media.activePlayer ? Media.trackTitle : "No Media Playing"
@@ -351,13 +362,42 @@ BaseBento {
             }
         }
 
-        // 3. PROGRESS BAR
-        ColumnLayout {
+        // 3. MEDIA CONTROLS & PROGRESS BAR
+        RowLayout {
             Layout.fillWidth: true
-            spacing: Globals.geometry.spacing.small
+            spacing: Globals.geometry.spacing.medium
+
+            BaseButton {
+                id: prevBtn
+                Layout.alignment: Qt.AlignVCenter
+                Layout.leftMargin: Globals.geometry.spacing.large * 3
+                size: Globals.dimensions.iconMedium
+                icon: "skip_previous"
+                enabled: Media.canGoPrevious
+                opacity: enabled ? 1.0 : 0.5
+                onClicked: {
+                    prevAnim.restart()
+                    Media.previous()
+                }
+
+                NumberAnimation {
+                    id: prevAnim
+                    target: prevBtn
+                    property: "iconRotation"
+                    from: 0
+                    to: -360
+                    duration: 500
+                    easing.type: Easing.OutBack
+                }
+            }
 
             Slider {
                 id: progressSlider
+
+                property real animatedProgress: visualPosition
+                Behavior on animatedProgress {
+                    BaseAnimation.Spring { profile: "snappy" }
+                }
 
                 property real wavePhase: 0
                 property real waveAmplitude: 4
@@ -365,6 +405,7 @@ BaseBento {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 32
+                Layout.alignment: Qt.AlignVCenter
                 
                 Connections {
                     target: Media
@@ -410,8 +451,7 @@ BaseBento {
                     Canvas {
                         id: waveCanvas
 
-                        property real progress: progressSlider.visualPosition
-                        Behavior on progress { BaseAnimation.Spring { profile: "snappy" } }
+                        property real progress: progressSlider.animatedProgress
 
                         property color activeColor: Globals.colors.text
                         property color inactiveColor: Globals.alpha(Globals.colors.text, 0.08)
@@ -469,8 +509,7 @@ BaseBento {
 
                 handle: Rectangle {
                     z: 1
-                    x: progressSlider.leftPadding + progressSlider.visualPosition * (progressSlider.availableWidth - width)
-                    Behavior on x { BaseAnimation.Spring { profile: "snappy" } }
+                    x: progressSlider.leftPadding + progressSlider.animatedProgress * (progressSlider.availableWidth - width)
                     
                     y: progressSlider.topPadding + progressSlider.availableHeight / 2 - height / 2
                     width: 4
@@ -480,241 +519,18 @@ BaseBento {
                 }
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                BaseText {
-                    text: root.formatTime(Media.currentPosition)
-                    pixelSize: Globals.typography.size.small
-                    muted: true
-                }
-
-                Item { Layout.fillWidth: true }
-
-                BaseText {
-                    text: root.formatTime(Media.trackLength / 1e+06)
-                    pixelSize: Globals.typography.size.small
-                    muted: true
-                }
-            }
-        }
-
-        // 4. MEDIA CONTROLS
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 24
-
-            BaseButton {
-                id: prevBtn
-                icon: "skip_previous"
-                enabled: Media.canGoPrevious
-                opacity: enabled ? 1.0 : 0.5
-                 onClicked: {
-                     prevAnim.restart()
-                     Media.previous()
-                 }
-
-                 NumberAnimation {
-                     id: prevAnim
-                    target: prevBtn
-                    property: "iconRotation"
-                    from: 0
-                    to: -360
-                    duration: 500
-                    easing.type: Easing.OutBack
-                }
-            }
-
-            // Scalloped badge play/pause button (replicates screenshot design)
-            Item {
-                id: scalloppedPlayBtn
-                width: 64
-                height: 64
-                enabled: Media.activePlayer !== null
-                opacity: enabled ? 1.0 : 0.4
-
-                Behavior on opacity { NumberAnimation { duration: Globals.animations.fast } }
-
-                // Press scale feedback
-                property real pressScale: 1.0
-                scale: pressScale
-                Behavior on pressScale { NumberAnimation { duration: 80; easing.type: Easing.OutQuad } }
-
-                // Scalloped shape — border doubles as a progress ring
-                Canvas {
-                    id: scallopsCanvas
-                    anchors.fill: parent
-
-                    // Reactive repaint triggers
-                    property color fillColor:    Globals.alpha(Globals.colors.primary, 0.18)
-                    property color trackColor:   Globals.alpha(Globals.colors.secondary, 0.22)
-                    property color primaryColor: Globals.colors.primary
-                    property color secondaryColor: Globals.colors.secondary
-                    property bool  hovered:      scallopsMouseArea.containsMouse
-                    property real  progress:       Media.progressRatio
-                    // Animate toward the raw progress so MPRIS jumps are smoothed
-                    property real  smoothProgress: progress
-                    property real  wavePhase:      0.0
-
-                    Behavior on smoothProgress {
-                        NumberAnimation { duration: 1000; easing.type: Easing.Linear }
-                    }
-
-                    // Continuously rotate the gradient while playing
-                    NumberAnimation on wavePhase {
-                        from: 0; to: Math.PI * 2
-                        duration: 3000
-                        loops: Animation.Infinite
-                        running: Media.playbackState === MprisPlaybackState.Playing
-                        easing.type: Easing.Linear
-                    }
-
-                    onFillColorChanged:       requestPaint()
-                    onTrackColorChanged:      requestPaint()
-                    onPrimaryColorChanged:    requestPaint()
-                    onSecondaryColorChanged:  requestPaint()
-                    onHoveredChanged:         requestPaint()
-                    onSmoothProgressChanged:  requestPaint()
-                    onWavePhaseChanged:       requestPaint()
-
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.clearRect(0, 0, width, height);
-
-                        var cx      = width  / 2;
-                        var cy      = height / 2;
-                        var nPeaks  = 10;
-                        var baseR   = width  / 2 - 5;
-                        var amp     = baseR * 0.12;
-                        // Use exact nPeaks*20 samples so the curve divides evenly
-                        var samples = nPeaks * 20;   // 200 samples, NO closing duplicate
-
-                        // 1. Build points (open — pts[0] != pts[last])
-                        var pts = [];
-                        for (var i = 0; i < samples; i++) {
-                            var angle = (i / samples) * Math.PI * 2 - Math.PI / 2;
-                            var r     = baseR + amp * Math.cos(nPeaks * angle);
-                            pts.push({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
-                        }
-
-                        // 2. Smooth closed path via quadratic bezier midpoints (C1 continuity)
-                        function buildSmoothedClosedPath() {
-                            ctx.beginPath();
-                            var n = pts.length;
-                            // start at midpoint between last and first point
-                            var sx = (pts[n-1].x + pts[0].x) / 2;
-                            var sy = (pts[n-1].y + pts[0].y) / 2;
-                            ctx.moveTo(sx, sy);
-                            for (var k = 0; k < n; k++) {
-                                var p    = pts[k];
-                                var pn   = pts[(k + 1) % n];
-                                var midX = (p.x + pn.x) / 2;
-                                var midY = (p.y + pn.y) / 2;
-                                ctx.quadraticCurveTo(p.x, p.y, midX, midY);
-                            }
-                            ctx.closePath();
-                        }
-
-                        // 3. Fill
-                        buildSmoothedClosedPath();
-                        ctx.fillStyle = hovered
-                            ? Globals.alpha(Globals.colors.primary, 0.28)
-                            : Globals.alpha(Globals.colors.primary, 0.18);
-                        ctx.fill();
-
-                        ctx.lineWidth = 2.5;
-                        ctx.lineJoin  = "round";
-                        ctx.lineCap   = "round";
-
-                        // 4. Background track — full dim outline
-                        buildSmoothedClosedPath();
-                        ctx.strokeStyle = trackColor;
-                        ctx.stroke();
-
-                        // 5. Progress arc — sub-point fractional endpoint for pixel-smooth movement
-                        var clamp      = Math.max(0, Math.min(1, smoothProgress));
-                        var exactPos   = clamp * samples;           // float index
-                        var floorIdx   = Math.floor(exactPos);      // whole points to draw
-                        var frac       = exactPos - floorIdx;       // fractional remainder
-
-                        if (floorIdx > 0 || frac > 0) {
-                            // Rotating gradient sweeps with wavePhase
-                            var gx1  = cx + cx * Math.cos(wavePhase);
-                            var gy1  = cy + cy * Math.sin(wavePhase);
-                            var gx2  = cx + cx * Math.cos(wavePhase + Math.PI);
-                            var gy2  = cy + cy * Math.sin(wavePhase + Math.PI);
-                            var grad = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
-                            grad.addColorStop(0.0, primaryColor);
-                            grad.addColorStop(1.0, secondaryColor);
-
-                            // Open partial path using bezier midpoints up to floorIdx
-                            ctx.beginPath();
-                            var startMidX = (pts[0].x + pts[1 % pts.length].x) / 2;
-                            var startMidY = (pts[0].y + pts[1 % pts.length].y) / 2;
-                            ctx.moveTo(startMidX, startMidY);
-                            var limit = Math.min(floorIdx, pts.length - 1);
-                            for (var pk = 1; pk < limit; pk++) {
-                                var pp   = pts[pk];
-                                var ppn  = pts[pk + 1];
-                                var pmx  = (pp.x + ppn.x) / 2;
-                                var pmy  = (pp.y + ppn.y) / 2;
-                                ctx.quadraticCurveTo(pp.x, pp.y, pmx, pmy);
-                            }
-                            // Fractional final segment: interpolate between pts[limit] and pts[limit+1]
-                            if (frac > 0 && limit < pts.length - 1) {
-                                var pa  = pts[limit];
-                                var pb  = pts[limit + 1];
-                                var tipX = pa.x + (pb.x - pa.x) * frac;
-                                var tipY = pa.y + (pb.y - pa.y) * frac;
-                                ctx.lineTo(tipX, tipY);
-                            }
-                            ctx.strokeStyle = grad;
-                            ctx.stroke();
-                        }
-                    }
-                }
-
-                // Play / Pause icon centered inside the scallop
-                Text {
-                    anchors.centerIn: parent
-                    font.family:      Globals.typography.iconFamily
-                    font.pixelSize:   22
-                    color:            Globals.colors.primary
-                    text:             Media.playbackState === MprisPlaybackState.Playing ? "\ue034" : "\ue037"
-                    // pause = U+E034  play_arrow = U+E037  (Material Symbols codepoints)
-
-                    Behavior on text {
-                        // Cross-fade on state change
-                        SequentialAnimation {
-                            NumberAnimation { target: scalloppedPlayBtn; property: "opacity"; to: 0.6; duration: 80 }
-                            NumberAnimation { target: scalloppedPlayBtn; property: "opacity"; to: scalloppedPlayBtn.enabled ? 1.0 : 0.4; duration: 80 }
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: scallopsMouseArea
-                    anchors.fill:  parent
-                    hoverEnabled:  true
-                    cursorShape:   scalloppedPlayBtn.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    enabled:       scalloppedPlayBtn.enabled
-
-                    onPressed:  scalloppedPlayBtn.pressScale = 0.93
-                    onReleased: scalloppedPlayBtn.pressScale = 1.0
-                    onClicked:  Media.togglePlayPause()
-                    onContainsMouseChanged: scallopsCanvas.requestPaint()
-                }
-            }
-
             BaseButton {
                 id: nextBtn
+                Layout.alignment: Qt.AlignVCenter
+                Layout.rightMargin: Globals.geometry.spacing.large * 3
+                size: Globals.dimensions.iconMedium
                 icon: "skip_next"
                 enabled: Media.canGoNext
                 opacity: enabled ? 1.0 : 0.5
-                 onClicked: {
-                     nextAnim.restart()
-                     Media.next()
-                 }
+                onClicked: {
+                    nextAnim.restart()
+                    Media.next()
+                }
 
                 NumberAnimation {
                     id: nextAnim

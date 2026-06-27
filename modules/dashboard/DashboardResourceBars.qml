@@ -4,11 +4,8 @@ import qs
 
 BaseBento {
     id: root
-    implicitWidth: 120
     implicitHeight: 320
     hoverEnabled: true
-
-
 
     RowLayout {
         Layout.fillWidth: true
@@ -24,9 +21,18 @@ BaseBento {
             property string tempText: ""
             property bool hovered: false
 
-            Layout.fillWidth: true
+            Layout.preferredWidth: 38
             Layout.fillHeight: true
             spacing: 8
+
+            BaseText {
+                Layout.alignment: Qt.AlignHCenter
+                text: barCol.label
+                pixelSize: 10
+                font.letterSpacing: 1.5
+                weight: Globals.typography.weights.bold
+                color: Globals.alpha(Globals.colors.text, 1)
+            }
 
             Item {
                 Layout.fillWidth: true
@@ -84,20 +90,12 @@ BaseBento {
 
                     BaseText {
                         anchors.centerIn: parent
-                        text: barCol.hovered && barCol.tempText !== "" ? barCol.tempText : Math.round(barCol.value * 100)
-                        pixelSize: 9
+                        text: Math.round(barCol.value * 100)
+                        pixelSize: 12
                         weight: Globals.typography.weights.bold
                         color: barCol.color
                     }
                 }
-            }
-
-            BaseText {
-                Layout.alignment: Qt.AlignHCenter
-                text: barCol.label
-                pixelSize: 9
-                weight: Globals.typography.weights.bold
-                color: Globals.alpha(Globals.colors.text, 0.4)
             }
         }
 

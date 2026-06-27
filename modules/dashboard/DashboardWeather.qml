@@ -174,6 +174,12 @@ BaseBento {
             Layout.fillHeight: true
             clip: true
 
+            property real drawProgress: 0.0
+            SequentialAnimation on drawProgress {
+                PauseAnimation { duration: 100 }
+                NumberAnimation { from: 0.0; to: 1.0; duration: 1000; easing.type: Easing.OutCubic }
+            }
+
             property int hoverIndex: {
                 if (!graphHover.hovered || sparkline.calculatedPoints.length === 0) return -1;
                 var x = graphHover.point.position.x;
@@ -199,11 +205,21 @@ BaseBento {
                 anchors.left: parent.left
             }
 
-            Canvas {
-                id: sparkline
-                anchors.fill: parent
-                anchors.topMargin: 24
-                anchors.bottomMargin: 0
+            Item {
+                id: graphClip
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: sparklineContainer.width * sparklineContainer.drawProgress
+                clip: true
+
+                Canvas {
+                    id: sparkline
+                    width: sparklineContainer.width
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: 24
+                    anchors.bottomMargin: 0
                 
                 property var temps: {
                     if (!Weather.hourlyForecast || !Weather.currentWeather) return [];
@@ -332,6 +348,7 @@ BaseBento {
                         sparklineLine.requestPaint();
                     }
                 }
+            }
             }
 
             Rectangle {
