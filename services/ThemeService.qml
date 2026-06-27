@@ -13,7 +13,7 @@ Item {
     property var allThemes: []
     readonly property string themesDir: Config.themesDir
     readonly property string scriptsDir: Config.scriptsDir
-    property var stockThemeIds: ["catppuccin", "kanagawa", "everforest", "gruvbox", "horizon", "solaris"]
+    property var stockThemeIds: ["catppuccin", "kanagawa", "everforest", "gruvbox", "horizon", "solaris", "rosepine"]
 
     // ── STATE PROPERTIES (SYSTEM THEME) ─────────────────────────────
     property string gtkTheme: ""
