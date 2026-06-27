@@ -130,18 +130,7 @@ Item {
             implicitHeight: Theme.dimensions.barItemHeight
             height: parent.height
 
-            BaseIndicatorDot {
-                id: hoverDot
-                orientation: Qt.Horizontal
-                edge: Qt.BottomEdge
-                retainLastPosition: true
-                targetItem: {
-                    var mi = _modelIndex(root.hoveredKey);
-                    if (mi >= 0 && mi < indicatorRepeater.count)
-                        return indicatorRepeater.itemAt(mi);
-                    return null;
-                }
-            }
+
 
             Repeater {
                 id: indicatorRepeater
@@ -221,7 +210,6 @@ Item {
                 }
             }
         }
-
         BaseIcon {
             anchors.centerIn: parent
             icon: itemRoot.iconName

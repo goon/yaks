@@ -162,7 +162,7 @@ BaseScroller {
                         Layout.preferredWidth: 0
                         Layout.preferredHeight: 0
 
-                        BaseIndicatorLine {
+                        BaseIndicator {
                             hoverPredicate: wifiListSection._hoverPredicate
                         }
                     }
@@ -180,7 +180,7 @@ BaseScroller {
     Component {
         id: wifiDelegate
 
-        BaseDevice {
+        NetworkDevice {
             id: delegateRoot
             deviceType: "wifi"
             property bool hovered: isHovered
@@ -205,11 +205,9 @@ BaseScroller {
                 if (sig > 25) return "network_wifi_2_bar";
                 return "network_wifi_1_bar";
             }
-            signalText: modelData.signal + "%"
             isSecured: modelData.secured
             isKnown: modelData.known || modelData.active || isPendingConnect
             isConnected: modelData.active || isPendingConnect
-            isConnecting: isPendingConnect
 
             onConnectClicked: (password) => Network.connect(modelData.ssid, password)
             onDisconnectClicked: Network.disconnect()

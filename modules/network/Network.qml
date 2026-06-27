@@ -105,7 +105,7 @@ BaseContainer {
             }
 
             // Sliding Hover Indicator
-            BaseIndicatorLine {
+            BaseIndicator {
                 id: slidingPill
                 targetItem: {
                     if (wifiItem.hovered) return wifiItem;

@@ -227,7 +227,7 @@ FocusScope {
                         // the indicator derives its target from it via gap debounce.
                         property Item activeHover: null
 
-                        BaseIndicatorLine {
+                        BaseIndicator {
                             z: 100
                             hoverPredicate: function() { return listView.activeHover; }
                         }

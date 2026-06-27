@@ -4,24 +4,13 @@ import qs
 Item {
     id: root
 
-    // ── VISUAL API (unchanged) ──────────────────────────────────────
+    // ── VISUAL API ──────────────────────────────────────────────────
     property Item targetItem: null
 
     property int orientation: Qt.Vertical
-    property int edge: Qt.LeftEdge
-    property real edgeOffset: 0
-
     property bool retainLastPosition: false
 
-    property int duration: Theme.animations.fast
-    property int easingType: Easing.OutQuart
-
-    // ── HOVER-TRACKING API (new) ───────────────────────────────────
-    // When set to a function returning the currently-hovered Item (or null),
-    // the indicator derives its targetItem from the predicate instead of
-    // from the `targetItem` property. The gapInterval debounces "hover lost"
-    // → "drop the indicator" by `gapInterval` ms.
-    // When null (default), the indicator is a pure follower of `targetItem`.
+    // ── HOVER-TRACKING API ─────────────────────────────────────────
     property var hoverPredicate: null
     property int gapInterval: 100
 
@@ -29,14 +18,8 @@ Item {
     property real _lastX: 0
     property real _lastY: 0
 
-    // The hover-derived candidate (raw, no debounce)
     readonly property Item _hoverCandidate: hoverPredicate ? hoverPredicate() : null
-
-    // `_hoverTarget` is the debounced hover state — set to the candidate
-    // on hover, cleared after `gapInterval` ms of no hover.
     property Item _hoverTarget: null
-
-    // Effective target: hover-derived (if predicate set) else direct
     readonly property Item _effectiveTarget: hoverPredicate ? root._hoverTarget : root.targetItem
 
     readonly property real targetX: {
@@ -44,10 +27,7 @@ Item {
             if (!_effectiveTarget) return retainLastPosition ? _lastX : 0;
             return _effectiveTarget.x + (_effectiveTarget.width - width) / 2;
         }
-        if (edge === Qt.RightEdge) {
-            return (parent ? parent.width - width : 0) + edgeOffset;
-        }
-        return edgeOffset;
+        return 0;
     }
 
     readonly property real targetY: {
@@ -58,11 +38,7 @@ Item {
                 : _effectiveTarget.height / 2;
             return _effectiveTarget.y + centerY - height / 2;
         }
-        if (edge === Qt.TopEdge) return edgeOffset;
-        if (edge === Qt.BottomEdge) {
-            return (parent ? parent.height - height : 0) + edgeOffset;
-        }
-        return edgeOffset;
+        return parent ? parent.height - height : 0;
     }
 
     x: targetX
@@ -71,19 +47,27 @@ Item {
     onXChanged: if (_effectiveTarget) _lastX = x
     onYChanged: if (_effectiveTarget) _lastY = y
 
-    Behavior on x { NumberAnimation { duration: duration; easing.type: easingType } }
-    Behavior on y { NumberAnimation { duration: duration; easing.type: easingType } }
+    Behavior on x { NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuart } }
+    Behavior on y { NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuart } }
 
     opacity: _effectiveTarget ? 1.0 : 0.0
-    Behavior on opacity { NumberAnimation { duration: duration } }
+    Behavior on opacity { NumberAnimation { duration: Theme.animations.fast } }
 
     z: 10
 
-    // ── HOVER STATE MACHINE ─────────────────────────────────────────
-    // Only active when `hoverPredicate` is set. The gap timer debounces
-    // "hover lost" → "drop the indicator" by `gapInterval` ms. If hover
-    // returns within the window, the timer is cancelled and the indicator
-    // stays put.
+    width: 3
+    height: 20
+
+    Rectangle {
+        anchors.fill: parent
+        radius: width / 2
+        gradient: Gradient {
+            orientation: Gradient.Vertical
+            GradientStop { position: 0.0; color: Theme.colors.primary }
+            GradientStop { position: 1.0; color: Theme.colors.secondary }
+        }
+    }
+
     Timer {
         id: gapTimer
         interval: root.gapInterval
@@ -91,9 +75,6 @@ Item {
         onTriggered: root._hoverTarget = null
     }
 
-    // Re-evaluate whenever the candidate changes:
-    // - candidate non-null → set target, stop timer
-    // - candidate null → start timer (target stays put until it fires)
     on_HoverCandidateChanged: {
         if (root._hoverCandidate) {
             root._hoverTarget = root._hoverCandidate;

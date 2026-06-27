@@ -5,11 +5,7 @@ import qs
 Item {
     id: root
 
-    property int rowHeight: Theme.dimensions.listItemHeight
-    property int itemSpacing: Theme.geometry.spacing.medium
-
-    implicitHeight: Math.max(rowHeight, layout.implicitHeight)
-    Behavior on implicitHeight { BaseAnimation { easing.type: Easing.OutQuart } }
+    implicitHeight: Math.max(Theme.dimensions.listItemHeight, layout.implicitHeight)
     implicitWidth: layout.implicitWidth
 
     property string title: ""
@@ -20,14 +16,12 @@ Item {
     property bool showSubtitleOnHover: false
     
     property string leftIcon: ""
-    property int leftIconSize: Theme.dimensions.iconMedium
     property bool leftIconInteractive: true
     property bool leftIconActive: false
     property real leftIconScale: 1.0
     
     // Separator
     property bool showVerticalSeparator: false
-    property bool showBottomSeparator: false
     
     // Right Icon Properties
     property string rightIcon: "chevron_right"
@@ -37,7 +31,7 @@ Item {
     property bool selected: false
 
     // Internal indicator (the gradient bar on the left edge).
-    // Set to false when an external BaseIndicatorLine is used instead (e.g. for hover-driven indicators).
+    // Set to false when an external BaseIndicator is used instead (e.g. for hover-driven indicators).
     property bool showInternalIndicator: true
 
     // State
@@ -60,7 +54,7 @@ Item {
     RowLayout {
         id: layout
         anchors.fill: parent
-        spacing: root.itemSpacing
+        spacing: Theme.geometry.spacing.medium
 
         // Active / Hover Notch
         Rectangle {
@@ -90,7 +84,7 @@ Item {
                 visible: root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: root.leftIconSize
+                size: Theme.dimensions.iconMedium
                 iconColor: root.leftIconActive ? Theme.colors.primary : Theme.colors.text
                 onClicked: root.leftIconClicked()
                 z: 2 // Sit above the main MouseArea
@@ -100,7 +94,7 @@ Item {
                 visible: !root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: root.leftIconSize
+                size: Theme.dimensions.iconMedium
                 color: root.selected ? Theme.colors.primary : (root.containsMouse ? Theme.colors.primary : Theme.colors.text)
                 Behavior on color { BaseAnimation { } }
             }
@@ -162,17 +156,9 @@ Item {
         BaseIcon {
             visible: root.rightIconVisible && root.rightIcon !== ""
             icon: root.rightIcon
-            color: root.containsMouse ? Theme.colors.text : Theme.colors.muted
+            color: root.selected ? Theme.colors.primary : (root.containsMouse ? Theme.colors.text : Theme.colors.muted)
             Behavior on color { BaseAnimation { } }
             Layout.alignment: Qt.AlignVCenter
         }
-    }
-
-    BaseSeparator {
-        visible: root.showBottomSeparator
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: root.leftIcon !== "" ? (Theme.geometry.spacing.medium + Theme.dimensions.iconMedium + Theme.geometry.spacing.medium) : Theme.geometry.spacing.medium
     }
 }

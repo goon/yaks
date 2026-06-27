@@ -19,11 +19,7 @@ Item {
     property string subtitle: ""
     property string iconName: "bluetooth"
     property real iconOpacity: 1.0
-    property string signalText: ""
-    
-    // State Properties
     property bool isConnected: false
-    property bool isConnecting: false
     property bool isSecured: false
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
     
@@ -92,8 +88,6 @@ Item {
                 id: innerRowLayout
                 anchors.fill: parent
                 spacing: Theme.geometry.spacing.medium
-
-
 
                 // Icon Slot
                 Item {
@@ -168,11 +162,9 @@ Item {
             }
         }
 
-        // Expandable Drawer (Wi-Fi specific)
         Item {
             Layout.fillWidth: true
             Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Theme.geometry.padding.medium : 0
-            state: root.expanded ? "expanded" : "collapsed"
             clip: true
             visible: deviceType === "wifi" && root.isSecured && !root.isConnected && !root.isKnown
 
@@ -199,7 +191,6 @@ Item {
                     // Password Input
                     BaseInput {
                         id: passwordInput
-                        visible: root.isSecured && !root.isConnected && !root.isKnown
                         Layout.fillWidth: true
                         Layout.preferredHeight: 36
                         placeholderText: "Network password..."

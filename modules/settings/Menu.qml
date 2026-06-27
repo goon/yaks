@@ -76,7 +76,7 @@ Item {
     }
 
     // Sliding Hover Indicator
-    BaseIndicatorLine {
+    BaseIndicator {
         hoverPredicate: root._hoverPredicate
     }
 }

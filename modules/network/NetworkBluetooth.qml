@@ -205,7 +205,7 @@ BaseScroller {
                     Layout.preferredWidth: 0
                     Layout.preferredHeight: 0
 
-                    BaseIndicatorLine {
+                    BaseIndicator {
                         hoverPredicate: bluetoothBlock._hoverPredicate
                     }
                 }
@@ -222,14 +222,13 @@ BaseScroller {
     Component {
         id: deviceDelegate
 
-        BaseDevice {
+        NetworkDevice {
             property bool hovered: isHovered
 
             title: modelData.name || modelData.address
             subtitle: modelData.connecting ? "Connecting..." : ""
             iconName: root.resolveBluetoothIcon(modelData.icon)
             isConnected: modelData.connected
-            isConnecting: modelData.connecting || false
             isKnown: modelData.paired || modelData.bonded || modelData.trusted
 
             onActionClicked: {
