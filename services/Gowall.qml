@@ -24,6 +24,12 @@ QtObject {
     property string currentThemeId: Preferences.currentTheme
     property string currentWallpaper: Wallpaper.currentWallpaper
     
+    // Add colorHash so QML knows the colors actually changed and reloads the image!
+    property string colorHash: {
+        if (!currentColors || Object.keys(currentColors).length === 0) return "none";
+        return (currentColors.base00 || "none").replace("#", "") + "_" + (currentColors.base0D || "none").replace("#", "");
+    }
+    
     // ── PATHS ─────────────────────────────────────────────────────────
     readonly property string gowallConfigDir: Globals.homeDir + "/.config/gowall"
     readonly property string gowallConfigFile: gowallConfigDir + "/config.yml"
@@ -44,12 +50,8 @@ QtObject {
         }
     }
 
-
-    
-
-
     function writeGowallConfig() {
-        if (!currentColors) {
+        if (!currentColors || Object.keys(currentColors).length === 0) {
             processing = false;
             return;
         }
@@ -78,10 +80,9 @@ QtObject {
         for (var i = 0; i < colorList.length; i++) {
             yaml += "      - \"" + colorList[i] + "\"\n";
         }
-
-
         
         // Write using sh
+        configWriter.running = false; // Quickshell quirk: Must reset running before restarting
         configWriter.command = ["sh", "-c", "printf '%s' \"$1\" > \"$2\"", "--", yaml, gowallConfigFile];
         configWriter.running = true;
     }
@@ -96,15 +97,19 @@ QtObject {
         // Unique filename per theme to force QML to reload the image
         var ext = currentWallpaper.split(".").pop();
         var baseName = currentWallpaper.split("/").pop().split(".").shift();
-        var fileName = baseName + "_" + currentThemeId + "." + ext;
+        var fileName = baseName + "_" + currentThemeId + "_" + colorHash + "." + ext;
         
         var targetPath = cacheDir + "/" + fileName;
     
+        // Clean old variants (avoiding deleting the temp file!)
+        ProcessService.runDetached(["sh", "-c", "find " + cacheDir + " -type f -name '" + baseName + "_*' -not -name '" + fileName + "' -not -name '*_temp.*' -delete"]);
+
         // Strategy: Detached Execution via sh
         // Construct the detached command
         // Args: input_file, theme_id, output_path
-        var cmd = "nohup sh -c 'cat \\\"" + currentWallpaper + "\\\" | gowall convert - - --theme \\\"" + currentThemeId + "\\\" > \\\"" + targetPath + "_temp." + ext + "\\\" && mv \\\"" + targetPath + "_temp." + ext + "\\\" \\\"" + targetPath + "\\\"' > /dev/null 2>&1 &";
+        var cmd = "nohup sh -c 'cat \"" + currentWallpaper + "\" | gowall convert - - --theme \"" + currentThemeId + "\" > \"" + targetPath + "_temp." + ext + "\" && mv \"" + targetPath + "_temp." + ext + "\" \"" + targetPath + "\"' > /dev/null 2>&1 &";
         
+        launcher.running = false; // Quickshell quirk: Must reset running before restarting
         launcher.command = ["sh", "-c", cmd];
         launcher.running = true;
         
@@ -139,6 +144,7 @@ QtObject {
                 return;
             }
             
+            checkFileProcess.running = false; // Quickshell quirk: Must reset running before restarting
             checkFileProcess.command = ["test", "-f", root.targetPollFile];
             checkFileProcess.running = true;
         }
@@ -163,6 +169,13 @@ QtObject {
     onEnabledChanged: update()
     onCurrentThemeIdChanged: update()
     onCurrentWallpaperChanged: update()
+    onCurrentColorsChanged: update()
+
+    function getExpectedFileName() {
+        var ext = currentWallpaper.split(".").pop();
+        var baseName = currentWallpaper.split("/").pop().split(".").shift();
+        return baseName + "_" + currentThemeId + "_" + colorHash + "." + ext;
+    }
 
     function update() {
         if (!enabled) {
@@ -170,14 +183,13 @@ QtObject {
             return;
         }
 
-        // If we are already displaying the correct processed file for this theme/wallpaper combination, do nothing.
-        // We reconstruct the expected filename to check this.
-        var ext = currentWallpaper.split(".").pop();
-        var baseName = currentWallpaper.split("/").pop().split(".").shift();
-        var expectedFileName = baseName + "_" + currentThemeId + "." + ext;
-        var expectedPath = cacheDir + "/" + expectedFileName;
+        if (currentWallpaper === "") return;
+        if (!currentColors || Object.keys(currentColors).length === 0) return; // Wait for colors
 
-        if (currentWallpaper === "" || Wallpaper.processedWallpaper === expectedPath) {
+        // If we are already displaying the correct processed file for this theme/wallpaper combination, do nothing.
+        var expectedPath = cacheDir + "/" + getExpectedFileName();
+
+        if (Wallpaper.processedWallpaper === expectedPath) {
              return;
         }
         
@@ -195,6 +207,4 @@ QtObject {
         // Write Config
         writeGowallConfig();
     }
-
-
 }
