@@ -120,20 +120,20 @@ safe_write_import() {
 
 # Apply to GTK 4.0 (Libadwaita)
 GTK4_DIR="$HOME/.config/gtk-4.0"
-GTK4_THEME_CSS="$GTK4_DIR/quickshell.css"
+GTK4_THEME_CSS="$GTK4_DIR/yaks.css"
 GTK4_MAIN_CSS="$GTK4_DIR/gtk.css"
 GTK4_DARK_CSS="$GTK4_DIR/gtk-dark.css"
 
 mkdir -p "$GTK4_DIR"
 apply_template "$TEMPLATE_DIR/gtk4.css" "$GTK4_THEME_CSS"
 
-IMPORT_LINE='@import url("quickshell.css");'
+IMPORT_LINE='@import url("yaks.css");'
 safe_write_import "$GTK4_MAIN_CSS" "$IMPORT_LINE"
 safe_write_import "$GTK4_DARK_CSS" "$IMPORT_LINE"
 
 # Apply to GTK 3.0
 GTK3_DIR="$HOME/.config/gtk-3.0"
-GTK3_THEME_CSS="$GTK3_DIR/quickshell.css"
+GTK3_THEME_CSS="$GTK3_DIR/yaks.css"
 GTK3_MAIN_CSS="$GTK3_DIR/gtk.css"
 
 mkdir -p "$GTK3_DIR"

@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Services.Notifications
 import qs
 
-BaseBlock {
+BaseContainer {
     id: root
 
     property var notification: null
@@ -13,58 +13,62 @@ BaseBlock {
     property bool showCloseButton: true
     property bool showTime: true
     property var time: new Date()
-    property string timeString: "now"
+    property string timeString: "just now"
 
     signal closeClicked()
 
     function updateTime() {
-        if (!time)
-            return ;
+        if (!time) return;
 
-        timeString = Qt.formatDateTime(time, "hh:mm");
+        const now = new Date();
+        const diffMs = Math.max(0, now.getTime() - time.getTime());
+        const diffSecs = Math.floor(diffMs / 1000);
+        const diffMins = Math.floor(diffSecs / 60);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffDays > 0) {
+            timeString = diffDays + "d ago";
+        } else if (diffHours > 0) {
+            timeString = diffHours + "h ago";
+        } else if (diffMins > 0) {
+            timeString = diffMins + "m ago";
+        } else {
+            timeString = "just now";
+        }
+    }
+
+    Timer {
+        interval: 60000 // Refresh every minute
+        running: root.visible
+        repeat: true
+        onTriggered: root.updateTime()
     }
 
     readonly property bool isScreenshot: {
         if (!root.notification) return false;
-        const app = (root.notification.appName || "").toLowerCase();
         const sum = (root.notification.summary || "").toLowerCase();
-        return app === "niri" || sum.indexOf("screenshot") !== -1;
+        return sum.indexOf("screenshot") !== -1;
     }
 
-    borderWidth: 1
-    borderColor: Theme.colors.border
-    premiumHover: true
+    readonly property bool isRecording: {
+        if (!root.notification) return false;
+        const sum = (root.notification.summary || "").toLowerCase();
+        return sum.indexOf("recording") !== -1;
+    }
+
     clickable: true
-    padding: 0
     onTimeChanged: root.updateTime()
 
     Component.onCompleted: root.updateTime()
     Layout.fillWidth: true
     implicitWidth: 350
 
-    // Inner Content Block
-    Rectangle {
-        property real innerPadding: Theme.geometry.spacing.dynamicPadding
-
+    // Top section: Icon, Info, Close
+    RowLayout {
         Layout.fillWidth: true
-
-        Layout.preferredHeight: notifContent.implicitHeight + (innerPadding * 2)
-        color: Theme.colors.transparent
-        radius: Theme.geometry.radius
-
-        ColumnLayout {
-            id: notifContent
-
-            anchors.fill: parent
-            anchors.margins: parent.innerPadding
-            spacing: Theme.geometry.spacing.medium
-
-
-            // Top section: Icon, Info, Close
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Theme.geometry.spacing.large
-                Layout.alignment: Qt.AlignTop
+        spacing: Theme.geometry.spacing.large
+        Layout.alignment: Qt.AlignTop
 
 
                 // App icon
@@ -92,7 +96,7 @@ BaseBlock {
                         sourceSize.width: width
                         sourceSize.height: height
                         smooth: true
-                        visible: !root.isScreenshot && status === Image.Ready && source.toString() !== ""
+                        visible: !root.isScreenshot && !root.isRecording && status === Image.Ready && source.toString() !== ""
                     }
 
                     // 2. App Icon (Middle Priority)
@@ -108,7 +112,7 @@ BaseBlock {
                         sourceSize.width: width
                         sourceSize.height: height
                         smooth: true
-                        visible: !root.isScreenshot && !specificImage.visible && status === Image.Ready && source.toString() !== ""
+                        visible: !root.isScreenshot && !root.isRecording && !specificImage.visible && status === Image.Ready && source.toString() !== ""
                     }
 
                     // 3. Material Symbol (Custom Fallback)
@@ -130,6 +134,7 @@ BaseBlock {
                             icon: {
                                 if (!root.notification) return "";
                                 if (root.isScreenshot) return "image";
+                                if (root.isRecording) return "screen_record";
                                 const ai = root.notification.appIcon || "";
                                 const img = root.notification.image || "";
                                 
@@ -154,7 +159,6 @@ BaseBlock {
                         anchors.centerIn: parent
                         visible: !specificImage.visible && !appIconImage.visible && !symbolIcon.visible
                         icon: "notifications_unread"
-                        size: Theme.dimensions.iconMedium
                         width: size
                         height: size
                         color: Theme.colors.primary
@@ -172,7 +176,6 @@ BaseBlock {
                     BaseText {
                         id: summaryText
                         Layout.fillWidth: false
-                        color: Theme.colors.text
                         pixelSize: Theme.typography.size.medium
                         weight: Theme.typography.weights.bold
                         text: root.notification ? (root.notification.summary || "") : ""
@@ -186,18 +189,18 @@ BaseBlock {
                     BaseText {
                         id: separator
                         text: "|"
-                        color: Theme.colors.muted
+                        muted: true
                         visible: root.showTime
-                        pixelSize: Theme.typography.size.base
                     }
 
                     // Time
                     BaseText {
                         id: timeText
-                        color: Theme.colors.muted
+                        muted: true
                         visible: root.showTime
-                        text: root.timeString.toUpperCase()
-                        pixelSize: Theme.typography.size.small
+                        text: root.timeString
+                        pixelSize: Theme.typography.size.base
+                        font.italic: true
                         elide: Text.ElideRight
                     }
 
@@ -207,7 +210,6 @@ BaseBlock {
                     }
                 }
 
-                // Close button
                 BaseButton {
                     Layout.preferredWidth: Theme.dimensions.iconMedium
                     Layout.preferredHeight: Theme.dimensions.iconMedium
@@ -226,7 +228,6 @@ BaseBlock {
             BaseText {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 200 // Hint to help Layout
-                color: Theme.colors.text
                 bold: false
                 text: root.notification ? (root.notification.body || "") : ""
                 wrapMode: Text.Wrap
@@ -234,10 +235,4 @@ BaseBlock {
                 elide: Text.ElideRight
                 visible: text !== ""
             }
-
-
-        }
-
-    }
-
 }

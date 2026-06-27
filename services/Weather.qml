@@ -6,8 +6,8 @@ pragma Singleton
 QtObject {
     id: root
 
-    property string latitude: Preferences.weatherLat
-    property string longitude: Preferences.weatherLong
+    property string latitude: Preferences.weather.lat
+    property string longitude: Preferences.weather.long
     property var currentWeather: null
     property var dailyForecast: null
     property var hourlyForecast: null
@@ -98,7 +98,7 @@ QtObject {
                             // Prefer city, then town, then village, then suburb
                             var name = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || "Unknown Location";
                             if (name && name !== "Unknown Location")
-                                Preferences.weatherLocationName = name;
+                                Preferences.weather.locationName = name;
 
                         }
                     } catch (e) {

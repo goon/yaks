@@ -3,17 +3,12 @@ import QtQuick.Layouts
 import Quickshell
 import qs
 
-BaseBlock {
+BaseBento {
     id: root
 
     implicitWidth: 120
     implicitHeight: 320
 
-    padding: 0
-    paddingHorizontal: 0
-    paddingVertical: 0
-
-    // Individual segment for animated time units
     component TimeSegment: Item {
         id: segment
         property string text: ""
@@ -109,7 +104,6 @@ BaseBlock {
         }
     }
 
-    // Single fill-item that takes up the whole contentContainer
     Item {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -119,12 +113,10 @@ BaseBlock {
             precision: SystemClock.Seconds
         }
 
-        // Inner column centered in the available space
         Column {
             anchors.centerIn: parent
             spacing: 8
 
-            // Hour Label
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDateTime(systemClock.date, "hh")
@@ -133,7 +125,6 @@ BaseBlock {
                 textColor: Theme.colors.primary
             }
 
-            // First Horizontal Dots separator
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 4
@@ -150,7 +141,6 @@ BaseBlock {
                 }
             }
 
-            // Minute Label
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDateTime(systemClock.date, "mm")
@@ -159,7 +149,6 @@ BaseBlock {
                 textColor: Theme.colors.primary
             }
 
-            // Second Horizontal Dots separator
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 4
@@ -176,7 +165,6 @@ BaseBlock {
                 }
             }
 
-            // Seconds Label
             TimeSegment {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDateTime(systemClock.date, "ss")

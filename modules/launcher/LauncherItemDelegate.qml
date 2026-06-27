@@ -6,7 +6,7 @@ import qs
 Item {
     id: root
 
-    // --- API ---
+    // ── API ───────────────────────────────────────────────────────────
     property string text: ""
     property string subText: ""
     property string iconSource: "" // Glyph/Icon name
@@ -35,20 +35,19 @@ Item {
     
     ParallelAnimation {
         id: entryAnim
-        BaseAnimation { target: root; property: "opacity"; to: 1; speed: "normal"; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)) }
-        BaseAnimation { target: entryTranslate; property: "y"; to: 0; speed: "normal"; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)); easing.type: Easing.OutBack }
+        BaseAnimation { target: root; property: "opacity"; to: 1; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)) }
+        BaseAnimation { target: entryTranslate; property: "y"; to: 0; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)); easing.type: Easing.OutBack }
     }
 
     Rectangle {
         id: mainBackground
         anchors.fill: parent
-        radius: Theme.geometry.radius
+        radius: Theme.geometry.innerRadius.medium
         color: Theme.colors.transparent
         
         BaseActiveBackground {
             anchors.fill: parent
             radius: parent.radius
-            baseColor: Theme.colors.surface
             hovered: mouseArea.containsMouse
             premiumActive: root.selected
             hoverEnabled: false // Hover logic in Launcher is handled externally via 'selected'
@@ -56,12 +55,12 @@ Item {
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: Theme.geometry.spacing.dynamicPadding
-            anchors.rightMargin: Theme.geometry.spacing.dynamicPadding
-            spacing: Theme.geometry.spacing.medium
+            anchors.leftMargin: Theme.geometry.spacing.large * 2
+            anchors.rightMargin: Theme.geometry.spacing.large * 2
+            spacing: Theme.geometry.spacing.large
             
             scale: mouseArea.pressed ? 0.98 : 1.0
-            Behavior on scale { BaseAnimation { speed: "fast" } }
+            Behavior on scale { BaseAnimation { } }
 
             // Icon Container
             Item {
@@ -69,14 +68,11 @@ Item {
                 Layout.preferredHeight: Theme.dimensions.iconLarge
                 Layout.alignment: Qt.AlignVCenter
 
-                // 1. Icon Glyph
                 BaseIcon {
                     anchors.fill: parent
                     icon: root.iconSource
-                    text: ""
                     color: root.selected ? Theme.colors.primary : root.iconColor
                     size: root.boxedIcon ? Theme.dimensions.iconLarge : Theme.dimensions.iconMedium
-                    boxed: root.boxedIcon
                     visible: !root.imageSource && !root.showFallbackIcon
                 }
 
@@ -86,17 +82,26 @@ Item {
                     source: root.imageSource
                     asynchronous: false // Keeping consistent with previous LauncherApps behavior
                     fillMode: Image.PreserveAspectFit
+                    sourceSize.width: Theme.dimensions.iconLarge
+                    sourceSize.height: Theme.dimensions.iconLarge
+                    mipmap: true
                     visible: !!root.imageSource && status === Image.Ready
                 }
 
                 // 3. Fallback (Text char)
-                BaseIcon {
+                Rectangle {
                     anchors.fill: parent
-                    icon: ""
-                    text: root.fallbackText
-                    color: Theme.colors.text
-                    size: Theme.dimensions.iconLarge
+                    radius: Theme.geometry.innerRadius.small
+                    color: Theme.colors.background
                     visible: root.showFallbackIcon
+
+                    BaseText {
+                        anchors.centerIn: parent
+                        text: root.fallbackText ? root.fallbackText.charAt(0).toUpperCase() : "?"
+                        color: root.iconColor
+                        pixelSize: Theme.dimensions.iconLarge * 0.6
+                        weight: Theme.typography.weights.bold
+                    }
                 }
             }
 
@@ -112,7 +117,6 @@ Item {
                     color: root.selected ? Theme.colors.text : Theme.colors.muted
                     weight: root.selected ? Theme.typography.weights.bold : Theme.typography.weights.normal
                     elide: Text.ElideRight
-                    horizontalAlignment: Text.AlignLeft
                 }
 
                 BaseText {

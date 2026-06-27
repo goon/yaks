@@ -7,7 +7,7 @@ import qs
 FocusScope {
     id: root
 
-    // --- Public Interface ---
+    // ── PUBLIC INTERFACE ──────────────────────────────────────────────
     property string searchText: ""
     property bool isActive: false
     property var currentItem: null
@@ -35,7 +35,7 @@ FocusScope {
     signal tabRedirectRequested(int index)
     signal searchTextUpdateRequested(string text)
 
-    // --- State Management ---
+    // ── STATE MANAGEMENT ──────────────────────────────────────────────
     visible: opacity > 0
     opacity: isActive ? 1 : 0
     
@@ -55,7 +55,7 @@ FocusScope {
         }
     }
 
-    // --- Virtual Methods (to be overridden if needed) ---
+    // ── VIRTUAL METHODS ───────────────────────────────────────────────
     
     // Called when the tab becomes active
     function onActivated() {

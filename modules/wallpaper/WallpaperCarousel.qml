@@ -20,7 +20,7 @@ PathView {
     property bool canNavigate: true
     signal closeRequested()
 
-    // --- Logic ---
+    // ── LOGIC ───────────────────────────────────────────────────────────
 
     function safeDecrement() {
         if (canNavigate) {
@@ -38,17 +38,6 @@ PathView {
         }
     }
 
-    function syncToIndex(path) {
-        if (model && model.length > 0 && path !== "") {
-            for (var i = 0; i < model.length; i++) {
-                if (model[i] === path) {
-                    currentIndex = i;
-                    break;
-                }
-            }
-        }
-    }
-
     function setRandomIndex() {
         if (model && model.length > 0) {
             var newIndex = Math.floor(Math.random() * model.length);
@@ -62,7 +51,7 @@ PathView {
         positionViewAtIndex(0, PathView.Center);
     }
 
-    // --- Configuration ---
+    // ── CONFIGURATION ───────────────────────────────────────────────────
 
     clip: false
     model: Wallpaper.wallpapers
@@ -76,7 +65,7 @@ PathView {
     
     focus: true
     
-    // --- Input Handling ---
+    // ── INPUT HANDLING ──────────────────────────────────────────────────
     
     Keys.onLeftPressed: safeDecrement()
     Keys.onRightPressed: safeIncrement()
@@ -104,7 +93,7 @@ PathView {
         onTriggered: root.canNavigate = true
     }
 
-    // --- Paths ---
+    // ── PATHS ─────────────────────────────────────────────────────────
 
     path: standardPath
 

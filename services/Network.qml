@@ -7,11 +7,11 @@ import qs
 QtObject {
     id: root
 
-    // --- Native Networking singletons ---
+    // ── NATIVE NETWORKING SINGLETONS ──────────────────────────────────
     readonly property bool wifiEnabled: Networking.wifiEnabled
     readonly property bool wifiHardwareEnabled: Networking.wifiHardwareEnabled
 
-    // --- Device Discovery ---
+    // ── DEVICE DISCOVERY ──────────────────────────────────────────────
     property WifiDevice wifiDevice: {
         var devs = Networking.devices.values;
         for (var i = 0; i < devs.length; i++) {
@@ -28,7 +28,7 @@ QtObject {
         return null;
     }
 
-    // --- Ethernet (Wired) Properties ---
+    // ── ETHERNET (WIRED) ──────────────────────────────────────────────
     readonly property bool ethernetEnabled: wiredDevice !== null
     readonly property bool ethernetConnected: wiredDevice ? wiredDevice.connected : false
     readonly property string ethernetName: wiredDevice ? wiredDevice.name : ""
@@ -41,7 +41,7 @@ QtObject {
         return "";
     }
 
-    // --- Wi-Fi Properties ---
+    // ── WI-FI PROPERTIES ──────────────────────────────────────────────
     readonly property bool connected: wifiDevice ? wifiDevice.connected : false
     readonly property string ssid: {
         if (!wifiDevice || !wifiDevice.connected) return "Disconnected";
@@ -52,12 +52,12 @@ QtObject {
         return _getConnectedSignal();
     }
 
-    // --- Scanning & Networks ---
+    // ── SCANNING & NETWORKS ───────────────────────────────────────────
     property var availableNetworks: []
     readonly property bool scanning: wifiDevice ? wifiDevice.scannerEnabled : false
     readonly property bool loading: false
 
-    // --- Internal Helpers ---
+    // ── INTERNAL HELPERS ──────────────────────────────────────────────
     function _getConnectedSsid() {
         if (!wifiDevice) return "Disconnected";
         var nets = wifiDevice.networks.values;
@@ -89,6 +89,20 @@ QtObject {
         for (var i = 0; i < nativeNets.length; i++) {
             var net = nativeNets[i];
             if (net.name) seenSsids[net.name] = true;
+            
+            // Reset pending connect if it succeeded
+            if (net.connected && pendingConnectSsid === net.name) {
+                pendingConnectSsid = "";
+            }
+            // Reset pending disconnect if it succeeded
+            if (!net.connected && pendingDisconnectSsid === net.name) {
+                pendingDisconnectSsid = "";
+            }
+            // Reset pending forget if it succeeded
+            if (!net.known && pendingForgetSsid === net.name) {
+                pendingForgetSsid = "";
+            }
+            
             nets.push({
                 "ssid": net.name,
                 "signal": Math.round(net.signalStrength * 100),
@@ -116,7 +130,12 @@ QtObject {
         root.availableNetworks = nets;
     }
 
-    // --- Public API ---
+    // ── OPTIMISTIC UI STATE ───────────────────────────────────────────
+    property string pendingConnectSsid: ""
+    property string pendingDisconnectSsid: ""
+    property string pendingForgetSsid: ""
+
+    // ── PUBLIC API ────────────────────────────────────────────────────
     function refresh() {
         _buildNetworksList();
     }
@@ -128,8 +147,15 @@ QtObject {
         wifiDevice.scannerEnabled = true;
     }
 
+    function toggleScan() {
+        if (!wifiDevice) return;
+        wifiDevice.scannerEnabled = !wifiDevice.scannerEnabled;
+    }
+
     function connect(ssid, password) {
         if (!wifiDevice) return;
+        pendingConnectSsid = ssid;
+        pendingDisconnectSsid = "";
         var nets = wifiDevice.networks.values;
         for (var i = 0; i < nets.length; i++) {
             var net = nets[i];
@@ -144,8 +170,29 @@ QtObject {
         }
     }
 
+    function disconnect() {
+        if (!wifiDevice) return;
+        var nets = wifiDevice.networks.values;
+        for (var i = 0; i < nets.length; i++) {
+            var net = nets[i];
+            if (net.connected) {
+                pendingDisconnectSsid = net.name;
+                pendingConnectSsid = "";
+                // Disconnect logic varies, sometimes it's net.disconnect(), sometimes it's through the device.
+                // Assuming Quickshell has disconnect() on WifiNetwork or WifiDevice.
+                if (typeof net.disconnect === "function") {
+                    net.disconnect();
+                } else if (typeof wifiDevice.disconnect === "function") {
+                    wifiDevice.disconnect();
+                }
+                return;
+            }
+        }
+    }
+
     function forget(ssid) {
         if (!wifiDevice) return;
+        pendingForgetSsid = ssid;
         var nets = wifiDevice.networks.values;
         for (var i = 0; i < nets.length; i++) {
             if (nets[i].name === ssid) {
@@ -155,9 +202,7 @@ QtObject {
         }
     }
 
-    function disconnectWifi() {
-        if (wifiDevice) wifiDevice.disconnect();
-    }
+
 
     function toggleWifi() {
         Networking.wifiEnabled = !Networking.wifiEnabled;
@@ -172,14 +217,14 @@ QtObject {
         }
     }
 
-    // --- Reactive Updates ---
+    // ── REACTIVE UPDATES ──────────────────────────────────────────────
     // QtObject has no default property, so Connections must be declared as a named property.
     property Connections _networksWatcher: Connections {
         target: root.wifiDevice ? root.wifiDevice.networks : null
         function onValuesChanged() { root._buildNetworksList(); }
     }
 
-    Component.onCompleted: {
+    Component.onCompleted: { 
         _buildNetworksList();
         if (wifiDevice) {
             wifiDevice.scannerEnabled = true;

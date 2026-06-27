@@ -6,7 +6,7 @@ Rectangle {
     id: root
 
     // Background configuration
-    property color baseColor: Theme.colors.transparent
+    property color baseColor: Theme.colors.surface
     property color hoverColor: Theme.colors.transparent
     
     // Interaction states
@@ -28,7 +28,7 @@ Rectangle {
         opacity: root.isPremiumActive ? 1.0 : 0.0
         visible: opacity > 0.0 || root.isPremiumActive
         
-        Behavior on opacity { BaseAnimation { speed: "fast" } }
+        Behavior on opacity { BaseAnimation { } }
         
         // Outer Gradient "Border"
         Rectangle {
@@ -78,9 +78,6 @@ Rectangle {
 
             if (root.hoverColor !== Theme.colors.transparent && root.hovered)
                 return root.hoverColor;
-
-            if (root.hovered)
-                return Theme.alpha(Theme.colors.text, 0.05);
 
             return Theme.colors.transparent;
         }

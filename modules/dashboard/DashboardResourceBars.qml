@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs
 
-BaseBlock {
+BaseBento {
     id: root
     implicitWidth: 120
     implicitHeight: 320

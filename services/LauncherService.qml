@@ -16,6 +16,18 @@ QtObject {
     property point lastMousePos: Qt.point(-1, -1)
     readonly property int moveThreshold: 10
 
+    // Terminal auto-discovery (priority: $TERMINAL > discovered > xterm)
+    property var _availableTerminals: ["xterm"]
+
+    Component.onCompleted: {
+        var cmd = "for t in kitty alacritty foot wezterm ghostty; do "
+                + "command -v $t >/dev/null 2>&1 && echo $t; done";
+        ProcessService.run(["sh", "-c", cmd], function(out, code) {
+            var found = out.trim().split("\n").filter(function(x) { return x.length > 0; });
+            if (found.length > 0) root._availableTerminals = found;
+        });
+    }
+
     function resetInputStates() {
         lastInputMethod = "keyboard";
         mouseSelectionEnabled = false;
@@ -124,7 +136,7 @@ QtObject {
             return iconName;
         }
 
-        // --- Desktop Entry lookup first ---
+        // ── DESKTOP ENTRY LOOKUP ──────────────────────────────────────────
         var desktopIcon = getIconFromDesktop(iconName);
         if (desktopIcon) {
             // If the desktop icon is itself a path, return it directly
@@ -134,11 +146,11 @@ QtObject {
             if (dp) return dp;
         }
 
-        // --- Direct theme hit ---
+        // ── DIRECT THEME HIT ──────────────────────────────────────────────
         var v = getVerifiedPath(iconName);
         if (v) return v;
 
-        // --- Fallback variations (only built when needed) ---
+        // ── FALLBACK VARIATIONS ───────────────────────────────────────────
         var lowerIcon = iconName.toLowerCase();
         var variations = [lowerIcon];
 
@@ -169,12 +181,12 @@ QtObject {
     function searchApps(query, applications, workspaces, maxResults) {
         maxResults = maxResults || 100;
         var queryLower = query.toLowerCase();
-        // --- Web Search Mode ---
+        // ── WEB SEARCH MODE ───────────────────────────────────────────────
         if (queryLower.startsWith("!s ") || queryLower.startsWith("!y ")) {
             var bangPrefix = queryLower.split(" ")[0];
             var webQuery = query.substring(bangPrefix.length + 1);
             if (webQuery.length > 0) {
-                var searchUrl = Preferences.webSearchUrl;
+                var searchUrl = Preferences.launcher.webSearchUrl;
                 var searchName = "Search Web";
                 if (bangPrefix === "!y") {
                     searchUrl = "https://www.youtube.com/results?search_query=";
@@ -190,7 +202,7 @@ QtObject {
             }
         }
         var scored = [];
-        // --- 3. Applications ---
+        // ── APPLICATIONS ──────────────────────────────────────────────────
         for (var i = 0; i < applications.length; i++) {
             var app = applications[i];
             if (app.noDisplay)
@@ -323,20 +335,10 @@ QtObject {
         return null;
     }
 
-    function isCommandMode(query) {
-        var prefix = Preferences.launcherGlobalPrefix;
-        if (!prefix) return false;
-        return query.startsWith(prefix);
-    }
 
-    function getCommandText(query) {
-        var prefix = Preferences.launcherGlobalPrefix;
-        if (!prefix) return query;
-        return query.substring(prefix.length);
-    }
 
     function getShortcutResults(query) {
-        var globalPrefix = Preferences.launcherGlobalPrefix || ">";
+        var globalPrefix = Preferences.launcher.globalPrefix || ">";
         
         // If we are in an active utility mode, process based on that mode
         if (activeUtilityMode === "web" || activeUtilityMode === "youtube") {
@@ -349,7 +351,7 @@ QtObject {
                     "icon": isYoutube ? "play_circle" : "language"
                 }];
             } else {
-                var searchUrl = isYoutube ? "https://www.youtube.com/results?search_query=" : (Preferences.webSearchUrl || "https://duckduckgo.com/?q=");
+                var searchUrl = isYoutube ? "https://www.youtube.com/results?search_query=" : (Preferences.launcher.webSearchUrl || "https://duckduckgo.com/?q=");
                 return [{
                     "type": "web",
                     "name": (isYoutube ? "Search YouTube" : "Search Web") + " for '" + query + "'",
@@ -406,17 +408,10 @@ QtObject {
                 },
                 {
                     "type": "shortcut-option",
-                    "name": "Clipboard History",
-                    "description": "Search clipboard history",
-                    "icon": "content_paste",
-                    "mode": "tab-1"
-                },
-                {
-                    "type": "shortcut-option",
                     "name": "Theme Switcher",
                     "description": "Change your color theme",
                     "icon": "palette",
-                    "mode": "tab-2"
+                    "mode": "tab-1"
                 },
                 {
                     "type": "shortcut-option",
@@ -457,14 +452,12 @@ QtObject {
     }
 
 
-    function runCommand(command, inTerminal) {
-        if (!command)
-            return ;
 
-        if (inTerminal)
-            ProcessService.runDetached([Preferences.terminal, "-e", "sh", "-c", command + "; read"]);
-        else
-            ProcessService.runDetached(["sh", "-c", command]);
+
+    function resolveTerminal() {
+        var fromEnv = Quickshell.env("TERMINAL");
+        if (fromEnv && fromEnv.length > 0) return fromEnv;
+        return root._availableTerminals[0];
     }
 
     function executeItem(item) {
@@ -473,7 +466,7 @@ QtObject {
 
         if (item.type === "app") {
             if (item.app && item.app.runInTerminal)
-                ProcessService.runDetached(["sh", "-c", Preferences.terminal + " -e " + item.app.command]);
+                ProcessService.runDetached(["sh", "-c", resolveTerminal() + " -e " + item.app.command]);
             else if (item.app)
                 item.app.execute();
         } else if (item.type === "workspace")

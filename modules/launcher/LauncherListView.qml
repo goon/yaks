@@ -6,7 +6,7 @@ ListView {
     id: root
 
     // Common Configuration
-    clip: true
+    clip: false
     spacing: Theme.geometry.spacing.large
     activeFocusOnTab: false
     

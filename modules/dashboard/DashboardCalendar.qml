@@ -4,14 +4,10 @@ import QtQuick.Layouts
 import Quickshell
 import qs
 
-BaseBlock {
+BaseBento {
     id: cal
     implicitWidth: 330
     implicitHeight: 320
-
-    padding: 0
-    paddingHorizontal: 0
-    paddingVertical: 0
 
     Item {
         id: calendarWidget
@@ -31,14 +27,12 @@ BaseBlock {
                 width: parent.width
                 height: 60
 
-                // Previous month button
                 BaseButton {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     width: Theme.dimensions.calendarCellSize
                     height: parent.height
                     icon: "chevron_left"
-                    iconSize: Theme.dimensions.iconBase
                     hoverColor: Theme.colors.surface
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
@@ -55,7 +49,7 @@ BaseBlock {
                     height: parent.height
                     scale: headerMouseArea.pressed ? 0.98 : 1.0
 
-                    Behavior on scale { BaseAnimation { speed: "fast" } }
+                    Behavior on scale { BaseAnimation { } }
 
                     MouseArea {
                         id: headerMouseArea
@@ -79,7 +73,6 @@ BaseBlock {
                         anchors.horizontalCenterOffset: -20
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.verticalCenterOffset: -8
-                        color: Theme.colors.text
                         weight: Theme.typography.weights.bold
                         pixelSize: Theme.typography.size.display * 0.6 // Approximate for 28px
                         text: Calendar.monthNames[Calendar.displayMonth].toUpperCase()
@@ -111,14 +104,12 @@ BaseBlock {
                     }
                 }
 
-                // Next month button
                 BaseButton {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     width: Theme.dimensions.calendarCellSize
                     height: parent.height
                     icon: "chevron_right"
-                    iconSize: Theme.dimensions.iconBase
                     hoverColor: Theme.colors.surface
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
@@ -179,20 +170,17 @@ BaseBlock {
                             property: "x"
                             from: 0
                             to: -gridContainer._animDirection * 30
-                            speed: "fast"
                             easing.type: Easing.OutCubic
                         }
                         BaseAnimation {
                             targets: [grid, monthLabel, yearLabel]
                             property: "opacity"
                             to: 0
-                            speed: "fast"
                         }
                         BaseAnimation {
                             targets: [monthLabel, yearLabel]
                             property: "scale"
                             to: 0.7
-                            speed: "fast"
                         }
                     }
 
@@ -211,26 +199,22 @@ BaseBlock {
                             targets: [gridTranslate]
                             to: 0
                             property: "x"
-                            speed: "fast"
                             easing.type: Easing.OutBack
                         }
                         BaseAnimation {
                             targets: [grid, monthLabel]
                             property: "opacity"
                             to: 1
-                            speed: "fast"
                         }
                         BaseAnimation {
                             target: yearLabel
                             property: "opacity"
                             to: 0.85
-                            speed: "fast"
                         }
                         BaseAnimation {
                             targets: [monthLabel, yearLabel]
                             property: "scale"
                             to: 1.0
-                            speed: "fast"
                         }
                     }
                 }
@@ -259,14 +243,12 @@ BaseBlock {
 
                             Behavior on scale {
                                 BaseAnimation {
-                                    speed: "fast"
                                 }
                             }
 
                             BaseActiveBackground {
                                 anchors.fill: parent
                                 radius: Theme.geometry.radius
-                                baseColor: Theme.colors.surface
                                 premiumActive: modelData.isToday
                                 hoverEnabled: false
                             }

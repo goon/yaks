@@ -6,10 +6,10 @@ import qs
 LauncherTab {
     id: root
 
-    // --- Tab Configuration ---
+    // ── TAB CONFIGURATION ────────────────────────────────────────────
     listView: themeListView
     
-    // --- Logic ---
+    // ── LOGIC ─────────────────────────────────────────────────────────
     function performSearch() {
         // Handled by binding
     }
@@ -71,13 +71,12 @@ LauncherTab {
             // Custom Content Overlay
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Theme.geometry.spacing.dynamicPadding
-                anchors.rightMargin: Theme.geometry.spacing.dynamicPadding
+                anchors.leftMargin: Theme.geometry.padding.island
+                anchors.rightMargin: Theme.geometry.padding.island
                 spacing: Theme.geometry.spacing.medium
 
                 BaseIcon {
                     icon: "palette"
-                    size: Theme.dimensions.iconMedium
                     color: delegateItem.selected ? Theme.colors.primary : Theme.colors.muted
                     Layout.alignment: Qt.AlignVCenter
                 }

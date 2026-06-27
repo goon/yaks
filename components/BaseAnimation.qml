@@ -18,7 +18,7 @@ SequentialAnimation {
     
     // Extensions
     property int delay: 0
-    property string speed: "normal" // fast, normal, slow
+    property string speed: Preferences.animations.profile || "normal" // fast, normal, slow
     property int duration: -1
     
     readonly property int _dur: {

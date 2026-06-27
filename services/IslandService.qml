@@ -6,10 +6,11 @@ pragma Singleton
 QtObject {
     id: root
 
-    // --- State Properties ---
+    // ── STATE PROPERTIES ──────────────────────────────────────────────
     property string activePanelName: ""
     property var activeScreen: null
     property Item activePanelItem: null
+    property bool indicatorsHovered: false
 
     property real anchorX: -1
     property real anchorMinX: -1
@@ -28,6 +29,13 @@ QtObject {
 
     onActivePanelItemChanged: {
         if (activePanelItem) {
+            if (typeof activePanelItem.panelStateChanged === "undefined") {
+                while (_pendingCallbacks.length > 0) {
+                    var cb = _pendingCallbacks.shift();
+                    if (typeof cb === "function") Qt.callLater(cb);
+                }
+                return;
+            }
             var checkState = () => {
                 if (activePanelItem && (activePanelItem.panelState === "Opening" || activePanelItem.panelState === "Open")) {
                     while (_pendingCallbacks.length > 0) {
@@ -42,8 +50,24 @@ QtObject {
         }
     }
 
-    // --- COORDINATE MATH ---
-    // --- CONTROL APIs ---
+    // ── PANEL REGISTRY ──────────────────────────────────────────────────
+
+    readonly property var panelRegistry: ({
+        "launcher":      { source: "../modules/launcher/Launcher.qml" },
+        "settings":      { source: "../modules/settings/Settings.qml" },
+        "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
+        "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
+        "fullbar":       { source: "../modules/bar/FullBar.qml" },
+        "power":         { source: "../modules/power/Power.qml" },
+        "mixer":         { source: "../modules/mixer/Mixer.qml" },
+        "network":       { source: "../modules/network/Network.qml" },
+        "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml" },
+        "clipboard":     { source: "../modules/clipboard/ClipboardIsland.qml", width: 760, height: 600 },
+        "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
+        "notificationtoast": { source: "../modules/toasts/NotificationToast.qml" }
+    })
+
+    // ── CONTROL APIS ──────────────────────────────────────────────────
     function togglePanel(name, screenX, barLeft, barRight, screen) {
         if (activePanelName === name) {
             closeAll();
@@ -74,7 +98,7 @@ QtObject {
         anchorMaxX = -1;
     }
 
-    // --- WRAPPER APIs FOR INDIVIDUAL PANELS ---
+    // ── PANEL WRAPPER APIS ────────────────────────────────────────────
     function toggleLauncher() {
         togglePanel("launcher");
     }
@@ -84,14 +108,7 @@ QtObject {
     }
 
     function toggleClipboard() {
-        if (activePanelName !== "launcher") {
-            openPanel("launcher");
-        }
-        runWhenPanelReady(() => {
-            if (activePanelItem && typeof activePanelItem.switchToTab === "function") {
-                activePanelItem.switchToTab(1);
-            }
-        });
+        togglePanel("clipboard");
     }
 
     function toggleSettings(pageName) {
@@ -121,36 +138,19 @@ QtObject {
         }
     }
 
-    function toggleDashboardPopout(screenX, barLeft, barRight) {
+    function toggleDashboardPopout() {
         togglePanel("dashboard");
     }
 
-    function toggleNetworkPopout(screenX, barLeft, barRight) {
-        var isCurrentlyOpen = (activePanelName === "nexus");
-        
-        if (isCurrentlyOpen) {
-            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.currentItem && activePanelItem.pageStack.currentItem.objectName === "views/NexusNetwork.qml") {
-                closeAll();
-            } else {
-                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
-                    activePanelItem.pushPage("network");
-                }
-            }
-        } else {
-            openPanel("nexus");
-            runWhenPanelReady(() => {
-                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
-                    activePanelItem.pushPage("network");
-                }
-            });
-        }
+    function toggleNetworkPopout() {
+        togglePanel("network");
     }
 
-    function toggleBluetoothPopout(screenX, barLeft, barRight) {
-        var isCurrentlyOpen = (activePanelName === "nexus");
+    function toggleBluetoothPopout() {
+        var isCurrentlyOpen = (activePanelName === "network");
         
         if (isCurrentlyOpen) {
-            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.currentItem && activePanelItem.pageStack.currentItem.objectName === "views/NexusBluetooth.qml") {
+            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.currentItem && activePanelItem.pageStack.currentItem.objectName === "NetworkBluetooth.qml") {
                 closeAll();
             } else {
                 if (activePanelItem && typeof activePanelItem.pushPage === "function") {
@@ -158,7 +158,7 @@ QtObject {
                 }
             }
         } else {
-            openPanel("nexus");
+            openPanel("network");
             runWhenPanelReady(() => {
                 if (activePanelItem && typeof activePanelItem.pushPage === "function") {
                     activePanelItem.pushPage("bluetooth");
@@ -167,13 +167,21 @@ QtObject {
         }
     }
 
-    function toggleNexusPopout(screenX, barLeft, barRight) {
-        togglePanel("nexus");
+    function togglePowerPopout() {
+        togglePanel("power");
+    }
+
+    function toggleMixerPopout() {
+        togglePanel("mixer");
+    }
+
+    function toggleNotificationsPopout() {
+        togglePanel("notifications_island");
     }
 
 
 
-    // --- Volume Toast Logic ---
+    // ── VOLUME TOAST LOGIC ────────────────────────────────────────────
     property bool _startupDelayFinished: false
     property Timer _startupTimer: Timer {
         running: true
@@ -210,4 +218,28 @@ QtObject {
             }
         }
     }
+
+    // ── WORKSPACE SWITCH (FULLBAR) ────────────────────────────────────
+    property Timer _workspaceFullBarTimer: Timer {
+        interval: 2000
+        onTriggered: {
+            if (activePanelName === "fullbar") {
+                closeAll();
+            }
+        }
+    }
+
+    property Connections _workspaceConnections: Connections {
+        target: Compositor
+        function onActiveWorkspaceIdChanged() {
+            if (!_startupDelayFinished) return;
+
+            // Only show fullbar if nothing else is open
+            if (activePanelName === "" || activePanelName === "fullbar") {
+                openPanel("fullbar");
+                _workspaceFullBarTimer.restart();
+            }
+        }
+    }
 }
+

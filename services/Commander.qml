@@ -59,12 +59,12 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { IslandService.toggleNexusPopout(); }
+        function toggle() { IslandService.toggleNotificationsPopout(); }
         target: "notifications"
     }
 
     IpcHandler {
-        function toggle() { IslandService.toggleNexusPopout(); }
+        function toggle() { IslandService.toggleMixerPopout(); }
         target: "volume"
     }
 
@@ -80,7 +80,7 @@ Item {
     }
 
     IpcHandler {
-        function toggle() { IslandService.toggleNexusPopout(); }
+        function toggle() { IslandService.togglePowerPopout(); }
         target: "power"
     }
 
@@ -90,16 +90,6 @@ Item {
     }
 
 
-
-    IpcHandler {
-        function toggle() { IslandService.toggleNexusPopout(); }
-        target: "nexus"
-    }
-
-    IpcHandler {
-        function toggle() { Recording.toggle(); }
-        target: "recording"
-    }
 
     IpcHandler {
         function reload(hard: bool): void {

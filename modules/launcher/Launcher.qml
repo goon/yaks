@@ -10,7 +10,7 @@ FocusScope {
     
     property string panelState: "Closed"
 
-    implicitWidth: 560
+    implicitWidth: 500
     implicitHeight: {
         var searchHeight = Theme.dimensions.launcherSearchHeight;
         var padLarge = Theme.geometry.spacing.large;
@@ -26,15 +26,17 @@ FocusScope {
         var itemHeight = Theme.dimensions.launcherItemHeight;
 
         if (visibleItems === 0) {
-            return searchHeight;
+            return searchHeight + padLarge;
         }
 
-        // Calculation based on ColumnLayout spacing and Loader margins:
+        // Calculation based on ColumnLayout spacing:
         // searchHeight (50) 
-        // + columnSpacing (12) 
-        // + resultsArea (loader margins 12 top/bottom + listContent)
+        // + columnSpacing to separator (12)
+        // + separator (1)
+        // + columnSpacing to results (12) 
+        // + listHeight
         var listHeight = (visibleItems * itemHeight) + (Math.max(0, visibleItems - 1) * padLarge);
-        return searchHeight + (3 * padLarge) + listHeight;
+        return searchHeight + (2 * padLarge) + 1 + listHeight;
     }
 
     property Item initialFocusItem: searchBar
@@ -74,7 +76,6 @@ FocusScope {
         }
     }
 
-    // Bind currentItem
     Binding {
         target: root
         property: "currentItem"
@@ -85,7 +86,6 @@ FocusScope {
     
     property var tabModel: [
         { icon: "dashboard", key: "", component: "LauncherApps.qml", placeholder: "Search..." },
-        { icon: "content_paste", key: "", component: "LauncherClipboard.qml", placeholder: "Search clipboard..." },
         { icon: "palette", key: "", component: "LauncherTheme.qml", placeholder: "Search themes..." }
     ]
 
@@ -159,14 +159,6 @@ FocusScope {
             }
 
             searchBar.focusInput();
-        }
-
-        function nextTab() {
-            root.switchTab((root.currentTabIndex + 1) % root.tabModel.length);
-        }
-
-        function prevTab() {
-            root.switchTab((root.currentTabIndex - 1 + root.tabModel.length) % root.tabModel.length);
         }
 
         function navigateHorizontal(dir) {
@@ -275,8 +267,7 @@ FocusScope {
             LauncherSearch {
                 id: searchBar
 
-                property alias searchField: searchBar
-                
+
                 // Dynamic Placeholder Binding
                 placeholderText: root.currentPlaceholder
 
@@ -319,20 +310,19 @@ FocusScope {
                     searchBar.focusInput();
                 }
             }
+
+            BaseSeparator {
+                Layout.fillWidth: true
+                visible: !root.isWallpaperActive && root.activeListCount > 0
+            }
+
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 visible: root.isWallpaperActive || root.activeListCount > 0
+                clip: true
 
-                // Page Background
-                BaseBlock {
-                    anchors.fill: parent
-                    backgroundColor: root.isWallpaperActive ? 
-                        Theme.alpha(Theme.colors.background, Theme.opacity.background) : 
-                        Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
-                    borderEnabled: false
-                    z: -1
-                }
+                // Background removed for flat design
 
 
                 // Dynamic Tab Loader Container
@@ -347,7 +337,6 @@ FocusScope {
                         Loader {
                             id: tabLoader
                             anchors.fill: parent
-                            anchors.margins: modelData.isWallpaper ? 0 : Theme.geometry.spacing.large
                             
                             // Lazy loading logic: only load if active or previously loaded
                             property bool wasEverActive: false

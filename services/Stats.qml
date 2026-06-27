@@ -7,32 +7,31 @@ import qs
 QtObject {
     id: root
 
-    // --- CPU Statistics ---
+    // ── CPU STATISTICS ────────────────────────────────────────────────
     property real currentCpu: 0
     property real currentTemp: 0
     property string cpuTempPath: ""
     property var _lastCpu: null
     
-    // --- RAM Statistics ---
+    // ── RAM STATISTICS ────────────────────────────────────────────────
     property real currentRam: 0
     property real memTotalSize: 0
-    property string totalRam: formatBytes(memTotalSize * 1024)
     property real memUsedSize: 0
 
-    // --- GPU Statistics ---
+    // ── GPU STATISTICS ────────────────────────────────────────────────
     property real currentGpu: 0
     property real currentGpuTemp: 0
     property string gpuTempPath: ""
     property string gpuLoadPath: ""
 
-    // --- Network Statistics ---
+    // ── NETWORK STATISTICS ─────────────────────────────────────────────
     property real currentNetworkRx: 0
     property real currentNetworkTx: 0
     property var networkRxHistory: Array(31).fill(0)
     property var networkTxHistory: Array(31).fill(0)
     property var _lastNet: null
 
-    // --- File Readers ---
+    // ── FILE READERS ──────────────────────────────────────────────────
     property FileView cpuFile: FileView { path: "/proc/stat" }
     property FileView memFile: FileView { path: "/proc/meminfo" }
     property FileView netFile: FileView { path: "/proc/net/dev" }

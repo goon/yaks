@@ -1,109 +1,61 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Hyprland
 import qs
 
-BaseBlock {
+BaseContainer {
     id: root
 
-    function syncModel() {
-        const source = Compositor.windows;
-        if (!source)
-            return ;
+    readonly property real _spacing: Theme.geometry.spacing.small
+    readonly property real _itemSize: Theme.dimensions.barItemHeight
 
-        // 1. Remove items not in source
-        for (let i = winModel.count - 1; i >= 0; i--) {
-            let item = winModel.get(i);
-            if (!source.find((w) => {
-                return w.id === item.id;
-            }))
-                winModel.remove(i);
-
-        }
-        // 2. Add/Move/Update items
-        for (let i = 0; i < source.length; i++) {
-            let win = source[i];
-            let existingIdx = -1;
-            for (let j = 0; j < winModel.count; j++) {
-                if (winModel.get(j).id === win.id) {
-                    existingIdx = j;
-                    break;
-                }
-            }
-            if (existingIdx === -1) {
-                winModel.insert(i, {
-                    "id": win.id,
-                    "appId": win.appId,
-                    "title": win.title,
-                    "isFocused": win.isFocused
-                });
-            } else {
-                if (existingIdx !== i)
-                    winModel.move(existingIdx, i, 1);
-
-                winModel.set(i, {
-                    "isFocused": win.isFocused,
-                    "appId": win.appId,
-                    "title": win.title
-                });
-            }
-        }
-    }
-
-    visible: Compositor.windows.length > 0
+    visible: Compositor.hasDockWindows
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
-    backgroundColor: Theme.colors.transparent
     paddingHorizontal: Theme.geometry.spacing.small
-    paddingVertical: 0
-    implicitHeight: 32
-    // Sync on model change or initial load
-    Component.onCompleted: syncModel()
-
-    ListModel {
-        id: winModel
-    }
-
-    Timer {
-        id: debounceTimer
-
-        interval: 10
-        onTriggered: syncModel()
-    }
-
-    Connections {
-        function onWindowsChanged() {
-            debounceTimer.restart();
-        }
-
-        target: Compositor
-    }
+    implicitHeight: _itemSize
 
     ListView {
         id: listView
 
         Layout.alignment: Qt.AlignCenter
         orientation: ListView.Horizontal
-        spacing: Theme.geometry.spacing.small
+        spacing: 0
         interactive: false
-        model: winModel
+        model: Hyprland.toplevels
         implicitWidth: contentWidth
-        implicitHeight: 32
+        implicitHeight: _itemSize
 
         delegate: Item {
             id: windowItem
 
-            readonly property bool isHovered: mouseArea.containsMouse
-            readonly property bool isFocused: model.isFocused
+            required property HyprlandToplevel modelData
 
-            implicitHeight: 32
-            implicitWidth: 32
+            readonly property bool isValid: {
+                if (!modelData) return false;
+                var addr = modelData.address;
+                if (!addr) return false;
+                if (!addr.startsWith("0x")) addr = "0x" + addr;
+                return !!Compositor.windowByAddress[addr];
+            }
+            readonly property string windowAppId: !modelData ? "" : (modelData.wayland?.appId ?? modelData.lastIpcObject?.class ?? "")
+            readonly property bool isHovered: mouseArea.containsMouse
+            readonly property bool isFocused: modelData ? modelData.activated : false
+
+            implicitHeight: _itemSize
+            implicitWidth: isValid ? _itemSize + _spacing : 0
+
+            Behavior on implicitWidth {
+                NumberAnimation { duration: Theme.animations.fast; easing.type: Easing.OutQuad }
+            }
 
             Image {
                 id: icon
 
+                visible: isValid
                 anchors.centerIn: parent
-                source: LauncherService.resolveIcon(model.appId) || "image://qsimage/application-x-executable"
+                source: LauncherService.resolveIcon(windowItem.windowAppId) || "image://icon/application-x-executable"
                 sourceSize: Qt.size(64, 64)
                 width: Theme.dimensions.iconBase
                 height: Theme.dimensions.iconBase
@@ -115,14 +67,12 @@ BaseBlock {
 
                 Behavior on scale {
                     BaseAnimation {
-                        speed: "fast"
                     }
 
                 }
 
                 Behavior on opacity {
                     BaseAnimation {
-                        speed: "fast"
                     }
 
                 }
@@ -132,10 +82,11 @@ BaseBlock {
             MouseArea {
                 id: mouseArea
 
+                visible: isValid
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: Compositor.focusWindow(model.id)
+                onClicked: { if (modelData && modelData.address) Compositor.focusWindow(modelData.address); }
             }
 
         }

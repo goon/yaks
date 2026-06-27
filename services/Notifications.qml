@@ -19,8 +19,6 @@ Item {
         id: historyModel
     }
 
-    // Signal for the UI (Overlay) to listen to
-    signal notificationReceived(var notification)
 
     Connections {
         target: server
@@ -45,7 +43,7 @@ Item {
             });
 
             // Sound logic
-            if (Preferences.notificationMode === 0) {
+            if (Preferences.notifications.mode === 0) {
                 if (Config.notificationSoundEnabled) {
                     ProcessService.runDetached([
                         "pw-play", 
@@ -61,7 +59,7 @@ Item {
         }
     }
     
-    // --- Toast Queue Logic ---
+    // ── TOAST QUEUE LOGIC ─────────────────────────────────────────────
     property var activeToastNotification: null
     property var _toastQueue: []
     
@@ -105,10 +103,5 @@ Item {
         }
     }
     
-    function clearAll() {
-        for (let i = historyModel.count - 1; i >= 0; i--) {
-            let notif = historyModel.get(i).modelData;
-            if (notif) notif.dismiss();
-        }
-    }
+
 }

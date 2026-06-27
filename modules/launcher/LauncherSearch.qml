@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs
 
-BaseBlock {
+BaseContainer {
     id: root
 
     property alias text: input.text
@@ -24,9 +24,8 @@ BaseBlock {
 
     Layout.fillWidth: true
     Layout.preferredHeight: Theme.dimensions.launcherSearchHeight
-    paddingHorizontal: 20
-    paddingVertical: 0
-    borderEnabled: false
+    paddingHorizontal: Theme.geometry.spacing.large
+    clickable: true
 
     RowLayout {
         Layout.fillWidth: true
@@ -39,14 +38,13 @@ BaseBlock {
 
         BaseIcon {
             icon: "search"
-            size: Theme.dimensions.iconMedium
             color: input.text.length > 0 ? Theme.colors.primary : Theme.colors.muted
             
-            Behavior on color { BaseAnimation { speed: "fast" } }
+            Behavior on color { BaseAnimation { } }
             
             // Subtle pulse when typing
             scale: input.text.length > 0 ? 1.1 : 1.0
-            Behavior on scale { BaseAnimation { speed: "fast" } }
+            Behavior on scale { BaseAnimation { } }
         }
 
         Item {
@@ -58,18 +56,13 @@ BaseBlock {
             BaseInput {
                 id: input
                 anchors.fill: parent
-                borderRadius: root.blockRadius
                 clip: true
-                inputPadding: 0
                 leftPadding: 8
                 rightPadding: 8
                 placeholderText: "Search..."
-                color: Theme.colors.text
                 verticalAlignment: Text.AlignVCenter
                 focus: true
                 activeFocusOnTab: false
-                backgroundColor: Theme.colors.transparent
-                borderWidth: 0
 
                 Keys.onPressed: (event) => {
                     if (event.key === Qt.Key_Down) {

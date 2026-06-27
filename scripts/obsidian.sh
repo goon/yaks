@@ -96,22 +96,22 @@ if [ -f "$OBSIDIAN_CONFIG" ]; then
         if [ -d "$vault" ]; then
             SNIPPET_DIR="$vault/.obsidian/snippets"
             mkdir -p "$SNIPPET_DIR"
-            echo "$SNIPPET_CONTENT" > "$SNIPPET_DIR/quickshell.css"
+            echo "$SNIPPET_CONTENT" > "$SNIPPET_DIR/yaks.css"
             
             # Enable snippet in appearance.json if not already enabled
             APP_JSON="$vault/.obsidian/appearance.json"
             if [ -f "$APP_JSON" ]; then
-                if ! grep -q "\"quickshell\"" "$APP_JSON"; then
+                if ! grep -q "\"yaks\"" "$APP_JSON"; then
                     # Simple injection into enabledSnippets array using sed
                     if grep -q "\"enabledSnippets\":" "$APP_JSON"; then
-                        sed -i 's/"enabledSnippets":[[:space:]]*\[/"enabledSnippets": ["quickshell", /' "$APP_JSON"
+                        sed -i 's/"enabledSnippets":[[:space:]]*\[/"enabledSnippets": ["yaks", /' "$APP_JSON"
                     else
                         # If enabledSnippets doesn't exist, append it (assuming simple JSON)
-                        sed -i 's/}$/, "enabledSnippets": ["quickshell"]}/' "$APP_JSON"
+                        sed -i 's/}$/, "enabledSnippets": ["yaks"]}/' "$APP_JSON"
                     fi
                 fi
             else
-                echo '{"enabledSnippets": ["quickshell"]}' > "$APP_JSON"
+                echo '{"enabledSnippets": ["yaks"]}' > "$APP_JSON"
             fi
         fi
     done

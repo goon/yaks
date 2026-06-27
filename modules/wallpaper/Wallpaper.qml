@@ -39,7 +39,6 @@ FocusScope {
         carousel.setRandomIndex();
     }
     
-    // Main Layout
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 0

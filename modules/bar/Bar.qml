@@ -8,10 +8,7 @@ import qs
 PanelWindow {
     id: bar
 
-    property var leftComponents: Preferences.barLeftComponents
-    readonly property var centerComponents: Preferences.barCenterComponents
-    readonly property var rightComponents: Preferences.barRightComponents
-    readonly property real sideMargin: Math.max(0, (Preferences.barHeight - (Theme.dimensions.barItemHeight * Theme.barScale)) / 2)
+    property var components: Preferences.bar.components
 
     function resolveComponentSource(name) {
         const map = {
@@ -29,11 +26,11 @@ PanelWindow {
     // Dynamic keyboard focus grabbing when morphed
     WlrLayershell.keyboardFocus: island.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-    WlrLayershell.namespace: "quickshell:bar"
+    WlrLayershell.namespace: "yaks:bar"
     WlrLayershell.layer: WlrLayer.Top
     
     // Crucial: Set fixed exclusive zone so full-screen expansion does not push user windows
-    WlrLayershell.exclusiveZone: Preferences.barHeight + Preferences.barMarginTop
+    WlrLayershell.exclusiveZone: Preferences.bar.height + Preferences.bar.marginTop
 
     // The bar is permanently full-screen height.
     //
@@ -50,8 +47,8 @@ PanelWindow {
 
     // Anchors: Width is locked to full screen at all times to prevent relative coordinate shifts.
     anchors {
-        top: Preferences.barPosition === "top"
-        bottom: Preferences.barPosition === "bottom"
+        top: Preferences.bar.position === "top"
+        bottom: Preferences.bar.position === "bottom"
         left: true
         right: true
     }
@@ -69,10 +66,9 @@ PanelWindow {
 
     Region {
         id: capsuleRegion
-        item: island.capsuleItem
+        item: island.maskItem
     }
 
-    // Centralized Island framework component
     Island {
         id: island
         barWindow: bar

@@ -13,16 +13,16 @@ import qs
 PanelWindow {
     id: root
 
-    // --- Configuration ---
-    property string namespace: "quickshell:wallpaper"
+    // ── CONFIGURATION ──────────────────────────────────────────────────
+    property string namespace: "yaks:wallpaper"
     property int exclusiveZone: -1
 
-    // --- State ---
+    // ── STATE ──────────────────────────────────────────────────────────
     property string activePath: ""
     property bool bufferToggle: false // false: A is active, true: B is active
     property bool transitionPending: false
 
-    // --- Logic ---
+    // ── LOGIC ──────────────────────────────────────────────────────────
 
     function updateWallpaper(newPath) {
         if (!newPath || newPath === "" || newPath === activePath) return;
@@ -66,7 +66,7 @@ PanelWindow {
         }
     }
 
-    // --- Connections ---
+    // ── CONNECTIONS ────────────────────────────────────────────────────
 
     Connections {
         target: Wallpaper
@@ -87,7 +87,7 @@ PanelWindow {
         }
     }
 
-    // --- Layout Shell Config ---
+    // ── LAYOUT SHELL CONFIG ────────────────────────────────────────────
     WlrLayershell.layer: WlrLayer.Background
     WlrLayershell.namespace: root.namespace
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
@@ -103,11 +103,11 @@ PanelWindow {
     }
 
     margins {
-        top: (Preferences.barPosition === "top") ? -(Preferences.barHeight + Preferences.barMarginTop) : 0
-        bottom: (Preferences.barPosition === "bottom") ? -(Preferences.barHeight + Preferences.barMarginTop) : 0
+        top: (Preferences.bar.position === "top") ? -(Preferences.bar.height + Preferences.bar.marginTop) : 0
+        bottom: (Preferences.bar.position === "bottom") ? -(Preferences.bar.height + Preferences.bar.marginTop) : 0
     }
 
-    // --- Buffers & Parallax ---
+    // ── BUFFERS & PARALLAX ─────────────────────────────────────────────
 
     MouseArea {
         id: mouseArea
@@ -119,7 +119,7 @@ PanelWindow {
     Item {
         id: parallaxContainer
         
-        property real strength: Preferences.wallpaperParallaxStrength
+        property real strength: Preferences.wallpaper.parallaxStrength
         
         x: -currentOffsetX
         y: -currentOffsetY
@@ -172,7 +172,7 @@ PanelWindow {
             onStatusChanged: if (status === Image.Ready) root.checkAndTransition()
         }
 
-        // --- Internal Transition Logic ---
+        // ── INTERNAL TRANSITION LOGIC ──────────────────────────────────
         Item {
             id: transition
             anchors.fill: parent

@@ -7,19 +7,19 @@ import qs
 LauncherTab {
     id: root
 
-    // --- Tab Configuration ---
+    // ── TAB CONFIGURATION ────────────────────────────────────────────
     property bool includeWindows: false
     
     // Alias for the list view so the parent (Launcher.qml) can control it
     listView: appListView
 
-    // --- Internal Properties ---
+    // ── INTERNAL PROPERTIES ──────────────────────────────────────────
     property var cachedModel: []
     property string _lastQuery: ""
     property string specialMode: ""
     property string specialModeText: ""
 
-    // --- Search Handling ---
+    // ── SEARCH HANDLING ───────────────────────────────────────────────
     
     onSearchTextChanged: {
         searchDebounceTimer.restart();
@@ -39,7 +39,7 @@ LauncherTab {
     // Override the base performSearch
     function performSearch() {
         var rawQuery = root.searchText;
-        var globalPrefix = Preferences.launcherGlobalPrefix || ">";
+        var globalPrefix = Preferences.launcher.globalPrefix || ">";
         if (rawQuery.startsWith(globalPrefix) && LauncherService.activeUtilityMode === "") {
             // Suffix shortcuts removed, user must select from the list
         }
@@ -128,7 +128,7 @@ LauncherTab {
         }
     }
 
-    // --- Sub-Components ---
+    // ── SUB-COMPONENTS ────────────────────────────────────────────────
 
     Connections {
         target: DesktopEntries.applications
@@ -182,7 +182,7 @@ LauncherTab {
                     modelData.type === "shortcut-option") {
                     return modelData.description || "";
                 }
-                return Preferences.launcherShowAppDescriptions ? (modelData.description || "") : "";
+                return Preferences.launcher.showAppDescriptions ? (modelData.description || "") : "";
             }
             
             property bool isGlyphIcon: (modelData && (

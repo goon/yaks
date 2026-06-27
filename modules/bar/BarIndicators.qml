@@ -9,50 +9,64 @@ Item {
     id: root
 
     property var barWindow: null
+    property string hoveredKey: ""
+
+    onHoveredKeyChanged: IslandService.indicatorsHovered = (hoveredKey !== "")
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
     implicitWidth: background.implicitWidth
     implicitHeight: Theme.dimensions.barItemHeight
 
-    readonly property int itemWidth: Theme.dimensions.iconBase + 8
     readonly property int spacing: Theme.geometry.spacing.small
+    readonly property int indicatorItemWidth: 32
 
-    // Calculate final target width for each key
-    function getItemWidth(key) {
-        if (key === "volume") {
-            if (!Preferences.indicatorsShowVolume) return 0;
-            return root.itemWidth;
+    // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
+
+    readonly property var _indicatorModel: [
+        { key: "wifi", icon: "wifi" },
+        { key: "notifications", icon: "notifications" },
+        { key: "settings", icon: "settings" },
+        { key: "instantmix", icon: "instant_mix" },
+        { key: "power", icon: "power_settings_new" },
+        { key: "screencast", icon: "browse_activity" },
+        { key: "clipboard", icon: "content_paste" },
+    ]
+
+    function _modelIndex(key) {
+        for (var i = 0; i < _indicatorModel.length; i++) {
+            if (_indicatorModel[i].key === key) return i;
         }
-        return 32;
+        return -1;
+    }
+
+    function getItemWidth(key) {
+        return indicatorItemWidth;
     }
 
     // Filter to get only visible draggable items in order
     readonly property var visibleKeys: {
-        let keys = [];
-        for (let i = 0; i < Preferences.indicatorsOrder.length; i++) {
-            let key = Preferences.indicatorsOrder[i];
-            if (key === "wifi" && Preferences.indicatorsShowWifi) keys.push(key);
-            if (key === "bluetooth" && Preferences.indicatorsShowBluetooth) keys.push(key);
-            if (key === "volume" && Preferences.indicatorsShowVolume) keys.push(key);
-            if (key === "notifications" && Preferences.indicatorsShowNotifications) keys.push(key);
+        var keys = [];
+        for (var i = 0; i < Preferences.indicators.order.length; i++) {
+            var key = Preferences.indicators.order[i];
+            if (_modelIndex(key) !== -1) keys.push(key);
+        }
+        // Fallbacks for keys that aren't in indicatorsOrder yet
+        for (var j = 0; j < _indicatorModel.length; j++) {
+            if (keys.indexOf(_indicatorModel[j].key) === -1)
+                keys.push(_indicatorModel[j].key);
         }
         return keys;
     }
 
     // Total content width based on animating widths of item components
     readonly property int contentWidth: {
-        let w = 0;
-        let hasVisibleItem = false;
-
-        for (let i = 0; i < visibleKeys.length; i++) {
-            let k = visibleKeys[i];
-            let itemW = 0;
-            if (k === "wifi") itemW = wifiItem.width;
-            else if (k === "bluetooth") itemW = bluetoothItem.width;
-            else if (k === "volume") itemW = volumeItem.width;
-            else if (k === "notifications") itemW = notificationsItem.width;
-
+        var w = 0;
+        var hasVisibleItem = false;
+        for (var i = 0; i < visibleKeys.length; i++) {
+            var idx = _modelIndex(visibleKeys[i]);
+            var item = (idx >= 0 && idx < indicatorRepeater.count) ? indicatorRepeater.itemAt(idx) : null;
+            var itemW = item ? item.width : getItemWidth(visibleKeys[i]);
             if (itemW > 0) {
                 if (hasVisibleItem) w += spacing;
                 w += itemW;
@@ -64,43 +78,51 @@ Item {
 
     // Get current animating X coordinate for positioning items in flow
     function getActualX(key) {
-        let x = 0;
-        let idx = visibleKeys.indexOf(key);
-        if (idx === -1) return x;
-
-        for (let i = 0; i < idx; i++) {
-            let k = visibleKeys[i];
-            if (k === "wifi") x += wifiItem.width + spacing;
-            else if (k === "bluetooth") x += bluetoothItem.width + spacing;
-            else if (k === "volume") x += volumeItem.width + spacing;
-            else if (k === "notifications") x += notificationsItem.width + spacing;
+        var idx = visibleKeys.indexOf(key);
+        if (idx <= 0) return 0;
+        var x = 0;
+        for (var i = 0; i < idx; i++) {
+            var k = visibleKeys[i];
+            var mi = _modelIndex(k);
+            var item = (mi >= 0 && mi < indicatorRepeater.count) ? indicatorRepeater.itemAt(mi) : null;
+            x += (item ? item.width : getItemWidth(k)) + spacing;
         }
         return x;
     }
 
     // Get static target position for drag and swap math
     function getTargetX(key) {
-        let x = 0;
-        let idx = visibleKeys.indexOf(key);
-        if (idx === -1) return x;
-
-        for (let i = 0; i < idx; i++) {
-            let k = visibleKeys[i];
-            x += getItemWidth(k) + spacing;
+        var idx = visibleKeys.indexOf(key);
+        if (idx <= 0) return 0;
+        var x = 0;
+        for (var i = 0; i < idx; i++) {
+            x += getItemWidth(visibleKeys[i]) + spacing;
         }
         return x;
     }
 
-    BaseBlock {
+    function _openPanel(key) {
+        switch (key) {
+            case "wifi": IslandService.toggleNetworkPopout(); break;
+            case "notifications": IslandService.toggleNotificationsPopout(); break;
+            case "power": IslandService.togglePowerPopout(); break;
+            case "instantmix": IslandService.toggleMixerPopout(); break;
+            case "settings": IslandService.toggleSettings(); break;
+            case "clipboard": IslandService.toggleClipboard(); break;
+        }
+    }
+
+    function _handleRightClick(key) {
+        if (key === "notifications")
+            Preferences.notifications.mode = Preferences.notifications.mode === 1 ? 0 : 1;
+    }
+
+    BaseContainer {
         id: background
 
         anchors.fill: parent
-        backgroundColor: Theme.colors.transparent
-        paddingVertical: 0
-        paddingHorizontal: Theme.geometry.spacing.small
         implicitHeight: Theme.dimensions.barItemHeight
         hoverEnabled: false
-        clickable: false
 
         Item {
             id: container
@@ -108,46 +130,47 @@ Item {
             implicitHeight: Theme.dimensions.barItemHeight
             height: parent.height
 
-            DraggableStatusItem {
-                id: wifiItem
-                itemKey: "wifi"
-                contentComponent: wifiComponent
+            BaseIndicatorDot {
+                id: hoverDot
+                orientation: Qt.Horizontal
+                edge: Qt.BottomEdge
+                retainLastPosition: true
+                targetItem: {
+                    var mi = _modelIndex(root.hoveredKey);
+                    if (mi >= 0 && mi < indicatorRepeater.count)
+                        return indicatorRepeater.itemAt(mi);
+                    return null;
+                }
             }
 
-            DraggableStatusItem {
-                id: bluetoothItem
-                itemKey: "bluetooth"
-                contentComponent: bluetoothComponent
-            }
+            Repeater {
+                id: indicatorRepeater
+                model: root._indicatorModel
 
-            DraggableStatusItem {
-                id: notificationsItem
-                itemKey: "notifications"
-                contentComponent: notificationsComponent
-            }
-
-            DraggableStatusItem {
-                id: volumeItem
-                itemKey: "volume"
-                contentComponent: volumeComponent
+                delegate: IndicatorIcon {
+                    itemKey: modelData.key
+                    iconName: {
+                        if (modelData.key === "notifications") {
+                            if (Preferences.notifications.mode === 1) return "notifications_off";
+                            if (Notifications.unreadCount > 0) return "notifications_unread";
+                            return "notifications";
+                        }
+                        return modelData.icon;
+                    }
+                }
             }
         }
     }
 
-    component DraggableStatusItem: Item {
+    component IndicatorIcon: Item {
         id: itemRoot
 
+        required property int index
+        required property var modelData
         required property string itemKey
-        required property Component contentComponent
-        readonly property alias loaderItem: contentLoader.item
+        property string iconName
 
-        readonly property bool isVisible: {
-            if (itemKey === "wifi") return Preferences.indicatorsShowWifi;
-            if (itemKey === "bluetooth") return Preferences.indicatorsShowBluetooth;
-            if (itemKey === "volume") return Preferences.indicatorsShowVolume;
-            if (itemKey === "notifications") return Preferences.indicatorsShowNotifications;
-            return false;
-        }
+        readonly property bool isVisible: _modelIndex(itemKey) !== -1
 
         visible: isVisible
         height: parent.height
@@ -163,44 +186,70 @@ Item {
         readonly property int targetX: getTargetX(itemKey)
         readonly property bool isDragging: dragArea.drag.active
 
-        // Follow the actual coordinates when not dragged
-        x: isDragging ? x : getActualX(itemKey)
+        // Follow the actual coordinates when not dragged.
+        // Uses a Binding element (not an inline binding) to avoid a self-referential
+        // binding loop: `x: isDragging ? x : ...` would reference `x` itself and crash.
+        Binding {
+            target: itemRoot
+            property: "x"
+            value: getActualX(itemKey)
+            when: !itemRoot.isDragging
+            // Without RestoreNone, QML reverts x to 0 (the pre-binding default) when
+            // the drag starts and the Binding releases, causing a visible flick to the
+            // left edge before the drag system corrects it.
+            restoreMode: Binding.RestoreNone
+        }
+
+        // Animate displaced items sliding into their new slots.
+        // Disabled while this item is being dragged so it follows the mouse freely.
+        Behavior on x {
+            enabled: !itemRoot.isDragging
+            NumberAnimation {
+                duration: Theme.animations.normal
+                easing.type: Easing.OutQuad
+            }
+        }
 
         onIsDraggingChanged: {
             if (isDragging) {
-                IslandService.closeAll();
+                // Only close other panels — do NOT close the fullbar we're dragging inside
+                if (IslandService.activePanelName !== "fullbar") {
+                    IslandService.closeAll();
+                }
+                if (root.hoveredKey === itemKey) {
+                    root.hoveredKey = "";
+                }
             }
         }
 
-        Loader {
-            id: contentLoader
-            anchors.fill: parent
-            sourceComponent: contentComponent
+        BaseIcon {
+            anchors.centerIn: parent
+            icon: itemRoot.iconName
+            opacity: dragArea.containsMouse ? 1.0 : 0.8
+            Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
 
-            // Pass containsMouse to the child
-            property bool containsMouse: dragArea.containsMouse
-        }
-
-        Timer {
-            id: hoverTimer
-            interval: 250
-            repeat: false
-            onTriggered: {
-                if (itemRoot.isDragging) return;
-                if (itemKey === "wifi") IslandService.toggleNetworkPopout();
-                else if (itemKey === "bluetooth") IslandService.toggleBluetoothPopout();
-                else if (itemKey === "volume") IslandService.toggleNexusPopout();
-                else if (itemKey === "notifications") IslandService.toggleNexusPopout();
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: dragArea.containsMouse ? Theme.alpha(Theme.colors.text, 0.1) : "transparent"
+                shadowBlur: 0.8
+                shadowHorizontalOffset: 0
+                shadowVerticalOffset: 0
+                Behavior on shadowColor { ColorAnimation { duration: Theme.animations.fast } }
             }
         }
+
+
 
         Connections {
             target: dragArea
             function onContainsMouseChanged() {
-                if (dragArea.containsMouse && Preferences.popoutTrigger === 1 && !itemRoot.isDragging) {
-                    hoverTimer.restart();
+                if (dragArea.containsMouse && !itemRoot.isDragging) {
+                    root.hoveredKey = itemKey;
                 } else {
-                    hoverTimer.stop();
+                    if (root.hoveredKey === itemKey) {
+                        root.hoveredKey = "";
+                    }
                 }
             }
         }
@@ -220,54 +269,54 @@ Item {
 
             onPositionChanged: {
                 if (drag.active) {
-                    checkAndSwap();
+                    swapDebounce.restart();
                 }
             }
 
             onReleased: (mouse) => {
-                if (drag.active) {
-                    itemRoot.x = Qt.binding(function() { return getActualX(itemKey); });
-                } else {
+                if (!drag.active) {
                     triggerClick(mouse);
                 }
+                // No need to restore x — the Binding element re-engages automatically
+                // when isDragging becomes false.
             }
 
             onCanceled: {
-                itemRoot.x = Qt.binding(function() { return getActualX(itemKey); });
+                // No need to restore x — the Binding element re-engages automatically.
             }
 
             function triggerClick(mouse) {
                 if (mouse.button === Qt.RightButton) {
-                    if (itemKey === "notifications") {
-                        Preferences.notificationMode = (Preferences.notificationMode === 1) ? 0 : 1;
-                    } else if (itemKey === "volume") {
-                        Volume.toggleMute();
-                    }
+                    root._handleRightClick(itemKey);
                 } else {
-                    if (itemKey === "wifi") {
-                        IslandService.toggleNetworkPopout();
-                    } else if (itemKey === "bluetooth") {
-                        IslandService.toggleBluetoothPopout();
-                    } else if (itemKey === "volume") {
-                        IslandService.toggleNexusPopout();
-                    } else if (itemKey === "notifications") {
-                        IslandService.toggleNexusPopout();
-                    }
+                    root._openPanel(itemKey);
                 }
+            }
+        }
+
+        Timer {
+            id: swapDebounce
+            interval: 50
+            repeat: false
+            onTriggered: {
+                if (itemRoot.isDragging) checkAndSwap();
             }
         }
 
         function checkAndSwap() {
             let activeWidth = getItemWidth(itemKey);
             let centerX = itemRoot.x + activeWidth / 2;
-            let currentIdx = visibleKeys.indexOf(itemKey);
+
+            // Snapshot the array to avoid mutating a live binding mid-read
+            let keys = visibleKeys.slice();
+            let currentIdx = keys.indexOf(itemKey);
             if (currentIdx === -1) return;
 
             let closestIdx = currentIdx;
             let minDistance = 999999;
 
-            for (let i = 0; i < visibleKeys.length; i++) {
-                let k = visibleKeys[i];
+            for (let i = 0; i < keys.length; i++) {
+                let k = keys[i];
                 let centerI = getTargetX(k) + getItemWidth(k) / 2;
                 let dist = Math.abs(centerX - centerI);
                 if (dist < minDistance) {
@@ -277,127 +326,24 @@ Item {
             }
 
             if (closestIdx !== currentIdx) {
-                let activeKey = visibleKeys[currentIdx];
-                let targetKey = visibleKeys[closestIdx];
+                let activeKey = keys[currentIdx];
+                let targetKey = keys[closestIdx];
 
-                let fullIdx1 = Preferences.indicatorsOrder.indexOf(activeKey);
-                let fullIdx2 = Preferences.indicatorsOrder.indexOf(targetKey);
+                // Snapshot Preferences.indicators.order to avoid reactive mid-write
+                let order = Preferences.indicators.order.slice();
+                let fullIdx1 = order.indexOf(activeKey);
+                let fullIdx2 = order.indexOf(targetKey);
 
                 if (fullIdx1 !== -1 && fullIdx2 !== -1) {
-                    let order = [...Preferences.indicatorsOrder];
-                    let temp = order[fullIdx1];
-                    order[fullIdx1] = order[fullIdx2];
-                    order[fullIdx2] = temp;
-
-                    Preferences.indicatorsOrder = order;
+                    // Move (shift) not swap: remove from current slot and insert at target slot.
+                    // All icons between the two positions shift by one — no teleporting.
+                    order.splice(fullIdx1, 1);
+                    order.splice(fullIdx2, 0, activeKey);
+                    Preferences.indicators.order = order;
                 }
             }
         }
     }
 
-    Component {
-        id: wifiComponent
-        Item {
-            implicitWidth: root.itemWidth
-            height: parent ? parent.height : Theme.dimensions.barItemHeight
 
-            BaseIcon {
-                anchors.centerIn: parent
-                icon: "wifi"
-                size: Theme.dimensions.iconMedium
-                color: parent.containsMouse ? Theme.colors.primary : Theme.colors.text
-            }
-        }
-    }
-
-    Component {
-        id: bluetoothComponent
-        Item {
-            implicitWidth: root.itemWidth
-            height: parent ? parent.height : Theme.dimensions.barItemHeight
-
-            BaseIcon {
-                anchors.centerIn: parent
-                icon: "bluetooth"
-                size: Theme.dimensions.iconMedium
-                color: {
-                    if (parent.containsMouse) return Theme.colors.primary;
-                    if (!Bluetooth.powered) return Theme.colors.muted;
-                    if (Bluetooth.connectedCount > 0) return Theme.colors.success;
-                    return Theme.colors.primary;
-                }
-            }
-        }
-    }
-
-    Component {
-        id: notificationsComponent
-        Item {
-            implicitWidth: root.itemWidth
-            height: parent ? parent.height : Theme.dimensions.barItemHeight
-
-            readonly property bool dndActive: Preferences.notificationMode === 1
-            readonly property bool hasUnread: Notifications.unreadCount > 0
-
-            BaseIcon {
-                anchors.centerIn: parent
-                icon: {
-                    if (parent.dndActive)
-                        return "notifications_off";
-
-                    if (parent.hasUnread)
-                        return "notifications_unread";
-
-                    return "notifications";
-                }
-                size: Theme.dimensions.iconMedium
-                color: parent.containsMouse ? Theme.colors.primary : (parent.dndActive ? Theme.colors.error : Theme.colors.text)
-            }
-        }
-    }
-
-
-
-    Component {
-        id: volumeComponent
-        Item {
-            id: volItemRoot
-            readonly property bool containsMouse: parent ? parent.containsMouse : false
-            implicitWidth: root.itemWidth
-            height: parent ? parent.height : Theme.dimensions.barItemHeight
-
-            // Wheel scrolls volume
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.NoButton
-                onWheel: (wheel) => {
-                    let delta = wheel.angleDelta.y > 0 ? 0.05 : -0.05;
-                    Volume.setVolume(Math.max(0, Math.min(1, Volume.volume + delta)));
-                }
-            }
-
-            // Volume icon — fades out on hover
-            BaseIcon {
-                anchors.centerIn: parent
-                icon: Volume.volumeIcon
-                size: Theme.dimensions.iconMedium
-                color: Theme.colors.text
-                opacity: volItemRoot.containsMouse ? 0.0 : 1.0
-                Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
-            }
-
-            // Percentage value — fades in on hover
-            BaseText {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: 1
-                text: Volume.muted ? "M" : Math.round(Volume.volume * 100).toString()
-                pixelSize: Theme.typography.size.large
-                weight: Theme.typography.weights.bold
-                color: Theme.colors.primary
-                horizontalAlignment: Text.AlignHCenter
-                opacity: volItemRoot.containsMouse ? 1.0 : 0.0
-                Behavior on opacity { BaseAnimation { duration: Theme.animations.fast } }
-            }
-        }
-    }
 }

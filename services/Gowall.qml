@@ -15,21 +15,21 @@ pragma Singleton
 QtObject {
     id: root
 
-    // --- State ---
+    // ── STATE ─────────────────────────────────────────────────────────
     property bool processing: false
 
-    // --- Dependencies ---
-    property bool enabled: Preferences.gowallEnabled
+    // ── DEPENDENCIES ──────────────────────────────────────────────────
+    property bool enabled: Preferences.wallpaper.gowallEnabled
     property var currentColors: ThemeService.currentColors
     property string currentThemeId: Preferences.currentTheme
     property string currentWallpaper: Wallpaper.currentWallpaper
     
-    // --- Paths ---
+    // ── PATHS ─────────────────────────────────────────────────────────
     readonly property string gowallConfigDir: Config.homeDir + "/.config/gowall"
     readonly property string gowallConfigFile: gowallConfigDir + "/config.yml"
     readonly property string cacheDir: Config.cacheDir + "/wallpapers"
 
-    // --- Components ---
+    // ── COMPONENTS ────────────────────────────────────────────────────
 
     // 1. Config Writer Process (Local, no StdioCollector needed)
     property Process configWriter: Process {
@@ -55,12 +55,22 @@ QtObject {
         }
 
         var c = currentColors;
-        var colorList = [
-            c.background, c.surface, c.surfaceAlt, 
-            c.primary, c.secondary, c.accent,
-            c.text, c.textDim, c.muted,
-            c.success, c.warning, c.error
-        ];
+        var colorList = [];
+        
+        // Try Base16 standard keys first
+        for (var i = 0; i <= 15; i++) {
+            var hex = i.toString(16).toUpperCase();
+            var key = "base0" + hex;
+            if (c[key]) colorList.push(c[key]);
+        }
+        
+        // Fallback to legacy/custom named keys
+        if (colorList.length === 0) {
+            var fallbackKeys = ["background", "surface", "surfaceAlt", "primary", "secondary", "accent", "text", "textDim", "muted", "success", "warning", "error"];
+            for (var j = 0; j < fallbackKeys.length; j++) {
+                if (c[fallbackKeys[j]]) colorList.push(c[fallbackKeys[j]]);
+            }
+        }
         
         colorList = colorList.filter(c => c && c.startsWith("#"));
 
@@ -151,7 +161,7 @@ QtObject {
         }
     }
 
-    // --- Logic ---
+    // ── LOGIC ─────────────────────────────────────────────────────────
 
     // Watch for changes
     onEnabledChanged: update()

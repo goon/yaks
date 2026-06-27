@@ -14,7 +14,6 @@ singleton LauncherService services/LauncherService.qml
 singleton Media services/Media.qml
 singleton Compositor services/Compositor.qml
 singleton IslandService services/IslandService.qml
-singleton Recording services/Recording.qml
 singleton Power services/Power.qml
 singleton Stats services/Stats.qml
 singleton Preferences services/Preferences.qml
@@ -38,9 +37,11 @@ Commander services/Commander.qml
 BaseBackground components/BaseBackground.qml
 BaseActiveBackground components/BaseActiveBackground.qml
 BaseHeader components/BaseHeader.qml
-BaseBlock components/BaseBlock.qml
+BaseBento components/BaseBento.qml
+BaseContainer components/BaseContainer.qml
 BaseButton components/BaseButton.qml
 BaseIcon components/BaseIcon.qml
+BaseListItem components/BaseListItem.qml
 BaseInput components/BaseInput.qml
 Island modules/Island.qml
 BaseScrollBar components/BaseScrollBar.qml
@@ -49,15 +50,22 @@ BaseSeparator components/BaseSeparator.qml
 BaseSlider components/BaseSlider.qml
 BaseText components/BaseText.qml
 BaseComboBox components/BaseComboBox.qml
+BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSwitch components/BaseSwitch.qml
 BaseAnimation components/BaseAnimation.qml
 BaseSpinBox components/BaseSpinBox.qml
+BaseIndicator components/BaseIndicator.qml
+BaseIndicatorLine components/BaseIndicatorLine.qml
+BaseIndicatorDot components/BaseIndicatorDot.qml
+BaseStackView components/BaseStackView.qml
 
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml
 NotificationToast modules/toasts/NotificationToast.qml
 VolumeToast modules/toasts/VolumeToast.qml
+
+
 
 # Launcher
 Launcher modules/launcher/Launcher.qml
@@ -66,12 +74,18 @@ LauncherTab modules/launcher/LauncherTab.qml
 LauncherListView modules/launcher/LauncherListView.qml
 LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
 LauncherApps modules/launcher/LauncherApps.qml
-LauncherClipboard modules/launcher/LauncherClipboard.qml
 LauncherTheme modules/launcher/LauncherTheme.qml
+
+# Clipboard
+ClipboardIsland modules/clipboard/ClipboardIsland.qml
+ClipboardListItem modules/clipboard/ClipboardListItem.qml
+ClipboardPreview modules/clipboard/ClipboardPreview.qml
 
 # Settings
 Settings modules/settings/Settings.qml
 SettingsPage modules/settings/SettingsPage.qml
+SettingsGroup modules/settings/SettingsGroup.qml
+SettingsRow modules/settings/SettingsRow.qml
 
 # Bar
 WallpaperBackground modules/wallpaper/WallpaperBackground.qml
@@ -80,6 +94,8 @@ BarClock modules/bar/BarClock.qml
 BarWorkspaces modules/bar/BarWorkspaces.qml
 BarDock modules/bar/BarDock.qml
 BarIndicators modules/bar/BarIndicators.qml
+PillClock modules/bar/PillClock.qml
+FullBar modules/bar/FullBar.qml
 
 # Dashboard
 Dashboard modules/dashboard/Dashboard.qml
@@ -91,14 +107,6 @@ DashboardClock modules/dashboard/DashboardClock.qml
 DashboardResourceBars modules/dashboard/DashboardResourceBars.qml
 
 # Panels
-NotificationsPanel modules/notifications/Notifications.qml
 WallpaperPanel modules/wallpaper/Wallpaper.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
-NexusPanel modules/nexus/Nexus.qml
-NexusMain modules/nexus/NexusMain.qml
-HubSliders modules/nexus/HubSliders.qml
-HubQuickActions modules/nexus/HubQuickActions.qml
-HubPower modules/nexus/HubPower.qml
-HubNotifications modules/nexus/HubNotifications.qml
-
 BaseDevice components/BaseDevice.qml

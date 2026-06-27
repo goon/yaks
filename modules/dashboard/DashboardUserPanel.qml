@@ -5,15 +5,11 @@ import Quickshell
 import qs
 import qs.services
 
-BaseBlock {
+BaseBento {
     id: root
 
     implicitWidth: 200
     implicitHeight: 160
-
-    padding: 0
-    paddingHorizontal: 0
-    paddingVertical: 0
 
     // Single fill-item that takes up the whole contentContainer
     Item {
@@ -114,7 +110,6 @@ BaseBlock {
                         Behavior on opacity { NumberAnimation { duration: 150 } }
                     }
 
-                    // Fallback default icon
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: "person"
@@ -123,7 +118,6 @@ BaseBlock {
                         visible: Preferences.customAvatar.toString() === "" && !avatarMouseArea.containsMouse
                     }
 
-                    // Edit overlay icon
                     BaseIcon {
                         id: editOverlayIcon
                         anchors.centerIn: parent
@@ -140,8 +134,8 @@ BaseBlock {
 
                         SequentialAnimation {
                             id: editIconAnim
-                            BaseAnimation { target: editOverlayIcon; property: "scale"; from: 1.0; to: 0.7; speed: "fast" }
-                            BaseAnimation { target: editOverlayIcon; property: "scale"; to: 1.0; speed: "fast"; easing.type: Easing.OutBack }
+                            BaseAnimation { target: editOverlayIcon; property: "scale"; from: 1.0; to: 0.7 }
+                            BaseAnimation { target: editOverlayIcon; property: "scale"; to: 1.0; easing.type: Easing.OutBack }
                         }
                     }
 
@@ -166,15 +160,13 @@ BaseBlock {
                     text: SystemInfo.username || "User"
                     weight: Theme.typography.weights.bold
                     pixelSize: 18
-                    color: Theme.colors.text
                 }
 
                 BaseText {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: SystemInfo.hostname || "hostname"
-                    weight: Theme.typography.weights.normal
                     pixelSize: 15
-                    color: Theme.colors.muted
+                    muted: true
                 }
             }
         }

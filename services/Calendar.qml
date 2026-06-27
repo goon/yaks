@@ -14,9 +14,7 @@ QtObject {
     // Array of day objects for calendar grid
     property var calendarDays: []
     
-    // Formatted month and year string
-    readonly property string monthYearString: getMonthYearString()
-    
+
     // Month names
     readonly property var monthNames: [
         "January", "February", "March", "April", "May", "June",
@@ -70,10 +68,7 @@ QtObject {
                year === now.getFullYear();
     }
     
-    // Get formatted month and year string
-    function getMonthYearString() {
-        return monthNames[displayMonth] + " " + displayYear;
-    }
+
     
     // Recalculate calendar grid
     function updateCalendar() {

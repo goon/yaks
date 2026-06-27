@@ -9,7 +9,7 @@ ComboBox {
 
     // Colors can be overridden
     property color textColor: Theme.colors.text
-    property color backgroundColor: Theme.colors.background
+    property color backgroundColor: Theme.alpha(Theme.colors.surface, Theme.opacity.background)
     property color hoverColor: Theme.colors.muted
     property color borderColor: Theme.colors.border
     property color borderActiveColor: Theme.colors.primary
@@ -29,7 +29,7 @@ ComboBox {
 
     // Default sizing
     Layout.fillWidth: true
-    implicitHeight: 42
+    implicitHeight: 36
     implicitWidth: 200
 
     font.family: currentFontFamily
@@ -43,7 +43,7 @@ ComboBox {
     delegate: ItemDelegate {
         id: delegateRoot
         width: ListView.view ? ListView.view.width : root.width
-        height: isItemVisible ? 40 : 0
+        height: isItemVisible ? 36 : 0
 
         property bool isItemVisible: {
             // FIX: Removed the index === root.currentIndex check which was hiding the active item!
@@ -76,25 +76,34 @@ ComboBox {
             font.weight: root.currentFontWeight
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
-            leftPadding: Theme.geometry.spacing.dynamicPadding
-            rightPadding: Theme.geometry.spacing.dynamicPadding
+            leftPadding: Theme.geometry.padding.small
+            rightPadding: Theme.geometry.padding.small
         }
 
         background: Rectangle {
             anchors.fill: parent
             anchors.margins: 2
-            radius: Theme.geometry.radius
+            radius: Theme.geometry.innerRadius.medium
             
             visible: parent.highlighted || parent.hovered
             
-            gradient: Gradient {
-                orientation: Gradient.Horizontal
-                GradientStop { position: 0; color: Theme.alpha(Theme.colors.primary, 0.2) }
-                GradientStop { position: 1; color: Theme.alpha(Theme.colors.secondary, 0.2) }
+            color: Theme.alpha(Theme.colors.surface, 0.5)
+
+            // Hover Notch
+            Rectangle {
+                width: 3
+                height: 20
+                radius: 1.5
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.geometry.spacing.small
+                anchors.verticalCenter: parent.verticalCenter
+                
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Theme.colors.primary }
+                    GradientStop { position: 1.0; color: Theme.colors.secondary }
+                }
             }
-            
-            border.color: Theme.alpha(Theme.colors.primary, 0.5)
-            border.width: 1
         }
 
         // Unified staggered opacity-only reveal
@@ -117,7 +126,7 @@ ComboBox {
         font.weight: root.currentFontWeight
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-        leftPadding: Theme.geometry.spacing.dynamicPadding
+        leftPadding: Theme.geometry.padding.small
         rightPadding: root.indicator.width + Theme.geometry.spacing.small
         visible: !comboPopup.visible
         opacity: visible ? 1.0 : 0.0
@@ -129,15 +138,14 @@ ComboBox {
         y: (root.availableHeight - height) / 2
         icon: "expand_more"
         color: root.textColor
-        size: Theme.dimensions.iconMedium
         visible: (root.count > 0 || root.searchable) && !comboPopup.visible
         opacity: visible ? 1.0 : 0.0
     }
 
-    // Background (Border and fill)
+    // Background (Closed state - floating)
     background: Rectangle {
         color: root.backgroundColor
-        radius: Theme.geometry.radius
+        radius: Theme.geometry.innerRadius.medium
         border.color: root.activeFocus ? root.borderActiveColor : root.borderColor
         border.width: 1
         antialiasing: true
@@ -219,7 +227,7 @@ ComboBox {
             border.color: root.activeFocus ? root.borderActiveColor : root.borderColor
             border.width: 1
             antialiasing: true
-            radius: Theme.geometry.radius
+            radius: Theme.geometry.innerRadius.medium
         }
     }
 }

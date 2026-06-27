@@ -15,7 +15,7 @@ Item {
     readonly property string scriptsDir: Config.scriptsDir
     property var stockThemeIds: ["catppuccin", "kanagawa", "everforest", "gruvbox", "horizon", "solaris"]
 
-    // --- State Properties (System Theme) ---
+    // ── STATE PROPERTIES (SYSTEM THEME) ─────────────────────────────
     property string gtkTheme: ""
     property string iconTheme: ""
     property string fontName: ""
@@ -184,73 +184,6 @@ Item {
         });
     }
 
-    function updateGtkConfig(key, value) {
-        var gtk3File = "~/.config/gtk-3.0/settings.ini";
-        var gtk4File = "~/.config/gtk-4.0/settings.ini";
-        var cmd3 = ["sh", "-c", "sed -i 's|^" + key + "=.*|" + key + "=" + value + "|' " + gtk3File];
-        ProcessService.runDetached(cmd3);
-        var cmd4 = ["sh", "-c", "sed -i 's|^" + key + "=.*|" + key + "=" + value + "|' " + gtk4File];
-        ProcessService.runDetached(cmd4);
-    }
-
-    function updateGtk2Config(key, value) {
-        var gtk2File = "~/.gtkrc-2.0";
-        var robustCmd = ["sh", "-c", "sed -i 's|^" + key + "\\s*=\\s*.*|" + key + " = \"" + value + "\";|' " + gtk2File];
-        ProcessService.runDetached(robustCmd);
-    }
-
-    function setGtkTheme(name) {
-        ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", "'" + name + "'"], function() {
-            refreshThemeService();
-        });
-        updateGtkConfig("gtk-theme-name", name);
-        updateGtk2Config("gtk-theme-name", name);
-    }
-
-    function setIconTheme(name) {
-        ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", "'" + name + "'"], function() {
-            refreshThemeService();
-        });
-        updateGtkConfig("gtk-icon-theme-name", name);
-        updateGtk2Config("gtk-icon-theme-name", name);
-    }
-
-    function setCursorTheme(name) {
-        ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "cursor-theme", "'" + name + "'"], function() {
-            refreshThemeService();
-        });
-        updateGtkConfig("gtk-cursor-theme-name", name);
-        updateGtk2Config("gtk-cursor-theme-name", name);
-    }
-
-    function setCursorSize(size) {
-        ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "cursor-size", size.toString()], function() {
-            refreshThemeService();
-        });
-        updateGtkConfig("gtk-cursor-theme-size", size);
-        updateGtk2Config("gtk-cursor-theme-size", size);
-    }
-
-    function setFontName(name) {
-        ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "font-name", "'" + name + "'"], function() {
-            refreshThemeService();
-        });
-        updateGtkConfig("gtk-font-name", name);
-        updateGtk2Config("gtk-font-name", name);
-    }
-
-    function setFontSize(size) {
-        var current = root.fontName;
-        var match = current.match(/(.*)\s+(\d+)$/);
-        if (match) {
-            var family = match[1];
-            var newFontName = family + " " + size;
-            setFontName(newFontName);
-        } else {
-            setFontName(current + " " + size);
-        }
-    }
-
     function toggleColorScheme() {
         var newScheme = (root.colorScheme === 'prefer-dark') ? 'default' : 'prefer-dark';
         ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", newScheme], function() {
@@ -272,9 +205,7 @@ Item {
         return allFontFamilies;
     }
 
-    // -------------------------------------------------------------------------
-    // --- Hook Service Logic
-    // -------------------------------------------------------------------------
+    // ── HOOK SERVICE LOGIC ───────────────────────────────────────────────
 
     function scanHooks() {
         if (root.scanningHooks) return;
@@ -331,12 +262,12 @@ Item {
             let app = ThemeRegistration.applications[i];
             let hookFile = root.scriptsDir + "/" + app.script;
             
-            if (Preferences.themedApps[app.id] !== true) {
+            if (Preferences.applications.themedApps[app.id] !== true) {
                 continue;
             }
             
             executedApps.push(app.id);
-            commandString += `sh "${hookFile}" "${id}" "${path}" "${context}" "${Preferences.themedAppsOpacity}" "${Preferences.themeMode}"; `;
+            commandString += `sh "${hookFile}" "${id}" "${path}" "${context}" "${Preferences.applications.themedAppsOpacity}" "${Preferences.globals.themeMode}"; `;
         }
         
         if (commandString === "") return;
@@ -377,9 +308,7 @@ Item {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // --- Components
-    // -------------------------------------------------------------------------
+    // ── COMPONENTS ─────────────────────────────────────────────────────────
     
     Instantiator {
         model: root.stockThemeIds
@@ -400,10 +329,19 @@ Item {
                 root.runStartupHooks();
             }
         }
+    }
 
+    Connections {
+        target: Preferences.applications
         function onThemedAppsOpacityChanged() {
             if (Preferences.loaded) {
                 root.triggerHooks(Preferences.currentTheme, root.themesDir + "/" + Preferences.currentTheme, "opacity_update");
+            }
+        }
+
+        function onThemedAppsChanged() {
+            if (Preferences.loaded) {
+                root.triggerHooks(Preferences.currentTheme, root.themesDir + "/" + Preferences.currentTheme, "app_toggle");
             }
         }
     }

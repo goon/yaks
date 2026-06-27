@@ -14,8 +14,6 @@ QtObject {
     readonly property bool canHibernate: true
     readonly property bool canLogout: true
 
-    // Signals for operation results
-    signal powerOperationFailed(string operation, string error)
     signal powerOperationStarted(string operation)
 
     // Shutdown the system

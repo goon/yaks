@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import qs
 
-BaseBlock {
+BaseBento {
     id: weather
     implicitWidth: 360
     implicitHeight: 160
@@ -65,15 +65,14 @@ BaseBlock {
 
                         SequentialAnimation {
                             id: iconAnim
-                            BaseAnimation { target: locIcon; property: "scale"; from: 1.0; to: 0.7; speed: "fast" }
-                            BaseAnimation { target: locIcon; property: "scale"; to: 1.0; speed: "fast"; easing.type: Easing.OutBack }
+                            BaseAnimation { target: locIcon; property: "scale"; from: 1.0; to: 0.7 }
+                            BaseAnimation { target: locIcon; property: "scale"; to: 1.0; easing.type: Easing.OutBack }
                         }
                     }
 
                     BaseText {
-                        text: Preferences.weatherLocationName
+                        text: Preferences.weather.locationName
                         font.pixelSize: Theme.typography.size.medium
-                        color: Theme.colors.text
                         weight: Theme.typography.weights.bold
                         elide: Text.ElideRight
                         Layout.fillWidth: true
@@ -99,21 +98,21 @@ BaseBlock {
                 textRole: "full_name"
                 searchable: true
                 filterLocally: false
-                displayText: Preferences.weatherLocationName || "Search location..."
+                displayText: Preferences.weather.locationName || "Search location..."
 
                 onSearchTextChanged: Weather.searchLocation(searchText)
 
                 onActivated: (index) => {
                     var item = Weather.searchResults[index];
                     if (item) {
-                        Preferences.weatherLat = item.latitude.toString();
-                        Preferences.weatherLong = item.longitude.toString();
-                        Preferences.weatherLocationName = item.full_name;
+                        Preferences.weather.lat = item.latitude.toString();
+                        Preferences.weather.long = item.longitude.toString();
+                        Preferences.weather.locationName = item.full_name;
                         weatherWidget.editMode = false;
                     }
                 }
 
-                Behavior on opacity { BaseAnimation { speed: "fast" } }
+                Behavior on opacity { BaseAnimation { } }
 
                 onVisibleChanged: {
                     if (visible) forceActiveFocus();
@@ -121,7 +120,6 @@ BaseBlock {
             }
         }
 
-        // Horizontal Separator
         BaseSeparator {
             Layout.fillWidth: true
             opacity: 0.2
@@ -147,8 +145,8 @@ BaseBlock {
                         BaseIcon { icon: "humidity_mid"; size: 16; color: Theme.colors.primary }
                         ColumnLayout {
                             spacing: 0
-                            BaseText { text: "Humidity"; font.pixelSize: 10; color: Theme.colors.muted; weight: Theme.typography.weights.bold }
-                            BaseText { text: Weather.humidity; font.pixelSize: Theme.typography.size.medium; color: Theme.colors.text; weight: Theme.typography.weights.bold }
+                            BaseText { text: "Humidity"; font.pixelSize: 10; muted: true; weight: Theme.typography.weights.bold }
+                            BaseText { text: Weather.humidity; font.pixelSize: Theme.typography.size.medium; weight: Theme.typography.weights.bold }
                         }
                     }
 
@@ -158,8 +156,8 @@ BaseBlock {
                         BaseIcon { icon: "air"; size: 16; color: Theme.colors.primary }
                         ColumnLayout {
                             spacing: 0
-                            BaseText { text: "Wind"; font.pixelSize: 10; color: Theme.colors.muted; weight: Theme.typography.weights.bold }
-                            BaseText { text: Weather.windSpeed; font.pixelSize: Theme.typography.size.medium; color: Theme.colors.text; weight: Theme.typography.weights.bold }
+                            BaseText { text: "Wind"; font.pixelSize: 10; muted: true; weight: Theme.typography.weights.bold }
+                            BaseText { text: Weather.windSpeed; font.pixelSize: Theme.typography.size.medium; weight: Theme.typography.weights.bold }
                         }
                     }
                 }
@@ -235,20 +233,18 @@ BaseBlock {
                         }
                     }
 
-                    // Temperature Details Column
                     ColumnLayout {
                         spacing: -Theme.geometry.spacing.small
                         BaseText {
                             text: Weather.temperature
                             font.pixelSize: 42
                             weight: Theme.typography.weights.bold
-                            color: Theme.colors.text
                         }
                         BaseText {
                             text: "FEELS LIKE " + Weather.feelsLike
                             font.pixelSize: 11
                             weight: Theme.typography.weights.bold
-                            color: Theme.colors.muted
+                            muted: true
                         }
                     }
                 }

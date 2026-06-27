@@ -26,29 +26,14 @@ FocusScope {
     Item {
         anchors.fill: parent
 
-        // Mask for rounded clipping
-        Rectangle {
-            id: contentMask
-            anchors.fill: parent
-            radius: Theme.geometry.radius
-            color: "white"
-            visible: false
-            layer.enabled: true
-        }
-
-        // Clipped container
+        // Scroller container
         Item {
             anchors.fill: parent
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskSource: contentMask
-            }
 
             BaseScroller {
                 id: contentScroller
                 anchors.fill: parent
-                clip: false
+                clip: true
 
                 ColumnLayout {
                     id: centeredContainer

@@ -33,6 +33,20 @@ Singleton {
 
     }
 
+    // Force a fresh scan by stopping then starting after a short delay.
+    // BlueZ rejects `discovering = true` while already discovering with
+    // "Operation already in progress", so we need the stop to settle first.
+    function scan() {
+        if (!adapter) return;
+        adapter.discovering = false;
+        restartTimer.restart();
+    }
+
+    property Timer restartTimer: Timer {
+        interval: 500
+        onTriggered: if (adapter) adapter.discovering = true;
+    }
+
     function connectDevice(address) {
         // Quickshell's BlueZ wrapper lacks a proper DBus Agent for PipeWire A2DP authorization.
         // Shelled out to bluetoothctl which properly spawns an agent and handles pairing/connecting.
@@ -47,18 +61,7 @@ Singleton {
         ProcessService.runDetached(["bluetoothctl", "remove", address]);
     }
 
-    function findDevice(address) {
-        if (!adapter)
-            return null;
 
-        var list = adapter.devices.values;
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].address === address)
-                return list[i];
-
-        }
-        return null;
-    }
 
     function refresh() {
     }

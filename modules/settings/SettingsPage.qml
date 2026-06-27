@@ -1,32 +1,60 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import qs
-
-BaseBlock {
+BaseContainer {
     id: root
     width: parent ? parent.width : 0
-    Layout.fillWidth: true
+    spacing: Theme.geometry.spacing.small
     
     property string title: ""
     property string icon: ""
-    
-    // Default properties for settings blocks
-    borderEnabled: false
+    property string description: ""
 
-    BaseHeader {
-        title: root.title
-        icon: root.icon
-    }
-
-    Component {
-        id: spacerComponent
-        Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+    onRightClicked: {
+        if (root.StackView.view && root.StackView.view.depth > 1) {
+            root.StackView.view.pop(null);
         }
     }
 
-    Component.onCompleted: {
-        spacerComponent.createObject(_contentContainer);
-    }
+    ColumnLayout {
+        Layout.fillWidth: true
+        Layout.bottomMargin: Theme.geometry.spacing.small / 2
+        spacing: Theme.geometry.spacing.small
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Theme.geometry.spacing.small
+
+            BaseIcon {
+                icon: "chevron_left"
+                color: backMouseArea.containsMouse ? Theme.colors.primary : Theme.colors.text
+                Layout.alignment: Qt.AlignVCenter
+                Behavior on color { BaseAnimation { } }
+
+                MouseArea {
+                    id: backMouseArea
+                    anchors.fill: parent
+                    anchors.margins: -8
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (root.StackView.view) {
+                            root.StackView.view.pop();
+                        }
+                    }
+                }
+            }
+
+            BaseHeader {
+                id: pageHeader
+                text: root.title.toUpperCase()
+                Layout.fillWidth: true
+            }
+        }
+        
+        BaseSeparator {
+            Layout.fillWidth: true
+        }
+    } // End of header ColumnLayout
 }

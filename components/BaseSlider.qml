@@ -1,8 +1,6 @@
 import qs
 import ".."
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
 
 Item {
     id: root
@@ -13,54 +11,44 @@ Item {
     property real to: 1
     property real stepSize: 0
 
-    // Interaction
-    property int orientation: Qt.Horizontal
     property bool interactive: true
+    property bool muted: false
     property alias pressed: mouseArea.pressed
     readonly property bool hovered: mouseArea.containsMouse
 
     // Visual customization
 
-    property color trackColor: Theme.colors.background
+    property color trackColor: Theme.alpha(Theme.colors.surface, Theme.opacity.background)
     property color fillColor: Theme.colors.primary
-    property color handleColor: bigMode ? Theme.colors.surface : Theme.colors.text
-    property color handleBorderColor: bigMode ? Theme.colors.border : Theme.colors.text
-    property int trackHeight: 12
-    property int handleSize: 24
-    property int handleWidth: 6
+    property int trackHeight: 38
 
     // Content properties
     property string icon: ""
     property string suffix: ""
-    property color iconColor: Theme.colors.muted
-    property color suffixColor: Theme.colors.muted
-    property int iconSize: Theme.dimensions.iconMedium
-    property int fontSize: 11
-    
-    // External Label
-    property bool externalLabel: false
-    property string externalSuffix: ""
-    property bool externalPercentage: false
+    property color iconColor: Theme.colors.text
+    property color suffixColor: Theme.colors.text
 
     // Internal computed values
     property real _animatedValue: value
     Behavior on _animatedValue {
         enabled: !mouseArea.pressed
-        BaseAnimation { duration: Theme.animations.fast }
+        BaseAnimation { }
     }
     
     readonly property real normalizedValue: (_animatedValue - from) / (to - from)
-    readonly property real fillSize: root.orientation === Qt.Horizontal ? track.width * root.normalizedValue : track.height * root.normalizedValue
-    readonly property bool bigMode: trackHeight >= 20
+    readonly property real fillSize: track.width * root.normalizedValue
 
     // Coolness Controls
-    property real interactionScale: (root.hovered || root.pressed) ? 1.05 : 1.0
+    property real interactionScale: root.isActive ? 1.05 : 1.0
     property real breathOpacity: 1.0
     property bool isActive: root.hovered || root.pressed
+    
+    property real _baseOpacity: root.muted ? 0.6 : 1.0
+    Behavior on _baseOpacity { BaseAnimation { } }
 
     SequentialAnimation on breathOpacity {
         id: breathAnim
-        running: root.pressed && root.bigMode
+        running: root.pressed
         loops: Animation.Infinite
         NumberAnimation { from: 1.0; to: 0.75; duration: 800; easing.type: Easing.InOutQuad }
         NumberAnimation { from: 0.75; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
@@ -68,118 +56,65 @@ Item {
     }
 
     // Signals
-    signal moved()
     signal valueChangedByUser()
-    signal iconClicked()
+    signal rightClicked()
 
-    implicitHeight: orientation === Qt.Horizontal ? Math.max(trackHeight, handleSize) : 100
-    implicitWidth: orientation === Qt.Horizontal ? 100 : Math.max(trackHeight, handleSize)
+    implicitHeight: trackHeight
+    implicitWidth: 100
 
     // Background track
     Rectangle {
         id: track
 
-        anchors.verticalCenter: root.orientation === Qt.Horizontal ? parent.verticalCenter : undefined
-        anchors.horizontalCenter: root.orientation === Qt.Vertical ? parent.horizontalCenter : undefined
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-        anchors.left: root.orientation === Qt.Horizontal ? parent.left : undefined
-        anchors.right: root.orientation === Qt.Horizontal ? (root.externalLabel ? externalLabelText.left : parent.right) : undefined
-        anchors.rightMargin: root.externalLabel ? Theme.geometry.spacing.large : 0
+        height: root.trackHeight
         
-        anchors.top: root.orientation === Qt.Vertical ? parent.top : undefined
-        anchors.bottom: root.orientation === Qt.Vertical ? parent.bottom : undefined
-
-        width: root.orientation === Qt.Horizontal ? undefined : root.trackHeight
-        height: root.orientation === Qt.Horizontal ? root.trackHeight : undefined
-        
-        radius: root.bigMode ? Theme.geometry.radius : Math.max(2, Theme.geometry.radius * 0.5)
+        radius: Theme.geometry.innerRadius.medium
         color: trackColor
-        border.width: 0
         clip: true
 
         // Gradient fill
         Rectangle {
             id: fill
 
-            width: root.bigMode ? (root.value > root.from ? (handle.x + handle.width + 4) : 0) : root.fillSize
-            height: root.orientation === Qt.Horizontal ? parent.height : root.fillSize
+            width: root.value > root.from ? (handle.x + handle.width + 4) : 0
+            height: parent.height
             radius: parent.radius
-            anchors.bottom: root.orientation === Qt.Vertical ? parent.bottom : undefined
-            anchors.top: root.orientation === Qt.Vertical ? (root.bigMode ? (handle.y - 4) : undefined) : undefined
-            anchors.left: root.orientation === Qt.Horizontal ? parent.left : undefined
+            anchors.left: parent.left
             
-            opacity: root.pressed && root.bigMode ? root.breathOpacity : 1.0
+            opacity: root._baseOpacity * (root.pressed ? root.breathOpacity : 1.0)
             
             gradient: Gradient {
-                orientation: root.orientation === Qt.Horizontal ? Gradient.Horizontal : Gradient.Vertical
+                orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: Theme.colors.primary }
                 GradientStop { position: 1.0; color: Theme.colors.secondary }
             }
         }
 
-        // Inside content (Icon and Suffix)
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: Theme.geometry.spacing.medium
-            anchors.rightMargin: Theme.geometry.spacing.medium
-            visible: root.orientation === Qt.Horizontal && !root.bigMode
-            spacing: Theme.geometry.spacing.small
-
-            Item {
-                visible: root.icon !== ""
-                Layout.preferredWidth: root.iconSize
-                Layout.preferredHeight: root.iconSize
-                Layout.alignment: Qt.AlignVCenter
-
-                BaseIcon {
-                    anchors.centerIn: parent
-                    icon: root.icon
-                    size: root.iconSize
-                    color: root.iconColor
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.iconClicked()
-                }
-            }
-
-            Item { Layout.fillWidth: true }
-
-            BaseText {
-                visible: root.suffix !== ""
-                text: root.suffix
-                color: root.suffixColor
-                pixelSize: root.fontSize
-                weight: Theme.typography.weights.medium
-                Layout.alignment: Qt.AlignVCenter
-            }
-        }
     }
 
     // Handle (only visible when interactive)
     Rectangle {
         id: handle
 
-        visible: root.interactive && root.handleWidth > 0 && root.handleSize > 0
-        width: root.bigMode ? (root.trackHeight - 8) : (root.orientation === Qt.Horizontal ? root.handleWidth : root.handleSize)
-        height: root.bigMode ? (root.trackHeight - 8) : (root.orientation === Qt.Horizontal ? root.handleSize : root.handleWidth)
-        radius: root.bigMode ? Theme.geometry.radius : Math.max(2, Theme.geometry.radius * 0.5)
+        visible: root.interactive
+        width: root.trackHeight - 8
+        height: root.trackHeight - 8
+        radius: Theme.geometry.innerRadius.medium
         
-        // Synchronize movement: knob and fill edge move together for big sliders, center for normal ones
-        x: root.orientation === Qt.Horizontal 
-             ? (root.bigMode ? (4 + (track.width - width - 8) * root.normalizedValue) : Math.max(0, Math.min(track.width - width, root.fillSize - width / 2)))
-             : (root.width - width) / 2
-        y: root.orientation === Qt.Vertical
-             ? (root.bigMode ? (4 + (track.height - height - 8) * (1.0 - root.normalizedValue)) : Math.max(0, Math.min(track.height - height, root.fillSize - height / 2)))
-             : (root.height - height) / 2
+        // Synchronize movement: knob and fill edge move together for big sliders
+        x: 4 + (track.width - width - 8) * root.normalizedValue
+        y: (root.height - height) / 2
         
-        color: root.bigMode ? Theme.alpha(handleColor, 0.95) : handleColor
-        border.color: Theme.alpha(handleBorderColor, (root.isActive && root.bigMode ? 0.3 : 0.15))
-        border.width: root.bigMode ? 1 : 0
+        color: Theme.alpha(Theme.colors.surface, 0.95)
+        border.color: Theme.alpha(Theme.colors.border, (root.isActive ? 0.3 : 0.15))
+        border.width: 1
         z: 10
 
-        scale: root.bigMode ? root.interactionScale : 1.0
+        scale: root.interactionScale
         Behavior on scale { BaseAnimation { duration: 250; easing.type: Easing.OutBack } }
 
         // Subtle glow effect when active
@@ -190,19 +125,18 @@ Item {
             color: "transparent"
             border.width: 2
             border.color: Theme.alpha(root.fillColor, 0.3)
-            visible: root.bigMode && root.isActive
-            opacity: root.pressed ? 1.0 : 0.5
+            visible: root.isActive
             z: -2
             
             SequentialAnimation on opacity {
-                running: root.isActive && root.bigMode
+                running: root.isActive
                 loops: Animation.Infinite
                 NumberAnimation { from: 0.2; to: 0.6; duration: 1000; easing.type: Easing.InOutQuad }
                 NumberAnimation { from: 0.6; to: 0.2; duration: 1000; easing.type: Easing.InOutQuad }
             }
         }
 
-        // Sublte depth effect for big sliders
+        // Subtle depth effect for big sliders
         Rectangle {
             anchors.fill: parent
             anchors.margins: -1
@@ -210,7 +144,6 @@ Item {
             color: "transparent"
             border.width: 1
             border.color: Theme.alpha(Theme.colors.background, 0.2)
-            visible: root.bigMode
             z: -1
         }
 
@@ -218,14 +151,13 @@ Item {
         Item {
             anchors.fill: parent
             anchors.margins: 4
-            visible: root.bigMode && root.orientation === Qt.Horizontal
 
             BaseIcon {
                 anchors.centerIn: parent
                 icon: root.icon
-                size: Math.min(parent.width, root.iconSize)
+                size: Math.min(parent.width, Theme.dimensions.iconMedium)
                 color: root.iconColor
-                opacity: (!root.hovered && !root.pressed) ? 1 : 0
+                opacity: !root.isActive ? 1 : 0
                 Behavior on opacity { BaseAnimation { duration: 400; easing.type: Easing.InOutQuad } }
             }
 
@@ -233,14 +165,14 @@ Item {
                 anchors.fill: parent
                 text: root.suffix
                 color: root.suffixColor
-                pixelSize: Math.min(parent.height - 4, root.fontSize + 1)
+                pixelSize: Math.min(parent.height - 4, 12)
                 fontSizeMode: Text.Fit
                 minimumPixelSize: 8
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.NoWrap
                 font.weight: Theme.typography.weights.bold
-                opacity: (root.hovered || root.pressed) ? 1 : 0
+                opacity: root.isActive ? 1 : 0
                 Behavior on opacity { BaseAnimation { duration: 400; easing.type: Easing.InOutQuad } }
             }
         }
@@ -255,7 +187,7 @@ Item {
             clip: true
 
             gradient: Gradient {
-                orientation: root.orientation === Qt.Horizontal ? Gradient.Vertical : Gradient.Horizontal
+                orientation: Gradient.Vertical
                 GradientStop { position: 0.0; color: Theme.colors.transparent }
                 GradientStop { position: 0.5; color: Theme.alpha(Theme.colors.text, 0.4) }
                 GradientStop { position: 1.0; color: Theme.colors.transparent }
@@ -273,23 +205,8 @@ Item {
                 to: 0; duration: 400; easing.type: Easing.InCubic
             }
 
-            // Trigger shimmer on interaction
-            Connections {
-                target: mouseArea
-                function onPressed() { if (root.interactive) shimmerAnim.start(); }
-            }
-        }
-    }
 
-    // External Text Label
-    BaseText {
-        id: externalLabelText
-        visible: root.externalLabel && root.orientation === Qt.Horizontal
-        text: root.externalPercentage ? Math.round(root.value * 100) + root.externalSuffix : Math.round(root.value) + root.externalSuffix
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        width: 40
-        horizontalAlignment: Text.AlignRight
+        }
     }
 
     // Mouse area for interaction
@@ -297,11 +214,7 @@ Item {
         id: mouseArea
 
         function updateValue(mousePos) {
-            var newValue;
-            if (root.orientation === Qt.Horizontal)
-                newValue = root.from + (mousePos / width) * (root.to - root.from);
-            else
-                newValue = root.from + ((height - mousePos) / height) * (root.to - root.from);
+            var newValue = root.from + (mousePos / width) * (root.to - root.from);
             if (root.stepSize > 0)
                 newValue = Math.round(newValue / root.stepSize) * root.stepSize;
 
@@ -311,19 +224,24 @@ Item {
         }
 
         anchors.fill: track
-        anchors.margins: -root.handleSize / 2
+        anchors.margins: -(root.trackHeight - 8) / 2
         enabled: root.interactive
         hoverEnabled: true
         preventStealing: pressed
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onPressed: (mouse) => {
             mouse.accepted = true;
-            updateValue(root.orientation === Qt.Horizontal ? mouse.x : mouse.y);
+            if (root.interactive) shimmerAnim.start();
+            if (mouse.button === Qt.RightButton) {
+                root.rightClicked();
+                return;
+            }
+            updateValue(mouse.x);
         }
         onPositionChanged: (mouse) => {
-            if (pressed)
-                updateValue(root.orientation === Qt.Horizontal ? mouse.x : mouse.y);
+            if (pressed && (mouse.buttons & Qt.LeftButton))
+                updateValue(mouse.x);
         }
-        onReleased: root.moved()
     }
 }

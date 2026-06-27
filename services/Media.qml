@@ -17,7 +17,6 @@ QtObject {
     property string trackTitle: metadata ? (metadata["xesam:title"] || "Unknown Track") : "Unknown Track"
     property var artistArray: metadata ? metadata["xesam:artist"] : null
     property string trackArtist: artistArray && artistArray.length > 0 ? artistArray[0] : "Unknown Artist"
-    property string trackAlbum: metadata ? (metadata["xesam:album"] || "") : ""
     property string albumArtUrl: metadata ? (metadata["mpris:artUrl"] || "") : ""
     property real trackLength: metadata ? (metadata["mpris:length"] || 0) : 0
     // Playback state
@@ -45,7 +44,6 @@ QtObject {
 
         return Math.max(0, Math.min(1, r));
     }
-    property real effectiveRatio: (isSeeking && localSeekRatio >= 0) ? Math.max(0, Math.min(1, localSeekRatio)) : progressRatio
     // Browser player filter
     readonly property var browserIdentities: ["firefox", "chrome", "chromium", "brave", "edge", "opera", "vivaldi", "safari"]
     // Position interpolation timer (updates every 100ms for smoothness)
@@ -125,31 +123,7 @@ QtObject {
 
     }
 
-    function setPosition(ratio) {
-        localSeekRatio = ratio;
-        seekDebounceTimer.restart();
-    }
 
-    function startSeek(ratio) {
-        isSeeking = true;
-        localSeekRatio = ratio;
-        if (activePlayer && canSeek) {
-            var microseconds = ratio * trackLength;
-            activePlayer.position = microseconds / 1e+06;
-        }
-        lastSentSeekRatio = ratio;
-    }
-
-    function endSeek(ratio) {
-        seekDebounceTimer.stop();
-        if (activePlayer && canSeek) {
-            var microseconds = ratio * trackLength;
-            activePlayer.position = microseconds / 1e+06;
-        }
-        isSeeking = false;
-        localSeekRatio = -1;
-        lastSentSeekRatio = -1;
-    }
 
     function resetPosition() {
         currentPosition = 0;

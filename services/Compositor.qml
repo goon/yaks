@@ -8,19 +8,31 @@ pragma Singleton
 Singleton {
     id: root
 
-    // --- Public State ---
+    // ── PUBLIC STATE ───────────────────────────────────────────────────
     property var workspaces: []
-    property var windows: []
+    readonly property var windows: Hyprland.toplevels.values
     property var windowByAddress: ({})
+    readonly property bool hasDockWindows: {
+        var vals = Hyprland.toplevels.values;
+        var wba = root.windowByAddress;
+        for (var i = 0; i < vals.length; i++) {
+            var t = vals[i];
+            var addr = t ? t.address : null;
+            if (!addr) continue;
+            if (!addr.startsWith("0x")) addr = "0x" + addr;
+            if (wba[addr]) return true;
+        }
+        return false;
+    }
     property var specialWorkspaces: []
     property int activeWorkspaceId: -1
     property var activeWindow: ({ "title": "Desktop", "app": "" })
 
 
-    // --- Workspace Mapping ---
+    // ── WORKSPACE MAPPING ─────────────────────────────────────────────
     function _mapWorkspaces() {
         var wsMap = {};
-        var maxId = Preferences.workspaceCount;
+        var maxId = Preferences.bar.workspaceCount;
         var activeId = -1;
 
         var focusedWs = Hyprland.focusedWorkspace;
@@ -64,65 +76,6 @@ Singleton {
         return { list: res, activeId: activeId };
     }
 
-    // --- Window Mapping ---
-    function _mapWindows() {
-        var res = [];
-        var tlList = Hyprland.toplevels.values;
-
-        for (var i = 0; i < tlList.length; i++) {
-            var win = tlList[i];
-
-            if (!win.address || win.address === "") continue;
-
-            var addr = win.address;
-            if (!addr.startsWith("0x")) addr = "0x" + addr;
-
-            var hyprData = root.windowByAddress[addr] || {};
-
-            var appId = "";
-            if (win.wayland && win.wayland.appId) {
-                appId = win.wayland.appId;
-            } else if (hyprData["class"]) {
-                appId = hyprData["class"];
-            } else if (win.lastIpcObject && win.lastIpcObject["class"]) {
-                appId = win.lastIpcObject["class"];
-            }
-
-            var title = win.title || hyprData["title"] || "";
-            if (appId === "" && title === "") continue;
-
-            var at = hyprData["at"] || (win.lastIpcObject && win.lastIpcObject["at"]) || [0, 0];
-            var size = hyprData["size"] || (win.lastIpcObject && win.lastIpcObject["size"]) || [100, 100];
-            var floating = hyprData["floating"] !== undefined ? hyprData["floating"] : !!(win.lastIpcObject && win.lastIpcObject["floating"]);
-            var fullscreen = hyprData["fullscreen"] || (win.lastIpcObject && win.lastIpcObject["fullscreen"]) || 0;
-            var monitorId = hyprData["monitor"] !== undefined ? hyprData["monitor"] : -1;
-            var monitorName = hyprData["monitorname"] || "";
-            var workspaceId = hyprData["workspace"] && hyprData["workspace"].id !== undefined ? hyprData["workspace"].id : (win.workspace ? win.workspace.id : -1);
-
-            res.push({
-                "id": addr,
-                "title": title,
-                "appId": appId || title,
-                "workspaceId": workspaceId,
-                "workspaceIdx": workspaceId,
-                "isFocused": win.activated,
-                "at": at,
-                "size": size,
-                "floating": floating,
-                "fullscreen": fullscreen,
-                "monitor": monitorName,
-                "monitorId": monitorId,
-                "class": hyprData["class"] || appId
-            });
-        }
-
-        res.sort((a, b) => {
-            if (a.workspaceIdx !== b.workspaceIdx) return a.workspaceIdx - b.workspaceIdx;
-            return String(a.id).localeCompare(String(b.id));
-        });
-        return res;
-    }
-
     function _refreshClients() {
         ProcessService.run(["hyprctl", "clients", "-j"], function(text, exitCode) {
             try {
@@ -137,11 +90,10 @@ Singleton {
                 root.windowByAddress = byAddr;
             } catch (e) {
             }
-            root._updateWindows();
         });
     }
 
-    // --- Internal Update Helpers ---
+    // ── INTERNAL UPDATE HELPERS ───────────────────────────────────────
     function _updateWorkspaces() {
         var data = _mapWorkspaces();
         root.workspaces = data.list;
@@ -167,10 +119,6 @@ Singleton {
         root.specialWorkspaces = names;
     }
 
-    function _updateWindows() {
-        root.windows = _mapWindows();
-    }
-
     function _updateActiveWindow() {
         var win = Hyprland.activeToplevel;
         if (win) {
@@ -183,7 +131,7 @@ Singleton {
         }
     }
 
-    // --- Event-Driven Updates via rawEvent ---
+    // ── EVENT-DRIVEN UPDATES ──────────────────────────────────────────
     Connections {
         target: Hyprland
         function onRawEvent(event) {
@@ -204,13 +152,15 @@ Singleton {
                     break;
 
                 case "openwindow":
+                    root._refreshClients();
+                    wsDebounce.restart();
+                    break;
+
                 case "closewindow":
                 case "movewindow":
                 case "movewindowv2":
                 case "changefloatingmode":
                 case "fullscreen":
-                    Hyprland.refreshToplevels();
-                    winDebounce.restart();
                     clientsDebounce.restart();
                     wsDebounce.restart();
                     break;
@@ -232,16 +182,20 @@ Singleton {
 
         function onActiveToplevelChanged() {
             _updateActiveWindow();
-            winDebounce.restart();
         }
     }
 
+    // Re-map workspaces immediately when the configured count changes
+    Connections {
+        target: Preferences.bar
+        function onWorkspaceCountChanged() { root._updateWorkspaces(); }
+    }
+
     Timer { id: wsDebounce;      interval: 50;  repeat: false; onTriggered: root._updateWorkspaces() }
-    Timer { id: winDebounce;     interval: 50;  repeat: false; onTriggered: root._updateWindows() }
     Timer { id: activeWinDebounce; interval: 50; repeat: false; onTriggered: root._updateActiveWindow() }
     Timer { id: clientsDebounce; interval: 100; repeat: false; onTriggered: root._refreshClients() }
 
-    // --- Startup ---
+    // ── STARTUP ────────────────────────────────────────────────────────
     Timer {
         id: startupTimer
         interval: 200
@@ -253,7 +207,6 @@ Singleton {
             Hyprland.refreshToplevels();
             root._refreshClients();
             root._updateWorkspaces();
-            root._updateWindows();
             root._updateActiveWindow();
 
             var fw = Hyprland.focusedWorkspace;
@@ -271,13 +224,12 @@ Singleton {
         repeat: true
         onTriggered: {
             root._updateWorkspaces();
-            root._updateWindows();
             root._updateSpecialWorkspaces();
             root._refreshClients();
         }
     }
 
-    // --- Public Utilities ---
+    // ── PUBLIC UTILITIES ──────────────────────────────────────────────
 
     function normalizeAddress(raw) {
         if (!raw) return "";
@@ -286,7 +238,7 @@ Singleton {
 
     property bool usingLua: true
 
-    // --- Public Actions ---
+    // ── PUBLIC ACTIONS ────────────────────────────────────────────────
 
     function _dispatch(cmd) {
         Hyprland.dispatch(cmd);
@@ -322,7 +274,6 @@ Singleton {
         Hyprland.refreshToplevels();
         root._refreshClients();
         root._updateWorkspaces();
-        root._updateWindows();
         root._updateActiveWindow();
         startupTimer.start();
     }

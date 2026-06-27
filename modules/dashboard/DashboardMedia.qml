@@ -6,13 +6,12 @@ import Quickshell
 import Quickshell.Services.Mpris
 import qs
 
-BaseBlock {
+BaseBento {
     id: root
 
     implicitWidth: 300
 
     borderEnabled: false
-    backgroundColor: Theme.alpha(Theme.colors.surface, Theme.opacity.surface)
     hoverEnabled: false
 
 
@@ -240,7 +239,7 @@ BaseBlock {
                         opacity: !albumArtContainer.useArt2 ? 1.0 : 0.0
                         visible: opacity > 0.01
 
-                        Behavior on opacity { BaseAnimation { speed: "slow" } }
+                        Behavior on opacity { BaseAnimation { } }
 
                         scale: albumArtContainer.breathScale
 
@@ -260,7 +259,7 @@ BaseBlock {
                         opacity: albumArtContainer.useArt2 ? 1.0 : 0.0
                         visible: opacity > 0.01
 
-                        Behavior on opacity { BaseAnimation { speed: "slow" } }
+                        Behavior on opacity { BaseAnimation { } }
 
                         scale: albumArtContainer.breathScale
 
@@ -334,7 +333,6 @@ BaseBlock {
                 weight: Theme.typography.weights.bold
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
-                color: Theme.colors.text
             }
 
             BaseText {
@@ -343,7 +341,7 @@ BaseBlock {
                 pixelSize: Theme.typography.size.medium
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
-                color: Theme.colors.muted
+                muted: true
             }
         }
 
@@ -390,7 +388,6 @@ BaseBlock {
                 BaseAnimation {
                     from: 0
                     to: -Math.PI * 2
-                    speed: "slow"
                     loops: Animation.Infinite
                     running: Media.playbackState === MprisPlaybackState.Playing
                     target: progressSlider
@@ -483,7 +480,7 @@ BaseBlock {
                 BaseText {
                     text: root.formatTime(Media.currentPosition)
                     pixelSize: Theme.typography.size.small
-                    color: Theme.colors.muted
+                    muted: true
                 }
 
                 Item { Layout.fillWidth: true }
@@ -491,7 +488,7 @@ BaseBlock {
                 BaseText {
                     text: root.formatTime(Media.trackLength / 1e+06)
                     pixelSize: Theme.typography.size.small
-                    color: Theme.colors.muted
+                    muted: true
                 }
             }
         }
@@ -502,21 +499,17 @@ BaseBlock {
             spacing: 24
 
             BaseButton {
-            buttonMode: "action"
                 id: prevBtn
                 icon: "skip_previous"
-                interactive: Media.canGoPrevious
-                opacity: interactive ? 1.0 : 0.5
-                actionColor: Theme.colors.primary
-                inactiveBackgroundColor: Theme.colors.background
-                inactiveBackgroundOpacity: 0.5
-                onClicked: {
-                    prevAnim.restart()
-                    Media.previous()
-                }
+                enabled: Media.canGoPrevious
+                opacity: enabled ? 1.0 : 0.5
+                 onClicked: {
+                     prevAnim.restart()
+                     Media.previous()
+                 }
 
-                NumberAnimation {
-                    id: prevAnim
+                 NumberAnimation {
+                     id: prevAnim
                     target: prevBtn
                     property: "iconRotation"
                     from: 0
@@ -708,18 +701,14 @@ BaseBlock {
             }
 
             BaseButton {
-            buttonMode: "action"
                 id: nextBtn
                 icon: "skip_next"
-                interactive: Media.canGoNext
-                opacity: interactive ? 1.0 : 0.5
-                actionColor: Theme.colors.primary
-                inactiveBackgroundColor: Theme.colors.background
-                inactiveBackgroundOpacity: 0.5
-                onClicked: {
-                    nextAnim.restart()
-                    Media.next()
-                }
+                enabled: Media.canGoNext
+                opacity: enabled ? 1.0 : 0.5
+                 onClicked: {
+                     nextAnim.restart()
+                     Media.next()
+                 }
 
                 NumberAnimation {
                     id: nextAnim

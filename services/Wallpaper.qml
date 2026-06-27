@@ -12,7 +12,7 @@ pragma Singleton
 Item {
     id: root
 
-    // --- State Properties ---
+    // ── STATE PROPERTIES ────────────────────────────────────────────
     property var wallpapers: []
     property string currentWallpaper: ""
     
@@ -20,12 +20,12 @@ Item {
     property bool isLoading: false
     property bool hasScanned: false
     
-    // --- Computed Source ---
+    // ── COMPUTED SOURCE ─────────────────────────────────────────────
     // This is the SINGLE source of truth for the UI.
     property string processedWallpaper: ""
-    property string displayWallpaper: (Preferences.gowallEnabled && processedWallpaper !== "") ? processedWallpaper : currentWallpaper
+    property string displayWallpaper: (Preferences.wallpaper.gowallEnabled && processedWallpaper !== "") ? processedWallpaper : currentWallpaper
 
-    // --- Child Components ---
+    // ── CHILD COMPONENTS ────────────────────────────────────────────
     FileView {
         id: listCacheView
         path: Config.wallpaperListFile
@@ -51,18 +51,20 @@ Item {
                 }
             }
         }
-        function onWallpaperDirectoryChanged() {
+    }
+
+    Connections {
+        target: Preferences.wallpaper
+        function onDirectoryChanged() {
             if (Preferences.loaded) {
                 root.refreshWallpapers();
             }
         }
     }
 
-    // --- Signals ---
-    signal wallpapersScanned()
     signal wallpaperSet(string path)
 
-    // --- Public API ---
+    // ── PUBLIC API ──────────────────────────────────────────────────
 
     /**
      * Updates the current wallpaper. 
@@ -91,12 +93,6 @@ Item {
     }
     function refreshWallpapers() { hasScanned = false; scanWallpapers(); }
     
-    function setRandomWallpaper() {
-        ensureScanned();
-        if (wallpapers.length > 0) {
-            setWallpaper(wallpapers[Math.floor(Math.random() * wallpapers.length)]);
-        }
-    }
 
     function shuffleWallpapers() {
         if (!wallpapers || wallpapers.length <= 1) return;
@@ -109,7 +105,7 @@ Item {
         wallpapers = shuffled;
     }
 
-    // --- Internal Logic ---
+    // ── INTERNAL LOGIC ──────────────────────────────────────────────
 
     property Timer scanRetryTimer: Timer {
         interval: 1000
@@ -129,7 +125,7 @@ Item {
         if (isLoading) return; 
         
         // Expand $HOME and ~ in the directory path
-        var dir = expandPath(Preferences.wallpaperDirectory);
+        var dir = expandPath(Preferences.wallpaper.directory);
         if (!dir || dir === "") {
             console.warn("[WallpaperService] No valid directory to scan");
             root.wallpapers = [];
