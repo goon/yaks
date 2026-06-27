@@ -17,7 +17,7 @@ Item {
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
     readonly property var _menuModel: [
-        { page: "GlobalsPage.qml",       title: "Globals",       subtitle: "Look, feel, and typography.",           icon: "web_asset" },
+        { page: "Style.qml",       title: "Style",       subtitle: "Look, feel, and typography.",           icon: "brush" },
         { page: "Bar.qml",           title: "Bar",           subtitle: "Position, size, and layout of the bar.", icon: "border_top" },
         { page: "Notifications.qml",  title: "Notifications", subtitle: "Behaviour, sounds, and display.",        icon: "notifications" },
         { page: "Clipboard.qml",     title: "Clipboard",     subtitle: "History, sync, and behaviour.",          icon: "content_paste" },

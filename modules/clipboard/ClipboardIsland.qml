@@ -59,6 +59,9 @@ FocusScope {
         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
             if (root.currentItem) {
                 Clipboard.pasteCliphistItem(root.currentItem.rawLine);
+                if (Preferences.clipboard.autoClose) {
+                    IslandService.closeAll();
+                }
                 event.accepted = true;
             }
         } else if (event.key === Qt.Key_Delete) {
@@ -287,6 +290,9 @@ FocusScope {
                         onClicked: {
                             if (root.currentItem) {
                                 Clipboard.pasteCliphistItem(root.currentItem.rawLine);
+                                if (Preferences.clipboard.autoClose) {
+                                    IslandService.closeAll();
+                                }
                             }
                         }
                     }

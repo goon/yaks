@@ -17,9 +17,46 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "construction"
-                label: "Coming Soon"
+                label: "Auto Close on Copy"
+                BaseSwitch {
+                    checked: Preferences.clipboard.autoClose
+                    onCheckedChanged: {
+                        if (Preferences.clipboard.autoClose !== checked) {
+                            Preferences.clipboard.autoClose = checked;
+                        }
+                    }
+                }
+            }
+
+            SettingsRow {
+                label: "Time Based Cleanup"
+                BaseSpinBox {
+                    value: Preferences.clipboard.cleanupDays
+                    from: 0
+                    to: 14
+                    suffix: "d"
+                    onValueChanged: {
+                        if (Preferences.clipboard.cleanupDays !== value) {
+                            Preferences.clipboard.cleanupDays = value;
+                        }
+                    }
+                }
+            }
+
+            SettingsRow {
+                label: "UI Display Limit"
                 showSeparator: false
+                BaseSpinBox {
+                    value: Preferences.clipboard.displayLimit
+                    from: 25
+                    to: 100
+                    onValueChanged: {
+                        if (Preferences.clipboard.displayLimit !== value) {
+                            Preferences.clipboard.displayLimit = value;
+                            Clipboard.reloadCliphist(); // Force reload to reflect limit change
+                        }
+                    }
+                }
             }
         }
     }

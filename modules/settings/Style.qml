@@ -6,7 +6,7 @@ import qs
 SettingsPage {
     id: root
 
-    title: "Globals"
+    title: "Style"
     description: "Adjust the core desktop environment's look, feel, and typography."
 
     ColumnLayout {
@@ -18,7 +18,7 @@ SettingsPage {
 
                 SettingsRow {
                     icon: "palette"
-                    label: "Tokens"
+                    label: "Theme"
                     
                     BaseComboBox {
                         Layout.fillWidth: true
@@ -74,26 +74,18 @@ SettingsPage {
                     label: "Background"
 
 
-                    BaseColourPicker {
-                        readonly property real _min: 0.04
-                        readonly property real _range: 0.22
-                        readonly property real _seedHue: Qt.color(Preferences.globals.dynamicSeedColor).hslHue
-
-                        Layout.fillWidth: true
-                        value: (Preferences.globals.dynamicBgLightness - _min) / _range
-                        thumbColor: Qt.hsla(_seedHue, 0.06, Preferences.globals.dynamicBgLightness, 1.0)
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: Qt.hsla(Qt.color(Preferences.globals.dynamicSeedColor).hslHue, 0.06, 0.04, 1.0) }
-                            GradientStop { position: 0.5; color: Qt.hsla(Qt.color(Preferences.globals.dynamicSeedColor).hslHue, 0.06, 0.14, 1.0) }
-                            GradientStop { position: 1.0; color: Qt.hsla(Qt.color(Preferences.globals.dynamicSeedColor).hslHue, 0.06, 0.26, 1.0) }
-                        }
-                        onDragged: (v) => {
-                            Preferences.globals.dynamicBgLightness = _min + v * _range;
-                            Theme.setTheme(Preferences.currentTheme, true);
-                        }
-                        onCommitted: (v) => {
-                            Theme.setTheme(Preferences.currentTheme, false);
+                    BaseSpinBox {
+                        from: 5
+                        to: 25
+                        stepSize: 1
+                        suffix: "%"
+                        value: Math.round(Preferences.globals.dynamicBgLightness * 100)
+                        onValueChanged: {
+                            let newLightness = value / 100.0;
+                            if (Math.abs(Preferences.globals.dynamicBgLightness - newLightness) > 0.001) {
+                                Preferences.globals.dynamicBgLightness = newLightness;
+                                Theme.setTheme(Preferences.currentTheme, false);
+                            }
                         }
                     }
                 }

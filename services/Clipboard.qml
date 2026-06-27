@@ -43,7 +43,8 @@ QtObject {
     }
 
     function reloadCliphist() {
-        ProcessService.run(["sh", "-c", "cliphist list | head -n 50"], function(out) {
+        var limit = Preferences.clipboard.displayLimit || 50;
+        ProcessService.run(["sh", "-c", "cliphist list | head -n " + limit], function(out) {
             if (out === undefined || out === null) {
                 return;
             }
@@ -340,6 +341,57 @@ QtObject {
                 }
             });
         }
+    }
+
+    function runCleanup() {
+        var days = Preferences.clipboard.cleanupDays;
+        if (!days || days <= 0 || !root.cliphistAvailable || !root.firstSeenLoaded) return;
+        
+        var cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - days);
+
+        ProcessService.run(["sh", "-c", "cliphist list"], function(out) {
+            if (!out) return;
+            var lines = out.split("\n");
+            var toDelete = [];
+            
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if (!line) continue;
+                var match = line.match(/^([0-9]+)\s+/);
+                if (!match) continue;
+                var idStr = match[1];
+                
+                var seen = root.firstSeenTimes[idStr];
+                if (seen && seen < cutoff) {
+                    toDelete.push(line);
+                }
+            }
+            
+            if (toDelete.length > 0) {
+                var script = "";
+                for (var j = 0; j < toDelete.length; j++) {
+                    script += "printf '%s\\n' " + root.shellQuote(toDelete[j]) + " | cliphist delete\n";
+                }
+                ProcessService.runDetached(["sh", "-c", script]);
+                console.log("[Clipboard] Cleaned up " + toDelete.length + " old items.");
+            }
+        });
+    }
+
+    property Timer cleanupTimer: Timer {
+        interval: 3600000 // 1 hour
+        repeat: true
+        running: root.cliphistAvailable
+        onTriggered: root.runCleanup()
+    }
+
+    // Run initial cleanup slightly after startup to avoid blocking
+    property Timer initialCleanupTimer: Timer {
+        interval: 5000
+        repeat: false
+        running: true
+        onTriggered: root.runCleanup()
     }
 
 }

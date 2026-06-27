@@ -119,6 +119,16 @@ QtObject {
         onOrderChanged: root.requestSave()
     }
 
+    property QtObject clipboard: QtObject {
+        property bool autoClose: true
+        property int cleanupDays: 7
+        property int displayLimit: 50
+
+        onAutoCloseChanged: root.requestSave()
+        onCleanupDaysChanged: root.requestSave()
+        onDisplayLimitChanged: root.requestSave()
+    }
+
     property QtObject animations: QtObject {
         property real speedMultiplier: 1.0 // 0.5x - 2.5x
 
@@ -168,6 +178,9 @@ QtObject {
         ["weather", "long"],
         ["weather", "locationName"],
         ["indicators", "order"],
+        ["clipboard", "autoClose"],
+        ["clipboard", "cleanupDays"],
+        ["clipboard", "displayLimit"],
         ["animations", "speedMultiplier"],
         ["currentTheme"],
         ["currentWallpaper"],
