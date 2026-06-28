@@ -64,6 +64,7 @@ SettingsPage {
                 property var indicatorTarget: appsTitleRow
                 Layout.fillWidth: true
                 Layout.margins: Globals.geometry.spacing.medium
+                Layout.topMargin: Globals.geometry.spacing.large
                 columns: 3
                 columnSpacing: Globals.geometry.spacing.small
                 rowSpacing: Globals.geometry.spacing.small

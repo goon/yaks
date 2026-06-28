@@ -137,9 +137,10 @@ SettingsPage {
 
             ComponentList {
                 id: componentList
+                property var indicatorTarget: activeComponentsTitle
                 Layout.fillWidth: true
                 Layout.margins: Globals.geometry.spacing.medium
-                Layout.topMargin: 0
+                Layout.topMargin: Globals.geometry.spacing.large
                 sectionName: "barComponents"
                 components: Preferences.bar.components
             }
