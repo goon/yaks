@@ -13,7 +13,7 @@ BaseContainer {
     visible: Compositor.hasDockWindows
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
-    paddingHorizontal: Globals.geometry.spacing.small
+    paddingHorizontal: 0
     implicitHeight: _itemSize
 
     ListView {
@@ -44,7 +44,7 @@ BaseContainer {
             readonly property bool isFocused: modelData ? modelData.activated : false
 
             implicitHeight: _itemSize
-            implicitWidth: isValid ? _itemSize + _spacing : 0
+            implicitWidth: isValid ? _itemSize : 0
 
             Behavior on implicitWidth {
                 NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuad }
