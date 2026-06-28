@@ -5,7 +5,7 @@ import qs.services
 import qs
 
 Item {
-    id: fullBarRoot
+    id: fullRoot
     
     property var barWindow: null
     
@@ -44,28 +44,30 @@ Item {
                 model: barWindow ? barWindow.components : []
                 
                 RowLayout {
+                    id: componentLayout
                     Layout.alignment: Qt.AlignVCenter
-                    visible: (Preferences.bar.componentsEnabled[modelData] === true) && (modelData === "dock" ? Compositor.hasDockWindows : (barWindow && barWindow.resolveComponentSource(modelData) !== ""))
+                    
+                    readonly property bool isComponentVisible: (Preferences.bar.componentsEnabled[modelData] === true) && (modelData === "dock" ? Compositor.hasDockWindows : (barWindow && barWindow.resolveComponentSource(modelData) !== ""))
+                    visible: isComponentVisible
                     spacing: horizontalSpacing
                     
                     BaseSeparator {
                         visible: {
-                            if (!parent.visible) return false;
-                            let visibleIndex = -1;
-                            for (let i = 0; i < mainContent.visibleChildren.length; i++) {
-                                if (mainContent.visibleChildren[i] === parent) {
-                                    visibleIndex = i;
-                                    break;
-                                }
+                            if (!componentLayout.isComponentVisible) return false;
+                            
+                            for (let i = 0; i < index; i++) {
+                                let otherData = barWindow.components[i];
+                                let otherVisible = (Preferences.bar.componentsEnabled[otherData] === true) && 
+                                                   (otherData === "dock" ? Compositor.hasDockWindows : (barWindow && barWindow.resolveComponentSource(otherData) !== ""));
+                                if (otherVisible) return true;
                             }
-                            return visibleIndex > 0;
+                            return false;
                         }
                         orientation: BaseSeparator.Vertical
                         Layout.fillHeight: false
                         Layout.preferredHeight: 30
                         Layout.preferredWidth: 1
                         Layout.alignment: Qt.AlignVCenter
-                        color: Globals.colors.border
                     }
 
                     Loader {

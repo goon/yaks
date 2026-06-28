@@ -12,12 +12,6 @@ BaseContainer {
     implicitWidth: 200
     implicitHeight: Globals.dimensions.barItemHeight
 
-    hoverEnabled: false
-    clickable: true
-    onClicked: {
-        IslandService.toggleDashboardPopout();
-    }
-
     SystemClock {
         id: systemClock
         precision: SystemClock.Minutes
