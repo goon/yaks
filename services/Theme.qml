@@ -128,7 +128,7 @@ Item {
 
         if (!silent) {
             var label = id.charAt(0).toUpperCase() + id.slice(1);
-            ProcessService.runDetached(["notify-send", "-a", "Tokens", "-i", "symbol:palette", "Tokens",
+            ProcessService.runDetached(["notify-send", "-a", "Theme", "-i", "symbol:palette", "Theme",
                 "The <b>" + label + "</b> palette has been applied."]);
         }
     }
