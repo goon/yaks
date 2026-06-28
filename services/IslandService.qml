@@ -11,6 +11,7 @@ QtObject {
     property var activeScreen: null
     property Item activePanelItem: null
     property bool indicatorsHovered: false
+    property bool isIslandHovered: false
 
     property real anchorX: -1
     property real anchorMinX: -1
@@ -57,7 +58,7 @@ QtObject {
         "settings":      { source: "../modules/settings/Settings.qml" },
         "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
-        "fullbar":       { source: "../modules/bar/FullBar.qml" },
+        "fullbar":       { source: "../modules/bar/Full.qml" },
         "power":         { source: "../modules/power/Power.qml" },
         "mixer":         { source: "../modules/mixer/Mixer.qml" },
         "network":       { source: "../modules/network/Network.qml" },
@@ -192,7 +193,7 @@ QtObject {
     property Timer _volumeToastTimer: Timer {
         interval: 2000
         onTriggered: {
-            if (activePanelName === "volumetoast") {
+            if (activePanelName === "volumetoast" && !isIslandHovered) {
                 closeAll();
             }
         }
@@ -223,7 +224,7 @@ QtObject {
     property Timer _workspaceFullBarTimer: Timer {
         interval: 2000
         onTriggered: {
-            if (activePanelName === "fullbar") {
+            if (activePanelName === "fullbar" && !isIslandHovered) {
                 closeAll();
             }
         }

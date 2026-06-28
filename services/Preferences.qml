@@ -30,6 +30,7 @@ QtObject {
         property int height: 55
         property int marginTop: 10
         property int workspaceCount: 5
+        property bool dynamicIsland: true
         property var components: ["workspaces", "dock", "indicators", "clock"]
         property var componentsEnabled: ({"workspaces": true, "dock": true, "indicators": true, "clock": true})
 
@@ -43,6 +44,7 @@ QtObject {
         onHeightChanged: root.requestSave()
         onMarginTopChanged: root.requestSave()
         onWorkspaceCountChanged: root.requestSave()
+        onDynamicIslandChanged: root.requestSave()
         onComponentsChanged: root.requestSave()
         onComponentsEnabledChanged: root.requestSave()
     }
@@ -161,6 +163,7 @@ QtObject {
         ["bar", "height"],
         ["bar", "marginTop"],
         ["bar", "workspaceCount"],
+        ["bar", "dynamicIsland"],
         ["bar", "components"],
         ["bar", "componentsEnabled"],
         ["wallpaper", "gowallEnabled"],

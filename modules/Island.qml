@@ -22,14 +22,15 @@ Item {
 
     // ── HOVER EXPAND STATE ────────────────────────────────────────────
     property bool isHovered: false
+    onIsHoveredChanged: IslandService.isIslandHovered = isHovered;
 
-    readonly property bool isMouseOverCapsule: capsuleHoverArea.containsMouse || capsuleInnerHoverArea.containsMouse
+    readonly property bool isMouseOverCapsule: typeof capsuleHoverHandler !== "undefined" ? capsuleHoverHandler.hovered : false
 
     onIsMouseOverCapsuleChanged: {
         if (isMouseOverCapsule) {
             hoverDelayTimer.stop();
             islandRoot.isHovered = true;
-            if (IslandService.activePanelName === "") {
+            if (Preferences.bar.dynamicIsland && IslandService.activePanelName === "") {
                 IslandService.openPanel("fullbar");
             }
         } else {
@@ -148,7 +149,7 @@ Item {
     readonly property alias maskItem: maskItem
 
     readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - (Globals.dimensions.barItemHeight * Globals.barScale)) / 2)
-    readonly property real normalCapsuleWidth: (pillClock.implicitWidth * Globals.barScale + normalSideMargin * 2)
+    readonly property real normalCapsuleWidth: Preferences.bar.dynamicIsland ? (minimalClock.implicitWidth * Globals.barScale + normalSideMargin * 2) : (staticFull.implicitWidth * Globals.barScale + normalSideMargin * 2)
     readonly property real normalCapsuleHeight: Preferences.bar.height
     readonly property real normalCapsuleX: (barWindow.width - normalCapsuleWidth) / 2
     readonly property real normalCapsuleY: Preferences.bar.position === "top"
@@ -243,6 +244,10 @@ Item {
     BaseBackground {
         id: capsule
         
+        HoverHandler {
+            id: capsuleHoverHandler
+        }
+        
         x: targetCapsuleX
         y: targetCapsuleY
         width: targetCapsuleWidth
@@ -275,7 +280,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: implicitHeight
-                width: (pillClock.implicitWidth * Globals.barScale + normalSideMargin * 2) / Globals.barScale
+                width: normalCapsuleWidth / Globals.barScale
                 spacing: normalSideMargin / Globals.barScale
                 
                 opacity: islandRoot.isIslandMorphed ? 0.0 : 1.0
@@ -290,8 +295,16 @@ Item {
                     yScale: Globals.barScale
                 }
 
-                PillClock {
-                    id: pillClock
+                Minimal {
+                    id: minimalClock
+                    visible: Preferences.bar.dynamicIsland
+                    Layout.alignment: Qt.AlignCenter
+                }
+
+                Full {
+                    id: staticFull
+                    visible: !Preferences.bar.dynamicIsland
+                    barWindow: islandRoot.barWindow
                     Layout.alignment: Qt.AlignCenter
                 }
             }
