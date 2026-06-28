@@ -179,6 +179,12 @@ Item {
                             
                             opacity: trayMouseArea.containsMouse ? 1.0 : 0.8
                             Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
+
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                colorization: 1.0
+                                colorizationColor: Globals.colors.text
+                            }
                         }
                     }
                 }
