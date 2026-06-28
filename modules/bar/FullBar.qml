@@ -76,7 +76,7 @@ Item {
                             target: componentLoader.item
                             property: "barWindow"
                             value: barWindow
-                            when: componentLoader.item !== null && modelData === "indicators"
+                            when: componentLoader.item !== null && (modelData === "indicators" || modelData === "tray")
                         }
                     }
                 }

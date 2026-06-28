@@ -30,8 +30,8 @@ QtObject {
         property int height: 55
         property int marginTop: 10
         property int workspaceCount: 5
-        property var components: ["workspaces", "dock", "indicators", "clock"]
-        property var componentsEnabled: ({"workspaces": true, "dock": true, "indicators": true, "clock": true})
+        property var components: ["workspaces", "dock", "tray", "indicators", "clock"]
+        property var componentsEnabled: ({"workspaces": true, "dock": true, "tray": true, "indicators": true, "clock": true})
 
         onPositionChanged: root.requestSave()
         onDensityChanged: {
@@ -302,7 +302,11 @@ QtObject {
                             // Reassign to trigger property change
                             root.applications.themedApps = Object.assign({}, currentApps);
                         }
-                    }                    safetyTimer.stop();
+                    }
+
+                    // ── MIGRATIONS ─────────────────────────────────────────
+                    
+                    safetyTimer.stop();
                     root.loaded = true;
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
