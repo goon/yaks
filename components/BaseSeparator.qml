@@ -21,5 +21,5 @@ Rectangle {
     Layout.fillHeight: orientation === BaseSeparator.Vertical
     
     color: Globals.colors.border
-    opacity: 0.3
+    opacity: 0.5
 }
