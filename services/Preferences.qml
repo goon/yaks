@@ -91,7 +91,7 @@ QtObject {
         property int cornerRadius: 30
         property double backgroundOpacity: 1.0
         property bool islandOutline: true
-        property string dynamicSeedColor: "#7E9CD8"
+        property string dynamicSeedColor: "#9d99e5"
         property real dynamicBgLightness: 0.08
 
         onThemeModeChanged: root.requestSave()
@@ -143,7 +143,7 @@ QtObject {
 
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
-    property string currentTheme: "pure"
+    property string currentTheme: "tinted"
     property string currentWallpaper: ""
 
     onCurrentThemeChanged: root.requestSave()
@@ -247,7 +247,18 @@ QtObject {
 
     // ── INITIALISATION ──────────────────────────────────────────────────
 
-    Component.onCompleted: { prefsFileView.reload(); }
+    Component.onCompleted: { 
+        ProcessService.run(["sh", "-c", "test -f " + root.prefsFile], function(out, exitCode) {
+            if (exitCode !== 0) {
+                console.log("[Preferences] No preferences file found. Booting with defaults immediately.");
+                safetyTimer.stop();
+                root.loaded = true;
+                root.requestSave(); // Create the file
+            } else {
+                prefsFileView.reload();
+            }
+        });
+    }
 
     property Timer safetyTimer: Timer {
         interval: 10000

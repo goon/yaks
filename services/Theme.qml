@@ -140,14 +140,35 @@ Item {
     }
 
     function loadDefaultFallback() {
-        currentColors = {
-            "background": "#1a1a24",
-            "surface":    "#23232d",
-            "surfaceAlt": "#2a2a37",
-            "primary":    "#d4a76a",
-            "text":       "#e0e0e6",
-            "textDim":    "#6a6a7a"
-        };
+        var seed = Preferences.globals.dynamicSeedColor;
+        var bgL  = Preferences.globals.dynamicBgLightness;
+        var themeData = Generator.generateTinted(seed, bgL);
+        
+        if (themeData) {
+            currentColors = themeData;
+        } else {
+            // Absolute failsafe
+            currentColors = {
+                "base00": "#1e1e2d",
+                "base01": "#181824",
+                "base02": "#29293b",
+                "base03": "#3d3d51",
+                "base04": "#4f4f65",
+                "base05": "#CDD6F4",
+                "base06": "#F5E0DC",
+                "base07": "#B4BEFE",
+                "base08": "#F38BA8",
+                "base09": "#FAB387",
+                "base0A": "#F9E2AF",
+                "base0B": "#A6E3A1",
+                "base0C": "#94E2D5",
+                "base0D": "#9d99e5",
+                "base0E": "#c199e5",
+                "base0F": "#F2CDCD",
+                "primaryIdx": "base0D",
+                "secondaryIdx": "base0E"
+            };
+        }
         ready = true;
     }
 

@@ -31,26 +31,26 @@ QtObject {
      */
     readonly property QtObject base16: QtObject {
         // ── BACKGROUNDS & SURFACES ────────────────────────────────────────
-        readonly property color base00: root.activePalette.base00 || "#16161D" // Default App Background
-        readonly property color base01: root.activePalette.base01 || "#1F1F28" // Lighter Background (Panels, Status Bars)
-        readonly property color base02: root.activePalette.base02 || "#2A2A37" // Selection Background / Hover States
-        readonly property color base03: root.activePalette.base03 || "#363646" // Inactive Elements / Borders / Comments
+        readonly property color base00: root.activePalette.base00 || "#1e1e2d" // Default App Background
+        readonly property color base01: root.activePalette.base01 || "#181824" // Lighter Background (Panels, Status Bars)
+        readonly property color base02: root.activePalette.base02 || "#29293b" // Selection Background / Hover States
+        readonly property color base03: root.activePalette.base03 || "#3d3d51" // Inactive Elements / Borders / Comments
         
         // ── FOREGROUNDS & TEXT ────────────────────────────────────────────
-        readonly property color base04: root.activePalette.base04 || "#54546D" // Muted Text / Dark Foreground
-        readonly property color base05: root.activePalette.base05 || "#DCD7BA" // Default Foreground / Standard Text
-        readonly property color base06: root.activePalette.base06 || "#C8C093" // Light Foreground / Emphasized Text
-        readonly property color base07: root.activePalette.base07 || "#E8E5DF" // Brightest Foreground / Active Text
+        readonly property color base04: root.activePalette.base04 || "#4f4f65" // Muted Text / Dark Foreground
+        readonly property color base05: root.activePalette.base05 || "#CDD6F4" // Default Foreground / Standard Text
+        readonly property color base06: root.activePalette.base06 || "#F5E0DC" // Light Foreground / Emphasized Text
+        readonly property color base07: root.activePalette.base07 || "#B4BEFE" // Brightest Foreground / Active Text
 
         // ── BRAND & FEEDBACK COLORS ───────────────────────────────────────
-        readonly property color base08: root.activePalette.base08 || "#E82424" // Red: Error, Destructive Actions
-        readonly property color base09: root.activePalette.base09 || "#FF9E3B" // Orange: Warning, Alerts
-        readonly property color base0A: root.activePalette.base0A || "#E6C384" // Yellow: Accent, Highlights
-        readonly property color base0B: root.activePalette.base0B || "#76946A" // Green: Success, Positive States
-        readonly property color base0C: root.activePalette.base0C || "#7AA89F" // Cyan: Info, Active Indicators
-        readonly property color base0D: root.activePalette.base0D || "#7E9CD8" // Blue: Primary Brand Color, Links
-        readonly property color base0E: root.activePalette.base0E || "#957FB8" // Purple/Magenta: Secondary Brand Color
-        readonly property color base0F: root.activePalette.base0F || "#DCA561" // Brown: Tertiary Colors, Misc
+        readonly property color base08: root.activePalette.base08 || "#F38BA8" // Red: Error, Destructive Actions
+        readonly property color base09: root.activePalette.base09 || "#FAB387" // Orange: Warning, Alerts
+        readonly property color base0A: root.activePalette.base0A || "#F9E2AF" // Yellow: Accent, Highlights
+        readonly property color base0B: root.activePalette.base0B || "#A6E3A1" // Green: Success, Positive States
+        readonly property color base0C: root.activePalette.base0C || "#94E2D5" // Cyan: Info, Active Indicators
+        readonly property color base0D: root.activePalette.base0D || "#9d99e5" // Blue: Primary Brand Color, Links
+        readonly property color base0E: root.activePalette.base0E || "#c199e5" // Purple/Magenta: Secondary Brand Color
+        readonly property color base0F: root.activePalette.base0F || "#F2CDCD" // Brown: Tertiary Colors, Misc
     }
 
     readonly property QtObject

@@ -63,7 +63,7 @@ SettingsPage {
                             Theme.setTheme(Preferences.currentTheme, true);
                         }
                         onCommitted: (v) => {
-                            Theme.setTheme(Preferences.currentTheme, false);
+                            Theme.setTheme(Preferences.currentTheme, true);
                         }
                     }
                 }
@@ -84,7 +84,7 @@ SettingsPage {
                             let newLightness = value / 100.0;
                             if (Math.abs(Preferences.globals.dynamicBgLightness - newLightness) > 0.001) {
                                 Preferences.globals.dynamicBgLightness = newLightness;
-                                Theme.setTheme(Preferences.currentTheme, false);
+                                Theme.setTheme(Preferences.currentTheme, true);
                             }
                         }
                     }
