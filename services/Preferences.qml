@@ -30,8 +30,8 @@ QtObject {
         property int height: 55
         property int marginTop: 10
         property int workspaceCount: 5
-        property var components: ["workspaces", "dock", "tray", "indicators", "clock"]
-        property var componentsEnabled: ({"workspaces": true, "dock": true, "tray": true, "indicators": true, "clock": true})
+        property var components: ["workspaces", "dock", "indicators", "clock"]
+        property var componentsEnabled: ({"workspaces": true, "dock": true, "indicators": true, "clock": true})
 
         onPositionChanged: root.requestSave()
         onDensityChanged: {
@@ -277,6 +277,9 @@ QtObject {
                 try {
                     var data = JSON.parse(rawText);
                     if (!data || typeof data !== "object") throw new Error("Invalid JSON");
+                    
+                    // Snapshot the default valid components BEFORE overwriting them with user data
+                    var defaultValidComponents = root.bar.components.slice();
 
                     // ── SCHEMA-DRIVEN LOAD ─────────────────────────────────
                     for (var i = 0; i < _schema.length; i++) {
@@ -305,9 +308,30 @@ QtObject {
                     }
 
                     // ── MIGRATIONS ─────────────────────────────────────────
+                    // General cleanup: remove any cached components that no longer exist in the system
+                    var loadedComponents = root.bar.components;
+                    var cleanedComponents = loadedComponents.filter(c => defaultValidComponents.indexOf(c) !== -1);
                     
+                    var loadedEnabled = root.bar.componentsEnabled || {};
+                    var cleanedEnabled = {};
+                    for (var i = 0; i < defaultValidComponents.length; i++) {
+                        var c = defaultValidComponents[i];
+                        cleanedEnabled[c] = loadedEnabled[c] !== undefined ? loadedEnabled[c] : true;
+                    }
+                    
+                    var migrated = false;
+                    if (cleanedComponents.length !== loadedComponents.length || Object.keys(loadedEnabled).length !== defaultValidComponents.length) {
+                        root.bar.components = cleanedComponents;
+                        root.bar.componentsEnabled = cleanedEnabled;
+                        console.log("[Preferences] Cleaned up legacy/invalid components from bar configuration.");
+                        // Force property change signal for QML bindings
+                        root.bar = Object.assign({}, root.bar);
+                        migrated = true;
+                    }
                     safetyTimer.stop();
                     root.loaded = true;
+                    
+                    if (migrated) root.requestSave();
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
                 }
