@@ -17,6 +17,16 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
+                icon: "call_to_action"
+                label: "Minimal"
+                
+                BaseSwitch {
+                    checked: Preferences.bar.dynamicIsland
+                    onToggled: Preferences.bar.dynamicIsland = checked
+                }
+            }
+
+            SettingsRow {
                 icon: "border_top"
                 label: "Position"
 
@@ -74,6 +84,8 @@ SettingsPage {
                     onValueChanged: Preferences.bar.workspaceCount = value
                 }
             }
+
+
 
             SettingsRow {
                 id: activeComponentsTitle
