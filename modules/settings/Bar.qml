@@ -65,7 +65,7 @@ SettingsPage {
             SettingsRow {
                 icon: "view_module"
                 label: "Workspace Count"
-                showSeparator: false
+                showSeparator: true
 
                 BaseSpinBox {
                     from: 1
@@ -75,8 +75,17 @@ SettingsPage {
                 }
             }
 
+            SettingsRow {
+                id: activeComponentsTitle
+                icon: "drag_indicator"
+                label: "Components"
+                showSeparator: false
+                Layout.fillWidth: true
+            }
+
             BarConfiguration {
                 Layout.fillWidth: true
+                property var indicatorTarget: activeComponentsTitle
             }
         }
     }
@@ -126,10 +135,11 @@ SettingsPage {
             Layout.fillWidth: true
             spacing: Globals.geometry.spacing.medium
 
-
-
             ComponentList {
+                id: componentList
                 Layout.fillWidth: true
+                Layout.margins: Globals.geometry.spacing.medium
+                Layout.topMargin: 0
                 sectionName: "barComponents"
                 components: Preferences.bar.components
             }
@@ -145,7 +155,7 @@ SettingsPage {
         property string label
         property var dragData: ({ componentId: componentId, sourceSection: sourceSection })
 
-        width:  rect.width
+        width:  parent ? parent.width : 200
         height: rect.height
         opacity: dragHandler.drag.active ? 0.3 : 1.0
 
@@ -155,43 +165,15 @@ SettingsPage {
             readonly property bool isActive: dragHandler.containsMouse || dragHandler.drag.active
             readonly property bool isEnabled: Preferences.bar.componentsEnabled[itemRoot.componentId] === true
 
-            width:  innerLayout.width  + Globals.geometry.spacing.medium * 2
-            height: Globals.dimensions.iconBase + Globals.geometry.spacing.small  * 2
+            width:  parent.width
+            height: 48
 
-            radius: Globals.geometry.radius
+            radius: Globals.geometry.innerRadius.medium
 
-            // Outer border/color for inactive available components
-            color:        Globals.colors.transparent
-            border.width: !rect.isEnabled ? 1 : 0
-            border.color: Globals.colors.border
-
-            // Premium gradient layer (visible for active sections OR when hovered/dragged)
-            Rectangle {
-                anchors.fill: parent
-                radius: parent.radius
-                visible: rect.isEnabled
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: Globals.colors.primary }
-                    GradientStop { position: 1.0; color: Globals.colors.secondary }
-                }
-            }
-
-            // Cutout/Inner background layer
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1.5
-                radius: parent.radius - anchors.margins
-                visible: rect.isEnabled
-                color: Globals.colors.surface
-
-                // Overlay primary tint for premium active section items
-                Rectangle {
-                    anchors.fill: parent
-                    radius: parent.radius
-                    color: Qt.alpha(Globals.colors.primary, 0.08)
-                }
-            }
+            // Flat well-style container pills
+            color:        rect.isEnabled ? Globals.alpha(Globals.colors.primary, 0.15) : Globals.alpha(Globals.colors.surface, 0.5)
+            border.width: rect.isEnabled ? 1 : 0
+            border.color: rect.isEnabled ? Globals.colors.primary : Globals.colors.transparent
 
             // Drag handler covering the entire background of the pill
             MouseArea {
@@ -211,22 +193,31 @@ SettingsPage {
                 }
             }
 
-            Row {
+            RowLayout {
                 id: innerLayout
-                anchors.centerIn: parent
-                spacing: 6
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: Globals.geometry.spacing.medium
+                anchors.rightMargin: Globals.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.medium
 
                 BaseIcon {
                     icon:  barRoot.componentMetadata[itemRoot.componentId]?.icon || "extension"
                     size:  Globals.dimensions.iconBase
                     color: rect.isEnabled ? Globals.colors.primary : Globals.colors.text
-                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 BaseText {
                     text:  itemRoot.label
                     color: rect.isEnabled ? Globals.colors.textLighter : Globals.colors.text
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.fillWidth: true
+                }
+
+                BaseIcon {
+                    icon: "reorder"
+                    size: Globals.dimensions.iconBase
+                    color: Globals.alpha(Globals.colors.text, 0.5)
                 }
             }
 
@@ -260,11 +251,10 @@ SettingsPage {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: Math.max(flow.height, 50)
-            color:        dropArea.containsDrag ? Globals.alpha(barRoot.primaryColor, 0.1) : Globals.colors.transparent
-            radius:       Globals.geometry.radius
-            border.width: 1
-            border.color: dropArea.containsDrag ? Globals.colors.primary : Globals.colors.transparent
+            Layout.preferredHeight: Math.max(flow.height + Globals.geometry.spacing.medium * 2, 50)
+            color:        Globals.colors.transparent
+            radius:       Globals.geometry.innerRadius.medium
+            border.width: 0
 
             DropArea {
                 id: dropArea
@@ -280,22 +270,24 @@ SettingsPage {
 
 
 
-            Flow {
+            ColumnLayout {
                 id: flow
                 anchors.top:   parent.top
                 anchors.left:  parent.left
                 anchors.right: parent.right
-                anchors.margins: 4
+                anchors.margins: Globals.geometry.spacing.small
                 spacing: Globals.geometry.spacing.small
 
                 Repeater {
                     model: components
                     Item {
-                        width:  itemInstance.width
+                        Layout.fillWidth: true
                         height: itemInstance.height
 
                         BarComponentItem {
                             id: itemInstance
+                            anchors.left: parent.left
+                            anchors.right: parent.right
                             componentId:   modelData
                             sourceSection: section.sectionName
                             label:         barRoot.componentMetadata[modelData]?.name || modelData

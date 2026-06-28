@@ -41,7 +41,7 @@ SettingsPage {
             SettingsRow {
                 icon: "opacity"
                 label: "Themed Apps Opacity"
-                showSeparator: false
+                showSeparator: true
 
                 BaseSpinBox {
                     from: 30
@@ -52,93 +52,73 @@ SettingsPage {
                     onValueChanged: Preferences.applications.themedAppsOpacity = value / 100.0
                 }
             }
-        }
 
-        Flow {
-            Layout.fillWidth: true
-            spacing: Globals.geometry.spacing.small
+            SettingsRow {
+                id: appsTitleRow
+                icon: "apps"
+                label: "Applications"
+                showSeparator: false
+            }
 
-            Repeater {
-                model: Theme.applications
+            GridLayout {
+                property var indicatorTarget: appsTitleRow
+                Layout.fillWidth: true
+                Layout.margins: Globals.geometry.spacing.medium
+                columns: 3
+                columnSpacing: Globals.geometry.spacing.small
+                rowSpacing: Globals.geometry.spacing.small
 
-                delegate: Item {
-                    id: pill
+                Repeater {
+                    model: Theme.applications
 
-                    readonly property bool isInstalled: Theme.installedApps[modelData.id] !== false
-                    readonly property bool isEnabled: (Preferences.applications.themedApps[modelData.id] || false) && isInstalled
+                    delegate: BaseBento {
+                        id: bento
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1 // Force equal column distribution
+                        Layout.preferredHeight: 80
+                        
+                        readonly property bool isInstalled: Theme.installedApps[modelData.id] !== false
+                        readonly property bool isEnabled: (Preferences.applications.themedApps[modelData.id] || false) && isInstalled
 
-                    width: innerRow.width + Globals.geometry.spacing.medium * 2
-                    height: innerRow.height + Globals.geometry.spacing.small * 2
-                    opacity: isInstalled ? 1 : 0.5
+                        backgroundColor: isEnabled ? Globals.alpha(Globals.colors.primary, 0.1) : Globals.alpha(Globals.colors.surface, 0.5)
+                        premiumActive: false // Disable the overwhelming pink gradient block
+                        opacity: isInstalled ? 1.0 : 0.5
+                        blockRadius: Globals.geometry.innerRadius.medium
 
-                    // 1. Premium Selection Gradient Border (Active)
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: Globals.geometry.radius
-                        visible: pill.isEnabled
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: Globals.colors.primary }
-                            GradientStop { position: 1; color: Globals.colors.secondary }
-                        }
-                    }
-
-                    // 2. Inner Cutout (Active)
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 1.5
-                        radius: Globals.geometry.radius - 1.5
-                        visible: pill.isEnabled
-                        color: Globals.colors.surface
-
-                        Rectangle {
+                        ColumnLayout {
                             anchors.fill: parent
-                            radius: parent.radius
-                            color: Qt.alpha(Globals.colors.primary, 0.08)
-                        }
-                    }
+                            anchors.margins: Globals.geometry.spacing.small
+                            spacing: Globals.geometry.spacing.small
 
-                    // 3. Inactive Border (Inactive)
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: Globals.geometry.radius
-                        visible: !pill.isEnabled
-                        color: Globals.colors.transparent
-                        border.width: 1
-                        border.color: Globals.colors.border
-                    }
+                            BaseIcon {
+                                icon: bento.isEnabled ? "check_circle" : "radio_button_unchecked"
+                                size: 24
+                                color: bento.isEnabled ? Globals.colors.primary : Globals.colors.text
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                            }
 
-                    Row {
-                        id: innerRow
-                        anchors.centerIn: parent
-                        spacing: 6
-
-                        BaseIcon {
-                            icon: pill.isEnabled ? "check_circle" : "circle"
-                            size: 14
-                            color: pill.isEnabled ? Globals.colors.primary : Globals.colors.border
-                            anchors.verticalCenter: parent.verticalCenter
+                            BaseText {
+                                text: modelData.name
+                                color: bento.isEnabled ? Globals.colors.textLighter : Globals.colors.text
+                                pixelSize: Globals.typography.size.small
+                                weight: Globals.typography.weights.medium
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
+                            }
                         }
 
-                        BaseText {
-                            id: label
-                            text: modelData.name
-                            color: pill.isEnabled ? Globals.colors.textLighter : Globals.colors.text
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
-
-
-
-                    MouseArea {
-                        id: mouseArea
-                        anchors.fill: parent
-                        enabled: pill.isInstalled
-                        hoverEnabled: true
-                        onClicked: {
-                            let apps = JSON.parse(JSON.stringify(Preferences.applications.themedApps));
-                            apps[modelData.id] = !pill.isEnabled;
-                            Preferences.applications.themedApps = apps;
+                        MouseArea {
+                            anchors.fill: parent
+                            enabled: bento.isInstalled
+                            hoverEnabled: true
+                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: {
+                                let apps = JSON.parse(JSON.stringify(Preferences.applications.themedApps));
+                                apps[modelData.id] = !bento.isEnabled;
+                                Preferences.applications.themedApps = apps;
+                            }
                         }
                     }
                 }

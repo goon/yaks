@@ -27,7 +27,7 @@ Item {
             var child = col.children[i];
             if (!child.visible || child.height === 0) continue;
             if (my >= child.y && my <= child.y + child.height) {
-                return child;
+                return child.indicatorTarget !== undefined ? child.indicatorTarget : child;
             }
         }
         return null;
