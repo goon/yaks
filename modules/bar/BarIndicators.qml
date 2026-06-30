@@ -220,10 +220,18 @@ Item {
 
         visible: isVisible
         height: parent.height
-        
+        property bool _ready: false
+        Timer {
+            id: readyTimer
+            interval: 300
+            running: true
+            onTriggered: itemRoot._ready = true
+        }
+
         // Define animating width centered on the item's state width
         width: isVisible ? getItemWidth(itemKey) : 0
         Behavior on width {
+            enabled: itemRoot._ready
             BaseAnimation {
                 duration: Globals.animations.normal
             }
@@ -249,7 +257,7 @@ Item {
         // Animate displaced items sliding into their new slots.
         // Disabled while this item is being dragged so it follows the mouse freely.
         Behavior on x {
-            enabled: !itemRoot.isDragging
+            enabled: !itemRoot.isDragging && itemRoot._ready
             NumberAnimation {
                 duration: Globals.animations.normal
                 easing.type: Easing.OutQuad
