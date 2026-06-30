@@ -26,7 +26,6 @@ QtObject {
 
     property QtObject bar: QtObject {
         property string position: "top"
-        property int density: 1 // 0: Compact, 1: Default, 2: Comfortable
         property int height: 55
         property int marginTop: 10
         property int workspaceCount: 5
@@ -35,12 +34,6 @@ QtObject {
         property var componentsEnabled: ({"workspaces": true, "dock": true, "indicators": true, "clock": true})
 
         onPositionChanged: root.requestSave()
-        onDensityChanged: {
-            if (density === 0) height = 50;
-            else if (density === 1) height = 55;
-            else if (density === 2) height = 60;
-            root.requestSave();
-        }
         onHeightChanged: root.requestSave()
         onMarginTopChanged: root.requestSave()
         onWorkspaceCountChanged: root.requestSave()
@@ -95,6 +88,7 @@ QtObject {
         property bool islandOutline: true
         property string dynamicSeedColor: "#9d99e5"
         property real dynamicBgLightness: 0.08
+        property int scale: 1 // 0: 0.9x, 1: 1.0x, 2: 1.1x
 
         onThemeModeChanged: root.requestSave()
         onShellFontChanged: root.requestSave()
@@ -103,6 +97,12 @@ QtObject {
         onIslandOutlineChanged: root.requestSave()
         onDynamicSeedColorChanged: root.requestSave()
         onDynamicBgLightnessChanged: root.requestSave()
+        onScaleChanged: {
+            if (scale === 0) root.bar.height = 50;
+            else if (scale === 1) root.bar.height = 55;
+            else if (scale === 2) root.bar.height = 60;
+            root.requestSave();
+        }
     }
 
     property QtObject weather: QtObject {
@@ -159,7 +159,7 @@ QtObject {
         ["notifications", "soundVolume"],
         ["notifications", "timeout"],
         ["bar", "position"],
-        ["bar", "density"],
+        ["globals", "scale"],
         ["bar", "height"],
         ["bar", "marginTop"],
         ["bar", "workspaceCount"],

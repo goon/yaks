@@ -40,23 +40,6 @@ SettingsPage {
                 }
             }
 
-            SettingsRow {
-                icon: "view_quilt"
-                label: "Density"
-
-                BaseSegmentedControl {
-                    Layout.fillWidth: true
-                    model: [
-                        { "label": "0.9x", "value": 0 },
-                        { "label": "1.0x", "value": 1 },
-                        { "label": "1.1x", "value": 2 }
-                    ]
-                    currentValue: Preferences.bar.density
-                    onActivated: (index, value) => {
-                        Preferences.bar.density = value;
-                    }
-                }
-            }
 
             SettingsRow {
                 icon: "space_bar"

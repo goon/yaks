@@ -114,6 +114,24 @@ SettingsPage {
                 }
 
                 SettingsRow {
+                    icon: "view_quilt"
+                    label: "Scale"
+
+                    BaseSegmentedControl {
+                        Layout.fillWidth: true
+                        model: [
+                            { "label": "0.9x", "value": 0 },
+                            { "label": "1.0x", "value": 1 },
+                            { "label": "1.1x", "value": 2 }
+                        ]
+                        currentValue: Preferences.globals.scale
+                        onActivated: (index, value) => {
+                            Preferences.globals.scale = value;
+                        }
+                    }
+                }
+
+                SettingsRow {
                     icon: "rounded_corner"
                     label: "Rounding"
 

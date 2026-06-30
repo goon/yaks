@@ -9,15 +9,13 @@ Item {
     
     property var barWindow: null
     
-    readonly property real localBarScale: Globals.barScale
-    
     // Explicitly define height matching the pill clock capsule height
     implicitHeight: Preferences.bar.height
-    implicitWidth: (contentLayout.implicitWidth || 0) * localBarScale + (dynamicEndMargin * 2)
+    implicitWidth: (contentLayout.implicitWidth || 0) + (dynamicEndMargin * 2)
     
     readonly property real normalSideMargin: 0
     readonly property real dynamicEndMargin: Globals.geometry.padding.island
-    readonly property real horizontalSpacing: 20 / localBarScale
+    readonly property real horizontalSpacing: 20
 
     RowLayout {
         id: contentLayout
@@ -27,13 +25,6 @@ Item {
         height: implicitHeight
         width: mainContent.implicitWidth
         spacing: horizontalSpacing
-        
-        transform: Scale {
-            origin.x: contentLayout.width / 2
-            origin.y: contentLayout.height / 2
-            xScale: localBarScale
-            yScale: localBarScale
-        }
         
         RowLayout {
             id: mainContent

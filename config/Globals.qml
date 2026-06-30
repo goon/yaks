@@ -14,12 +14,12 @@ QtObject {
 
     readonly property var activePalette: Theme.currentColors
 
-    readonly property real barScale: {
-        if (Preferences.bar.density === 0)
+    readonly property real shellScale: {
+        if (Preferences.globals.scale === 0)
             return 0.9;
-        if (Preferences.bar.density === 1)
+        if (Preferences.globals.scale === 1)
             return 1;
-        if (Preferences.bar.density === 2)
+        if (Preferences.globals.scale === 2)
             return 1.1;
         return 1;
     }
@@ -89,26 +89,26 @@ QtObject {
      * =========================================================================
      */
     readonly property QtObject geometry: QtObject {
-        readonly property int radius: Preferences.globals.cornerRadius
+        readonly property int radius: Preferences.globals.cornerRadius * root.shellScale
         readonly property QtObject spacing: QtObject {
-            readonly property int small: 6
-            readonly property int medium: 8
-            readonly property int large: 12
-            readonly property int xlarge: 18
+            readonly property int small: 6 * root.shellScale
+            readonly property int medium: 8 * root.shellScale
+            readonly property int large: 12 * root.shellScale
+            readonly property int xlarge: 18 * root.shellScale
         }
 
         readonly property QtObject padding: QtObject {
-            readonly property int small: 8
-            readonly property int medium: 14
-            readonly property int large: 18
-            readonly property int island: Math.max(22, Math.ceil(root.geometry.radius * 0.5))
+            readonly property int small: 8 * root.shellScale
+            readonly property int medium: 14 * root.shellScale
+            readonly property int large: 18 * root.shellScale
+            readonly property int island: Math.max(22 * root.shellScale, Math.ceil(root.geometry.radius * 0.5))
         }
 
         readonly property QtObject innerRadius: QtObject {
-            readonly property int small: root.geometry.radius === 0 ? 0 : Math.max(4, root.geometry.radius - root.geometry.spacing.small)
-            readonly property int medium: root.geometry.radius === 0 ? 0 : Math.max(4, root.geometry.radius - root.geometry.spacing.medium)
-            readonly property int large: root.geometry.radius === 0 ? 0 : Math.max(4, root.geometry.radius - root.geometry.spacing.large)
-            readonly property int island: root.geometry.radius === 0 ? 0 : Math.max(4, root.geometry.radius - root.geometry.padding.island)
+            readonly property int small: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.small)
+            readonly property int medium: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.medium)
+            readonly property int large: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.large)
+            readonly property int island: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.padding.island)
         }
     }
 
@@ -119,17 +119,17 @@ QtObject {
      */
     readonly property QtObject
     dimensions: QtObject {
-        readonly property int barItemHeight: 32
-        readonly property int listItemHeight: 44
-        readonly property int iconSmall: 16
-        readonly property int iconBase: 18
-        readonly property int iconMedium: 20
-        readonly property int iconLarge: 32
-        readonly property int iconExtraLarge: 48
-        readonly property int calendarCellSize: 40
-        readonly property int calendarBlockWidth: 320
-        readonly property int launcherItemHeight: 54
-        readonly property int launcherSearchHeight: 50
+        readonly property int barItemHeight: 32 * root.shellScale
+        readonly property int listItemHeight: 44 * root.shellScale
+        readonly property int iconSmall: 16 * root.shellScale
+        readonly property int iconBase: 18 * root.shellScale
+        readonly property int iconMedium: 20 * root.shellScale
+        readonly property int iconLarge: 32 * root.shellScale
+        readonly property int iconExtraLarge: 48 * root.shellScale
+        readonly property int calendarCellSize: 40 * root.shellScale
+        readonly property int calendarBlockWidth: 320 * root.shellScale
+        readonly property int launcherItemHeight: 54 * root.shellScale
+        readonly property int launcherSearchHeight: 50 * root.shellScale
     }
 
     /*
@@ -150,11 +150,11 @@ QtObject {
 
         readonly property QtObject
         size: QtObject {
-            readonly property int small: 12
-            readonly property int base: 14
-            readonly property int medium: 16
-            readonly property int large: 18
-            readonly property int display: 48
+            readonly property int small: 12 * root.shellScale
+            readonly property int base: 14 * root.shellScale
+            readonly property int medium: 16 * root.shellScale
+            readonly property int large: 18 * root.shellScale
+            readonly property int display: 48 * root.shellScale
         }
 
     }

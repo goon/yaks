@@ -148,8 +148,8 @@ Item {
     // Expose the mask element to Bar.qml for input region
     readonly property alias maskItem: maskItem
 
-    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - (Globals.dimensions.barItemHeight * Globals.barScale)) / 2)
-    readonly property real normalCapsuleWidth: Preferences.bar.dynamicIsland ? (minimalClock.implicitWidth * Globals.barScale + normalSideMargin * 2) : (staticFull.implicitWidth * Globals.barScale + normalSideMargin * 2)
+    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - (Globals.dimensions.barItemHeight)) / 2)
+    readonly property real normalCapsuleWidth: Preferences.bar.dynamicIsland ? (minimalClock.implicitWidth + normalSideMargin * 2) : (staticFull.implicitWidth + normalSideMargin * 2)
     readonly property real normalCapsuleHeight: Preferences.bar.height
     readonly property real normalCapsuleX: (barWindow.width - normalCapsuleWidth) / 2
     readonly property real normalCapsuleY: Preferences.bar.position === "top"
@@ -280,20 +280,13 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: implicitHeight
-                width: normalCapsuleWidth / Globals.barScale
-                spacing: normalSideMargin / Globals.barScale
+                width: normalCapsuleWidth
+                spacing: normalSideMargin
                 
                 opacity: islandRoot.isIslandMorphed ? 0.0 : 1.0
                 visible: opacity > 0.01
 
                 Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
-
-                transform: Scale {
-                    origin.x: contentLayout.width / 2
-                    origin.y: contentLayout.height / 2
-                    xScale: Globals.barScale
-                    yScale: Globals.barScale
-                }
 
                 Minimal {
                     id: minimalClock
