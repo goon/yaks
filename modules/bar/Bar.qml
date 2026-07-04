@@ -47,12 +47,14 @@ PanelWindow {
         right: 0
     }
 
-    mask: (island.isIslandMorphed && !island.isToast) ? null : capsuleRegion
+    mask: (island.isIslandMorphed && !island.isToast) || IslandService.isTrayMenuOpen ? null : capsuleRegion
 
     Region {
         id: capsuleRegion
         item: island.maskItem
     }
+
+    property alias trayMenu: trayMenu
 
     Island {
         id: island
@@ -60,4 +62,9 @@ PanelWindow {
         anchors.fill: parent
     }
 
+    BarTrayMenu {
+        id: trayMenu
+        z: 9999
+        islandItem: island
+    }
 }

@@ -179,7 +179,7 @@ Item {
         if (_startupHooksRun || !Preferences.loaded) return;
         _startupHooksRun = true;
         // Always regenerate from seed + bgL — no palette cache needed.
-        root.setTheme(Preferences.currentTheme);
+        root.setTheme(Preferences.currentTheme, true);
     }
 
     // ── SYSTEM THEME SCANNING ─────────────────────────────────────────

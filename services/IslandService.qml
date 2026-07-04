@@ -12,6 +12,7 @@ QtObject {
     property Item activePanelItem: null
     property bool indicatorsHovered: false
     property bool isIslandHovered: false
+    property bool isTrayMenuOpen: false
 
     property real anchorX: -1
     property real anchorMinX: -1

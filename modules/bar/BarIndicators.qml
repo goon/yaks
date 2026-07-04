@@ -161,8 +161,8 @@ Item {
                             cursorShape: Qt.PointingHandCursor
 
                             onClicked: (mouse) => {
-                                if (mouse.button === Qt.RightButton) {
-                                    modelData.display(barWindow, mouse.x, mouse.y);
+                                if (mouse.button === Qt.RightButton && modelData.menu) {
+                                    barWindow.trayMenu.openMenu(modelData.menu, mouse.x, mouse.y, trayMouseArea);
                                 } else {
                                     modelData.activate();
                                 }
