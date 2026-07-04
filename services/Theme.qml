@@ -107,22 +107,25 @@ Item {
         Preferences.currentTheme = id;
         var seed = Preferences.globals.dynamicSeedColor;
         var bgL  = Preferences.globals.dynamicBgLightness;
+        var hsl  = Generator.hexToHsl(seed);
         var themeData = null;
 
-        if      (id === "pure")       themeData = Generator.generatePure(seed, bgL);
-        else if (id === "tinted")     themeData = Generator.generateTinted(seed, bgL);
-        else if (id === "monochrome") themeData = Generator.generateMonochrome(seed, bgL);
-        else if (id === "pastel")     themeData = Generator.generatePastel(seed, bgL);
+        if      (id === "pure")       themeData = Generator.generatePure(seed, hsl, bgL);
+        else if (id === "tinted")     themeData = Generator.generateTinted(seed, hsl, bgL);
+        else if (id === "monochrome") themeData = Generator.generateMonochrome(seed, hsl, bgL);
+        else if (id === "pastel")     themeData = Generator.generatePastel(seed, hsl, bgL);
 
         if (!themeData) return;
 
         root.applyThemeColors(themeData);
 
         // Write to the single canonical path so all hook scripts read from one place.
-        var jsonStr     = JSON.stringify(themeData, null, 2);
-        var safeJsonStr = jsonStr.replace(/'/g, "'\\''");
-        var cmd = "mkdir -p " + currentThemePath + " && printf '%s' '" + safeJsonStr + "' > " + currentThemePath + "/colors.json";
-        ProcessService.run(["sh", "-c", cmd], function() {
+        var jsonStr = JSON.stringify(themeData, null, 2);
+        var targetFile = currentThemePath + "/colors.json";
+        var tempFile = targetFile + ".tmp";
+        var cmd = 'mkdir -p "$1" && printf "%s" "$2" > "$3" && mv "$3" "$4"';
+        
+        ProcessService.run(["sh", "-c", cmd, "--", currentThemePath, jsonStr, tempFile, targetFile], function() {
             root.triggerHooks(id, currentThemePath);
         });
 
@@ -142,7 +145,8 @@ Item {
     function loadDefaultFallback() {
         var seed = Preferences.globals.dynamicSeedColor;
         var bgL  = Preferences.globals.dynamicBgLightness;
-        var themeData = Generator.generateTinted(seed, bgL);
+        var hsl  = Generator.hexToHsl(seed);
+        var themeData = Generator.generateTinted(seed, hsl, bgL);
         
         if (themeData) {
             currentColors = themeData;
@@ -281,7 +285,6 @@ Item {
     }
 
     function triggerHooks(themeId, themePath, context = "manual") {
-        root.checkInstalledApps();
         executionTimer.pendingId      = themeId;
         executionTimer.pendingPath    = themePath;
         executionTimer.pendingContext = context;
