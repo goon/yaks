@@ -9,7 +9,7 @@ BaseContainer {
     id: root
 
     implicitWidth: 400
-    spacing: Globals.geometry.spacing.large * 1.5
+    spacing: 0
 
     property string panelState: "Closed"
     property string expandedSide: "" // "", "output", "input"
@@ -143,8 +143,8 @@ BaseContainer {
                 Layout.preferredHeight: root.expandedSide === modelData.type ? deviceListCol.implicitHeight : 0
                 opacity: root.expandedSide === modelData.type ? 1 : 0
                 clip: true
-                Behavior on Layout.preferredHeight { BaseAnimation { } }
-                Behavior on opacity { BaseAnimation { } }
+                Behavior on opacity { PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType } }
+                Behavior on Layout.preferredHeight { PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType } }
 
                 ColumnLayout {
                     id: deviceListCol
@@ -206,5 +206,9 @@ BaseContainer {
                 }
             }
         }
+    }
+
+    Item {
+        Layout.fillHeight: true
     }
 }
