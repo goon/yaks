@@ -7,8 +7,6 @@ import ".."
 BaseContainer {
     id: root
     implicitWidth: 400
-    
-    Behavior on implicitHeight { BaseAnimation { } }
 
     property string panelState: "Closed"
     property alias pageStack: stackView

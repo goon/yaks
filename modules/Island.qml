@@ -260,10 +260,10 @@ Item {
         radius: Preferences.globals.cornerRadius || Globals.geometry.radius
         clip: true
 
-        Behavior on x      { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
-        Behavior on y      { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
-        Behavior on width  { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
-        Behavior on height { enabled: islandRoot._ready; BaseAnimation { duration: Globals.animations.normal; easing.type: Globals.animations.easingType } }
+        Behavior on x      { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
+        Behavior on y      { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
+        Behavior on width  { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
+        Behavior on height { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
 
 
 

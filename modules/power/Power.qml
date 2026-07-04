@@ -111,7 +111,6 @@ BaseContainer {
                     Item {
                         Layout.fillWidth: true
                         implicitHeight: btn.containsMouse ? subtitleText.implicitHeight : 0
-                        Behavior on implicitHeight { BaseAnimation { easing.type: Easing.OutQuart } }
                         clip: true
                         opacity: btn.containsMouse ? 1.0 : 0.0
                         Behavior on opacity { BaseAnimation { } }

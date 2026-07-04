@@ -21,7 +21,6 @@ FocusScope {
         : 760
 
     implicitHeight: Math.min(maxHeight, mainCol.implicitHeight)
-    Behavior on implicitHeight { BaseAnimation { easing.type: Easing.OutQuart } }
 
     property alias pageStack: pageStack
 

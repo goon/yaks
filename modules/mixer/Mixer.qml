@@ -207,6 +207,4 @@ BaseContainer {
             }
         }
     }
-
-    Behavior on implicitHeight { BaseAnimation { } }
 }
