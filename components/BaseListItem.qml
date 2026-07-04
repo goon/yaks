@@ -14,9 +14,8 @@ Item {
     property string subtitle: ""
     property int subtitleSize: Globals.typography.size.base
     property bool showSubtitleOnHover: false
-    property bool reserveLeftIconSpace: false
+    
     property string leftIcon: ""
-    property string leftImage: ""
     property bool leftIconInteractive: true
     property bool leftIconActive: false
     property real leftIconScale: 1.0
@@ -72,16 +71,9 @@ Item {
             }
         }
 
-        // Spacer for breathing room when no icon is present
-        Item {
-            visible: !iconSlot.visible && !root.showInternalIndicator
-            Layout.preferredWidth: Globals.geometry.padding.medium
-        }
-
         // Left Icon Slot
         Item {
-            id: iconSlot
-            visible: root.reserveLeftIconSpace || root.leftIcon !== "" || root.leftImage !== ""
+            visible: root.leftIcon !== ""
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
             Layout.alignment: Qt.AlignVCenter
@@ -105,15 +97,6 @@ Item {
                 size: Globals.dimensions.iconMedium
                 color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.primary : Globals.colors.text)
                 Behavior on color { BaseAnimation { } }
-            }
-
-            Image {
-                visible: root.leftImage !== "" && root.leftIcon === ""
-                anchors.centerIn: parent
-                source: root.leftImage
-                width: Globals.dimensions.iconMedium
-                height: Globals.dimensions.iconMedium
-                fillMode: Image.PreserveAspectFit
             }
         }
 
