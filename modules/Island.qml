@@ -284,7 +284,7 @@ Item {
                 spacing: normalSideMargin
                 
                 opacity: islandRoot.isIslandMorphed ? 0.0 : 1.0
-                visible: opacity > 0.01
+                enabled: opacity > 0.01
 
                 Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
 
