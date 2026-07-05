@@ -36,13 +36,28 @@ Item {
     Layout.fillWidth: false
     // Ensure standard bar height and vertical alignment
     implicitHeight: Globals.dimensions.barItemHeight
-    implicitWidth: layout.implicitWidth
+    readonly property int _staticWidth: {
+        var count = root.workspaces ? root.workspaces.length : 0;
+        if (count === 0) return 0;
+        return (count - 1) * 16 + 28;
+    }
+    implicitWidth: _staticWidth
+    onImplicitWidthChanged: console.log("[BarWorkspaces] implicitWidth changed to", implicitWidth)
 
-    RowLayout {
+    Item {
         id: layout
 
         anchors.fill: parent
-        spacing: 8
+
+        readonly property int activeIndex: {
+            for (var i = 0; i < root.workspaces.length; i++) {
+                var ws = root.workspaces[i];
+                if (ws.id === root.activeWorkspaceId || (root.activeWorkspaceId === -1 && ws.isFocused)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
         Repeater {
             model: root.workspaces
@@ -50,18 +65,16 @@ Item {
             Item {
                 id: indicator
 
-                // Primary: match by ID from service. Fallback: use ws.focused flag from
-                // the workspace data itself, in case the service chain hasn't delivered yet.
-                readonly property bool isActive: modelData.id === root.activeWorkspaceId
-                    || (root.activeWorkspaceId === -1 && modelData.isFocused)
+                readonly property bool isActive: index === layout.activeIndex
                 readonly property bool hasWindows: modelData.hasWindows
 
-                // Determine target width: 28 for active pill, 8 for all other slots
-                // Empty workspaces are shown at low opacity so the configured count is visible
                 readonly property real targetWidth: isActive ? 28 : 8
+                readonly property real targetX: (layout.activeIndex !== -1 && index > layout.activeIndex) ? (index * 16 + 20) : (index * 16)
 
-                implicitHeight: Globals.dimensions.barItemHeight
-                implicitWidth: targetWidth
+                height: Globals.dimensions.barItemHeight
+                width: targetWidth
+                x: targetX
+                y: 0
 
                 // Update the active item reference
                 Component.onCompleted: if (isActive) root.activeItem = indicator
@@ -70,7 +83,10 @@ Item {
                 visible: true
                 opacity: isActive ? 1.0 : (mouseArea.containsMouse ? 1.0 : (hasWindows ? 0.6 : 0.2))
 
-                Behavior on implicitWidth {
+                Behavior on width {
+                    BaseAnimation { }
+                }
+                Behavior on x {
                     BaseAnimation { }
                 }
                 Behavior on opacity {
@@ -105,7 +121,7 @@ Item {
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: parent.implicitWidth
+                    width: parent.width
                     height: 8
                     radius: height / 2
 

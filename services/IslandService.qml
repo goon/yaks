@@ -234,6 +234,7 @@ QtObject {
         target: Compositor
         function onActiveWorkspaceIdChanged() {
             if (!_startupDelayFinished) return;
+            if (!Preferences.bar.dynamicIsland) return;
 
             // Only show fullbar if nothing else is open
             if (activePanelName === "" || activePanelName === "fullbar") {
