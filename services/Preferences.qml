@@ -56,6 +56,7 @@ QtObject {
         property var themedApps: ({
             "gtk": false,
             "kitty": false,
+            "ghostty": false,
             "vesktop": false,
             "obsidian": false,
             "nvim": false,

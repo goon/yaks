@@ -7,6 +7,7 @@ import "../lib/dynagen.js" as Generator
 
 import "../lib/firefox.js" as FirefoxHook
 import "../lib/kitty.js" as KittyHook
+import "../lib/ghostty.js" as GhosttyHook
 import "../lib/obsidian.js" as ObsidianHook
 import "../lib/vesktop.js" as VesktopHook
 import "../lib/nvim.js" as NvimHook
@@ -46,6 +47,11 @@ Item {
             "id": "kitty",
             "name": "Kitty",
             "binary": "command -v kitty"
+        },
+        {
+            "id": "ghostty",
+            "name": "Ghostty",
+            "binary": "command -v ghostty"
         },
         {
             "id": "nvim",
@@ -300,6 +306,7 @@ Item {
         const hooks = {
             "firefox": FirefoxHook,
             "kitty": KittyHook,
+            "ghostty": GhosttyHook,
             "obsidian": ObsidianHook,
             "vesktop": VesktopHook,
             "nvim": NvimHook,
