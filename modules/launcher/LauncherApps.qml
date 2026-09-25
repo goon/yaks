@@ -79,7 +79,6 @@ LauncherTab {
             newModel.push({
                 "type": "calculation",
                 "name": calcResult.toString(),
-                "description": "Result - Copy to clipboard",
                 "icon": "calculate"
             });
         }

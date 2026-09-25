@@ -16,8 +16,6 @@ QtObject {
 
         if (panel === "launcher") {
             handleLauncherKey(event, item);
-        } else if (panel === "clipboard") {
-            handleClipboardKey(event, item);
         } else if (panel === "wallpaper") {
             handleWallpaperKey(event, item);
         }
@@ -69,43 +67,6 @@ QtObject {
         }
     }
 
-    // ── CLIPBOARD ────────────────────────────────────────────────────
-
-    function handleClipboardKey(event, clipboard) {
-        if (!clipboard) return;
-
-        if (event.key === Qt.Key_Down) {
-            if (clipboard.listView.count > 0) {
-                if (clipboard.listView.currentIndex < 0)
-                    clipboard.listView.currentIndex = 0;
-                else if (clipboard.listView.currentIndex < clipboard.listView.count - 1)
-                    clipboard.listView.currentIndex++;
-                event.accepted = true;
-            }
-        } else if (event.key === Qt.Key_Up) {
-            if (clipboard.listView.count > 0 && clipboard.listView.currentIndex > 0) {
-                clipboard.listView.currentIndex--;
-                event.accepted = true;
-            }
-        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            if (clipboard.currentItem) {
-                Clipboard.pasteCliphistItem(clipboard.currentItem.rawLine);
-                if (Preferences.clipboard.autoClose) {
-                    IslandService.closeAll();
-                }
-                event.accepted = true;
-            }
-        } else if (event.key === Qt.Key_Delete) {
-            if (clipboard.currentItem) {
-                Clipboard.deleteCliphistItem(clipboard.currentItem.rawLine);
-                if (clipboard.listView.currentIndex >= clipboard.listView.count - 1) {
-                    clipboard.listView.currentIndex = Math.max(0, clipboard.listView.count - 2);
-                }
-            }
-            event.accepted = true;
-        }
-    }
-
     // ── WALLPAPER ────────────────────────────────────────────────────
 
     function handleWallpaperKey(event, panel) {
@@ -147,7 +108,7 @@ QtObject {
             }
             event.accepted = true;
         }
-        // Launcher and Clipboard: Flickable handles scrolling natively,
+        // Launcher: Flickable handles scrolling natively,
         // so we do nothing here. The event propagates naturally.
     }
 

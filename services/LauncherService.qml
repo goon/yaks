@@ -379,7 +379,6 @@ QtObject {
                     return [{
                         "type": "calculation",
                         "name": calcResult.toString(),
-                        "description": "Result - Press Enter to copy to clipboard",
                         "icon": "calculate"
                     }];
                 } else {

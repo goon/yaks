@@ -20,7 +20,6 @@ singleton Volume services/Volume.qml
 singleton Wallpaper services/Wallpaper.qml
 singleton Weather services/Weather.qml
 singleton Network services/Network.qml
-singleton Clipboard services/Clipboard.qml
 singleton Bluetooth services/Bluetooth.qml
 singleton Display services/Display.qml
 singleton Notifications services/Notifications.qml
@@ -73,11 +72,6 @@ LauncherListView modules/launcher/LauncherListView.qml
 LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
 LauncherApps modules/launcher/LauncherApps.qml
 LauncherTheme modules/launcher/LauncherTheme.qml
-
-# Clipboard
-ClipboardIsland modules/clipboard/ClipboardIsland.qml
-ClipboardListItem modules/clipboard/ClipboardListItem.qml
-ClipboardPreview modules/clipboard/ClipboardPreview.qml
 
 # Settings
 Settings modules/settings/Settings.qml

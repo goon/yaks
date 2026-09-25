@@ -62,7 +62,6 @@ QtObject {
         "mixer":         { source: "../modules/mixer/Mixer.qml" },
         "network":       { source: "../modules/network/Network.qml" },
         "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml" },
-        "clipboard":     { source: "../modules/clipboard/ClipboardIsland.qml", width: 760, height: 600 },
         "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
         "notificationtoast": { source: "../modules/toasts/NotificationToast.qml" }
     })
@@ -105,10 +104,6 @@ QtObject {
 
     function toggleWallpaper() {
         togglePanel("wallpaper");
-    }
-
-    function toggleClipboard() {
-        togglePanel("clipboard");
     }
 
     function toggleSettings(pageName) {

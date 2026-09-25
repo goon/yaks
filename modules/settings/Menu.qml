@@ -20,7 +20,6 @@ Item {
         { page: "Style.qml",         title: "Style",         subtitle: "Look, feel, and typography.",            icon: "paintbrush" },
         { page: "Bar.qml",           title: "Bar",           subtitle: "Position, size, and layout of the bar.", icon: "panel-top" },
         { page: "Notifications.qml", title: "Notifications", subtitle: "Behaviour, sounds, and display.",        icon: "bell" },
-        { page: "Clipboard.qml",     title: "Clipboard",     subtitle: "History, sync, and behaviour.",          icon: "clipboard" },
         { page: "Launcher.qml",      title: "Launcher",      subtitle: "Launcher look, feel and behaviour.",     icon: "rocket" },
         { page: "Animations.qml",    title: "Animations",    subtitle: "Speed, transitions, and motion.",        icon: "zap" },
         { page: "TimeDate.qml",      title: "Time & Date",   subtitle: "Time formatting and location settings.", icon: "clock" },

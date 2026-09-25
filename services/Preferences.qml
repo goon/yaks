@@ -114,19 +114,9 @@ QtObject {
     }
 
     property QtObject indicators: QtObject {
-        property var order: ["notifications", "clipboard", "wifi", "instantmix", "settings", "power"]
+        property var order: ["notifications", "wifi", "instantmix", "settings", "power"]
 
         onOrderChanged: root.requestSave()
-    }
-
-    property QtObject clipboard: QtObject {
-        property bool autoClose: true
-        property int cleanupDays: 7
-        property int displayLimit: 50
-
-        onAutoCloseChanged: root.requestSave()
-        onCleanupDaysChanged: root.requestSave()
-        onDisplayLimitChanged: root.requestSave()
     }
 
     property QtObject animations: QtObject {
@@ -182,9 +172,6 @@ QtObject {
         ["weather", "long"],
         ["weather", "locationName"],
         ["indicators", "order"],
-        ["clipboard", "autoClose"],
-        ["clipboard", "cleanupDays"],
-        ["clipboard", "displayLimit"],
         ["animations", "speedMultiplier"],
         ["timedate", "format"],
         ["currentTheme"],
@@ -292,16 +279,71 @@ QtObject {
                     // Snapshot the default valid components BEFORE overwriting them with user data
                     var defaultValidComponents = root.bar.components.slice();
 
+                    // Snapshot default array values BEFORE the schema-driven load
+                    // overwrites them — later used to prune stale array entries.
+                    var arrayDefaults = Object.create(null);
+                    for (var si = 0; si < _schema.length; si++) {
+                        var snapPath = _schema[si];
+                        var walker = root;
+                        for (var pi = 0; pi < snapPath.length; pi++) walker = walker[snapPath[pi]];
+                        if (Array.isArray(walker)) arrayDefaults[snapPath.join(".")] = walker.slice();
+                    }
+
                     // ── SCHEMA-DRIVEN LOAD ─────────────────────────────────
                     for (var i = 0; i < _schema.length; i++) {
                         var path = _schema[i];
                         // applications.themedApps is handled by merge below
                         if (path.length === 2 && path[0] === "applications" && path[1] === "themedApps") continue;
-                        var val = _getData(data, path);
-                        if (val !== undefined) _set(path, val);
-                    }
+                    var val = _getData(data, path);
+                    if (val !== undefined) _set(path, val);
+                }
 
-                    // ── MERGE DICTIONARIES ─────────────────────────────────
+                // ── PRUNE STALE KEYS ─────────────────────────────────
+                // Drop any saved values no longer declared in _schema so
+                // leftovers from removed or renamed features are cleaned
+                // up automatically instead of needing manual migrations.
+                var allowed = Object.create(null);
+                for (var p = 0; p < _schema.length; p++) {
+                    var sp = _schema[p];
+                    if (!allowed[sp[0]]) allowed[sp[0]] = Object.create(null);
+                    if (sp.length > 1) allowed[sp[0]][sp[1]] = true;
+                }
+
+                var prunedAny = false;
+                for (var key in data) {
+                    if (!allowed[key]) {
+                        delete data[key];
+                        prunedAny = true;
+                        continue;
+                    }
+                    if (data[key] && typeof data[key] === "object") {
+                        for (var sub in data[key]) {
+                            if (!allowed[key][sub]) {
+                                delete data[key][sub];
+                                prunedAny = true;
+                            }
+                        }
+                    }
+                }
+                // Prune stale array values: entries no longer present among the
+                // schema-declared defaults are dropped; saved order is preserved.
+                for (var arrayKey in arrayDefaults) {
+                    var parts = arrayKey.split(".");
+                    var arr = _get(parts);
+                    if (!Array.isArray(arr)) continue;
+                    var validEntries = Object.create(null);
+                    for (var vi = 0; vi < arrayDefaults[arrayKey].length; vi++)
+                        validEntries[arrayDefaults[arrayKey][vi]] = true;
+                    var filtered = arr.filter(function(v) { return !!validEntries[v]; });
+                    if (filtered.length !== arr.length) {
+                        _set(parts, filtered);
+                        prunedAny = true;
+                    }
+                }
+                if (prunedAny)
+                    console.log("[Preferences] Pruned stale entries from preferences file.");
+
+                // ── MERGE DICTIONARIES ─────────────────────────────────
                     var savedApps = _getData(data, ["applications", "themedApps"]);
                     if (savedApps !== undefined && typeof savedApps === "object") {
                         var currentApps = root.applications.themedApps;
@@ -319,9 +361,8 @@ QtObject {
                     }
 
                     // ── MIGRATIONS ─────────────────────────────────────────
-                    // General cleanup: remove any cached components that no longer exist in the system
-                    var loadedComponents = root.bar.components;
-                    var cleanedComponents = loadedComponents.filter(c => defaultValidComponents.indexOf(c) !== -1);
+                    // Rebuild the bar toggle map against current defaults; the
+                    // components array itself is pruned generically above.
                     
                     var loadedEnabled = root.bar.componentsEnabled || {};
                     var cleanedEnabled = {};
@@ -331,8 +372,7 @@ QtObject {
                     }
                     
                     var migrated = false;
-                    if (cleanedComponents.length !== loadedComponents.length || Object.keys(loadedEnabled).length !== defaultValidComponents.length) {
-                        root.bar.components = cleanedComponents;
+                    if (Object.keys(loadedEnabled).length !== defaultValidComponents.length) {
                         root.bar.componentsEnabled = cleanedEnabled;
                         console.log("[Preferences] Cleaned up legacy/invalid components from bar configuration.");
                         // Force property change signal for QML bindings
@@ -342,7 +382,7 @@ QtObject {
                     safetyTimer.stop();
                     root.loaded = true;
                     
-                    if (migrated) root.requestSave();
+                    if (migrated || prunedAny) root.requestSave();
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
                 }

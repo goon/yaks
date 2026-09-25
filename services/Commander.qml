@@ -43,15 +43,6 @@ Item {
         target: "wallpaper"
     }
 
-    // Clipboard
-    IpcHandler {
-        function toggle() {
-            IslandService.toggleClipboard();
-        }
-
-        target: "clipboard"
-    }
-
     // Tokens
     IpcHandler {
         function apply(id: string) { Theme.setTheme(id); }
