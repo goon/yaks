@@ -7,7 +7,6 @@ import qs.services
 ShellRoot {
     // Instantiate background services for tracking
     property var _stats: Stats
-    property var _gowall: Gowall
     property var _display: Display
     property var _cava: Cava
 

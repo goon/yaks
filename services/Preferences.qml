@@ -41,11 +41,9 @@ QtObject {
     }
 
     property QtObject wallpaper: QtObject {
-        property bool gowallEnabled: false
         property double parallaxStrength: 25
         property string directory: ""
 
-        onGowallEnabledChanged: root.requestSave()
         onParallaxStrengthChanged: root.requestSave()
         onDirectoryChanged: root.requestSave()
     }
@@ -58,7 +56,6 @@ QtObject {
             "obsidian": false,
             "nvim": false,
             "firefox": false,
-            "gowall": false,
             "steam": false
         })
         property double themedAppsOpacity: 0.85
@@ -152,7 +149,6 @@ QtObject {
         ["bar", "workspaceCount"],
         ["bar", "components"],
         ["bar", "componentsEnabled"],
-        ["wallpaper", "gowallEnabled"],
         ["wallpaper", "parallaxStrength"],
         ["wallpaper", "directory"],
         ["applications", "themedApps"],

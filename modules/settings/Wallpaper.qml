@@ -18,16 +18,6 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "palette"
-                label: "Gowall"
-
-                BaseSwitch {
-                    checked: Preferences.wallpaper.gowallEnabled
-                    onToggled: Preferences.wallpaper.gowallEnabled = checked
-                }
-            }
-
-            SettingsRow {
                 icon: "move-diagonal-2"
                 label: "Parallax"
 

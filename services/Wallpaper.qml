@@ -25,8 +25,7 @@ Item {
     property bool isLoading: false
     property bool hasScanned: false
 
-    property string processedWallpaper: ""
-    readonly property string displayWallpaper: (Preferences.wallpaper.gowallEnabled && processedWallpaper !== "") ? processedWallpaper : currentWallpaper
+    readonly property string displayWallpaper: currentWallpaper
 
     readonly property string wallpaperListFile: Globals.cacheDir + "/wallpaper.json"
     readonly property string thumbDir: (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/yaks/thumbnails"

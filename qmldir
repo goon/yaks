@@ -23,7 +23,6 @@ singleton Network services/Network.qml
 singleton Bluetooth services/Bluetooth.qml
 singleton Display services/Display.qml
 singleton Notifications services/Notifications.qml
-singleton Gowall services/Gowall.qml
 singleton Cava services/Cava.qml
 singleton Binds services/Binds.qml
 

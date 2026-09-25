@@ -70,11 +70,6 @@ Item {
             "id": "steam",
             "name": "Steam / Millennium",
             "binary": "command -v steam && test -d ~/.config/millennium"
-        },
-        {
-            "id": "gowall",
-            "name": "Gowall",
-            "binary": "command -v gowall"
         }
     ]
 
@@ -279,7 +274,7 @@ Item {
             // Skip disabled apps
             if (Preferences.applications.themedApps[app.id] !== true) continue;
             
-            // Skip apps without a hook (e.g. gowall is handled internally by Gowall.qml)
+            // Skip apps without a hook
             let hook = hooks[app.id];
             if (!hook) continue;
 
