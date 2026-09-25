@@ -13,6 +13,10 @@ ShellRoot {
 
     objectName: "shellRoot"
 
+    FontLoader {
+        source: Qt.resolvedUrl("assets/fonts/lucide.ttf")
+    }
+
     Commander {
         id: commander
     }

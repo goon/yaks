@@ -26,7 +26,7 @@ BaseScrolling {
         case "input-mouse":
             return "mouse";
         case "input-gaming":
-            return "videogame_asset";
+            return "gamepad-2";
         default:
             return "bluetooth";
         }
@@ -99,7 +99,7 @@ BaseScrolling {
                 spacing: Globals.geometry.spacing.small
 
                 BaseIcon {
-                    icon: "chevron_left"
+                    icon: "chevron-left"
                     color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
                     Layout.alignment: Qt.AlignVCenter
                     Behavior on color { BaseAnimation { } }
@@ -131,7 +131,7 @@ BaseScrolling {
 
                 BaseButton {
                     id: refreshButton
-                    icon: "refresh"
+                    icon: "refresh-cw"
                     width: 28
                     height: 28
                     customRadius: Globals.geometry.innerRadius.medium

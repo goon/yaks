@@ -17,7 +17,7 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "volume_up"
+                icon: "volume"
                 label: "Sound Enabled"
                 
                 BaseSwitch {
@@ -27,7 +27,7 @@ SettingsPage {
             }
 
             SettingsRow {
-                icon: "graphic_eq"
+                icon: "sliders-horizontal"
                 label: "Volume"
 
                 BaseSpinBox {

@@ -141,7 +141,7 @@ QtObject {
     readonly property QtObject
     typography: QtObject {
         readonly property string family: Preferences.globals.shellFont
-        readonly property string iconFamily: "Material Symbols Rounded"
+        readonly property string iconFamily: "Lucide"
         readonly property QtObject
         weights: QtObject {
             readonly property int normal: 400

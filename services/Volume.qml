@@ -15,15 +15,15 @@ Singleton {
     property bool inputMuted: (audioSource && audioSource.audio) ? audioSource.audio.muted : false
     readonly property string volumeIcon: {
         if (muted)
-            return "volume_off";
+            return "volume-off";
 
         if (volume <= 0)
-            return "volume_mute";
+            return "volume-x";
 
         if (volume < 0.6)
-            return "volume_down";
+            return "volume-1";
 
-        return "volume_up";
+        return "volume-2";
     }
     readonly property int volumePercent: Math.round(volume * 100)
     property var sinks: Pipewire.nodes.values.filter((node) => {

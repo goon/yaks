@@ -80,7 +80,7 @@ FocusScope {
     property var currentItem: null
     
     property var tabModel: [
-        { icon: "dashboard", key: "", component: "LauncherApps.qml", placeholder: "Search..." },
+        { icon: "layout-dashboard", key: "", component: "LauncherApps.qml", placeholder: "Search..." },
         { icon: "palette", key: "", component: "LauncherTheme.qml", placeholder: "Search themes..." }
     ]
 

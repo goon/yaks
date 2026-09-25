@@ -17,7 +17,7 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "animation"
+                icon: "zap"
                 label: "Speed"
                 showSeparator: false
 

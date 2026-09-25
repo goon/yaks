@@ -41,7 +41,7 @@ SettingsPage {
             }
 
             SettingsRow {
-                icon: "keyboard_command_key"
+                icon: "command"
                 label: "Prefix"
 
                 Item {
@@ -70,7 +70,7 @@ SettingsPage {
                         }
 
                         BaseIcon {
-                            icon: "chevron_right"
+                            icon: "chevron-right"
                             color: Globals.colors.muted
                         }
                     }
@@ -127,7 +127,7 @@ SettingsPage {
             }
 
             SettingsRow {
-                icon: "description"
+                icon: "file-text"
                 label: "App Descriptions"
                 showSeparator: false
 

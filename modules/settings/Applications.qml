@@ -18,7 +18,7 @@ SettingsPage {
             spacing: Globals.geometry.spacing.small
 
             BaseIcon {
-                icon: "warning"
+                icon: "triangle-alert"
                 color: Globals.colors.warning
                 Layout.alignment: Qt.AlignTop
             }
@@ -39,7 +39,7 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "opacity"
+                icon: "droplet"
                 label: "Themed Apps Opacity"
                 showSeparator: true
 
@@ -55,7 +55,7 @@ SettingsPage {
 
             SettingsRow {
                 id: appsTitleRow
-                icon: "apps"
+                icon: "layout-grid"
                 label: "Applications"
                 showSeparator: false
             }
@@ -92,7 +92,7 @@ SettingsPage {
                             spacing: Globals.geometry.spacing.small
 
                             BaseIcon {
-                                icon: bento.isEnabled ? "check_circle" : "radio_button_unchecked"
+                                icon: bento.isEnabled ? "check" : "circle"
                                 size: 24
                                 color: bento.isEnabled ? Globals.colors.primary : Globals.colors.text
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom

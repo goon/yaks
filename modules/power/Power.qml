@@ -190,10 +190,10 @@ BaseContainer {
     }
 
     readonly property var _actions: [
-        { label: "Shutdown", icon: "power_settings_new", onClicked: function() { IslandService.closeAll(); Power.shutdown(); } },
-        { label: "Restart",  icon: "rotate_right",        onClicked: function() { IslandService.closeAll(); Power.reboot(); } },
-        { label: "Sleep",    icon: "bedtime",            onClicked: function() { IslandService.closeAll(); Power.suspend(); } },
-        { label: "Logout",   icon: "move_item",             onClicked: function() { IslandService.closeAll(); Power.logout(); } },
+        { label: "Shutdown", icon: "power",       onClicked: function() { IslandService.closeAll(); Power.shutdown(); } },
+        { label: "Restart",  icon: "rotate-cw",   onClicked: function() { IslandService.closeAll(); Power.reboot(); } },
+        { label: "Sleep",    icon: "moon",        onClicked: function() { IslandService.closeAll(); Power.suspend(); } },
+        { label: "Logout",   icon: "log-out",     onClicked: function() { IslandService.closeAll(); Power.logout(); } },
     ]
 
     Item {

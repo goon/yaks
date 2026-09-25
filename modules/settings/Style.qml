@@ -37,7 +37,7 @@ SettingsPage {
 
                 SettingsRow {
                     id: colorPickerRow
-                    icon: "colorize"
+                    icon: "paint-bucket"
                     label: "Seed Hue"
 
 
@@ -70,7 +70,7 @@ SettingsPage {
 
                 SettingsRow {
                     id: bgBrightnessRow
-                    icon: "brightness_6"
+                    icon: "sun"
                     label: "Background"
 
 
@@ -93,7 +93,7 @@ SettingsPage {
 
                 SettingsRow {
                     id: shellFontRow
-                    icon: "text_fields"
+                    icon: "type"
                     label: "Font"
                     clickable: true
                     onClicked: root.StackView.view.push("Font.qml")
@@ -107,14 +107,14 @@ SettingsPage {
                     }
 
                     BaseIcon {
-                        icon: "chevron_right"
+                        icon: "chevron-right"
                         color: shellFontRow.hovered ? Globals.colors.text : Globals.colors.muted
                         Behavior on color { BaseAnimation { } }
                     }
                 }
 
                 SettingsRow {
-                    icon: "view_quilt"
+                    icon: "layout-grid"
                     label: "Scale"
 
                     BaseSegmentedControl {
@@ -132,7 +132,7 @@ SettingsPage {
                 }
 
                 SettingsRow {
-                    icon: "rounded_corner"
+                    icon: "spline"
                     label: "Rounding"
 
                     BaseSpinBox {
@@ -146,7 +146,7 @@ SettingsPage {
                 }
 
                 SettingsRow {
-                    icon: "opacity"
+                    icon: "droplet"
                     label: "Opacity"
 
                     BaseSpinBox {
@@ -160,7 +160,7 @@ SettingsPage {
                 }
 
                 SettingsRow {
-                    icon: "border_outer"
+                    icon: "frame"
                     label: "Outline"
                     showSeparator: false
 

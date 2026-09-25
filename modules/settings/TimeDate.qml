@@ -17,7 +17,7 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "schedule"
+                icon: "clock"
                 label: "Time"
 
                 BaseSegmentedControl {
@@ -31,7 +31,7 @@ SettingsPage {
             }
 
             SettingsRow {
-                icon: "location_on"
+                icon: "map-pin"
                 label: "Location"
                 showSeparator: false
 
@@ -61,7 +61,7 @@ SettingsPage {
                         }
 
                         BaseIcon {
-                            icon: "chevron_right"
+                            icon: "chevron-right"
                             color: Globals.colors.muted
                         }
                     }

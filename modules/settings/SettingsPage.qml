@@ -27,7 +27,7 @@ BaseContainer {
             spacing: Globals.geometry.spacing.small
 
             BaseIcon {
-                icon: "chevron_left"
+                icon: "chevron-left"
                 color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
                 Layout.alignment: Qt.AlignVCenter
                 Behavior on color { BaseAnimation { } }

@@ -46,7 +46,7 @@ Item {
 
             BaseIcon {
                 Layout.alignment: Qt.AlignHCenter
-                icon: "content_paste"
+                icon: "clipboard"
                 size: Globals.dimensions.iconExtraLarge
                 color: Globals.colors.muted
             }

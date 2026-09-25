@@ -322,7 +322,7 @@ BaseBento {
 
                 BaseIcon {
                     anchors.centerIn: parent
-                    icon: "music_note"
+                    icon: "music"
                     size: Globals.dimensions.iconExtraLarge
                     color: Globals.alpha(Globals.colors.primary, 0.4)
                 }
@@ -363,7 +363,7 @@ BaseBento {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.leftMargin: Globals.geometry.spacing.large * 3
                 size: Globals.dimensions.iconMedium
-                icon: "skip_previous"
+                icon: "skip-back"
                 enabled: Media.canGoPrevious
                 opacity: enabled ? 1.0 : 0.5
                 onClicked: {
@@ -515,7 +515,7 @@ BaseBento {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.rightMargin: Globals.geometry.spacing.large * 3
                 size: Globals.dimensions.iconMedium
-                icon: "skip_next"
+                icon: "skip-forward"
                 enabled: Media.canGoNext
                 opacity: enabled ? 1.0 : 0.5
                 onClicked: {

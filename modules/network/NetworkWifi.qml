@@ -45,7 +45,7 @@ BaseScrolling {
                 spacing: Globals.geometry.spacing.small
 
                 BaseIcon {
-                    icon: "chevron_left"
+                    icon: "chevron-left"
                     color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
                     Layout.alignment: Qt.AlignVCenter
                     Behavior on color { BaseAnimation { } }
@@ -77,7 +77,7 @@ BaseScrolling {
 
                 BaseButton {
                     id: refreshButton
-                    icon: "refresh"
+                    icon: "refresh-cw"
                     width: 28
                     height: 28
                     customRadius: Globals.geometry.innerRadius.medium
@@ -201,9 +201,9 @@ BaseScrolling {
             iconName: {
                 var sig = modelData.signal;
                 if (sig > 75) return "wifi";
-                if (sig > 50) return "network_wifi_3_bar";
-                if (sig > 25) return "network_wifi_2_bar";
-                return "network_wifi_1_bar";
+                if (sig > 50) return "signal-high";
+                if (sig > 25) return "signal-medium";
+                return "signal-low";
             }
             isSecured: modelData.secured
             isKnown: modelData.known || modelData.active || isPendingConnect

@@ -21,22 +21,22 @@ BaseBento {
 
         function getIcon(code, isDay) {
             if (code === 0)
-                return isDay ? "clear_day" : "clear_night";
+                return isDay ? "sun" : "moon";
             if (code >= 1 && code <= 3)
-                return isDay ? "partly_cloudy_day" : "partly_cloudy_night";
+                return isDay ? "cloud-sun" : "cloud-moon";
             if (code >= 45 && code <= 48)
-                return "foggy";
+                return "cloud-fog";
             if (code >= 51 && code <= 67)
-                return "rainy";
+                return "cloud-rain";
             if (code >= 71 && code <= 77)
-                return "weather_snowy";
+                return "cloud-snow";
             if (code >= 80 && code <= 82)
-                return "rainy";
+                return "cloud-rain";
             if (code >= 85 && code <= 86)
-                return "weather_snowy";
+                return "cloud-snow";
             if (code >= 95 && code <= 99)
-                return "thunderstorm";
-            return "question_mark";
+                return "cloud-lightning";
+            return "cloud";
         }
 
         function getDayName(dateString) {
@@ -139,7 +139,7 @@ BaseBento {
                         
                         RowLayout {
                             spacing: Globals.geometry.spacing.small
-                            BaseIcon { icon: "device_thermostat"; size: 18 }
+                            BaseIcon { icon: "thermometer"; size: 18 }
                             BaseText { text: Weather.feelsLike; font.pixelSize: Globals.typography.size.medium; weight: Globals.typography.weights.bold }
                         }
 
@@ -147,7 +147,7 @@ BaseBento {
                         
                         RowLayout {
                             spacing: Globals.geometry.spacing.small
-                            BaseIcon { icon: "water_drop"; size: 18 }
+                            BaseIcon { icon: "droplet"; size: 18 }
                             BaseText { text: Weather.humidity; font.pixelSize: Globals.typography.size.medium; weight: Globals.typography.weights.bold }
                         }
 
@@ -155,7 +155,7 @@ BaseBento {
 
                         RowLayout {
                             spacing: Globals.geometry.spacing.small
-                            BaseIcon { icon: "air"; size: 18 }
+                            BaseIcon { icon: "wind"; size: 18 }
                             BaseText { text: Weather.windSpeed; font.pixelSize: Globals.typography.size.medium; weight: Globals.typography.weights.bold }
                         }
                     }
@@ -529,7 +529,7 @@ BaseBento {
                                 RowLayout {
                                     Layout.preferredWidth: 54
                                     spacing: Globals.geometry.spacing.small
-                                    BaseIcon { icon: "device_thermostat"; size: 18 }
+                                    BaseIcon { icon: "thermometer"; size: 18 }
                                     BaseText { 
                                         text: Math.round(Weather.dailyForecast.apparent_temperature_max[delegateItem.dayIdx]) + "°"
                                         font.pixelSize: Globals.typography.size.base
@@ -542,7 +542,7 @@ BaseBento {
                                 RowLayout {
                                     Layout.preferredWidth: 64
                                     spacing: Globals.geometry.spacing.small
-                                    BaseIcon { icon: "water_drop"; size: 18 }
+                                    BaseIcon { icon: "droplet"; size: 18 }
                                     BaseText { 
                                         text: Weather.dailyForecast.precipitation_probability_max[delegateItem.dayIdx] + "%"
                                         font.pixelSize: Globals.typography.size.base
@@ -555,7 +555,7 @@ BaseBento {
                                 RowLayout {
                                     Layout.preferredWidth: 46
                                     spacing: Globals.geometry.spacing.small
-                                    BaseIcon { icon: "air"; size: 18 }
+                                    BaseIcon { icon: "wind"; size: 18 }
                                     BaseText { 
                                         text: Math.round(Weather.dailyForecast.wind_speed_10m_max[delegateItem.dayIdx])
                                         font.pixelSize: Globals.typography.size.base

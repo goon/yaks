@@ -102,7 +102,7 @@ BaseBento {
         ResourceBar {
             value: Stats.currentCpu
             color: Globals.colors.accent
-            icon: "memory"
+            icon: "memory-stick"
             label: "CPU"
             tempText: Stats.currentTemp + "°"
         }
@@ -110,14 +110,14 @@ BaseBento {
         ResourceBar {
             value: Stats.currentRam
             color: Globals.colors.success
-            icon: "sd_card"
+            icon: "hard-drive"
             label: "RAM"
         }
 
         ResourceBar {
             value: Stats.currentGpu
             color: Globals.colors.error
-            icon: "videogame_asset"
+            icon: "gamepad-2"
             label: "GPU"
             tempText: Stats.currentGpuTemp + "°"
         }

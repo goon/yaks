@@ -17,7 +17,7 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "border_top"
+                icon: "panel-top"
                 label: "Position"
 
                 BaseSegmentedControl {
@@ -32,7 +32,7 @@ SettingsPage {
 
 
             SettingsRow {
-                icon: "space_bar"
+                icon: "grip-horizontal"
                 label: "Margin"
 
                 BaseSpinBox {
@@ -46,7 +46,7 @@ SettingsPage {
             }
 
             SettingsRow {
-                icon: "view_module"
+                icon: "layout-grid"
                 label: "Workspace Count"
                 showSeparator: true
 
@@ -62,7 +62,7 @@ SettingsPage {
 
             SettingsRow {
                 id: activeComponentsTitle
-                icon: "drag_indicator"
+                icon: "grip-vertical"
                 label: "Components"
                 showSeparator: false
                 Layout.fillWidth: true
@@ -80,10 +80,10 @@ SettingsPage {
         id: barRoot
 
         readonly property var componentMetadata: ({
-            "workspaces": { name: "Workspaces", icon: "view_week" },
-            "clock":      { name: "Clock",      icon: "schedule"  },
-            "dock":       { name: "Dock",        icon: "vertical_split" },
-            "indicators": { name: "Indicators",  icon: "stacks"   },
+            "workspaces": { name: "Workspaces", icon: "columns-4" },
+            "clock":      { name: "Clock",      icon: "clock"    },
+            "dock":       { name: "Dock",        icon: "columns-2" },
+            "indicators": { name: "Indicators",  icon: "layers"   },
         })
 
 
@@ -200,7 +200,7 @@ SettingsPage {
                 }
 
                 BaseIcon {
-                    icon: "reorder"
+                    icon: "arrow-up-down"
                     size: Globals.dimensions.iconBase
                     color: Globals.alpha(Globals.colors.text, 0.5)
                 }

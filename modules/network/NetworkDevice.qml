@@ -152,7 +152,7 @@ Item {
                         }
 
                         BaseIcon {
-                            icon: "heart_check"
+                            icon: "heart-pulse"
                             size: 14
                             visible: root.isKnown
                         }

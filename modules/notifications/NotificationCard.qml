@@ -113,7 +113,7 @@ BaseContainer {
                         visible: !root.isScreenshot && !root.isRecording && !specificImage.visible && status === Image.Ready && source.toString() !== ""
                     }
 
-                    // 3. Material Symbol (Custom Fallback)
+                    // 3. Icon Symbol (Custom Fallback)
                     // Visible if appIcon or image starts with 'symbol:'
                     Rectangle {
                         id: symbolIconContainer
@@ -132,7 +132,7 @@ BaseContainer {
                             icon: {
                                 if (!root.notification) return "";
                                 if (root.isScreenshot) return "image";
-                                if (root.isRecording) return "screen_record";
+                                if (root.isRecording) return "monitor-play";
                                 const ai = root.notification.appIcon || "";
                                 const img = root.notification.image || "";
                                 
@@ -156,7 +156,7 @@ BaseContainer {
                     BaseIcon {
                         anchors.centerIn: parent
                         visible: !specificImage.visible && !appIconImage.visible && !symbolIcon.visible
-                        icon: "notifications_unread"
+                        icon: "bell-dot"
                         width: size
                         height: size
                         color: Globals.colors.primary
@@ -213,7 +213,7 @@ BaseContainer {
                     Layout.preferredHeight: Globals.dimensions.iconMedium
                     Layout.alignment: Qt.AlignTop
                     visible: root.showCloseButton
-                    icon: "clear_all"
+                    icon: "trash-2"
                     iconColor: containsMouse ? Globals.colors.surface : Globals.colors.error
                     hoverColor: Globals.colors.error
                     size: Globals.typography.size.large

@@ -99,7 +99,7 @@ SpinBox {
     up.indicator: BaseIcon {
         x: root.width - width - 8
         y: (root.height - height) / 2
-        icon: "add"
+        icon: "plus"
         color: root.up.pressed ? Globals.colors.primary : Globals.colors.text
         opacity: root.expanded ? 1.0 : 0.0
         Behavior on opacity { BaseAnimation { } }
@@ -108,7 +108,7 @@ SpinBox {
     down.indicator: BaseIcon {
         x: 8
         y: (root.height - height) / 2
-        icon: "remove"
+        icon: "minus"
         color: root.down.pressed ? Globals.colors.primary : Globals.colors.text
         opacity: root.expanded ? 1.0 : 0.0
         Behavior on opacity { BaseAnimation { } }

@@ -26,11 +26,11 @@ Item {
 
     readonly property var _indicatorModel: [
         { key: "wifi", icon: "wifi" },
-        { key: "notifications", icon: "notifications" },
+        { key: "notifications", icon: "bell" },
         { key: "settings", icon: "settings" },
-        { key: "instantmix", icon: "instant_mix" },
-        { key: "power", icon: "power_settings_new" },
-        { key: "clipboard", icon: "content_paste" },
+        { key: "instantmix", icon: "audio-lines" },
+        { key: "power", icon: "power" },
+        { key: "clipboard", icon: "clipboard" },
     ]
 
     function _modelIndex(key) {
@@ -195,9 +195,9 @@ Item {
                     itemKey: modelData.key
                     iconName: {
                         if (modelData.key === "notifications") {
-                            if (Preferences.notifications.mode === 1) return "notifications_off";
-                            if (Notifications.unreadCount > 0) return "notifications_unread";
-                            return "notifications";
+                            if (Preferences.notifications.mode === 1) return "bell-off";
+                            if (Notifications.unreadCount > 0) return "bell-dot";
+                            return "bell";
                         }
                         return modelData.icon;
                     }

@@ -129,7 +129,7 @@ ComboBox {
     indicator: BaseIcon {
         x: root.width - width - Globals.geometry.spacing.medium
         y: (root.availableHeight - height) / 2
-        icon: "expand_more"
+        icon: "chevron-down"
         color: root.textColor
         visible: (root.count > 0 || root.searchable) && !comboPopup.visible
         opacity: visible ? 1.0 : 0.0

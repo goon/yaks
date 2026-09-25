@@ -65,8 +65,8 @@ BaseContainer {
                 trackHeight: 38
                 icon: {
                     if (modelData.type === "output") return Volume.volumeIcon;
-                    if (modelData.type === "input") return Volume.inputMuted ? "mic_off" : "mic";
-                    return "light_mode";
+                    if (modelData.type === "input") return Volume.inputMuted ? "mic-off" : "mic";
+                    return "sun";
                 }
                 suffix: {
                     if (modelData.type === "display") return Math.round(Display.brightness * 100);
@@ -126,7 +126,7 @@ BaseContainer {
                     }
 
                     BaseIcon {
-                        icon: "expand_more"
+                        icon: "chevron-down"
                         rotation: root.expandedSide === modelData.type ? 180 : 0
                         Behavior on rotation { BaseAnimation { } }
                     }
@@ -180,8 +180,7 @@ BaseContainer {
                                     readonly property bool isActive: sectionCol.sectionType === "output"
                                         ? (Volume.audioSink && Volume.audioSink.id === modelData.id)
                                         : (Volume.audioSource && Volume.audioSource.id === modelData.id)
-                                    icon: isActive ? "task_alt" : "circle"
-                                    fill: isActive
+                                    icon: isActive ? "check" : "circle"
                                     color: isActive ? Globals.colors.primary : Globals.colors.muted
                                     size: Globals.dimensions.iconSmall
                                 }

@@ -32,7 +32,7 @@ BaseContainer {
             Item { Layout.fillWidth: true }
 
             BaseButton {
-                icon: "clear_all"
+                icon: "trash-2"
                 hoverColor: "transparent"
                 onClicked: {
                     if (root.notificationManager) {
@@ -210,12 +210,11 @@ BaseContainer {
                     grad.addColorStop(1.0, Globals.colors.secondary);
                     
                     ctx.fillStyle = grad;
-                    // Note: Globals.typography.iconFamily provides the Material font
                     ctx.font = Globals.dimensions.iconExtraLarge + "px \"" + Globals.typography.iconFamily + "\"";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
                     ctx.globalAlpha = 0.7; // Dim slightly per request
-                    ctx.fillText("notifications", width/2, height/2);
+                    ctx.fillText("bell", width/2, height/2);
                 }
                 
                 Timer {

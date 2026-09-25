@@ -24,7 +24,7 @@ Item {
     property bool showVerticalSeparator: false
     
     // Right Icon Properties
-    property string rightIcon: "chevron_right"
+    property string rightIcon: "chevron-right"
     property bool rightIconVisible: true
     
     // Selection state

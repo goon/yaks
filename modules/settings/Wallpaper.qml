@@ -28,7 +28,7 @@ SettingsPage {
             }
 
             SettingsRow {
-                icon: "open_with"
+                icon: "move-diagonal-2"
                 label: "Parallax"
 
                 BaseSpinBox {
@@ -78,7 +78,7 @@ SettingsPage {
             spacing: Globals.geometry.spacing.small
 
             BaseIcon {
-                icon: "warning"
+                icon: "triangle-alert"
                 color: Globals.colors.warning
             }
 

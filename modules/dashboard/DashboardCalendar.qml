@@ -28,7 +28,7 @@ BaseBento {
                     anchors.verticalCenter: parent.verticalCenter
                     width: Globals.dimensions.calendarCellSize
                     height: parent.height
-                    icon: "chevron_left"
+                    icon: "chevron-left"
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
                     onClicked: {
@@ -79,7 +79,7 @@ BaseBento {
                     anchors.verticalCenter: parent.verticalCenter
                     width: Globals.dimensions.calendarCellSize
                     height: parent.height
-                    icon: "chevron_right"
+                    icon: "chevron-right"
                     scale: pressed ? 0.92 : (containsMouse ? 1.05 : 1.0)
                     clickRotate: true
                     onClicked: {

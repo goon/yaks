@@ -73,7 +73,7 @@ BaseContainer {
                         }
                         return "Disconnected";
                     }
-                    leftIcon: Network.connected ? "wifi" : (Network.ethernetConnected ? "desktop_windows" : "wifi_off")
+                    leftIcon: Network.connected ? "wifi" : (Network.ethernetConnected ? "ethernet-port" : "wifi-off")
                     leftIconActive: Network.connected || Network.ethernetConnected
                     leftIconInteractive: !Network.ethernetConnected
                     showVerticalSeparator: true
@@ -92,7 +92,7 @@ BaseContainer {
 
                     title: "Bluetooth"
                     subtitle: Bluetooth.powered ? (Bluetooth.connectedCount > 0 ? Bluetooth.connectedCount + " devices" : "On") : "Off"
-                    leftIcon: Bluetooth.powered ? "bluetooth" : "bluetooth_disabled"
+                    leftIcon: Bluetooth.powered ? "bluetooth" : "bluetooth-off"
                     leftIconActive: Bluetooth.powered
                     leftIconScale: 1.25
                     leftIconInteractive: false

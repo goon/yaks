@@ -15,10 +15,10 @@ BaseListItem {
     leftIconInteractive: false
 
     leftIcon: {
-        if (!itemData) return "content_copy";
+        if (!itemData) return "copy";
         if (itemData.isImage) return "image";
         if (Clipboard.isCode(itemData.text)) return "code";
-        return "text_fields";
+        return "type";
     }
 
     title: {

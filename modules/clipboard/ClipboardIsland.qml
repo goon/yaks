@@ -111,7 +111,7 @@ FocusScope {
                 Item { Layout.fillWidth: true }
 
                 BaseButton {
-                    icon: "delete_sweep"
+                    icon: "trash"
                     size: Globals.dimensions.iconMedium * 1.1
                     Layout.alignment: Qt.AlignVCenter
                     enabled: Clipboard.history.count > 0
@@ -218,7 +218,7 @@ FocusScope {
                         spacing: Globals.geometry.spacing.medium
                         BaseIcon {
                             Layout.alignment: Qt.AlignHCenter
-                            icon: "content_paste_off"
+                            icon: "clipboard-x"
                             size: Globals.dimensions.iconExtraLarge
                             color: Globals.colors.muted
                         }
@@ -248,7 +248,7 @@ FocusScope {
                     Item { Layout.fillWidth: true }
 
                     BaseButton {
-                        icon: "content_paste"
+                        icon: "clipboard"
                         Layout.alignment: Qt.AlignVCenter
                         enabled: root.currentItem !== null
                         onClicked: {
@@ -262,7 +262,7 @@ FocusScope {
                     }
 
                     BaseButton {
-                        icon: "delete"
+                        icon: "trash-2"
                         Layout.alignment: Qt.AlignVCenter
                         enabled: root.currentItem !== null
                         onClicked: {
