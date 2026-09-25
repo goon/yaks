@@ -231,7 +231,7 @@ QtObject {
 
         const jsonContent = JSON.stringify(data, null, 2);
         const tempFile = root.prefsFile + ".tmp";
-        const cmd = `printf '%s' "$1" > "$2" && mv "$2" "$3"`;
+        const cmd = `mkdir -p "$(dirname "$3")" && printf '%s' "$1" > "$2" && mv "$2" "$3"`;
         ProcessService.runDetached(["sh", "-c", cmd, "--", jsonContent, tempFile, root.prefsFile]);
     }
 
