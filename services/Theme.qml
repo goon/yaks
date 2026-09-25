@@ -11,7 +11,6 @@ import "../lib/obsidian.js" as ObsidianHook
 import "../lib/vesktop.js" as VesktopHook
 import "../lib/nvim.js" as NvimHook
 import "../lib/steam.js" as SteamHook
-import "../lib/vscodium.js" as VscodiumHook
 import "../lib/gtk.js" as GtkHook
 import "../lib/qt.js" as QtHook
 pragma Singleton
@@ -76,11 +75,6 @@ Item {
             "id": "gowall",
             "name": "Gowall",
             "binary": "command -v gowall"
-        },
-        {
-            "id": "vscodium",
-            "name": "VSCode",
-            "binary": "command -v codium || command -v vscodium"
         }
     ]
 
@@ -266,7 +260,6 @@ Item {
             "vesktop": VesktopHook,
             "nvim": NvimHook,
             "steam": SteamHook,
-            "vscodium": VscodiumHook,
             "gtk": GtkHook,
             "qt": QtHook
         };

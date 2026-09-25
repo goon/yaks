@@ -59,8 +59,7 @@ QtObject {
             "nvim": false,
             "firefox": false,
             "gowall": false,
-            "steam": false,
-            "vscodium": false
+            "steam": false
         })
         property double themedAppsOpacity: 0.85
 
