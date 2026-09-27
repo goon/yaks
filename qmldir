@@ -5,25 +5,19 @@ singleton Globals config/Globals.qml
 
 # Services (Singletons)
 singleton Theme services/Theme.qml
-singleton Calendar services/Calendar.qml
 singleton ProcessService services/ProcessService.qml
 singleton Zenity services/Zenity.qml
 singleton LauncherService services/LauncherService.qml
-singleton Media services/Media.qml
 singleton Compositor services/Compositor.qml
 singleton IslandService services/IslandService.qml
 singleton Power services/Power.qml
-singleton Stats services/Stats.qml
 singleton Preferences services/Preferences.qml
-singleton SystemInfo services/SystemInfo.qml
 singleton Volume services/Volume.qml
 singleton Wallpaper services/Wallpaper.qml
-singleton Weather services/Weather.qml
 singleton Network services/Network.qml
 singleton Bluetooth services/Bluetooth.qml
 singleton Display services/Display.qml
 singleton Notifications services/Notifications.qml
-singleton Cava services/Cava.qml
 singleton Binds services/Binds.qml
 
 
@@ -85,15 +79,6 @@ BarWorkspaces modules/bar/BarWorkspaces.qml
 BarDock modules/bar/BarDock.qml
 BarIndicators modules/bar/BarIndicators.qml
 Full modules/bar/Full.qml
-
-# Dashboard
-Dashboard modules/dashboard/Dashboard.qml
-DashboardCalendar modules/dashboard/DashboardCalendar.qml
-DashboardWeather modules/dashboard/DashboardWeather.qml
-DashboardMedia modules/dashboard/DashboardMedia.qml
-
-DashboardClock modules/dashboard/DashboardClock.qml
-DashboardResourceBars modules/dashboard/DashboardResourceBars.qml
 
 # Panels
 WallpaperPanel modules/wallpaper/Wallpaper.qml

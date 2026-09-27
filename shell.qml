@@ -5,9 +5,7 @@ import qs
 import qs.services
 
 ShellRoot {
-    property var _stats: Stats
     property var _display: Display
-    property var _cava: Cava
 
     objectName: "shellRoot"
 

@@ -54,7 +54,6 @@ QtObject {
     readonly property var panelRegistry: ({
         "launcher":      { source: "../modules/launcher/Launcher.qml" },
         "settings":      { source: "../modules/settings/Settings.qml" },
-        "dashboard":     { source: "../modules/dashboard/Dashboard.qml" },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
         "fullbar":       { source: "../modules/bar/Full.qml" },
         "power":         { source: "../modules/power/Power.qml" },
@@ -130,10 +129,6 @@ QtObject {
                 });
             }
         }
-    }
-
-    function toggleDashboardPopout() {
-        togglePanel("dashboard");
     }
 
     function toggleNetworkPopout() {

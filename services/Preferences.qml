@@ -101,16 +101,6 @@ QtObject {
         }
     }
 
-    property QtObject weather: QtObject {
-        property string lat: "51.50853"
-        property string long: "-0.12574"
-        property string locationName: "London, England, United Kingdom"
-
-        onLatChanged: root.requestSave()
-        onLongChanged: root.requestSave()
-        onLocationNameChanged: root.requestSave()
-    }
-
     property QtObject indicators: QtObject {
         property var order: ["notifications", "wifi", "instantmix", "settings", "power"]
 
@@ -166,9 +156,6 @@ QtObject {
         ["globals", "islandOutline"],
         ["globals", "dynamicSeedColor"],
         ["globals", "dynamicBgLightness"],
-        ["weather", "lat"],
-        ["weather", "long"],
-        ["weather", "locationName"],
         ["indicators", "order"],
         ["animations", "speedMultiplier"],
         ["timedate", "format"],

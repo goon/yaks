@@ -59,7 +59,6 @@ QtObject {
         // ── BRANDING & GRADIENTS ──────────────────────────────────────────
         readonly property color primary: root.activePalette.primaryIdx ? base16[root.activePalette.primaryIdx] : base16.base0D
         readonly property color secondary: root.activePalette.secondaryIdx ? base16[root.activePalette.secondaryIdx] : base16.base0E
-        readonly property color accent: base16.base0A
 
         // ── FEEDBACK & ALERTS ─────────────────────────────────────────────
         readonly property color success: base16.base0B
@@ -134,8 +133,6 @@ QtObject {
         readonly property int iconMedium: 20 * root.shellScale
         readonly property int iconLarge: 32 * root.shellScale
         readonly property int iconExtraLarge: 48 * root.shellScale
-        readonly property int calendarCellSize: 40 * root.shellScale
-        readonly property int calendarBlockWidth: 320 * root.shellScale
         readonly property int launcherItemHeight: 54 * root.shellScale
         readonly property int launcherSearchHeight: 50 * root.shellScale
         readonly property int caretWidth: Math.max(2, Math.round(2 * root.shellScale))
@@ -163,7 +160,6 @@ QtObject {
             readonly property int base: 14 * root.shellScale
             readonly property int medium: 16 * root.shellScale
             readonly property int large: 18 * root.shellScale
-            readonly property int display: 48 * root.shellScale
         }
 
     }

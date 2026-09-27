@@ -82,7 +82,6 @@ SettingsPage {
                         readonly property bool isEnabled: (Preferences.applications.themedApps[modelData.id] || false) && isInstalled
 
                         backgroundColor: isEnabled ? Globals.alpha(Globals.colors.primary, 0.1) : Globals.alpha(Globals.colors.surface, 0.5)
-                        premiumActive: false // Disable the overwhelming pink gradient block
                         opacity: isInstalled ? 1.0 : 0.5
                         blockRadius: Globals.geometry.innerRadius.medium
 

@@ -71,11 +71,6 @@ Item {
         target: "power"
     }
 
-    IpcHandler {
-        function toggle() { IslandService.toggleDashboardPopout(); }
-        target: "dashboard"
-    }
-
 
 
     IpcHandler {

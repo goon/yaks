@@ -12,10 +12,6 @@ BaseContainer {
     padding: Globals.geometry.padding.small
     implicitWidth: layout.implicitWidth + (paddingHorizontal * 2)
     hoverEnabled: false
-    clickable: true
-    onClicked: {
-        IslandService.toggleDashboardPopout();
-    }
 
     component TimeSegment: Item {
         id: segment
