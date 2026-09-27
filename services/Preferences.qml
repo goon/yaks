@@ -327,6 +327,7 @@ QtObject {
                         var currentApps = root.applications.themedApps;
                         var appsChanged = false;
                         for (var key in savedApps) {
+                            if (!(key in currentApps)) continue;
                             if (currentApps[key] !== savedApps[key]) {
                                 currentApps[key] = savedApps[key];
                                 appsChanged = true;

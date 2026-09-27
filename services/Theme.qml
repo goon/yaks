@@ -12,7 +12,6 @@ import "../lib/vesktop.js" as VesktopHook
 import "../lib/nvim.js" as NvimHook
 import "../lib/steam.js" as SteamHook
 import "../lib/gtk.js" as GtkHook
-import "../lib/qt.js" as QtHook
 pragma Singleton
 
 Item {
@@ -34,11 +33,6 @@ Item {
             "id": "gtk",
             "name": "GTK",
             "binary": "command -v gsettings"
-        },
-        {
-            "id": "qt",
-            "name": "Qt",
-            "binary": "test -d ~/.config/Kvantum"
         },
         {
             "id": "kitty",
@@ -254,8 +248,7 @@ Item {
             "vesktop": VesktopHook,
             "nvim": NvimHook,
             "steam": SteamHook,
-            "gtk": GtkHook,
-            "qt": QtHook
+            "gtk": GtkHook
         };
 
         const opacity = Preferences.applications.themedAppsOpacity;
