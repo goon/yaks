@@ -67,8 +67,6 @@ Item {
         }
     }
 
-    signal wallpaperSet(string path)
-
     function setWallpaper(path) {
         if (!path || path === "" || root.currentWallpaper === path) return;
 
@@ -76,7 +74,6 @@ Item {
 
         Preferences.currentWallpaper = path;
 
-        root.wallpaperSet(path);
         ProcessService.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper has been applied."]);
     }
 

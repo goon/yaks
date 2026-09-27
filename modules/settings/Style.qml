@@ -7,7 +7,6 @@ SettingsPage {
     id: root
 
     title: "Style"
-    description: "Adjust the core desktop environment's look, feel, and typography."
 
     ColumnLayout {
         Layout.fillWidth: true

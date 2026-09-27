@@ -8,7 +8,6 @@ SettingsPage {
     id: root
 
     title: "Wallpaper & Effects"
-    description: "Configure your desktop background and dynamic theming."
 
     ColumnLayout {
         Layout.fillWidth: true

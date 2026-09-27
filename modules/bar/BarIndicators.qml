@@ -10,7 +10,6 @@ Item {
     id: root
 
     property var barWindow: null
-    property string hoveredKey: ""
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
@@ -240,9 +239,6 @@ Item {
                 if (IslandService.activePanelName !== "fullbar") {
                     IslandService.closeAll();
                 }
-                if (root.hoveredKey === itemKey) {
-                    root.hoveredKey = "";
-                }
             }
         }
         BaseIcon {
@@ -263,19 +259,6 @@ Item {
         }
 
 
-
-        Connections {
-            target: dragArea
-            function onContainsMouseChanged() {
-                if (dragArea.containsMouse && !itemRoot.isDragging) {
-                    root.hoveredKey = itemKey;
-                } else {
-                    if (root.hoveredKey === itemKey) {
-                        root.hoveredKey = "";
-                    }
-                }
-            }
-        }
 
         MouseArea {
             id: dragArea

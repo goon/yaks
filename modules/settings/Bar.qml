@@ -7,7 +7,6 @@ SettingsPage {
     id: root
 
     title: "Bar"
-    description: "Configure the position, size, and layout of the system bar."
 
     ColumnLayout {
         Layout.fillWidth: true

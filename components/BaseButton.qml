@@ -21,19 +21,15 @@ Rectangle {
     property color hoverColor: "transparent"
     property real customRadius: -1
     property bool hoverEnabled: true
-    property bool clickRotate: false
     property int paddingHorizontal: text !== "" ? Globals.geometry.padding.medium : Globals.geometry.spacing.medium
     property int paddingVertical: Globals.geometry.spacing.medium
 
     // ── STATE PROXIES ─────────────────────────────────────────────────
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool pressed: mouseArea.pressed
-    property bool hovered: containsMouse
 
     // ── SIGNALS ───────────────────────────────────────────────────────
     signal clicked()
-    signal rightClicked()
-    signal pressedSignal()
 
     radius: {
         if (root.customRadius >= 0) return root.customRadius;
@@ -86,25 +82,8 @@ Rectangle {
         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: (mouse) => {
-            if (mouse.button === Qt.RightButton) {
-                root.rightClicked();
-            } else {
-                if (root.clickRotate) rotateAnim.restart();
+            if (mouse.button === Qt.LeftButton)
                 root.clicked();
-            }
         }
-        onPressed: root.pressedSignal()
-    }
-
-    SequentialAnimation {
-        id: rotateAnim
-        NumberAnimation {
-            target: root
-            property: "iconRotation"
-            from: 0; to: 360
-            duration: Globals.animations.normal
-            easing.type: Easing.OutBack
-        }
-        PropertyAction { target: root; property: "iconRotation"; value: 0 }
     }
 }

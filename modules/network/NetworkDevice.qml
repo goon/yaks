@@ -16,7 +16,6 @@ Item {
     property string title: ""
     property string subtitle: ""
     property string iconName: "bluetooth"
-    property real iconOpacity: 1.0
     property bool isConnected: false
     property bool isSecured: false
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
@@ -91,7 +90,6 @@ Item {
                         anchors.centerIn: parent
                         icon: root.iconName
                         color: root.isConnected ? Globals.colors.primary : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.muted : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
-                        opacity: root.iconOpacity
                         Behavior on color { BaseAnimation { } }
                     }
                 }

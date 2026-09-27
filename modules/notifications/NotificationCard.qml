@@ -9,7 +9,6 @@ BaseContainer {
     id: root
 
     property var notification: null
-    property real progress: 0
     property bool showCloseButton: true
     property bool showTime: true
     property var time: new Date()

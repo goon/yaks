@@ -32,9 +32,6 @@ FocusScope {
 
     signal clicked()
     signal rightClicked()
-    signal middleClicked()
-    signal pressedSignal()
-    signal releasedSignal()
 
     Layout.fillWidth: autoFillWidth
     implicitWidth: contentContainer.implicitWidth + (paddingHorizontal * 2)
@@ -56,15 +53,9 @@ FocusScope {
         onClicked: (mouse) => {
             if (mouse.button === Qt.RightButton)
                 root.rightClicked();
-            else if (mouse.button === Qt.MiddleButton)
-                root.middleClicked();
-            else
+            else if (mouse.button === Qt.LeftButton)
                 root.clicked();
         }
-        onPressed: (mouse) => {
-            root.pressedSignal();
-        }
-        onReleased: root.releasedSignal()
     }
 
     ColumnLayout {

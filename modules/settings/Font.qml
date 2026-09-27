@@ -7,7 +7,6 @@ SettingsPage {
     id: root
     
     title: "Shell Font"
-    description: "Select the primary font used throughout the shell."
 
     property string searchText: ""
     property var allFonts: Array.from(Theme.allFontFamilies || [])

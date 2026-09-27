@@ -123,8 +123,6 @@ BaseContainer {
 
             // ── DEVICE LIST (expanded dropdown) ─────────────────────────
             Item {
-                id: deviceListHover
-                HoverHandler { id: deviceListHoverHandler }
                 Layout.fillWidth: true
                 visible: modelData.hasDevices
                 Layout.preferredHeight: root.expandedSide === modelData.type ? deviceListCol.implicitHeight : 0

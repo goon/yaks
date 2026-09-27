@@ -13,8 +13,6 @@ Item {
     readonly property var workspaces: Compositor.workspaces || []
     readonly property int activeWorkspaceId: localActiveId !== -1 ? localActiveId : Compositor.activeWorkspaceId
     property int localActiveId: -1
-    property Item activeItem: null
-    property Item hoveredItem: null
 
     // Instantly sync local state when the compositor's event arrives
     Connections {
@@ -74,9 +72,6 @@ Item {
                 x: targetX
                 y: 0
 
-                Component.onCompleted: if (isActive) root.activeItem = indicator
-                onIsActiveChanged: if (isActive) root.activeItem = indicator
-
                 opacity: isActive ? 1.0 : (mouseArea.containsMouse ? 1.0 : (hasWindows ? 0.6 : 0.2))
 
                 Behavior on width {
@@ -103,14 +98,6 @@ Item {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();
                             Compositor.switchToWorkspace(modelData.idx || modelData.id);
-                        }
-                    }
-
-                    onContainsMouseChanged: {
-                        if (containsMouse) {
-                            root.hoveredItem = indicator;
-                        } else if (root.hoveredItem === indicator) {
-                            root.hoveredItem = null;
                         }
                     }
                 }

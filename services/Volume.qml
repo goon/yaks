@@ -25,7 +25,6 @@ Singleton {
 
         return "volume-2";
     }
-    readonly property int volumePercent: Math.round(volume * 100)
     property var sinks: Pipewire.nodes.values.filter((node) => {
         return node.isSink && !node.isStream && node.audio;
     }).sort((a, b) => root.getNodeName(a).localeCompare(root.getNodeName(b)))

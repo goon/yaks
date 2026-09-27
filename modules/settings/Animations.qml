@@ -7,7 +7,6 @@ SettingsPage {
     id: root
 
     title: "Animations"
-    description: "Animation speed, transitions, and motion."
 
     ColumnLayout {
         Layout.fillWidth: true

@@ -45,21 +45,17 @@ QtObject {
             readonly property int small: 6 * root.shellScale
             readonly property int medium: 8 * root.shellScale
             readonly property int large: 12 * root.shellScale
-            readonly property int xlarge: 18 * root.shellScale
         }
 
         readonly property QtObject padding: QtObject {
             readonly property int small: 8 * root.shellScale
             readonly property int medium: 14 * root.shellScale
-            readonly property int large: 18 * root.shellScale
             readonly property int island: Math.max(22 * root.shellScale, Math.ceil(root.geometry.radius * 0.5))
         }
 
         readonly property QtObject innerRadius: QtObject {
             readonly property int small: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.small)
             readonly property int medium: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.medium)
-            readonly property int large: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.large)
-            readonly property int island: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.padding.island)
         }
 
         readonly property QtObject slider: QtObject {
@@ -124,7 +120,6 @@ QtObject {
     animations: QtObject {
         readonly property int fast: 250
         readonly property int normal: 450
-        readonly property int slow: 700
         readonly property int easingType: Easing.OutQuint
         readonly property var bezierCurve: [0.15, 0, 0, 1]
     }
@@ -135,7 +130,6 @@ QtObject {
         shadow: QtObject {
             readonly property color color: root.colors.raw.shadow || "#000000"
             readonly property int radius: 20
-            readonly property int samples: 20
             readonly property int offsetX: 0
             readonly property int offsetY: 0
         }

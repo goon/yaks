@@ -7,7 +7,6 @@ SettingsPage {
     id: root
 
     title: "Applications"
-    description: "Enabling applications inherit the current shell theme. This overrides various configuration files and can be destructive." 
 
     ColumnLayout {
         spacing: Globals.geometry.spacing.large

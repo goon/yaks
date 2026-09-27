@@ -3,7 +3,7 @@ import qs
 
 /**
  * BaseAnimation - Standardized Animation Hub for the shell
- * Can be used as a simple PropertyAnimation or specialized for Springs/Staggers.
+ * Can be used as a simple PropertyAnimation.
  */
 SequentialAnimation {
     id: root
@@ -32,16 +32,5 @@ SequentialAnimation {
         duration: root._dur
         easing.type: Globals.animations.easingType
         easing.bezierCurve: Globals.animations.bezierCurve
-    }
-
-    component Spring: SpringAnimation {
-        property string profile: "gooey" // gooey, snappy
-        
-        // Physics scaling for global duration multiplier
-        property real _m: Preferences.animations.speedMultiplier
-        
-        spring: (profile === "gooey" ? 4 : 2) * (_m * _m)
-        damping: (profile === "gooey" ? 0.7 : 0.5) * _m
-        mass: profile === "gooey" ? 0.8 : 1.0
     }
 }

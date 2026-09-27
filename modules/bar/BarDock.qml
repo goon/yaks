@@ -7,7 +7,6 @@ import qs
 BaseContainer {
     id: root
 
-    readonly property real _spacing: Globals.geometry.spacing.small
     readonly property real _itemSize: Globals.dimensions.barItemHeight
 
     visible: Compositor.hasDockWindows

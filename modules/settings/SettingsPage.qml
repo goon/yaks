@@ -9,7 +9,6 @@ BaseContainer {
     
     property string title: ""
     property string icon: ""
-    property string description: ""
 
     onRightClicked: {
         if (root.StackView.view && root.StackView.view.depth > 1) {

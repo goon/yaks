@@ -7,7 +7,6 @@ SettingsPage {
     id: root
 
     title: "Notifications"
-    description: "Notification behaviour, sounds, and display."
 
     ColumnLayout {
         Layout.fillWidth: true

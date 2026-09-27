@@ -6,7 +6,6 @@ SettingsPage {
     id: root
 
     title: "Launcher"
-    description: "Configure launcher behaviors."
 
     ColumnLayout {
         Layout.fillWidth: true

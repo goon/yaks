@@ -9,7 +9,6 @@ QtObject {
 
     // ── NATIVE NETWORKING SINGLETONS ──────────────────────────────────
     readonly property bool wifiEnabled: Networking.wifiEnabled
-    readonly property bool wifiHardwareEnabled: Networking.wifiHardwareEnabled
 
     // ── DEVICE DISCOVERY ──────────────────────────────────────────────
     property WifiDevice wifiDevice: {
@@ -29,17 +28,7 @@ QtObject {
     }
 
     // ── ETHERNET (WIRED) ──────────────────────────────────────────────
-    readonly property bool ethernetEnabled: wiredDevice !== null
     readonly property bool ethernetConnected: wiredDevice ? wiredDevice.connected : false
-    readonly property string ethernetName: wiredDevice ? wiredDevice.name : ""
-    // address is the IP provided directly by the native API
-    readonly property string ipv4: {
-        if (wiredDevice && wiredDevice.connected && wiredDevice.address !== "")
-            return wiredDevice.address;
-        if (wifiDevice && wifiDevice.connected && wifiDevice.address !== "")
-            return wifiDevice.address;
-        return "";
-    }
 
     // ── WI-FI PROPERTIES ──────────────────────────────────────────────
     readonly property bool connected: wifiDevice ? wifiDevice.connected : false
@@ -55,7 +44,6 @@ QtObject {
     // ── SCANNING & NETWORKS ───────────────────────────────────────────
     property var availableNetworks: []
     readonly property bool scanning: wifiDevice ? wifiDevice.scannerEnabled : false
-    readonly property bool loading: false
 
     // ── INTERNAL HELPERS ──────────────────────────────────────────────
     function _getConnectedSsid() {
@@ -133,12 +121,6 @@ QtObject {
     property string pendingForgetSsid: ""
 
     // ── PUBLIC API ────────────────────────────────────────────────────
-    function scan() {
-        if (!wifiDevice) return;
-        wifiDevice.scannerEnabled = false;
-        wifiDevice.scannerEnabled = true;
-    }
-
     function toggleScan() {
         if (!wifiDevice) return;
         wifiDevice.scannerEnabled = !wifiDevice.scannerEnabled;

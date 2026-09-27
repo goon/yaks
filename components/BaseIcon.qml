@@ -6,9 +6,7 @@ Item {
 
     property string icon: ""
     property int size: Globals.dimensions.iconMedium
-    property alias iconSize: root.size
     property color color: Globals.colors.text
-    property alias iconColor: root.color
 
     implicitWidth: size
     implicitHeight: size

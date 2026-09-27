@@ -45,13 +45,11 @@ QtObject {
         property string directory: ""
         property string transition: "fade" // fade | disc | corner | wave
         property int transitionDuration: 1750
-        property bool transitionRandom: false
 
         onParallaxStrengthChanged: root.requestSave()
         onDirectoryChanged: root.requestSave()
         onTransitionChanged: root.requestSave()
         onTransitionDurationChanged: root.requestSave()
-        onTransitionRandomChanged: root.requestSave()
     }
 
     property QtObject applications: QtObject {
@@ -134,7 +132,6 @@ QtObject {
         ["wallpaper", "directory"],
         ["wallpaper", "transition"],
         ["wallpaper", "transitionDuration"],
-        ["wallpaper", "transitionRandom"],
         ["applications", "themedApps"],
         ["applications", "themedAppsOpacity"],
         ["launcher", "showAppDescriptions"],

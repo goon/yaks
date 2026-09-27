@@ -84,9 +84,6 @@ Item {
         });
     }
 
-    Component.onCompleted: {
-    }
-
     Timer {
         id: brightnessUpdateTimer
 
