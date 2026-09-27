@@ -44,17 +44,6 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        BaseHeader {
-            text: "SETTINGS"
-            isActive: root.activeHover !== null
-            Layout.bottomMargin: Globals.geometry.spacing.large
-        }
-
-        BaseSeparator {
-            Layout.fillWidth: true
-            Layout.bottomMargin: Globals.geometry.spacing.large
-        }
-
         Repeater {
             id: menuRepeater
             model: root._menuModel
