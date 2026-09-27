@@ -109,6 +109,7 @@ Item {
                     visible: !!root.subText
                     pixelSize: Globals.typography.size.base
                     color: root.selected ? Globals.alpha(Globals.colors.text, 0.7) : Globals.colors.muted
+                    wrapMode: Text.NoWrap
                     elide: Text.ElideMiddle
                 }
             }
