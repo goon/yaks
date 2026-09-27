@@ -64,12 +64,6 @@ Item {
                         id: componentLoader
                         Layout.alignment: Qt.AlignVCenter
                         source: barWindow ? barWindow.resolveComponentSource(modelData) : ""
-                        Binding {
-                            target: componentLoader.item
-                            property: "barWindow"
-                            value: barWindow
-                            when: componentLoader.item !== null && (modelData === "indicators" || modelData === "tray")
-                        }
                     }
                 }
             }

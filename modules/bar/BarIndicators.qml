@@ -2,14 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
-import Quickshell.Services.SystemTray
 import qs
 import qs.services
 
 Item {
     id: root
-
-    property var barWindow: null
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
@@ -18,8 +15,6 @@ Item {
 
     readonly property int spacing: Globals.geometry.spacing.small
     readonly property int indicatorItemWidth: 32
-
-    readonly property int traySectionWidth: trayRow.visible ? trayRow.width : 0
 
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
@@ -60,11 +55,6 @@ Item {
     readonly property int contentWidth: {
         var w = 0;
         var hasVisibleItem = false;
-        
-        if (traySectionWidth > 0) {
-            w += traySectionWidth;
-            hasVisibleItem = true;
-        }
 
         for (var i = 0; i < visibleKeys.length; i++) {
             var idx = _modelIndex(visibleKeys[i]);
@@ -84,7 +74,7 @@ Item {
         var idx = visibleKeys.indexOf(key);
         if (idx < 0) return 0;
         
-        var x = (traySectionWidth > 0) ? traySectionWidth + spacing : 0;
+        var x = 0;
         for (var i = 0; i < idx; i++) {
             var k = visibleKeys[i];
             var mi = _modelIndex(k);
@@ -99,7 +89,7 @@ Item {
         var idx = visibleKeys.indexOf(key);
         if (idx < 0) return 0;
         
-        var x = (traySectionWidth > 0) ? traySectionWidth + spacing : 0;
+        var x = 0;
         for (var i = 0; i < idx; i++) {
             x += getItemWidth(visibleKeys[i]) + spacing;
         }
@@ -134,55 +124,6 @@ Item {
             implicitHeight: Globals.dimensions.barItemHeight
             height: parent.height
 
-            Row {
-                id: trayRow
-                x: 0
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: root.spacing
-
-                Repeater {
-                    model: SystemTray.items
-
-                    delegate: Item {
-                        width: root.indicatorItemWidth
-                        height: container.height
-
-                        MouseArea {
-                            id: trayMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            cursorShape: Qt.PointingHandCursor
-
-                            onClicked: (mouse) => {
-                                if (mouse.button === Qt.RightButton) {
-                                    modelData.display(barWindow, mouse.x, mouse.y);
-                                } else {
-                                    modelData.activate();
-                                }
-                            }
-                        }
-
-                        Image {
-                            anchors.centerIn: parent
-                            width: Globals.dimensions.iconMedium * 1.1
-                            height: Globals.dimensions.iconMedium * 1.1
-                            source: modelData.icon
-                            sourceSize: Qt.size(width, height)
-                            fillMode: Image.PreserveAspectFit
-                            
-                            opacity: trayMouseArea.containsMouse ? 1.0 : 0.8
-                            Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
-
-                            layer.enabled: true
-                            layer.effect: MultiEffect {
-                                colorization: 1.0
-                                colorizationColor: Globals.colors.text
-                            }
-                        }
-                    }
-                }
-            }
             Repeater {
                 id: indicatorRepeater
                 model: root._indicatorModel
@@ -269,7 +210,7 @@ Item {
 
             drag.target: itemRoot
             drag.axis: Drag.XAxis
-            drag.minimumX: (root.traySectionWidth > 0) ? root.traySectionWidth + root.spacing : 0
+            drag.minimumX: 0
             drag.maximumX: container.width - width
             drag.threshold: 8
 
