@@ -29,7 +29,6 @@ Item {
         { id: "pastel",      name: "Pastel"     },
     ]
 
-    // Application metadata for theming
     readonly property var applications: [
         {
             "id": "gtk",
@@ -271,10 +270,8 @@ Item {
         for (let i = 0; i < root.applications.length; i++) {
             let app = root.applications[i];
             
-            // Skip disabled apps
             if (Preferences.applications.themedApps[app.id] !== true) continue;
             
-            // Skip apps without a hook
             let hook = hooks[app.id];
             if (!hook) continue;
 

@@ -59,7 +59,7 @@ Item {
         loadedPanelName !== "fullbar" &&
         loadedPanelName !== ""
 
-    // Helper functions to safely call lifecycle methods and set properties on loaded views
+    // Safely call lifecycle methods and set properties on loaded views
     function notifyPanel(funcName) {
         if (panelLoader.item && typeof panelLoader.item[funcName] === "function") {
             panelLoader.item[funcName]();
@@ -135,7 +135,6 @@ Item {
         }
     }
 
-    // Active panel element reference shortcut
     readonly property alias activePanelItem: panelLoader.item
 
     // Expose the mask element to Bar.qml for input region
@@ -164,7 +163,6 @@ Item {
     readonly property real totalWidthPadding: (Globals.geometry.padding.island * 2)
     readonly property real totalHeightPadding: (Globals.geometry.padding.island * 2)
 
-    // Target Dimensions when morphed
     property real activePanelWidth: activePanelItem ? (activePanelItem.implicitWidth || 0) + totalWidthPadding : getExpectedPanelWidth(activePanelName)
     property real activePanelHeight: activePanelItem ? (activePanelItem.implicitHeight || 0) + totalHeightPadding : getExpectedPanelHeight(activePanelName)
 

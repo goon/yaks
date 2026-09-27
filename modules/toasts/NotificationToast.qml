@@ -18,7 +18,6 @@ NotificationCard {
     showTime: false
     clickable: true
     
-    // When clicking the notification, we close the toast
     onClicked: {
         if (Notifications.activeToastNotification) {
             Notifications.activeToastNotification.dismiss();

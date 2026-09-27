@@ -6,7 +6,6 @@ pragma Singleton
 QtObject {
     id: root
 
-    // Input State Management
     property string lastInputMethod: "keyboard"
     property point originMousePos: Qt.point(-1, -1)
     property bool mouseSelectionEnabled: false
@@ -40,7 +39,6 @@ QtObject {
         }
         var dx = Math.abs(globalX - lastMousePos.x);
         var dy = Math.abs(globalY - lastMousePos.y);
-        // If movement is significant, enable mouse selection
         if (dx > 2 || dy > 2) {
             lastMousePos = Qt.point(globalX, globalY);
             if (!mouseSelectionEnabled) {
@@ -136,7 +134,6 @@ QtObject {
         // ── DESKTOP ENTRY LOOKUP ──────────────────────────────────────────
         var desktopIcon = getIconFromDesktop(iconName);
         if (desktopIcon) {
-            // If the desktop icon is itself a path, return it directly
             if (desktopIcon.startsWith("/") || desktopIcon.startsWith("file://"))
                 return desktopIcon.startsWith("/") ? "file://" + desktopIcon : desktopIcon;
             var dp = getVerifiedPath(desktopIcon);
@@ -159,7 +156,6 @@ QtObject {
                 : firstChar.toUpperCase() + rest);
         }
 
-        // Symbolic / indicator / panel suffixes
         variations.push(lowerIcon + "-symbolic");
         variations.push(iconName + "-symbolic");
         variations.push(lowerIcon + "-indicator");

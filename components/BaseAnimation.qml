@@ -8,7 +8,6 @@ import qs
 SequentialAnimation {
     id: root
     
-    // Compatibility properties
     property alias target: anim.target
     property alias targets: anim.targets
     property alias property: anim.property
@@ -16,7 +15,6 @@ SequentialAnimation {
     property alias from: anim.from
     property alias easing: anim.easing
     
-    // Extensions
     property int delay: 0
     property int duration: -1
     
@@ -36,7 +34,6 @@ SequentialAnimation {
         easing.bezierCurve: Globals.animations.bezierCurve
     }
 
-    // Specialized Spring Component
     component Spring: SpringAnimation {
         property string profile: "gooey" // gooey, snappy
         

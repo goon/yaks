@@ -6,7 +6,6 @@ pragma Singleton
 QtObject {
     id: root
 
-    // Exposed properties
     property string username: ""
     property string hostname: ""
     property string uptime: ""
@@ -51,32 +50,25 @@ QtObject {
         onTriggered: {
             refreshTimer.running = true;
             
-            // Initial loads
             osReleaseFile.reload();
             uptimeFile.reload();
             hostnameFile.reload();
             cpuInfoFile.reload();
             
-            // Parse OS Name
             var osMatch = osReleaseFile.text().match(/^PRETTY_NAME="?([^"\n]+)"?/m);
             if (osMatch) root.osName = osMatch[1].trim();
             
-            // Parse CPU Model
             var cpuMatch = cpuInfoFile.text().match(/^model name\s*:\s*(.*)$/m);
             if (cpuMatch) root.cpuModel = cpuMatch[1].trim();
             
-            // Parse Hostname
             root.hostname = hostnameFile.text().trim();
             
-            // Fetch Username, Kernel, and GPU via quick one-off processes
             ProcessService.run(["whoami"], (out) => root.username = out.trim());
             ProcessService.run(["uname", "-r"], (out) => root.kernelVersion = out.trim());
             
-            // Environment context
             root.de = Quickshell.env("XDG_CURRENT_DESKTOP") || "N/A";
             root.wm = Quickshell.env("XDG_SESSION_DESKTOP") || "N/A";
 
-            // GPU Model - Robust Detection
             ProcessService.run(["sh", "-c", "{ if command -v lspci >/dev/null; then lspci | grep -i 'vga\\|display' | cut -d':' -f3; elif command -v glxinfo >/dev/null; then glxinfo 2>/dev/null | grep -i 'device:' | cut -d':' -f2-; else echo '...'; fi; } | sed 's/^[ \t]*//' | tr '\\n' '|'"], (out) => {
                 if (!out) return;
                 var gpus = out.split('|').filter(g => g.trim().length > 0);

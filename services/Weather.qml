@@ -13,14 +13,12 @@ QtObject {
     property var hourlyForecast: null
     property bool loading: false
     property string error: ""
-    // derived properties for easy access
     property string temperature: currentWeather ? Math.round(currentWeather.temperature_2m ?? currentWeather.temperature) + "°" : "--"
     property string feelsLike: currentWeather ? Math.round(currentWeather.apparent_temperature) + "°" : "--"
     property string windSpeed: currentWeather ? Math.round(currentWeather.wind_speed_10m) + " mph" : "--"
     property string humidity: currentWeather ? Math.round(currentWeather.relative_humidity_2m) + "%" : "--"
     property int weatherCode: currentWeather ? (currentWeather.weather_code ?? currentWeather.weathercode) : -1
     property bool isDay: currentWeather ? currentWeather.is_day === 1 : true
-    // Auto-refresh every 30 minutes
     property Timer autoRefreshTimer
     property Timer fetchDebounce
 
@@ -54,7 +52,6 @@ QtObject {
 
         loading = true;
         error = "";
-        // Fetch Weather
         var xhr = new XMLHttpRequest();
         var url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + 
                  "&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m" + 
@@ -79,9 +76,7 @@ QtObject {
         };
         xhr.open("GET", url);
         xhr.send();
-        // Fetch Location Name (Reverse Geocoding)
         var geoXhr = new XMLHttpRequest();
-        // Using Nominatim (OpenStreetMap) Geocoding API
         var geoUrl = "https://nominatim.openstreetmap.org/reverse?lat=" + latitude + "&lon=" + longitude + "&format=json";
         geoXhr.onreadystatechange = function() {
             if (geoXhr.readyState === XMLHttpRequest.DONE) {
@@ -90,7 +85,6 @@ QtObject {
                         var json = JSON.parse(geoXhr.responseText);
                         if (json.address) {
                             var addr = json.address;
-                            // Prefer city, then town, then village, then suburb
                             var name = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || "Unknown Location";
                             if (name && name !== "Unknown Location")
                                 Preferences.weather.locationName = name;

@@ -20,7 +20,6 @@ QtObject {
             handleWallpaperKey(event, item);
         }
 
-        // Escape closes any panel
         if (event.key === Qt.Key_Escape) {
             IslandService.closeAll();
             event.accepted = true;

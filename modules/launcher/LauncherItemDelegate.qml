@@ -8,28 +8,27 @@ Item {
     // ── API ───────────────────────────────────────────────────────────
     property string text: ""
     property string subText: ""
-    property string imageSource: "" // Image path/url
+    property string imageSource: ""
     property bool selected: false
-    property color iconColor: Globals.colors.text // Default icon color
+    property color iconColor: Globals.colors.text
 
     property bool showFallbackIcon: false
     property string fallbackText: ""
 
     signal clicked()
 
-    property int itemIndex: -1 // To be set by ListView
-    
+    property int itemIndex: -1
+
     width: ListView.view ? ListView.view.width : parent.width
     height: Globals.dimensions.launcherItemHeight
-    
-    // Entry animation properties
+
     opacity: 0
     transform: Translate { id: entryTranslate; y: 20 }
-    
+
     Component.onCompleted: {
         entryAnim.start();
     }
-    
+
     ParallelAnimation {
         id: entryAnim
         BaseAnimation { target: root; property: "opacity"; to: 1; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)) }
@@ -41,7 +40,7 @@ Item {
         anchors.fill: parent
         radius: Globals.geometry.innerRadius.medium
         color: Globals.colors.transparent
-        
+
         BaseActiveBackground {
             anchors.fill: parent
             radius: parent.radius
@@ -55,17 +54,15 @@ Item {
             anchors.leftMargin: Globals.geometry.spacing.large * 2
             anchors.rightMargin: Globals.geometry.spacing.large * 2
             spacing: Globals.geometry.spacing.large
-            
+
             scale: mouseArea.pressed ? 0.98 : 1.0
             Behavior on scale { BaseAnimation { } }
 
-            // Icon Container
             Item {
                 Layout.preferredWidth: Globals.dimensions.iconLarge
                 Layout.preferredHeight: Globals.dimensions.iconLarge
                 Layout.alignment: Qt.AlignVCenter
 
-                // 1. Image (e.g. App Icon)
                 Image {
                     anchors.fill: parent
                     source: root.imageSource
@@ -77,7 +74,6 @@ Item {
                     visible: !!root.imageSource && status === Image.Ready
                 }
 
-                // 2. Fallback (Text char)
                 Rectangle {
                     anchors.fill: parent
                     radius: Globals.geometry.innerRadius.small
@@ -94,7 +90,6 @@ Item {
                 }
             }
 
-            // Text Container
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
@@ -124,15 +119,14 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        
+
         onPositionChanged: (mouse) => {
              var container = root.ListView.view ? root.ListView.view.parent : null;
              if (container && container.isActive && typeof container.mouseMoveRequested === "function") {
                  container.mouseMoveRequested(root.itemIndex, mouse);
              }
         }
-        
+
         onClicked: root.clicked()
     }
 }
-

@@ -11,10 +11,8 @@ Item {
     implicitWidth: mainLayout.implicitWidth
     Layout.fillWidth: true
 
-    // Core Properties
     property string deviceType: "bluetooth" // "bluetooth" | "wifi"
     
-    // Display Properties
     property string title: ""
     property string subtitle: ""
     property string iconName: "bluetooth"
@@ -23,11 +21,9 @@ Item {
     property bool isSecured: false
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
     
-    // Internal State
     property bool expanded: false
     readonly property bool isHovered: mainMouseArea.containsMouse
     
-    // Signals
     signal connectClicked(string password)
     signal disconnectClicked()
     signal forgetClicked()
@@ -38,7 +34,6 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        // Main Row Container
         Item {
             id: rowContainer
             Layout.fillWidth: true
@@ -73,7 +68,6 @@ Item {
                             }
                         }
                     } else {
-                        // Bluetooth
                         if (root.isConnected) {
                             root.disconnectClicked();
                         } else {
@@ -88,7 +82,6 @@ Item {
                 anchors.fill: parent
                 spacing: Globals.geometry.spacing.medium
 
-                // Icon Slot
                 Item {
                     Layout.preferredWidth: 40
                     Layout.preferredHeight: 40
@@ -103,7 +96,6 @@ Item {
                     }
                 }
 
-                // Title and Subtitle
                 ColumnLayout {
                     spacing: 2
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -130,7 +122,6 @@ Item {
                     }
                 }
 
-                // Wi-Fi Status Badge (Fixed Width Pill)
                 Rectangle {
                     visible: deviceType === "wifi" && (root.isSecured || root.isKnown)
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -187,7 +178,6 @@ Item {
                     anchors.margins: Globals.geometry.spacing.large
                     spacing: Globals.geometry.spacing.medium
 
-                    // Password Input
                     BaseInput {
                         id: passwordInput
                         Layout.fillWidth: true

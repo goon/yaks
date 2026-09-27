@@ -56,5 +56,5 @@ BaseContainer {
         BaseSeparator {
             Layout.fillWidth: true
         }
-    } // End of header ColumnLayout
+    }
 }

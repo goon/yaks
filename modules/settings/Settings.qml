@@ -52,7 +52,6 @@ FocusScope {
             Layout.fillHeight: true
             implicitHeight: pageStack.implicitHeight
 
-            // Scroller container
             Item {
                 anchors.fill: parent
 

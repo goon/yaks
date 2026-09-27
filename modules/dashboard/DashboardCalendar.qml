@@ -16,7 +16,6 @@ BaseBento {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         spacing: Globals.geometry.spacing.medium
 
-            // Month navigation header
             Item {
                 id: navHeader
 
@@ -36,7 +35,6 @@ BaseBento {
                     }
                 }
 
-                // Centered overlapping text
                 Item {
                     id: headerContainer
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -88,7 +86,6 @@ BaseBento {
                 }
             }
 
-            // Day headers (Sun, Mon, Tue, etc.)
             Row {
                 id: dayHeaders
 

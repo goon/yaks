@@ -43,7 +43,6 @@ Item {
         return indicatorItemWidth;
     }
 
-    // Filter to get only visible draggable items in order
     readonly property var visibleKeys: {
         var keys = [];
         for (var i = 0; i < Preferences.indicators.order.length; i++) {
@@ -216,7 +215,6 @@ Item {
 
         visible: isVisible
         height: parent.height
-        // Define animating width centered on the item's state width
         width: isVisible ? getItemWidth(itemKey) : 0
 
         readonly property int targetX: getTargetX(itemKey)
@@ -235,8 +233,6 @@ Item {
             // left edge before the drag system corrects it.
             restoreMode: Binding.RestoreNone
         }
-
-        // (Removed Behavior on x to prevent sliding animation)
 
         onIsDraggingChanged: {
             if (isDragging) {

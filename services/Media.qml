@@ -12,28 +12,23 @@ QtObject {
 
     // Active player (filtered to exclude browsers)
     property var activePlayer: null
-    // Metadata properties
     property var metadata: activePlayer && activePlayer.metadata ? activePlayer.metadata : null
     property string trackTitle: metadata ? (metadata["xesam:title"] || "Unknown Track") : "Unknown Track"
     property var artistArray: metadata ? metadata["xesam:artist"] : null
     property string trackArtist: artistArray && artistArray.length > 0 ? artistArray[0] : "Unknown Artist"
     property string albumArtUrl: metadata ? (metadata["mpris:artUrl"] || "") : ""
     property real trackLength: metadata ? (metadata["mpris:length"] || 0) : 0
-    // Playback state
     property real currentPosition: activePlayer ? activePlayer.position : 0
     property int playbackState: activePlayer ? activePlayer.playbackState : MprisPlaybackState.Stopped
-    // Player capabilities
     property bool canPlay: activePlayer ? activePlayer.canPlay : false
     property bool canPause: activePlayer ? activePlayer.canPause : false
     property bool canGoNext: activePlayer ? activePlayer.canGoNext : false
     property bool canGoPrevious: activePlayer ? activePlayer.canGoPrevious : false
     property bool canSeek: activePlayer ? activePlayer.canSeek : false
-    // Seeking state management
     property bool isSeeking: false
     property real localSeekRatio: -1
     property real lastSentSeekRatio: -1
     property real seekEpsilon: 0.01
-    // Computed properties
     property real progressRatio: {
         if (!activePlayer || trackLength <= 0)
             return 0;
@@ -44,13 +39,9 @@ QtObject {
 
         return Math.max(0, Math.min(1, r));
     }
-    // Browser player filter
     readonly property var browserIdentities: ["firefox", "chrome", "chromium", "brave", "edge", "opera", "vivaldi", "safari"]
-    // Position interpolation timer (updates every 100ms for smoothness)
     property Timer positionTimer
-    // Seek debounce timer (75ms)
     property Timer seekDebounceTimer
-    // Sync position when activePlayer reports a position change (e.g. seek)
     property Connections playerConnections
 
     playerConnections: Connections {
@@ -63,7 +54,6 @@ QtObject {
         target: root.activePlayer
     }
 
-    // Functions
     function updateActivePlayer() {
         for (var i = 0; i < Mpris.players.values.length; i++) {
             var p = Mpris.players.values[i];
@@ -135,7 +125,6 @@ QtObject {
 
     }
 
-    // Track changes to reset position
     onTrackTitleChanged: resetPosition()
     onTrackArtistChanged: resetPosition()
     onTrackLengthChanged: resetPosition()
@@ -144,7 +133,6 @@ QtObject {
             currentPosition = activePlayer.position;
 
     }
-    // Update filtered player when Mpris players change
     Component.onCompleted: {
         updateActivePlayer();
         Mpris.players.valuesChanged.connect(updateActivePlayer);
@@ -159,7 +147,6 @@ QtObject {
     }
 
 
-    // Position interpolation
     property var _lastUpdateTime: 0
     positionTimer: Timer {
         interval: 16 // ~60fps for perfectly smooth progress

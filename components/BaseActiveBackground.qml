@@ -5,19 +5,15 @@ import qs
 Rectangle {
     id: root
 
-    // Background configuration
     property color baseColor: Globals.colors.surface
     property color hoverColor: Globals.colors.transparent
     
-    // Interaction states
     property bool hovered: false
     property bool hoverEnabled: true
 
-    // Premium styling states
     property bool premiumActive: false
     property bool premiumHover: false
     
-    // Derived state
     readonly property bool isPremiumActive: premiumActive || (premiumHover && hovered)
 
     color: (root.hoverEnabled && !root.isPremiumActive && root.hovered) 

@@ -213,7 +213,7 @@ BaseContainer {
                     ctx.font = Globals.dimensions.iconExtraLarge + "px \"" + Globals.typography.iconFamily + "\"";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
-                    ctx.globalAlpha = 0.7; // Dim slightly per request
+                    ctx.globalAlpha = 0.7;
                     ctx.fillText("bell", width/2, height/2);
                 }
                 

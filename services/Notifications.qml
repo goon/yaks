@@ -8,10 +8,8 @@ pragma Singleton
 Item {
     id: root
 
-    // The core notification server provided by Quickshell
     property NotificationServer server: NotificationServer {}
     
-    // History model
     property alias notificationHistory: historyModel
     readonly property alias unreadCount: historyModel.count
 
@@ -26,13 +24,11 @@ Item {
         function onNotification(notification) {
             notification.tracked = true;
             
-            // Add to history (at the top)
             historyModel.insert(0, {
                 "modelData": notification,
                 "receivedAt": new Date()
             });
 
-            // Handle dismissal/closing
             notification.onClosed.connect(() => {
                 for (var i = 0; i < historyModel.count; i++) {
                     if (historyModel.get(i).modelData === notification) {
@@ -42,7 +38,6 @@ Item {
                 }
             });
 
-            // Sound logic
             if (Preferences.notifications.mode === 0) {
                 if (Preferences.notifications.soundEnabled) {
                     ProcessService.runDetached([
@@ -52,7 +47,6 @@ Item {
                     ]);
                 }
                 
-                // Queue for morph island
                 root._toastQueue.push(notification);
                 root._processQueue();
             }
@@ -75,7 +69,6 @@ Item {
         if (root.activeToastNotification === null && root._toastQueue.length > 0) {
             root.activeToastNotification = root._toastQueue.shift();
             
-            // Only open panel if no other panel is open, or if it's already notificationtoast
             if (IslandService.activePanelName === "" || IslandService.activePanelName === "notificationtoast") {
                 IslandService.openPanel("notificationtoast");
                 toastTimer.restart();

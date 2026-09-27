@@ -8,7 +8,6 @@ Item {
 
     id: root
 
-    // Launcher
     IpcHandler {
         function toggle() {
             IslandService.toggleLauncher();
@@ -17,7 +16,6 @@ Item {
         target: "launcher"
     }
 
-    // Settings
     IpcHandler {
         function toggle() {
             IslandService.toggleSettings();
@@ -30,7 +28,6 @@ Item {
         target: "settings"
     }
 
-    // Wallpaper
     IpcHandler {
         function toggle() {
             IslandService.toggleWallpaper();
@@ -43,7 +40,6 @@ Item {
         target: "wallpaper"
     }
 
-    // Tokens
     IpcHandler {
         function apply(id: string) { Theme.setTheme(id); }
         target: "theme"

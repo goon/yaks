@@ -160,7 +160,6 @@ SettingsPage {
             border.width: rect.isEnabled ? 1 : 0
             border.color: rect.isEnabled ? Globals.colors.primary : Globals.colors.transparent
 
-            // Drag handler covering the entire background of the pill
             MouseArea {
                 id: dragHandler
                 anchors.fill: parent

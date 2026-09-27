@@ -5,15 +5,12 @@ import qs
 Text {
     id: root
 
-    // Convenience properties for common overrides
     property alias pixelSize: root.font.pixelSize
     property alias bold: root.font.bold
     property alias family: root.font.family
     property alias weight: root.font.weight
-    // Muted text mode (overrides color to Globals.colors.muted)
     property bool muted: false
 
-    // Shadow support
     property bool shadow: false
     property color shadowColor: Globals.effects.shadow.color
     property int shadowRadius: Globals.effects.shadow.radius

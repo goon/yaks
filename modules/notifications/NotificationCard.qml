@@ -39,7 +39,7 @@ BaseContainer {
     }
 
     Timer {
-        interval: 60000 // Refresh every minute
+        interval: 60000
         running: root.visible
         repeat: true
         onTriggered: root.updateTime()
@@ -64,14 +64,11 @@ BaseContainer {
     Layout.fillWidth: true
     implicitWidth: 350
 
-    // Top section: Icon, Info, Close
     RowLayout {
         Layout.fillWidth: true
         spacing: Globals.geometry.spacing.large
         Layout.alignment: Qt.AlignTop
 
-
-                // App icon
                 Rectangle {
                     Layout.preferredWidth: Globals.dimensions.iconLarge
                     Layout.preferredHeight: Layout.preferredWidth
@@ -163,14 +160,12 @@ BaseContainer {
                     }
                 }
 
-                // Header info: Summary (Title) | App Name (Single Line)
                 RowLayout {
                     id: headerRow
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
                     spacing: Globals.geometry.spacing.small
 
-                    // Summary (Title)
                     BaseText {
                         id: summaryText
                         Layout.fillWidth: false
@@ -183,7 +178,6 @@ BaseContainer {
                         Layout.maximumWidth: root.width - 120
                     }
 
-                    // Separator
                     BaseText {
                         id: separator
                         text: "|"
@@ -191,7 +185,6 @@ BaseContainer {
                         visible: root.showTime
                     }
 
-                    // Time
                     BaseText {
                         id: timeText
                         muted: true
@@ -202,7 +195,6 @@ BaseContainer {
                         elide: Text.ElideRight
                     }
 
-                    // Spacer to push everything to the left
                     Item {
                         Layout.fillWidth: true
                     }
@@ -222,7 +214,6 @@ BaseContainer {
 
             }
 
-            // Body section: Spans full width
             BaseText {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 200 // Hint to help Layout

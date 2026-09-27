@@ -20,29 +20,23 @@ Item {
     property bool leftIconActive: false
     property real leftIconScale: 1.0
     
-    // Separator
     property bool showVerticalSeparator: false
     
-    // Right Icon Properties
     property string rightIcon: "chevron-right"
     property bool rightIconVisible: true
     
-    // Selection state
     property bool selected: false
 
     // Internal indicator (the gradient bar on the left edge).
     // Set to false when an external BaseIndicator is used instead (e.g. for hover-driven indicators).
     property bool showInternalIndicator: true
 
-    // State
     readonly property bool containsMouse: mainMouseArea.containsMouse
     readonly property bool hovered: containsMouse
 
-    // Signals
     signal clicked()
     signal leftIconClicked()
 
-    // Main row hover/click area
     MouseArea {
         id: mainMouseArea
         anchors.fill: parent
@@ -56,7 +50,6 @@ Item {
         anchors.fill: parent
         spacing: Globals.geometry.spacing.medium
 
-        // Active / Hover Notch
         Rectangle {
             visible: root.showInternalIndicator && root.selected
             Layout.preferredWidth: 3
@@ -70,7 +63,6 @@ Item {
             }
         }
 
-        // Left Icon Slot
         Item {
             visible: root.leftIcon !== ""
             Layout.preferredWidth: 40
@@ -78,7 +70,6 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             scale: root.leftIconScale
 
-            // Left Icon (Interactive Toggle)
             BaseButton {
                 visible: root.leftIconInteractive
                 anchors.centerIn: parent
@@ -108,7 +99,6 @@ Item {
             opacity: 0.3
         }
 
-        // Text Labels
         ColumnLayout {
             Layout.fillWidth: true
             Layout.leftMargin: root.showVerticalSeparator ? 8 : 0

@@ -118,7 +118,6 @@ BaseScrolling {
                 muted: true
             }
         }
-        // --- SECTION 3: AVAILABLE NETWORKS ---
         Item {
             id: wifiListSection
             Layout.fillWidth: true

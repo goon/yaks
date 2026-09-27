@@ -5,7 +5,6 @@ import QtQuick
 Item {
     id: root
 
-    // Value properties
     property real value: 0
     property real from: 0
     property real to: 1
@@ -16,19 +15,15 @@ Item {
     property alias pressed: mouseArea.pressed
     readonly property bool hovered: mouseArea.containsMouse
 
-    // Visual customization
-
     property color trackColor: Globals.alpha(Globals.colors.surface, Globals.opacity.background)
     property color fillColor: Globals.colors.primary
     property int trackHeight: 38
 
-    // Content properties
     property string icon: ""
     property string suffix: ""
     property color iconColor: Globals.colors.text
     property color suffixColor: Globals.colors.text
 
-    // Internal computed values
     property real _animatedValue: value
     Behavior on _animatedValue {
         enabled: !mouseArea.pressed
@@ -38,7 +33,6 @@ Item {
     readonly property real normalizedValue: (_animatedValue - from) / (to - from)
     readonly property real fillSize: track.width * root.normalizedValue
 
-    // Coolness Controls
     property real interactionScale: root.isActive ? 1.05 : 1.0
     property real breathOpacity: 1.0
     property bool isActive: root.hovered || root.pressed
@@ -55,14 +49,12 @@ Item {
         onStopped: root.breathOpacity = 1.0
     }
 
-    // Signals
     signal valueChangedByUser()
     signal rightClicked()
 
     implicitHeight: trackHeight
     implicitWidth: 100
 
-    // Background track
     Rectangle {
         id: track
 
@@ -76,7 +68,6 @@ Item {
         color: trackColor
         clip: true
 
-        // Gradient fill
         Rectangle {
             id: fill
 
@@ -96,7 +87,6 @@ Item {
 
     }
 
-    // Handle (only visible when interactive)
     Rectangle {
         id: handle
 
@@ -117,7 +107,6 @@ Item {
         scale: root.interactionScale
         Behavior on scale { BaseAnimation { duration: 250; easing.type: Easing.OutBack } }
 
-        // Subtle glow effect when active
         Rectangle {
             anchors.fill: parent
             anchors.margins: -4
@@ -136,7 +125,6 @@ Item {
             }
         }
 
-        // Subtle depth effect for big sliders
         Rectangle {
             anchors.fill: parent
             anchors.margins: -1
@@ -147,7 +135,6 @@ Item {
             z: -1
         }
 
-        // Handle Content (Icon/Suffix Switch with Fading)
         Item {
             anchors.fill: parent
             anchors.margins: 4
@@ -177,7 +164,6 @@ Item {
             }
         }
 
-        // Tactile Shimmer Effect
         Rectangle {
             id: shimmer
             anchors.fill: parent
@@ -209,7 +195,6 @@ Item {
         }
     }
 
-    // Mouse area for interaction
     MouseArea {
         id: mouseArea
 

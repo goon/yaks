@@ -43,7 +43,6 @@ Item {
         }
     }
 
-    // Thumb
     Rectangle {
         id: thumb
 

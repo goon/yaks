@@ -160,9 +160,6 @@ BaseScrolling {
             visible: !!Bluetooth.powered
         }
 
-
-
-        // Searching Placeholder
         Item {
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? 64 : 0

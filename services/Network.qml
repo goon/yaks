@@ -90,15 +90,12 @@ QtObject {
             var net = nativeNets[i];
             if (net.name) seenSsids[net.name] = true;
             
-            // Reset pending connect if it succeeded
             if (net.connected && pendingConnectSsid === net.name) {
                 pendingConnectSsid = "";
             }
-            // Reset pending disconnect if it succeeded
             if (!net.connected && pendingDisconnectSsid === net.name) {
                 pendingDisconnectSsid = "";
             }
-            // Reset pending forget if it succeeded
             if (!net.known && pendingForgetSsid === net.name) {
                 pendingForgetSsid = "";
             }
@@ -138,7 +135,6 @@ QtObject {
     // ── PUBLIC API ────────────────────────────────────────────────────
     function scan() {
         if (!wifiDevice) return;
-        // Toggle scanner to trigger a fresh scan
         wifiDevice.scannerEnabled = false;
         wifiDevice.scannerEnabled = true;
     }

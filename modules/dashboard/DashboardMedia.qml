@@ -19,7 +19,6 @@ BaseBento {
         Layout.fillHeight: true
         spacing: Globals.geometry.spacing.large
 
-        // 1. CIRCULAR ALBUM ART with CAVA Equalizer
         Item {
             id: albumArtWrapper
             Layout.fillWidth: true
@@ -41,7 +40,6 @@ BaseBento {
                 );
             }
 
-            // Helper for circle dimensions
             Item {
                 id: albumArtCircle
                 anchors.centerIn: parent
@@ -49,7 +47,6 @@ BaseBento {
                 height: width
             }
 
-            // Radiating Equalizer (CAVA)
             Item {
                 anchors.fill: parent
                 opacity: Media.playbackState === MprisPlaybackState.Playing ? 1.0 : 0.0
@@ -122,7 +119,6 @@ BaseBento {
                     }
                 }
             }
-            // Rotating Gradient Ring border for Album Art
             Canvas {
                 id: ringCanvas
                 anchors.centerIn: albumArtCircle
@@ -154,7 +150,6 @@ BaseBento {
                 onHeightChanged: requestPaint()
             }
 
-            // Mask for circular crop
             Rectangle {
                 id: albumArtMask
                 width: albumArtCircle.width
@@ -168,7 +163,6 @@ BaseBento {
                 layer.samples: 8
             }
 
-            // Outer masked layer
             Item {
                 anchors.fill: albumArtCircle
                 layer.enabled: true
@@ -182,7 +176,6 @@ BaseBento {
                 }
 
 
-                // Inner layer: images + blur background
                 Item {
                     id: albumArtContainer
                     anchors.fill: parent
@@ -254,7 +247,6 @@ BaseBento {
                     }
                 }
 
-                // Vignette overlay inside the circle
                 Canvas {
                     id: vignetteCanvas
                     anchors.fill: parent
@@ -276,7 +268,6 @@ BaseBento {
                     }
                 }
 
-                // Inset border overlay for clean circular look
                 Rectangle {
                     anchors.fill: parent
                     radius: width / 2
@@ -285,7 +276,6 @@ BaseBento {
                     border.width: 1.5
                 }
 
-                // Interactive Play/Pause Overlay
                 Rectangle {
                     anchors.fill: parent
                     radius: width / 2
@@ -329,7 +319,6 @@ BaseBento {
             }
         }
 
-        // 2. TRACK TITLE + ARTIST
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Globals.geometry.spacing.small
@@ -353,7 +342,6 @@ BaseBento {
             }
         }
 
-        // 3. MEDIA CONTROLS & PROGRESS BAR
         RowLayout {
             Layout.fillWidth: true
             spacing: Globals.geometry.spacing.medium

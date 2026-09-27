@@ -6,16 +6,13 @@ import qs
 FocusScope {
     id: root
 
-    // Panel state
     property string panelState: "Closed"
 
-    // Layout
     property real padding: 0
     property real paddingHorizontal: padding
     property real paddingVertical: padding
     property real spacing: Globals.geometry.spacing.medium
 
-    // Interactivity
     property bool clickable: false
     property bool hoverEnabled: true
     property bool autoFillWidth: true
@@ -31,7 +28,6 @@ FocusScope {
     readonly property bool containsMouse: hoverHandler.hovered
     readonly property alias pressed: mouseArea.pressed
 
-    // Internal layout control
     default property alias contentData: contentContainer.data
 
     signal clicked()

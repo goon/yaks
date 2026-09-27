@@ -74,7 +74,6 @@ Item {
         }
     }
 
-    // Sliding Hover Indicator
     BaseIndicator {
         hoverPredicate: root._hoverPredicate
     }

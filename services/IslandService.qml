@@ -16,7 +16,6 @@ QtObject {
     property real anchorMinX: -1
     property real anchorMaxX: -1
 
-    // Callback Queue for panel-specific navigation on load
     property var _pendingCallbacks: []
 
     function runWhenPanelReady(callback) {
@@ -198,7 +197,6 @@ QtObject {
         function onVolumeChanged() {
             if (!_startupDelayFinished) return;
             
-            // Only open toast if no other panel is open, or if the toast is already open
             if (activePanelName === "" || activePanelName === "volumetoast") {
                 openPanel("volumetoast");
                 _volumeToastTimer.restart();

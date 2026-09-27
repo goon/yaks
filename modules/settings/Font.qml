@@ -73,7 +73,6 @@ SettingsPage {
                 rightIconVisible: selected
                 rightIcon: "check"
                 
-                // Font preview lazy loading
                 property bool loadFont: false
                 Timer {
                     interval: 80

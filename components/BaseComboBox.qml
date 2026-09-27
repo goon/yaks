@@ -7,15 +7,12 @@ import QtQuick.Layouts
 ComboBox {
     id: root
 
-    // Colors can be overridden
     property color textColor: Globals.colors.text
     property color backgroundColor: Globals.alpha(Globals.colors.surface, Globals.opacity.background)
     property color borderColor: Globals.colors.border
     property color borderActiveColor: Globals.colors.primary
-    // List limiting
     property int maxVisibleItems: 10
 
-    // Search and Preview
     property bool searchable: false
     property bool filterLocally: true
     property bool previewFonts: false
@@ -32,14 +29,12 @@ ComboBox {
     enabled: count > 0 || searchable
     opacity: enabled ? 1.0 : 0.5
 
-    // Delegate (Dropdown items)
     delegate: ItemDelegate {
         id: delegateRoot
         width: ListView.view ? ListView.view.width : root.width
         height: isItemVisible ? 36 : 0
 
         property bool isItemVisible: {
-            // FIX: Removed the index === root.currentIndex check which was hiding the active item!
             if (!root.searchable || !root.filterLocally || root.searchText === "") return true;
             let t = (root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData;
             return (t || "").toLowerCase().includes(root.searchText.toLowerCase());
@@ -53,7 +48,6 @@ ComboBox {
             color: delegateRoot.highlighted || delegateRoot.hovered ? Globals.colors.text : root.textColor
             weight: delegateRoot.highlighted || delegateRoot.hovered ? Globals.typography.weights.bold : Globals.typography.weights.normal
             
-            // Lazy Font Loading
             property bool loadFont: !root.previewFonts
             
             Timer {
@@ -82,7 +76,6 @@ ComboBox {
             
             color: Globals.alpha(Globals.colors.surface, 0.5)
 
-            // Hover Notch
             Rectangle {
                 width: 3
                 height: 20
@@ -110,7 +103,6 @@ ComboBox {
         }
     }
 
-    // Main Content Item (Selected text)
     contentItem: BaseText {
         text: root.displayText
         color: root.textColor
@@ -125,7 +117,6 @@ ComboBox {
         opacity: visible ? 1.0 : 0.0
     }
 
-    // Custom Chevron Indicator
     indicator: BaseIcon {
         x: root.width - width - Globals.geometry.spacing.medium
         y: (root.availableHeight - height) / 2
@@ -135,7 +126,6 @@ ComboBox {
         opacity: visible ? 1.0 : 0.0
     }
 
-    // Background (Closed state - floating)
     background: Rectangle {
         color: root.backgroundColor
         radius: Globals.geometry.innerRadius.medium
@@ -151,7 +141,6 @@ ComboBox {
         implicitHeight: contentLayout.implicitHeight + padding * 2
         padding: Globals.geometry.spacing.medium
 
-        // Seamless on-site transitions
         enter: Transition {
             ParallelAnimation {
                 BaseAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Globals.animations.fast }
@@ -192,7 +181,6 @@ ComboBox {
                     if (event.key === Qt.Key_Escape) {
                         comboPopup.close();
                     } else if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
-                        // Select highlighted item
                         if (listView.count > 0) {
                             root.currentIndex = listView.currentIndex;
                             comboPopup.close();

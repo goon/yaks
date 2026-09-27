@@ -45,14 +45,12 @@ BaseBento {
             return days[d.getDay()];
         }
 
-        // LEFT COLUMN: Current Weather
         ColumnLayout {
             Layout.preferredWidth: 210
             Layout.maximumWidth: 250
             Layout.fillHeight: true
             spacing: Globals.geometry.spacing.medium
 
-            // CURRENT Label
             BaseText {
                 text: "CURRENT"
                 font.pixelSize: 10
@@ -62,17 +60,14 @@ BaseBento {
                 Layout.fillWidth: true
             }
 
-            // Editorial Overlap Hero + Stats
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                // Perfectly centered foreground content
                 ColumnLayout {
                     anchors.centerIn: parent
                     spacing: Globals.geometry.spacing.large
 
-                    // Icon and Condition String
                     ColumnLayout {
                         Layout.alignment: Qt.AlignHCenter
                         spacing: Globals.geometry.spacing.small
@@ -110,7 +105,6 @@ BaseBento {
                             }
                         }
 
-                        // Removed current temperature
                         BaseText {
                             text: {
                                 var code = weatherWidget.code;
@@ -132,7 +126,6 @@ BaseBento {
                         }
                     }
 
-                    // Stats row (Feels like, Humidity, Wind)
                     RowLayout {
                         Layout.alignment: Qt.AlignHCenter
                         spacing: Globals.geometry.spacing.large
@@ -165,7 +158,6 @@ BaseBento {
 
         BaseSeparator { orientation: BaseSeparator.Vertical; Layout.fillHeight: true; opacity: 0.1 }
 
-        // MIDDLE COLUMN: 24-Hour Sparkline Curve
         Item {
             id: sparklineContainer
             Layout.fillWidth: true
@@ -281,7 +273,6 @@ BaseBento {
                     
                     sparkline.calculatedPoints = points;
                     
-                    // Draw fill
                     ctx.beginPath();
                     ctx.moveTo(points[0].x, height);
                     ctx.lineTo(points[0].x, points[0].y);
@@ -432,7 +423,6 @@ BaseBento {
 
         BaseSeparator { orientation: BaseSeparator.Vertical; Layout.fillHeight: true; opacity: 0.1 }
 
-            // RIGHT COLUMN: Multi-Day Forecast
             Item {
                 id: rightColumnItem
                 Layout.preferredWidth: 260
@@ -524,7 +514,7 @@ BaseBento {
                                     color: index === 0 ? Globals.colors.primary : Globals.colors.text
                                 }
                                 
-                                Item { Layout.fillWidth: true } // Spacer
+                                Item { Layout.fillWidth: true }
 
                                 RowLayout {
                                     Layout.preferredWidth: 54

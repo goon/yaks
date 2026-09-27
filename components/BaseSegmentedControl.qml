@@ -13,7 +13,7 @@ Rectangle {
 
     signal activated(int index, var value)
 
-    color: Globals.alpha(Globals.colors.surface, 0.5) // Deeper well look
+    color: Globals.alpha(Globals.colors.surface, 0.5)
     radius: Globals.geometry.innerRadius.medium
 
     implicitHeight: 36
@@ -55,7 +55,7 @@ Rectangle {
 
         Repeater {
             model: root.model
-            
+
             Rectangle {
                 id: itemRect
                 Layout.fillWidth: true
@@ -65,7 +65,7 @@ Rectangle {
 
                 radius: Globals.geometry.innerRadius.medium - root.padding
                 color: "transparent"
-                
+
                 onIsSelectedChanged: {
                     if (isSelected) {
                         root.indicatorX = Qt.binding(function() { return itemRect.x + root.padding })
@@ -73,7 +73,7 @@ Rectangle {
                         root.isReady = true;
                     }
                 }
-                
+
                 Component.onCompleted: {
                     if (isSelected) {
                         root.indicatorX = Qt.binding(function() { return itemRect.x + root.padding })
@@ -81,7 +81,7 @@ Rectangle {
                         root.isReady = true;
                     }
                 }
-                
+
                 BaseText {
                     anchors.centerIn: parent
                     text: modelData[root.textRole] !== undefined ? modelData[root.textRole] : modelData

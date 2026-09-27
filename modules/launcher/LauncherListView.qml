@@ -4,7 +4,6 @@ import qs
 ListView {
     id: root
 
-    // Common Configuration
     spacing: Globals.geometry.spacing.large
     activeFocusOnTab: false
     

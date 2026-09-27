@@ -34,7 +34,6 @@ Item {
     }
 
     Layout.fillWidth: false
-    // Ensure standard bar height and vertical alignment
     implicitHeight: Globals.dimensions.barItemHeight
     readonly property int _staticWidth: {
         var count = root.workspaces ? root.workspaces.length : 0;
@@ -75,7 +74,6 @@ Item {
                 x: targetX
                 y: 0
 
-                // Update the active item reference
                 Component.onCompleted: if (isActive) root.activeItem = indicator
                 onIsActiveChanged: if (isActive) root.activeItem = indicator
 

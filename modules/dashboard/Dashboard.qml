@@ -20,11 +20,9 @@ FocusScope {
 
     implicitHeight: Math.min(maxHeight, mainRow.implicitHeight)
 
-    // CONTENT AREA
     Item {
         anchors.fill: parent
 
-        // Scroller container
         Item {
             anchors.fill: parent
 
@@ -42,13 +40,11 @@ FocusScope {
                         Layout.fillWidth: true
                         spacing: Globals.geometry.spacing.large
 
-                        // Top Row: Weather
                         DashboardWeather {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 190
                         }
 
-                        // Bottom Row: Clock & Calendar & Resource Bars & Media
                         RowLayout {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 320

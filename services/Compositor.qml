@@ -185,7 +185,6 @@ Singleton {
         }
     }
 
-    // Re-map workspaces immediately when the configured count changes
     Connections {
         target: Preferences.bar
         function onWorkspaceCountChanged() { root._updateWorkspaces(); }

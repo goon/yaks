@@ -5,17 +5,13 @@ import qs.services
 pragma Singleton
 
 Item {
-    // Removed direct calls to prevent startup freeze
-
     id: root
 
     property real brightness: 0.5
-    // Internal state
     property int _targetBrightness: -1
     property bool _brightnessUpdating: false
     // Detected backend: "ddcutil" or "brightnessctl"
     property string backend: "ddcutil"
-    // Detected monitor bus
     property string monitorBus: ""
 
     function getBrightness() {
@@ -91,7 +87,6 @@ Item {
     Component.onCompleted: {
     }
 
-    // High-performance brightness updates
     Timer {
         id: brightnessUpdateTimer
 

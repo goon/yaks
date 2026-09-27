@@ -22,7 +22,6 @@ BaseContainer {
         }
     }
 
-    // Reset stackview when closed
     onPanelStateChanged: {
         if (panelState === "Closed") {
             stackView.pop(null); // pop to root
@@ -101,7 +100,6 @@ BaseContainer {
                 }
             }
 
-            // Sliding Hover Indicator
             BaseIndicator {
                 id: slidingPill
                 targetItem: {

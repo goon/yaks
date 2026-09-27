@@ -14,13 +14,11 @@ Switch {
     background: null
     
 
-    // Animating progress between 0.0 (unchecked) and 1.0 (checked)
     property real progress: control.checked ? 1.0 : 0.0
     Behavior on progress {
         BaseAnimation { easing.type: Easing.OutQuint }
     }
 
-    // Helper to ensure cursor changes
     HoverHandler {
         cursorShape: control.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
@@ -80,17 +78,14 @@ Switch {
             }
         }
 
-        // Thumb
         Rectangle {
             id: thumb
 
-            // Tactile press size (stretches to 22px on press)
             property real baseWidth: control.pressed ? 22 : 16
             Behavior on baseWidth {
                 BaseAnimation { }
             }
             
-            // Calculate center position based on progress
             property real centerX: 4 + baseWidth / 2 + control.progress * (parent.width - baseWidth - 8)
             
             // Squash & stretch physics based on progress
@@ -102,10 +97,8 @@ Switch {
             height: 16
             radius: Math.max(0, Globals.geometry.innerRadius.small - 4)
             
-            // Thumb Color (keeps the knob white when enabled)
             color: control.enabled ? Globals.colors.textLighter : Globals.colors.muted
 
-            // Subtle border definition
             border.width: 1
             border.color: control.checked ? Globals.alpha(Globals.colors.primary, 0.2) : Globals.alpha(Globals.colors.base, 0.1)
 
