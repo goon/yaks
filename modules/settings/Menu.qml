@@ -22,7 +22,6 @@ Item {
         { page: "Notifications.qml", title: "Notifications", subtitle: "Behaviour, sounds, and display.",        icon: "bell" },
         { page: "Launcher.qml",      title: "Launcher",      subtitle: "Launcher look, feel and behaviour.",     icon: "rocket" },
         { page: "Animations.qml",    title: "Animations",    subtitle: "Speed, transitions, and motion.",        icon: "zap" },
-        { page: "TimeDate.qml",      title: "Time & Date",   subtitle: "Time formatting and location settings.", icon: "clock" },
         { page: "Wallpaper.qml",     title: "Wallpaper",     subtitle: "Wallpaper and dynamic themeing.",        icon: "image" },
         { page: "Applications.qml",  title: "Applications",  subtitle: "External application themeing.",         icon: "layout-grid" },
     ]

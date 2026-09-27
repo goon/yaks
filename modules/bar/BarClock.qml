@@ -140,15 +140,13 @@ BaseContainer {
         precision: SystemClock.Seconds
     }
 
-    readonly property string hoursFormat: Preferences.timedate.format === "12" ? "hh" : "HH"
-
     Row {
         id: layout
         spacing: Globals.geometry.spacing.medium
         anchors.verticalCenter: parent.verticalCenter
 
         TimeSegment {
-            text: Qt.formatDateTime(systemClock.date, root.hoursFormat)
+            text: Qt.formatDateTime(systemClock.date, "HH")
         }
 
         DotSeparator {}

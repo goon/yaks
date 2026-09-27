@@ -113,12 +113,6 @@ QtObject {
         onSpeedMultiplierChanged: root.requestSave()
     }
 
-    property QtObject timedate: QtObject {
-        property string format: "24" // "12" or "24"
-
-        onFormatChanged: root.requestSave()
-    }
-
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
     property string currentTheme: "tinted"
@@ -158,7 +152,6 @@ QtObject {
         ["globals", "dynamicBgLightness"],
         ["indicators", "order"],
         ["animations", "speedMultiplier"],
-        ["timedate", "format"],
         ["currentTheme"],
         ["currentWallpaper"]
     ]
