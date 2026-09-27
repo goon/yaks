@@ -200,7 +200,6 @@ QtObject {
                     "item": {
                         "type": "app",
                         "name": app.name,
-                        "description": app.comment || app.genericName || "Application",
                         "icon": app.icon,
                         "category": "Application",
                         "app": app

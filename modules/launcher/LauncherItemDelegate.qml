@@ -7,7 +7,6 @@ Item {
 
     // ── API ───────────────────────────────────────────────────────────
     property string text: ""
-    property string subText: ""
     property string imageSource: ""
     property bool selected: false
     property color iconColor: Globals.colors.text
@@ -101,16 +100,6 @@ Item {
                     color: root.selected ? Globals.colors.text : Globals.colors.muted
                     weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.normal
                     elide: Text.ElideRight
-                }
-
-                BaseText {
-                    Layout.fillWidth: true
-                    text: root.subText
-                    visible: !!root.subText
-                    pixelSize: Globals.typography.size.base
-                    color: root.selected ? Globals.alpha(Globals.colors.text, 0.7) : Globals.colors.muted
-                    wrapMode: Text.NoWrap
-                    elide: Text.ElideMiddle
                 }
             }
         }

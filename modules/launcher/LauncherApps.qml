@@ -87,10 +87,6 @@ FocusScope {
             selected: appListView.currentIndex === index
 
             text: modelData ? modelData.name : ""
-            subText: {
-                if (!modelData) return "";
-                return Preferences.launcher.showAppDescriptions ? (modelData.description || "") : "";
-            }
 
             imageSource: modelData ? LauncherService.resolveIcon(modelData.icon) : ""
             showFallbackIcon: imageSource === ""

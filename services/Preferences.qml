@@ -69,12 +69,6 @@ QtObject {
         onThemedAppsOpacityChanged: root.requestSave()
     }
 
-    property QtObject launcher: QtObject {
-        property bool showAppDescriptions: false
-
-        onShowAppDescriptionsChanged: root.requestSave()
-    }
-
     property QtObject globals: QtObject {
         property string schemeType: "scheme-tonal-spot"
         property string shellFont: "Outfit"
@@ -134,7 +128,6 @@ QtObject {
         ["wallpaper", "transitionDuration"],
         ["applications", "themedApps"],
         ["applications", "themedAppsOpacity"],
-        ["launcher", "showAppDescriptions"],
         ["globals", "schemeType"],
         ["globals", "shellFont"],
         ["globals", "cornerRadius"],
