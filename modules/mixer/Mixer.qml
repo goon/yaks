@@ -62,16 +62,10 @@ BaseContainer {
             BaseSlider {
                 id: sectionSlider
                 Layout.fillWidth: true
-                trackHeight: 38
                 icon: {
                     if (modelData.type === "output") return Volume.volumeIcon;
                     if (modelData.type === "input") return Volume.inputMuted ? "mic-off" : "mic";
                     return "sun";
-                }
-                suffix: {
-                    if (modelData.type === "display") return Math.round(Display.brightness * 100);
-                    if (modelData.type === "output") return Math.round(Volume.volume * 100);
-                    return Math.round(Volume.inputVolume * 100);
                 }
                 muted: {
                     if (modelData.type === "output") return Volume.muted;

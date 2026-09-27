@@ -111,6 +111,13 @@ QtObject {
             readonly property int large: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.large)
             readonly property int island: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.padding.island)
         }
+
+        readonly property QtObject slider: QtObject {
+            readonly property int trackHeight: 12 * root.shellScale
+            readonly property int handleWidth: 4 * root.shellScale
+            readonly property int handleHeight: 20 * root.shellScale
+            readonly property int gap: 5 * root.shellScale
+        }
     }
 
     /*

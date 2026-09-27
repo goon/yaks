@@ -16,11 +16,9 @@ Item {
         id: slider
         anchors.fill: parent
         
-        trackHeight: height
         trackColor: Globals.alpha(Globals.colors.surface, 0.22)
         
         icon: Volume.volumeIcon
-        suffix: Volume.volumePercent + "%"
         muted: Volume.muted
         
         value: Volume.volume
