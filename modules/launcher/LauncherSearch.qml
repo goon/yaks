@@ -48,6 +48,7 @@ BaseContainer {
                 clip: true
                 leftPadding: 8
                 rightPadding: 8
+                font.pixelSize: Globals.typography.size.medium
                 placeholderText: "Search..."
                 verticalAlignment: Text.AlignVCenter
                 focus: true

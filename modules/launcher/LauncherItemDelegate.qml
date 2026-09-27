@@ -102,6 +102,7 @@ Item {
                 BaseText {
                     Layout.fillWidth: true
                     text: root.text
+                    pixelSize: Globals.typography.size.medium
                     color: root.selected ? Globals.colors.text : Globals.colors.muted
                     weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.normal
                     elide: Text.ElideRight
@@ -111,7 +112,7 @@ Item {
                     Layout.fillWidth: true
                     text: root.subText
                     visible: !!root.subText
-                    font.pixelSize: Globals.typography.size.small
+                    pixelSize: Globals.typography.size.base
                     color: root.selected ? Globals.alpha(Globals.colors.text, 0.7) : Globals.colors.muted
                     elide: Text.ElideMiddle
                 }
