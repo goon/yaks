@@ -45,7 +45,6 @@ BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSwitch components/BaseSwitch.qml
 BaseAnimation components/BaseAnimation.qml
 BaseSpinBox components/BaseSpinBox.qml
-BaseColourPicker components/BaseColourPicker.qml
 BaseIndicator components/BaseIndicator.qml
 
 BaseStackView components/BaseStackView.qml
@@ -81,7 +80,6 @@ BarIndicators modules/bar/BarIndicators.qml
 Full modules/bar/Full.qml
 
 # Panels
-WallpaperPanel modules/wallpaper/Wallpaper.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 NetworkDevice modules/network/NetworkDevice.qml
 

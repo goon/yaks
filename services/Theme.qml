@@ -3,6 +3,15 @@ import Quickshell
 import Quickshell.Io
 import qs
 import qs.services
+
+import "../lib/gtk.js" as GtkHook
+import "../lib/firefox.js" as FirefoxHook
+import "../lib/kitty.js" as KittyHook
+import "../lib/obsidian.js" as ObsidianHook
+import "../lib/steam.js" as SteamHook
+import "../lib/discord.js" as DiscordHook
+import "../lib/nvim.js" as NvimHook
+import "../lib/zed.js" as ZedHook
 pragma Singleton
 
 Item {
@@ -10,17 +19,12 @@ Item {
 
     property bool ready: false
 
-    // Flat raw Material 3 tokens, straight from Matugen. No semantic remapping.
     property var currentColors: root._fallbackColors
-
-    // Raw base16 scheme emitted alongside the md3 tokens (retained for Phase 2).
-    property var base16: ({})
 
     readonly property string defaultSeedColor: "#9d99e5"
     readonly property string configPath: Globals.cacheDir + "/matugen/config.toml"
     readonly property string colorsPath: Globals.cacheDir + "/current_theme/colors.json"
 
-    // Material 3 dark baseline, used only until the first Matugen run completes.
     readonly property var _fallbackColors: ({
         "primary": "#adc6ff",
         "on_primary": "#002e69",
@@ -91,7 +95,6 @@ Item {
             ? ["image", wp]
             : ["color", "hex", root.defaultSeedColor];
 
-        // Minimal isolated config: no templates, no wallpaper daemon, no caching.
         var cfg = '[config]\n'
             + 'version_check = false\n'
             + 'caching = false\n'
@@ -121,8 +124,6 @@ Item {
         });
     }
 
-    // Matugen nests tokens as { <name>: { <mode>: { color: "#rrggbb" } } },
-    // but also supports a flat string shape, so tolerate both.
     function _token(map, name, mode) {
         if (!map || map[name] === undefined) return undefined;
         if (typeof map[name] === "string") return map[name];
@@ -140,23 +141,68 @@ Item {
             if (val) colors[name] = val;
         }
 
-        var b16 = {};
-        var base = data.base16 || {};
-        for (var bname in base) {
-            var bval = root._token(base, bname, mode);
-            if (bval) b16[bname] = bval;
-        }
-
         root.currentColors = colors;
-        root.base16 = b16;
         root.ready = true;
 
-        // Persist a flat copy for debugging and future app hooks.
-        var jsonStr = JSON.stringify({ md3: colors, base16: b16 }, null, 2);
+        // Persist a flat copy for debugging.
+        var jsonStr = JSON.stringify({ md3: colors }, null, 2);
         var tmp = root.colorsPath + ".tmp";
         ProcessService.runDetached(["sh", "-c",
             'mkdir -p "$(dirname "$3")" && printf "%s" "$1" > "$2" && mv "$2" "$3"',
             "--", jsonStr, tmp, root.colorsPath]);
+
+        root.runHooks(executionTimer.pendingContext);
+    }
+
+    // ── APPLICATION HOOKS ─────────────────────────────────────────────
+
+    readonly property var _hooks: ({
+        "gtk": GtkHook,
+        "firefox": FirefoxHook,
+        "kitty": KittyHook,
+        "obsidian": ObsidianHook,
+        "steam": SteamHook,
+        "discord": DiscordHook,
+        "nvim": NvimHook,
+        "zed": ZedHook
+    })
+
+    function runHooks(context) {
+        if (!Preferences.loaded) return;
+
+        var ctx = {
+            "opacity": Preferences.applications.themedAppsOpacity,
+            "mode": "dark",
+            "context": context || "manual",
+            "font": Preferences.globals.shellFont,
+            "wallpaper": Wallpaper.currentWallpaper
+        };
+
+        for (var i = 0; i < root.applications.length; i++) {
+            var app = root.applications[i];
+            if (Preferences.applications.themedApps[app.id] !== true) continue;
+
+            var hook = root._hooks[app.id];
+            if (!hook || typeof hook.generate !== "function") continue;
+
+            var result = hook.generate(root.currentColors, ctx);
+            if (!result) continue;
+
+            root._writeHookFiles(result.files);
+            if (result.postHook)
+                ProcessService.runDetached(["sh", "-c", result.postHook]);
+        }
+    }
+
+    function _writeHookFiles(files) {
+        if (!files) return;
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i];
+            if (!f || !f.path) continue;
+            ProcessService.runDetached(["sh", "-c",
+                'p="$1"; p="${p/#\\~/$HOME}"; mkdir -p "$(dirname "$p")" && printf "%s" "$2" > "$p"',
+                "--", f.path, f.content || ""]);
+        }
     }
 
     // ── STARTUP ───────────────────────────────────────────────────────
@@ -175,9 +221,10 @@ Item {
         { "id": "kitty", "name": "Kitty", "binary": "command -v kitty" },
         { "id": "nvim", "name": "Neovim", "binary": "command -v nvim" },
         { "id": "obsidian", "name": "Obsidian", "binary": "command -v obsidian || flatpak info md.obsidian.Obsidian" },
-        { "id": "vesktop", "name": "Vesktop", "binary": "command -v vesktop || flatpak info dev.vencord.Vesktop" },
+        { "id": "discord", "name": "Discord", "binary": "command -v vesktop || flatpak info dev.vencord.Vesktop" },
         { "id": "firefox", "name": "Firefox", "binary": "command -v pywalfox" },
-        { "id": "steam", "name": "Steam / Millennium", "binary": "command -v steam && test -d ~/.config/millennium" }
+        { "id": "steam", "name": "Steam / Millennium", "binary": "command -v steam && test -d ~/.config/millennium" },
+        { "id": "zed", "name": "Zed", "binary": "command -v zeditor || command -v zed" }
     ]
 
     property var installedApps: ({})
@@ -195,88 +242,7 @@ Item {
         });
     }
 
-    // ── SYSTEM THEME SCANNING ─────────────────────────────────────────
-
-    property string gtkTheme: ""
-    property string iconTheme: ""
-    property string fontName: ""
-    property string colorScheme: ""
-    property var availableGtkThemes: []
-    property var availableIconThemes: []
-    property string cursorTheme: ""
-    property int cursorSize: 24
-    property var availableCursorThemes: []
-
-    function refreshThemeService() {
-        ProcessService.run(["gsettings", "get", "org.gnome.desktop.interface", "gtk-theme"], function(out) {
-            root.gtkTheme = out.trim().replace(/'/g, "");
-        });
-        ProcessService.run(["gsettings", "get", "org.gnome.desktop.interface", "icon-theme"], function(out) {
-            root.iconTheme = out.trim().replace(/'/g, "");
-        });
-        ProcessService.run(["gsettings", "get", "org.gnome.desktop.interface", "cursor-theme"], function(out) {
-            root.cursorTheme = out.trim().replace(/'/g, "");
-        });
-        ProcessService.run(["gsettings", "get", "org.gnome.desktop.interface", "cursor-size"], function(out) {
-            var val = parseInt(out.trim());
-            root.cursorSize = isNaN(val) ? 24 : val;
-        });
-        ProcessService.run(["gsettings", "get", "org.gnome.desktop.interface", "font-name"], function(out) {
-            root.fontName = out.trim().replace(/'/g, "");
-        });
-        ProcessService.run(["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"], function(out) {
-            root.colorScheme = out.trim().replace(/'/g, "");
-        });
-    }
-
-    function scanThemeServices() {
-        const agnosticCmd = `
-            echo "$XDG_DATA_DIRS:/usr/local/share:/usr/share" | tr ':' '\\n' | while read -r dir; do
-                [ -d "$dir/themes" ] && find -L "$dir/themes" -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' 2>/dev/null
-                [ "$dir" = "$HOME/.themes" ] && find -L "$dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' 2>/dev/null
-            done | sort | uniq
-        `;
-        ProcessService.run(["sh", "-c", agnosticCmd], function(out) {
-            root.availableGtkThemes = out.split('\n').filter(l => l.length > 0 && l !== "themes" && l[0] !== '.');
-        });
-
-        const agnosticIconsCmd = `
-            echo "$XDG_DATA_DIRS:/usr/local/share:/usr/share" | tr ':' '\\n' | while read -r dir; do
-                SDIR="$dir"
-                [ -d "$dir/icons" ] && SDIR="$dir/icons"
-                [ -d "$SDIR" ] && for d in "$SDIR"/*; do
-                    [ -d "$d" ] && [ -f "$d/index.theme" ] && [ ! -d "$d/cursors" ] && [ ! -f "$d/cursor.theme" ] && basename "$d"
-                done
-            done 2>/dev/null | sort | uniq
-        `;
-        ProcessService.run(["sh", "-c", agnosticIconsCmd], function(out) {
-            root.availableIconThemes = out.split('\n').filter(l => l.length > 0 && l !== "icons" && l[0] !== '.');
-        });
-
-        scanCursorThemes();
-    }
-
-    function scanCursorThemes() {
-        const agnosticCursorsCmd = `
-            echo "$XDG_DATA_DIRS:/usr/local/share:/usr/share" | tr ':' '\\n' | while read -r dir; do
-                SDIR="$dir"
-                [ -d "$dir/icons" ] && SDIR="$dir/icons"
-                [ -d "$SDIR" ] && for d in "$SDIR"/*; do
-                    [ -d "$d" ] && { [ -d "$d/cursors" ] || [ -f "$d/cursor.theme" ]; } && basename "$d"
-                done
-            done 2>/dev/null | sort | uniq
-        `;
-        ProcessService.run(["sh", "-c", agnosticCursorsCmd], function(out) {
-            root.availableCursorThemes = out.split('\n').filter(l => l.length > 0);
-        });
-    }
-
-    function toggleColorScheme() {
-        var newScheme = (root.colorScheme === 'prefer-dark') ? 'default' : 'prefer-dark';
-        ProcessService.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", newScheme], function() {
-            refreshThemeService();
-        });
-    }
+    // ── SYSTEM FONTS ──────────────────────────────────────────────────
 
     property var allFontFamilies: []
     function updateFontFamilies() {
@@ -315,8 +281,6 @@ Item {
     }
 
     Component.onCompleted: {
-        refreshThemeService();
-        scanThemeServices();
         checkInstalledApps();
         updateFontFamilies();
         root.runStartup();

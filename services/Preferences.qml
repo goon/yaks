@@ -9,7 +9,7 @@ QtObject {
 
     property bool loaded: false
 
-    // ── USER GROUPS (one per settings page) ──────────────────────────────
+    // ── USER GROUPS ──────────────────────────────
 
     property QtObject notifications: QtObject {
         property int mode: 0 // 0: Normal, 1: DND (Silent)
@@ -58,11 +58,12 @@ QtObject {
         property var themedApps: ({
             "gtk": false,
             "kitty": false,
-            "vesktop": false,
+            "discord": false,
             "obsidian": false,
             "nvim": false,
             "firefox": false,
-            "steam": false
+            "steam": false,
+            "zed": false
         })
         property double themedAppsOpacity: 0.85
 
@@ -203,7 +204,7 @@ QtObject {
 
     // ── INITIALISATION ──────────────────────────────────────────────────
 
-    Component.onCompleted: { 
+    Component.onCompleted: {
         ProcessService.run(["sh", "-c", "test -f " + root.prefsFile], function(out, exitCode) {
             if (exitCode !== 0) {
                 console.log("[Preferences] No preferences file found. Booting with defaults immediately.");
@@ -244,7 +245,7 @@ QtObject {
                 try {
                     var data = JSON.parse(rawText);
                     if (!data || typeof data !== "object") throw new Error("Invalid JSON");
-                    
+
                     // Snapshot the default valid components BEFORE overwriting them with user data
                     var defaultValidComponents = root.bar.components.slice();
 
@@ -268,9 +269,6 @@ QtObject {
                 }
 
                 // ── PRUNE STALE KEYS ─────────────────────────────────
-                // Drop any saved values no longer declared in _schema so
-                // leftovers from removed or renamed features are cleaned
-                // up automatically instead of needing manual migrations.
                 var allowed = Object.create(null);
                 for (var p = 0; p < _schema.length; p++) {
                     var sp = _schema[p];
@@ -294,8 +292,6 @@ QtObject {
                         }
                     }
                 }
-                // Prune stale array values: entries no longer present among the
-                // schema-declared defaults are dropped; saved order is preserved.
                 for (var arrayKey in arrayDefaults) {
                     var parts = arrayKey.split(".");
                     var arr = _get(parts);
@@ -316,42 +312,39 @@ QtObject {
                     var savedApps = _getData(data, ["applications", "themedApps"]);
                     if (savedApps !== undefined && typeof savedApps === "object") {
                         var currentApps = root.applications.themedApps;
-                        var appsChanged = false;
-                        for (var key in savedApps) {
-                            if (!(key in currentApps)) continue;
-                            if (currentApps[key] !== savedApps[key]) {
-                                currentApps[key] = savedApps[key];
-                                appsChanged = true;
-                            }
-                        }
-                        if (appsChanged) {
-                            // Reassign to trigger property change
-                            root.applications.themedApps = Object.assign({}, currentApps);
+                    var appsChanged = false;
+                    for (var key in savedApps) {
+                        if (!(key in currentApps)) continue;
+                        if (currentApps[key] !== savedApps[key]) {
+                            currentApps[key] = savedApps[key];
+                            appsChanged = true;
                         }
                     }
+                    if (appsChanged) {
+                        // Reassign to trigger property change
+                        root.applications.themedApps = Object.assign({}, currentApps);
+                    }
+                }
 
                     // ── MIGRATIONS ─────────────────────────────────────────
-                    // Rebuild the bar toggle map against current defaults; the
-                    // components array itself is pruned generically above.
-                    
+
                     var loadedEnabled = root.bar.componentsEnabled || {};
                     var cleanedEnabled = {};
                     for (var i = 0; i < defaultValidComponents.length; i++) {
                         var c = defaultValidComponents[i];
                         cleanedEnabled[c] = loadedEnabled[c] !== undefined ? loadedEnabled[c] : true;
                     }
-                    
+
                     var migrated = false;
                     if (Object.keys(loadedEnabled).length !== defaultValidComponents.length) {
                         root.bar.componentsEnabled = cleanedEnabled;
                         console.log("[Preferences] Cleaned up legacy/invalid components from bar configuration.");
-                        // Force property change signal for QML bindings
                         root.bar = Object.assign({}, root.bar);
                         migrated = true;
                     }
                     safetyTimer.stop();
                     root.loaded = true;
-                    
+
                     if (migrated || prunedAny) root.requestSave();
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);

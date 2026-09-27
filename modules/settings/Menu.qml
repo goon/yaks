@@ -22,7 +22,7 @@ Item {
         { page: "Notifications.qml", title: "Notifications", subtitle: "Behaviour, sounds, and display.",        icon: "bell" },
         { page: "Launcher.qml",      title: "Launcher",      subtitle: "Launcher look, feel and behaviour.",     icon: "rocket" },
         { page: "Animations.qml",    title: "Animations",    subtitle: "Speed, transitions, and motion.",        icon: "zap" },
-        { page: "Wallpaper.qml",     title: "Wallpaper",     subtitle: "Wallpaper and dynamic themeing.",        icon: "image" },
+        { page: "Wallpaper.qml",     title: "Wallpaper",     subtitle: "Desktop background and transitions.",     icon: "image" },
         { page: "Applications.qml",  title: "Applications",  subtitle: "External application themeing.",         icon: "layout-grid" },
     ]
 
