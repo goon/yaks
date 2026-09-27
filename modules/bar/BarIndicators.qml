@@ -19,7 +19,7 @@ Item {
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
     readonly property var _indicatorModel: [
-        { key: "wifi", icon: "wifi" },
+        { key: "wifi", icon: "wifi-pen" },
         { key: "notifications", icon: "bell" },
         { key: "settings", icon: "settings" },
         { key: "instantmix", icon: "audio-lines" },
