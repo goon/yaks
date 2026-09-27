@@ -18,14 +18,10 @@ TextField {
     background: Item { }
 
     // ── TYPEWRITER CARET ─────────────────────────────────────────────────
-    // Custom cursor + per-keystroke ink. caretPulse is incremented on every
-    // edit; BaseCaret reacts to it.
     property int caretPulse: 0
     property string _prevText: ""
     property var _pending: null
 
-    // cursor-smith Typer "ink stamp": the letter just typed is overprinted
-    // bold and 1.3x on its own cell, shrinking onto the real glyph and fading.
     readonly property real _inkAlpha: 0.9
     readonly property real _inkScale: 1.3
     readonly property int _inkMs: 400
@@ -101,8 +97,6 @@ TextField {
         }
     }
 
-    // Keep the previous text one event-loop behind so onTextEdited can diff
-    // against it, regardless of textEdited/textChanged/cursor ordering.
     Timer {
         id: syncText
 
@@ -110,8 +104,6 @@ TextField {
         onTriggered: root._prevText = root.text
     }
 
-    // Spawn on the next tick: textEdited fires before the layout is updated,
-    // so positionToRectangle is only trustworthy once the glyph is laid out.
     Timer {
         id: inkTimer
 
@@ -136,8 +128,6 @@ TextField {
         var len = root._pending.len;
         root._pending = null;
 
-        // positionToRectangle() is content-relative; the glyphs (and the
-        // caret delegate) live at leftPadding/topPadding.
         var ox = root.leftPadding;
         var oy = root.topPadding;
 
