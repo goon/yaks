@@ -8,7 +8,7 @@ Item {
     property Item targetItem: null
 
     property int orientation: Qt.Vertical
-    property bool retainLastPosition: false
+    property bool retainLastPosition: true
 
     // ── HOVER-TRACKING API ─────────────────────────────────────────
     property var hoverPredicate: null
@@ -17,6 +17,7 @@ Item {
     // ── INTERNAL STATE ──────────────────────────────────────────────
     property real _lastX: 0
     property real _lastY: 0
+    property bool _hasPositioned: false
 
     readonly property Item _hoverCandidate: hoverPredicate ? hoverPredicate() : null
     property Item _hoverTarget: null
@@ -44,11 +45,11 @@ Item {
     x: targetX
     y: targetY
 
-    onXChanged: if (_effectiveTarget) _lastX = x
-    onYChanged: if (_effectiveTarget) _lastY = y
+    onXChanged: if (_effectiveTarget) { _lastX = x; _hasPositioned = true; }
+    onYChanged: if (_effectiveTarget) { _lastY = y; _hasPositioned = true; }
 
-    Behavior on x { NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
-    Behavior on y { NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
+    Behavior on x { enabled: root._hasPositioned; NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
+    Behavior on y { enabled: root._hasPositioned; NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
 
     opacity: _effectiveTarget ? 1.0 : 0.0
     Behavior on opacity { NumberAnimation { duration: Globals.animations.fast } }
