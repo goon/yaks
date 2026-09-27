@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import qs
 
@@ -9,14 +8,12 @@ Item {
     // ── API ───────────────────────────────────────────────────────────
     property string text: ""
     property string subText: ""
-    property string iconSource: "" // Glyph/Icon name
-    property string imageSource: "" // Image path/url (takes precedence if valid)
+    property string imageSource: "" // Image path/url
     property bool selected: false
     property color iconColor: Globals.colors.text // Default icon color
 
     property bool showFallbackIcon: false
     property string fallbackText: ""
-    property bool boxedIcon: false
 
     signal clicked()
 
@@ -50,7 +47,7 @@ Item {
             radius: parent.radius
             hovered: mouseArea.containsMouse
             premiumActive: root.selected
-            hoverEnabled: false // Hover logic in Launcher is handled externally via 'selected'
+            hoverEnabled: false
         }
 
         RowLayout {
@@ -68,19 +65,11 @@ Item {
                 Layout.preferredHeight: Globals.dimensions.iconLarge
                 Layout.alignment: Qt.AlignVCenter
 
-                BaseIcon {
-                    anchors.fill: parent
-                    icon: root.iconSource
-                    color: root.selected ? Globals.colors.primary : root.iconColor
-                    size: root.boxedIcon ? Globals.dimensions.iconLarge : Globals.dimensions.iconMedium
-                    visible: !root.imageSource && !root.showFallbackIcon
-                }
-
-                // 2. Image (e.g. App Icon)
+                // 1. Image (e.g. App Icon)
                 Image {
                     anchors.fill: parent
                     source: root.imageSource
-                    asynchronous: false // Keeping consistent with previous LauncherApps behavior
+                    asynchronous: false
                     fillMode: Image.PreserveAspectFit
                     sourceSize.width: Globals.dimensions.iconLarge
                     sourceSize.height: Globals.dimensions.iconLarge
@@ -88,7 +77,7 @@ Item {
                     visible: !!root.imageSource && status === Image.Ready
                 }
 
-                // 3. Fallback (Text char)
+                // 2. Fallback (Text char)
                 Rectangle {
                     anchors.fill: parent
                     radius: Globals.geometry.innerRadius.small
@@ -136,10 +125,9 @@ Item {
         hoverEnabled: true
         
         onPositionChanged: (mouse) => {
-             // Find the LauncherTab (parent of the ListView)
-             var tab = root.ListView.view ? root.ListView.view.parent : null;
-             if (tab && tab.isActive && typeof tab.mouseMoveRequested === "function") {
-                 tab.mouseMoveRequested(root.itemIndex, mouse);
+             var container = root.ListView.view ? root.ListView.view.parent : null;
+             if (container && container.isActive && typeof container.mouseMoveRequested === "function") {
+                 container.mouseMoveRequested(root.itemIndex, mouse);
              }
         }
         

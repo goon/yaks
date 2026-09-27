@@ -66,11 +66,9 @@ VolumeToast modules/toasts/VolumeToast.qml
 # Launcher
 Launcher modules/launcher/Launcher.qml
 LauncherSearch modules/launcher/LauncherSearch.qml
-LauncherTab modules/launcher/LauncherTab.qml
 LauncherListView modules/launcher/LauncherListView.qml
 LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
 LauncherApps modules/launcher/LauncherApps.qml
-LauncherTheme modules/launcher/LauncherTheme.qml
 
 # Settings
 Settings modules/settings/Settings.qml

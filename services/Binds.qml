@@ -41,20 +41,8 @@ QtObject {
         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
             launcher.activateCurrentItem();
             event.accepted = true;
-        } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Right) {
-            if (launcher.isWallpaperActive) {
-                launcher.navigateHorizontal(event.key === Qt.Key_Left ? -1 : 1);
-                event.accepted = true;
-            }
         } else if (launcher.getCurrentListView && launcher.getCurrentListView()
                    && launcher.getCurrentListView().activeFocus) {
-            var listView = launcher.getCurrentListView();
-
-            if (event.key === Qt.Key_Delete) {
-                event.accepted = false;
-                return;
-            }
-
             var isSpecial = (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab
                              || event.key === Qt.Key_Left || event.key === Qt.Key_Right);
             if (!isSpecial && event.text.length > 0) {

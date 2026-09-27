@@ -1,7 +1,5 @@
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import Quickshell.Services.SystemTray
 import qs
 pragma Singleton
 
@@ -10,12 +8,10 @@ QtObject {
 
     // Input State Management
     property string lastInputMethod: "keyboard"
-    property string activeUtilityMode: "" // "", "command", "calculator", "web", "youtube"
     property point originMousePos: Qt.point(-1, -1)
     property bool mouseSelectionEnabled: false
     property point lastMousePos: Qt.point(-1, -1)
     readonly property int moveThreshold: 10
-    readonly property string frequencyFile: Globals.cacheDir + "/launcher.json"
 
     // Terminal auto-discovery (priority: $TERMINAL > discovered > xterm)
     property var _availableTerminals: ["xterm"]
@@ -179,29 +175,9 @@ QtObject {
         return "";
     }
 
-    function searchApps(query, applications, workspaces, maxResults) {
+    function searchApps(query, applications, maxResults) {
         maxResults = maxResults || 100;
         var queryLower = query.toLowerCase();
-        // ── WEB SEARCH MODE ───────────────────────────────────────────────
-        if (queryLower.startsWith("!s ") || queryLower.startsWith("!y ")) {
-            var bangPrefix = queryLower.split(" ")[0];
-            var webQuery = query.substring(bangPrefix.length + 1);
-            if (webQuery.length > 0) {
-                var searchUrl = Preferences.launcher.webSearchUrl;
-                var searchName = "Search Web";
-                if (bangPrefix === "!y") {
-                    searchUrl = "https://www.youtube.com/results?search_query=";
-                    searchName = "Search YouTube";
-                }
-                return [{
-                    "type": "web",
-                    "name": searchName + " for '" + webQuery + "'",
-                    "description": "Open search in browser",
-                    "icon": "web-browser",
-                    "url": searchUrl + encodeURIComponent(webQuery)
-                }];
-            }
-        }
         var scored = [];
         // ── APPLICATIONS ──────────────────────────────────────────────────
         for (var i = 0; i < applications.length; i++) {
@@ -250,210 +226,6 @@ QtObject {
         return finalResults;
     }
 
-    function evaluateCalculator(expr) {
-        expr = expr.trim();
-        if (expr.startsWith("=")) {
-            expr = expr.substring(1).trim();
-        }
-
-        var pos = 0;
-        function peek(str) {
-            return expr.substring(pos, pos + str.length) === str;
-        }
-
-        function consume(str) {
-            if (peek(str)) {
-                pos += str.length;
-                return true;
-            }
-            return false;
-        }
-
-        function parseExpression() {
-            var x = parseTerm();
-            while (true)if (consume('+'))
-                x += parseTerm();
-            else if (consume('-'))
-                x -= parseTerm();
-            else
-                return x;
-        }
-
-        function parseTerm() {
-            var x = parseFactor();
-            while (true)if (consume('*'))
-                x *= parseFactor();
-            else if (consume('/'))
-                x /= parseFactor();
-            else
-                return x;
-        }
-
-        function parseFactor() {
-            if (consume('+'))
-                return parseFactor();
-
-            if (consume('-'))
-                return -parseFactor();
-
-            var x;
-            var startPos = pos;
-            if (consume('(')) {
-                x = parseExpression();
-                consume(')');
-            } else if (peek('sqrt(')) {
-                consume('sqrt(');
-                x = Math.sqrt(parseExpression());
-                consume(')');
-            } else if (peek('pow(')) {
-                consume('pow(');
-                var base = parseExpression();
-                consume(',');
-                var exp = parseExpression();
-                x = Math.pow(base, exp);
-                consume(')');
-            } else {
-                while (pos < expr.length && /[0-9.]/.test(expr[pos]))pos++
-                x = parseFloat(expr.substring(startPos, pos));
-            }
-            return x;
-        }
-
-        expr = expr.replace(/\s/g, '');
-        if (!/^[0-9+\-*\/().a-z0-9,]+$/.test(expr))
-            return null;
-
-        try {
-            var result = parseExpression();
-            if (pos !== expr.length)
-                return null;
-
-            if (typeof result === 'number' && !isNaN(result) && isFinite(result))
-                return result;
-
-        } catch (e) {
-        }
-        return null;
-    }
-
-
-
-    function getShortcutResults(query) {
-        var globalPrefix = Preferences.launcher.globalPrefix || ">";
-        
-        // If we are in an active utility mode, process based on that mode
-        if (activeUtilityMode === "web" || activeUtilityMode === "youtube") {
-            var isYoutube = (activeUtilityMode === "youtube");
-            if (query === "") {
-                return [{
-                    "type": "web-hint",
-                    "name": isYoutube ? "YouTube Search" : "Web Search",
-                    "description": "Type search query and press Enter",
-                    "icon": isYoutube ? "play_circle" : "language"
-                }];
-            } else {
-                var searchUrl = isYoutube ? "https://www.youtube.com/results?search_query=" : (Preferences.launcher.webSearchUrl || "https://duckduckgo.com/?q=");
-                return [{
-                    "type": "web",
-                    "name": (isYoutube ? "Search YouTube" : "Search Web") + " for '" + query + "'",
-                    "description": "Open search in browser",
-                    "icon": isYoutube ? "play_circle" : "language",
-                    "url": searchUrl + encodeURIComponent(query)
-                }];
-            }
-        }
-
-
-        
-        if (activeUtilityMode === "calculator") {
-            if (query === "") {
-                return [{
-                    "type": "calculation-hint",
-                    "name": "Calculator",
-                    "description": "Type a mathematical expression to evaluate",
-                    "icon": "calculate"
-                }];
-            } else {
-                var calcResult = evaluateCalculator(query);
-                if (calcResult !== null) {
-                    return [{
-                        "type": "calculation",
-                        "name": calcResult.toString(),
-                        "icon": "calculate"
-                    }];
-                } else {
-                    return [{
-                        "type": "calculation-hint",
-                        "name": "Calculator",
-                        "description": "Incomplete expression: " + query,
-                        "icon": "calculate"
-                    }];
-                }
-            }
-        }
-        
-
-        
-        // If we are not in an active utility mode, check if the query starts with global prefix
-        if (query.startsWith(globalPrefix)) {
-            var rest = query.substring(globalPrefix.length);
-            
-            var options = [
-                {
-                    "type": "shortcut-option",
-                    "name": "Calculator",
-                    "description": "Evaluate mathmatical expressions",
-                    "icon": "calculate",
-                    "mode": "calculator"
-                },
-                {
-                    "type": "shortcut-option",
-                    "name": "Tokens Switcher",
-                    "description": "Change your color theme",
-                    "icon": "palette",
-                    "mode": "tab-1"
-                },
-                {
-                    "type": "shortcut-option",
-                    "name": "Wallpaper Switcher",
-                    "description": "Change your wallpaper",
-                    "icon": "image",
-                    "mode": "invoke-wallpaper"
-                },
-                {
-                    "type": "shortcut-option",
-                    "name": "Web Search",
-                    "description": "Search the web",
-                    "icon": "language",
-                    "mode": "web"
-                }
-            ];
-
-
-
-            if (rest.trim() === "") {
-                return options;
-            } else {
-                var filterQuery = rest.trim();
-                var filtered = [];
-                for (var i = 0; i < options.length; i++) {
-                    var opt = options[i];
-                    if (fuzzyMatch(opt.name, filterQuery) || 
-                        fuzzyMatch(opt.mode, filterQuery)) {
-                        filtered.push(opt);
-                    }
-                }
-
-                return filtered;
-            }
-        }
-        
-        return null;
-    }
-
-
-
-
     function resolveTerminal() {
         var fromEnv = Quickshell.env("TERMINAL");
         if (fromEnv && fromEnv.length > 0) return fromEnv;
@@ -461,25 +233,12 @@ QtObject {
     }
 
     function executeItem(item) {
-        if (!item)
-            return ;
+        if (!item || !item.app)
+            return;
 
-        if (item.type === "app") {
-            if (item.app && item.app.runInTerminal)
-                ProcessService.runDetached(["sh", "-c", resolveTerminal() + " -e " + item.app.command]);
-            else if (item.app)
-                item.app.execute();
-        } else if (item.type === "workspace")
-            Compositor.switchToWorkspace(item.workspaceIdx);
-        else if (item.type === "window")
-            Compositor.focusWindow(item.windowId);
-        else if (item.type === "calculation")
-            ProcessService.runDetached(["wl-copy", item.name]);
-        else if (item.type === "web")
-            ProcessService.runDetached(["xdg-open", item.url]);
+        if (item.app.runInTerminal)
+            ProcessService.runDetached(["sh", "-c", resolveTerminal() + " -e " + item.app.command]);
+        else
+            item.app.execute();
     }
-
-
-
-
 }

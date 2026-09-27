@@ -43,9 +43,15 @@ QtObject {
     property QtObject wallpaper: QtObject {
         property double parallaxStrength: 25
         property string directory: ""
+        property string transition: "fade" // fade | disc | corner | wave
+        property int transitionDuration: 1750
+        property bool transitionRandom: false
 
         onParallaxStrengthChanged: root.requestSave()
         onDirectoryChanged: root.requestSave()
+        onTransitionChanged: root.requestSave()
+        onTransitionDurationChanged: root.requestSave()
+        onTransitionRandomChanged: root.requestSave()
     }
 
     property QtObject applications: QtObject {
@@ -65,12 +71,8 @@ QtObject {
     }
 
     property QtObject launcher: QtObject {
-        property string webSearchUrl: "https://duckduckgo.com/?q="
-        property string globalPrefix: ">"
         property bool showAppDescriptions: false
 
-        onWebSearchUrlChanged: root.requestSave()
-        onGlobalPrefixChanged: root.requestSave()
         onShowAppDescriptionsChanged: root.requestSave()
     }
 
@@ -151,10 +153,11 @@ QtObject {
         ["bar", "componentsEnabled"],
         ["wallpaper", "parallaxStrength"],
         ["wallpaper", "directory"],
+        ["wallpaper", "transition"],
+        ["wallpaper", "transitionDuration"],
+        ["wallpaper", "transitionRandom"],
         ["applications", "themedApps"],
         ["applications", "themedAppsOpacity"],
-        ["launcher", "webSearchUrl"],
-        ["launcher", "globalPrefix"],
         ["launcher", "showAppDescriptions"],
         ["globals", "themeMode"],
         ["globals", "shellFont"],

@@ -1,93 +1,32 @@
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 import Quickshell
 import qs
 
-LauncherTab {
+FocusScope {
     id: root
 
-    // ── TAB CONFIGURATION ────────────────────────────────────────────
-    property bool includeWindows: false
-    
-    // Alias for the list view so the parent (Launcher.qml) can control it
-    listView: appListView
+    // ── PUBLIC INTERFACE ──────────────────────────────────────────────
+    property string searchText: ""
+    property bool isActive: false
+    property var listView: appListView
 
-    // ── INTERNAL PROPERTIES ──────────────────────────────────────────
+    readonly property int listCount: cachedModel.length
+
+    signal closeRequested()
+    signal mouseMoveRequested(int index, var mouse)
+
+    // ── INTERNAL STATE ────────────────────────────────────────────────
     property var cachedModel: []
     property string _lastQuery: ""
-    property string specialMode: ""
-    property string specialModeText: ""
 
-    // ── SEARCH HANDLING ───────────────────────────────────────────────
-    
-    onSearchTextChanged: {
-        searchDebounceTimer.restart();
-    }
+    onSearchTextChanged: searchDebounceTimer.restart()
 
-    // Called by the base class when this tab becomes active
-    function onActivated() {
-        if (root.searchText.trim() === "")
-            appListView.currentIndex = 0;
-
-        performSearch();
-        
-        if (appListView.count > 0 && appListView.currentIndex === -1)
-             appListView.currentIndex = 0;
-    }
-
-    // Override the base performSearch
     function performSearch() {
-        var rawQuery = root.searchText;
-        var globalPrefix = Preferences.launcher.globalPrefix || ">";
-        if (rawQuery.startsWith(globalPrefix) && LauncherService.activeUtilityMode === "") {
-            // Suffix shortcuts removed, user must select from the list
-        }
-
-        var query = root.searchText.trim();
+        var query = searchText.trim();
         var queryChanged = query !== _lastQuery;
         _lastQuery = query;
 
-        specialMode = "";
-        specialModeText = "";
-
-        // Check for shortcut mode
-        var shortcutResults = LauncherService.getShortcutResults(query);
-        if (shortcutResults !== null) {
-            finalizeModel(null, shortcutResults, queryChanged);
-            return;
-        }
-
-        // Otherwise, regular application & calculator search
-        var calcResult = LauncherService.evaluateCalculator(query);
-        var appResults = [];
-
-        if (root.includeWindows) {
-            Hyprland.queryWorkspaces((workspaces) => {
-                appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, workspaces, 100);
-                finalizeModel(calcResult, appResults, queryChanged);
-            });
-        } else {
-            appResults = LauncherService.searchApps(query, DesktopEntries.applications.values, null, 100);
-            finalizeModel(calcResult, appResults, queryChanged);
-        }
-    }
-
-    function finalizeModel(calcResult, appResults, queryChanged) {
-        var newModel = [];
-        if (calcResult !== null) {
-            newModel.push({
-                "type": "calculation",
-                "name": calcResult.toString(),
-                "icon": "calculate"
-            });
-        }
-        
-        for (var i = 0; i < appResults.length; i++) {
-            newModel.push(appResults[i]);
-        }
-        
-        cachedModel = newModel;
+        cachedModel = LauncherService.searchApps(query, DesktopEntries.applications.values, 100);
         updateCurrentIndex(queryChanged);
     }
 
@@ -100,30 +39,16 @@ LauncherTab {
         }
     }
 
-    // Override base activateCurrentItem
     function activateCurrentItem() {
         searchDebounceTimer.stop();
-        performSearch(); // Ensure state is fresh
+        performSearch();
 
         if (appListView.currentIndex < 0 && cachedModel.length > 0)
             appListView.currentIndex = 0;
 
-        if (appListView.currentIndex >= 0 && cachedModel && appListView.currentIndex < cachedModel.length) {
-            var item = cachedModel[appListView.currentIndex];
-            if (item.type === "shortcut-option") {
-                if (item.mode.startsWith("tab-")) {
-                    var tabIndex = parseInt(item.mode.substring(4));
-                    root.tabRedirectRequested(tabIndex);
-                } else if (item.mode === "invoke-wallpaper") {
-                    IslandService.toggleWallpaper();
-                } else {
-                    LauncherService.activeUtilityMode = item.mode;
-                    root.searchTextUpdateRequested("");
-                }
-            } else {
-                LauncherService.executeItem(item);
-                root.closeRequested();
-            }
+        if (appListView.currentIndex >= 0 && appListView.currentIndex < cachedModel.length) {
+            LauncherService.executeItem(cachedModel[appListView.currentIndex]);
+            closeRequested();
         }
     }
 
@@ -132,14 +57,7 @@ LauncherTab {
     Connections {
         target: DesktopEntries.applications
         function onValuesChanged() {
-            if (root.isActive) performSearch();
-        }
-    }
-
-    Connections {
-        target: LauncherService
-        function onActiveUtilityModeChanged() {
-            performSearch();
+            if (root.isActive) root.performSearch();
         }
     }
 
@@ -147,18 +65,17 @@ LauncherTab {
         id: searchDebounceTimer
         interval: 100
         repeat: false
-        onTriggered: performSearch()
+        onTriggered: root.performSearch()
     }
 
     LauncherListView {
         id: appListView
         anchors.fill: parent
-        model: cachedModel
-        
-        // Handle special modes logic for selection
+        model: root.cachedModel
+
         onCountChanged: {
-             if (LauncherService.lastInputMethod === "keyboard" || currentIndex === -1) {
-                if (count > 0 && currentIndex < 0 && specialMode === "")
+            if (LauncherService.lastInputMethod === "keyboard" || currentIndex === -1) {
+                if (count > 0 && currentIndex < 0)
                     currentIndex = 0;
                 else if (count === 0)
                     currentIndex = -1;
@@ -168,55 +85,21 @@ LauncherTab {
         delegate: LauncherItemDelegate {
             itemIndex: index
             selected: appListView.currentIndex === index
-            
-            // App Logic
+
             text: modelData ? modelData.name : ""
             subText: {
                 if (!modelData) return "";
-                if (modelData.type === "calculation" || 
-                    modelData.type === "calculation-hint" ||
-                    modelData.type === "workspace" || 
-                    modelData.type === "web" ||
-                    modelData.type === "web-hint" ||
-                    modelData.type === "shortcut-option") {
-                    return modelData.description || "";
-                }
                 return Preferences.launcher.showAppDescriptions ? (modelData.description || "") : "";
             }
-            
-            property bool isGlyphIcon: (modelData && (
-                modelData.type === "workspace" || 
-                modelData.type === "calculation" || 
-                modelData.type === "calculation-hint" ||
-                modelData.type === "shortcut-option" ||
-                modelData.type === "web" ||
-                modelData.type === "web-hint"
-            ))
-            
-            iconSource: isGlyphIcon ? (modelData.icon || "extension") : ""
-            imageSource: (!isGlyphIcon && modelData) ? LauncherService.resolveIcon(modelData.icon) : ""
-            
-            showFallbackIcon: (imageSource === "") && !isGlyphIcon
-            boxedIcon: isGlyphIcon
+
+            imageSource: modelData ? LauncherService.resolveIcon(modelData.icon) : ""
+            showFallbackIcon: imageSource === ""
             fallbackText: (modelData && modelData.name && modelData.name.length > 0) ? modelData.name.charAt(0).toUpperCase() : "?"
-            
+
             onClicked: {
                 appListView.currentIndex = index;
-                if (modelData && modelData.type === "shortcut-option") {
-                    if (modelData.mode.startsWith("tab-")) {
-                        var tabIndex = parseInt(modelData.mode.substring(4));
-                        root.tabRedirectRequested(tabIndex);
-                    } else if (modelData.mode === "invoke-wallpaper") {
-                        IslandService.toggleWallpaper();
-                    } else {
-                        LauncherService.activeUtilityMode = modelData.mode;
-                        root.searchTextUpdateRequested("");
-                    }
-                } else {
-                    root.activateCurrentItem();
-                }
+                root.activateCurrentItem();
             }
         }
-
     }
 }
