@@ -74,7 +74,7 @@ BaseContainer {
                     Layout.preferredHeight: Layout.preferredWidth
                     Layout.alignment: Qt.AlignTop
 
-                    color: Globals.colors.transparent
+                    color: "transparent"
                     radius: 0
 
                     function resolveSource(src) {
@@ -206,8 +206,8 @@ BaseContainer {
                     Layout.alignment: Qt.AlignTop
                     visible: root.showCloseButton
                     icon: "trash-2"
-                    iconColor: containsMouse ? Globals.colors.surface : Globals.colors.error
-                    hoverColor: Globals.colors.error
+                    iconColor: containsMouse ? Globals.colors.surface : Globals.colors.primary
+                    hoverColor: Globals.colors.primary
                     size: Globals.typography.size.large
                     onClicked: root.closeClicked()
                 }

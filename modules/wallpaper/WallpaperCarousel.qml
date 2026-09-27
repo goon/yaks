@@ -130,7 +130,7 @@ FocusScope {
                 id: card
                 anchors.fill: parent
                 radius: tile.corner
-                color: Globals.colors.base
+                color: Globals.colors.surface
 
                 layer.enabled: true
                 layer.effect: MultiEffect {

@@ -10,7 +10,7 @@ import qs
 Rectangle {
     id: root
 
-    property color borderColor: Globals.colors.transparent
+    property color borderColor: "transparent"
     property real borderWidth: 1
 
     color: Globals.alpha(Globals.colors.background, Globals.opacity.background)

@@ -39,7 +39,7 @@ Item {
         id: mainBackground
         anchors.fill: parent
         radius: Globals.geometry.innerRadius.medium
-        color: Globals.colors.transparent
+        color: "transparent"
 
         BaseActiveBackground {
             anchors.fill: parent
@@ -77,7 +77,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: Globals.geometry.innerRadius.small
-                    color: Globals.colors.background
+                    color: Globals.colors.surface
                     visible: root.showFallbackIcon
 
                     BaseText {

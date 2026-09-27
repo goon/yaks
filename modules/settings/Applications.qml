@@ -19,14 +19,14 @@ SettingsPage {
 
             BaseIcon {
                 icon: "triangle-alert"
-                color: Globals.colors.warning
+                color: Globals.colors.primary
                 Layout.alignment: Qt.AlignTop
             }
 
             BaseText {
                 text: "Enabling applications below inherit the currently applied theme. This overrides various configuration files and can be destructive."
                 pixelSize: Globals.typography.size.medium
-                color: Globals.colors.warning
+                color: Globals.colors.primary
                 Layout.fillWidth: true
             }
         }
@@ -99,7 +99,7 @@ SettingsPage {
 
                             BaseText {
                                 text: modelData.name
-                                color: bento.isEnabled ? Globals.colors.textLighter : Globals.colors.text
+                                color: bento.isEnabled ? Globals.colors.primary : Globals.colors.text
                                 pixelSize: Globals.typography.size.small
                                 weight: Globals.typography.weights.medium
                                 Layout.fillWidth: true

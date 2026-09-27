@@ -18,7 +18,7 @@ Rectangle {
     property int size: Globals.dimensions.iconBase
     property real iconRotation: 0
     property int weight: Globals.typography.weights.normal
-    property color hoverColor: Globals.colors.transparent
+    property color hoverColor: "transparent"
     property real customRadius: -1
     property bool hoverEnabled: true
     property bool clickRotate: false
@@ -39,7 +39,7 @@ Rectangle {
         if (root.customRadius >= 0) return root.customRadius;
         return Globals.geometry.innerRadius.medium;
     }
-    color: Globals.colors.transparent
+    color: "transparent"
     
     implicitWidth: childrenLayout.implicitWidth + (root.paddingHorizontal * 2)
     implicitHeight: childrenLayout.implicitHeight + (root.paddingVertical * 2)

@@ -246,7 +246,7 @@ Item {
         z: 2
         
 
-        borderColor: Preferences.globals.islandOutline ? Globals.alpha(Globals.colors.border, 0.4) : Globals.colors.transparent
+        borderColor: Preferences.globals.islandOutline ? Globals.alpha(Globals.colors.border, 0.4) : "transparent"
         borderWidth: Preferences.globals.islandOutline ? 1 : 0
         radius: Preferences.globals.cornerRadius || Globals.geometry.radius
         clip: true

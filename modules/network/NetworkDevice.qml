@@ -90,7 +90,7 @@ Item {
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: root.iconName
-                        color: root.isConnected ? Globals.colors.success : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.warning : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
+                        color: root.isConnected ? Globals.colors.primary : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.muted : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
                         opacity: root.iconOpacity
                         Behavior on color { BaseAnimation { } }
                     }
@@ -164,7 +164,7 @@ Item {
                 anchors.topMargin: Globals.geometry.padding.medium
                 anchors.left: parent.left
                 anchors.right: parent.right
-                color: Globals.colors.background
+                color: Globals.colors.surface
                 border.width: 1
                 border.color: Globals.alpha(Globals.colors.border, 0.5)
                 radius: Globals.geometry.innerRadius.medium

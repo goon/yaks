@@ -97,10 +97,10 @@ Switch {
             height: 16
             radius: Math.max(0, Globals.geometry.innerRadius.small - 4)
             
-            color: control.enabled ? Globals.colors.textLighter : Globals.colors.muted
+            color: control.enabled ? Globals.colors.primary : Globals.colors.muted
 
             border.width: 1
-            border.color: control.checked ? Globals.alpha(Globals.colors.primary, 0.2) : Globals.alpha(Globals.colors.base, 0.1)
+            border.color: control.checked ? Globals.alpha(Globals.colors.primary, 0.2) : Globals.alpha(Globals.colors.border, 0.3)
 
             Behavior on color { BaseAnimation { } }
             Behavior on border.color { BaseAnimation { } }

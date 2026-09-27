@@ -77,22 +77,18 @@ QtObject {
     }
 
     property QtObject globals: QtObject {
-        property string themeMode: "dark"
+        property string schemeType: "scheme-tonal-spot"
         property string shellFont: "Outfit"
         property int cornerRadius: 30
         property double backgroundOpacity: 1.0
         property bool islandOutline: true
-        property string dynamicSeedColor: "#9d99e5"
-        property real dynamicBgLightness: 0.08
         property int scale: 1 // 0: 0.9x, 1: 1.0x, 2: 1.1x
 
-        onThemeModeChanged: root.requestSave()
+        onSchemeTypeChanged: root.requestSave()
         onShellFontChanged: root.requestSave()
         onCornerRadiusChanged: root.requestSave()
         onBackgroundOpacityChanged: root.requestSave()
         onIslandOutlineChanged: root.requestSave()
-        onDynamicSeedColorChanged: root.requestSave()
-        onDynamicBgLightnessChanged: root.requestSave()
         onScaleChanged: {
             if (scale === 0) root.bar.height = 50;
             else if (scale === 1) root.bar.height = 55;
@@ -115,10 +111,8 @@ QtObject {
 
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
-    property string currentTheme: "tinted"
     property string currentWallpaper: ""
 
-    onCurrentThemeChanged: root.requestSave()
     onCurrentWallpaperChanged: root.requestSave()
 
     // ── SCHEMA ───────────────────────────────────────────────────────────
@@ -143,16 +137,13 @@ QtObject {
         ["applications", "themedApps"],
         ["applications", "themedAppsOpacity"],
         ["launcher", "showAppDescriptions"],
-        ["globals", "themeMode"],
+        ["globals", "schemeType"],
         ["globals", "shellFont"],
         ["globals", "cornerRadius"],
         ["globals", "backgroundOpacity"],
         ["globals", "islandOutline"],
-        ["globals", "dynamicSeedColor"],
-        ["globals", "dynamicBgLightness"],
         ["indicators", "order"],
         ["animations", "speedMultiplier"],
-        ["currentTheme"],
         ["currentWallpaper"]
     ]
 

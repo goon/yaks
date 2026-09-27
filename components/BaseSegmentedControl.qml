@@ -85,7 +85,7 @@ Rectangle {
                 BaseText {
                     anchors.centerIn: parent
                     text: modelData[root.textRole] !== undefined ? modelData[root.textRole] : modelData
-                    color: itemRect.isSelected ? Globals.colors.textLighter : Globals.colors.text
+                    color: itemRect.isSelected ? Globals.colors.primary : Globals.colors.text
                 }
 
                 MouseArea {

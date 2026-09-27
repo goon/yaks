@@ -6,77 +6,28 @@ pragma Singleton
 QtObject {
     id: root
 
-    // ── PATHS & EXTERNAL RESOURCES ───────────────────────────────────────
+    // ── PATHS & EXTERNAL RESOURCES ────────────────────────────────────────
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string rootDir: homeDir + "/.config/yaks"
     readonly property string assetsDir: rootDir + "/assets"
     readonly property string dataDir: homeDir + "/.local/share/yaks"
     readonly property string cacheDir: homeDir + "/.cache/yaks"
 
-    readonly property var activePalette: Theme.currentColors
+    // ── COLOURS ───────────────────────────────────────────────────────────
+    readonly property QtObject colors: QtObject {
+        id: colorsRoot
 
-    readonly property real shellScale: {
-        if (Preferences.globals.scale === 0)
-            return 0.9;
-        if (Preferences.globals.scale === 1)
-            return 1;
-        if (Preferences.globals.scale === 2)
-            return 1.1;
-        return 1;
-    }
-    /*
-     * =========================================================================
-     *   🌈 SEMANTIC COLORS (UI Roles)
-     *   Mirrors the flat semantic structure used in theme assets
-     * =========================================================================
-     */
-    readonly property QtObject base16: QtObject {
-        // ── BACKGROUNDS & SURFACES ────────────────────────────────────────
-        readonly property color base00: root.activePalette.base00 || "#1e1e2d" // Default App Background
-        readonly property color base01: root.activePalette.base01 || "#181824" // Lighter Background (Panels, Status Bars)
-        readonly property color base02: root.activePalette.base02 || "#29293b" // Selection Background / Hover States
-        readonly property color base03: root.activePalette.base03 || "#3d3d51" // Inactive Elements / Borders / Comments
-        
-        // ── FOREGROUNDS & TEXT ────────────────────────────────────────────
-        readonly property color base04: root.activePalette.base04 || "#4f4f65" // Muted Text / Dark Foreground
-        readonly property color base05: root.activePalette.base05 || "#CDD6F4" // Default Foreground / Standard Text
-        readonly property color base06: root.activePalette.base06 || "#F5E0DC" // Light Foreground / Emphasized Text
-        readonly property color base07: root.activePalette.base07 || "#B4BEFE" // Brightest Foreground / Active Text
+        // ── RAW PASSTHROUGH ───────────────────────────────────────────────
+        readonly property var raw: Theme.currentColors || ({})
 
-        // ── BRAND & FEEDBACK COLORS ───────────────────────────────────────
-        readonly property color base08: root.activePalette.base08 || "#F38BA8" // Red: Error, Destructive Actions
-        readonly property color base09: root.activePalette.base09 || "#FAB387" // Orange: Warning, Alerts
-        readonly property color base0A: root.activePalette.base0A || "#F9E2AF" // Yellow: Accent, Highlights
-        readonly property color base0B: root.activePalette.base0B || "#A6E3A1" // Green: Success, Positive States
-        readonly property color base0C: root.activePalette.base0C || "#94E2D5" // Cyan: Info, Active Indicators
-        readonly property color base0D: root.activePalette.base0D || "#9d99e5" // Blue: Primary Brand Color, Links
-        readonly property color base0E: root.activePalette.base0E || "#c199e5" // Purple/Magenta: Secondary Brand Color
-        readonly property color base0F: root.activePalette.base0F || "#F2CDCD" // Brown: Tertiary Colors, Misc
-    }
-
-    readonly property QtObject
-    colors: QtObject {
-        // ── BRANDING & GRADIENTS ──────────────────────────────────────────
-        readonly property color primary: root.activePalette.primaryIdx ? base16[root.activePalette.primaryIdx] : base16.base0D
-        readonly property color secondary: root.activePalette.secondaryIdx ? base16[root.activePalette.secondaryIdx] : base16.base0E
-
-        // ── FEEDBACK & ALERTS ─────────────────────────────────────────────
-        readonly property color success: base16.base0B
-        readonly property color warning: base16.base09
-        readonly property color error: base16.base08
-        readonly property color info: base16.base0C
-
-        // ── BACKWARD COMPATIBILITY ALIASES ────────────────────────────────
-        readonly property color base: base16.base00
-        readonly property color background: base16.base01
-        readonly property color surface: base16.base02
-        readonly property color border: base16.base03
-        readonly property color muted: base16.base04
-        readonly property color text: base16.base05
-        readonly property color textLighter: base16.base07
-
-        // ── HELPERS ───────────────────────────────────────────────────────
-        readonly property color transparent: "transparent"
+        // ── ROLE LAYER ────────────────────────────────────────────────────
+        readonly property color background: colorsRoot.raw.surface
+        readonly property color surface: colorsRoot.raw.surface_container
+        readonly property color border: colorsRoot.raw.outline_variant
+        readonly property color text: colorsRoot.raw.on_surface
+        readonly property color muted: colorsRoot.raw.on_surface_variant
+        readonly property color primary: colorsRoot.raw.primary
+        readonly property color secondary: colorsRoot.raw.secondary
     }
 
     readonly property QtObject opacity: QtObject {
@@ -182,7 +133,7 @@ QtObject {
     effects: QtObject {
         readonly property QtObject
         shadow: QtObject {
-            readonly property color color: colors.base
+            readonly property color color: root.colors.raw.shadow || "#000000"
             readonly property int radius: 20
             readonly property int samples: 20
             readonly property int offsetX: 0
@@ -194,7 +145,18 @@ QtObject {
         if (!c)
             return "transparent";
 
-        return Qt.rgba(c.r, c.g, c.b, a);
+        var col = (typeof c === "string") ? Qt.color(c) : c;
+        return Qt.rgba(col.r, col.g, col.b, a);
+    }
+
+    readonly property real shellScale: {
+        if (Preferences.globals.scale === 0)
+            return 0.9;
+        if (Preferences.globals.scale === 1)
+            return 1;
+        if (Preferences.globals.scale === 2)
+            return 1.1;
+        return 1;
     }
 
 }

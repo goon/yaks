@@ -158,7 +158,7 @@ SettingsPage {
             // Flat well-style container pills
             color:        rect.isEnabled ? Globals.alpha(Globals.colors.primary, 0.15) : Globals.alpha(Globals.colors.surface, 0.5)
             border.width: rect.isEnabled ? 1 : 0
-            border.color: rect.isEnabled ? Globals.colors.primary : Globals.colors.transparent
+            border.color: rect.isEnabled ? Globals.colors.primary : "transparent"
 
             MouseArea {
                 id: dragHandler
@@ -194,7 +194,7 @@ SettingsPage {
 
                 BaseText {
                     text:  itemRoot.label
-                    color: rect.isEnabled ? Globals.colors.textLighter : Globals.colors.text
+                    color: rect.isEnabled ? Globals.colors.primary : Globals.colors.text
                     Layout.fillWidth: true
                 }
 
@@ -236,7 +236,7 @@ SettingsPage {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: Math.max(flow.height + Globals.geometry.spacing.medium * 2, 50)
-            color:        Globals.colors.transparent
+            color:        "transparent"
             radius:       Globals.geometry.innerRadius.medium
             border.width: 0
 

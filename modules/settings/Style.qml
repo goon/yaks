@@ -18,74 +18,32 @@ SettingsPage {
 
                 SettingsRow {
                     icon: "palette"
-                    label: "Theme"
-                    
+                    label: "Scheme"
+
                     BaseComboBox {
                         Layout.fillWidth: true
                         textRole: "name"
-                        model: Theme.allThemes
+                        model: [
+                            { name: "Tonal Spot", value: "scheme-tonal-spot" },
+                            { name: "Content",    value: "scheme-content" },
+                            { name: "Expressive", value: "scheme-expressive" },
+                            { name: "Fidelity",   value: "scheme-fidelity" },
+                            { name: "Fruit Salad", value: "scheme-fruit-salad" },
+                            { name: "Monochrome", value: "scheme-monochrome" },
+                            { name: "Neutral",    value: "scheme-neutral" },
+                            { name: "Rainbow",    value: "scheme-rainbow" },
+                            { name: "Vibrant",    value: "scheme-vibrant" }
+                        ]
                         currentIndex: {
                             if (!model) return -1;
                             for (var i = 0; i < model.length; i++) {
-                                if (model[i].id === Preferences.currentTheme) return i;
+                                if (model[i].value === Preferences.globals.schemeType) return i;
                             }
                             return -1;
                         }
-                        onActivated: (index) => { return Theme.setTheme(model[index].id); }
-                    }
-                }
-
-                SettingsRow {
-                    id: colorPickerRow
-                    icon: "paint-bucket"
-                    label: "Seed Hue"
-
-
-                    BaseColourPicker {
-                        Layout.fillWidth: true
-                        value: {
-                            var hue = Qt.color(Preferences.globals.dynamicSeedColor).hslHue;
-                            return hue >= 0 ? hue : 0;
-                        }
-                        thumbColor: Preferences.globals.dynamicSeedColor
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0.000; color: Qt.hsla(0.000, 0.60, 0.75, 1.0) }
-                            GradientStop { position: 0.166; color: Qt.hsla(0.166, 0.60, 0.75, 1.0) }
-                            GradientStop { position: 0.333; color: Qt.hsla(0.333, 0.60, 0.75, 1.0) }
-                            GradientStop { position: 0.500; color: Qt.hsla(0.500, 0.60, 0.75, 1.0) }
-                            GradientStop { position: 0.666; color: Qt.hsla(0.666, 0.60, 0.75, 1.0) }
-                            GradientStop { position: 0.833; color: Qt.hsla(0.833, 0.60, 0.75, 1.0) }
-                            GradientStop { position: 1.000; color: Qt.hsla(1.000, 0.60, 0.75, 1.0) }
-                        }
-                        onDragged: (v) => {
-                            Preferences.globals.dynamicSeedColor = Qt.hsla(v, 0.60, 0.75, 1.0).toString();
-                            Theme.setTheme(Preferences.currentTheme, true);
-                        }
-                        onCommitted: (v) => {
-                            Theme.setTheme(Preferences.currentTheme, true);
-                        }
-                    }
-                }
-
-                SettingsRow {
-                    id: bgBrightnessRow
-                    icon: "sun"
-                    label: "Background"
-
-
-                    BaseSpinBox {
-                        from: 5
-                        to: 25
-                        stepSize: 1
-                        suffix: "%"
-                        value: Math.round(Preferences.globals.dynamicBgLightness * 100)
-                        onValueChanged: {
-                            let newLightness = value / 100.0;
-                            if (Math.abs(Preferences.globals.dynamicBgLightness - newLightness) > 0.001) {
-                                Preferences.globals.dynamicBgLightness = newLightness;
-                                Theme.setTheme(Preferences.currentTheme, true);
-                            }
+                        onActivated: (index) => {
+                            if (index >= 0 && index < model.length)
+                                Preferences.globals.schemeType = model[index].value;
                         }
                     }
                 }

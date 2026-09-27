@@ -104,13 +104,13 @@ SettingsPage {
 
             BaseIcon {
                 icon: "triangle-alert"
-                color: Globals.colors.warning
+                color: Globals.colors.primary
             }
 
             BaseText {
                 text: "No Wallpaper Directory Set: The wallpaper gallery is disabled until you select a folder containing images."
                 pixelSize: Globals.typography.size.medium
-                color: Globals.colors.warning
+                color: Globals.colors.primary
                 Layout.fillWidth: true
             }
         }

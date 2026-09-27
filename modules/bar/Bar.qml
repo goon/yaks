@@ -21,7 +21,7 @@ PanelWindow {
     }
 
     objectName: "bar"
-    color: Globals.colors.transparent
+    color: "transparent"
     
     WlrLayershell.keyboardFocus: island.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 

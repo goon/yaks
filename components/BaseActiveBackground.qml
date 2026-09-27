@@ -6,7 +6,7 @@ Rectangle {
     id: root
 
     property color baseColor: Globals.colors.surface
-    property color hoverColor: Globals.colors.transparent
+    property color hoverColor: "transparent"
     
     property bool hovered: false
     property bool hoverEnabled: true
@@ -18,7 +18,7 @@ Rectangle {
 
     color: (root.hoverEnabled && !root.isPremiumActive && root.hovered) 
            ? root.hoverColor 
-           : Globals.colors.transparent
+           : "transparent"
 
     Behavior on color {
         BaseAnimation { duration: Globals.animations.fast }
@@ -59,7 +59,7 @@ Rectangle {
             radius: Math.max(0, root.radius - 1)
             gradient: Gradient {
                 GradientStop { position: 0.0; color: Globals.alpha(Globals.colors.text, 0.05) }
-                GradientStop { position: 1.0; color: Globals.colors.transparent }
+                GradientStop { position: 1.0; color: "transparent" }
             }
         }
     }

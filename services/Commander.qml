@@ -41,7 +41,11 @@ Item {
     }
 
     IpcHandler {
-        function apply(id: string) { Theme.setTheme(id); }
+        function apply(scheme: string) {
+            if (scheme && scheme !== "")
+                Preferences.globals.schemeType = scheme;
+            Theme.requestApply("manual");
+        }
         target: "theme"
     }
 
