@@ -17,9 +17,9 @@ BaseContainer {
     // ── SECTION MODEL ───────────────────────────────────────────────────
 
     readonly property var _sections: [
-        { type: "output", header: "AUDIO OUTPUT", hasDevices: true, deviceIcon: "headphones", deviceLabel: "Output Device" },
-        { type: "input",  header: "MICROPHONE",   hasDevices: true, deviceIcon: "mic",          deviceLabel: "Input Device" },
-        { type: "display",header: "DISPLAY",      hasDevices: false, deviceIcon: "", deviceLabel: "" },
+        { type: "output", hasDevices: true, deviceIcon: "headphones", deviceLabel: "Output Device" },
+        { type: "input",  hasDevices: true, deviceIcon: "mic",          deviceLabel: "Input Device" },
+        { type: "display",hasDevices: false, deviceIcon: "", deviceLabel: "" },
     ]
 
     function _setVolume(type, val) {
@@ -50,12 +50,6 @@ BaseContainer {
                 visible: index > 0
                 Layout.topMargin: Globals.geometry.spacing.large * 0.75
                 Layout.bottomMargin: Globals.geometry.spacing.large * 0.75
-            }
-
-            // ── HEADER ──────────────────────────────────────────────────
-            BaseHeader {
-                text: modelData.header
-                isActive: sectionSlider.isActive || (modelData.hasDevices && (selectorBtn.hovered || deviceListHoverHandler.hovered))
             }
 
             // ── SLIDER ──────────────────────────────────────────────────
