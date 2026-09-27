@@ -131,6 +131,7 @@ QtObject {
         readonly property int calendarBlockWidth: 320 * root.shellScale
         readonly property int launcherItemHeight: 54 * root.shellScale
         readonly property int launcherSearchHeight: 50 * root.shellScale
+        readonly property int caretWidth: Math.max(2, Math.round(2 * root.shellScale))
     }
 
     /*
