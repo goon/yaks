@@ -22,7 +22,6 @@ Item {
         { key: "wifi", icon: "wifi-pen" },
         { key: "notifications", icon: "bell" },
         { key: "settings", icon: "settings" },
-        { key: "instantmix", icon: "audio-lines" },
         { key: "power", icon: "power" }
     ]
 
@@ -101,7 +100,6 @@ Item {
             case "wifi": IslandService.toggleNetworkPopout(); break;
             case "notifications": IslandService.toggleNotificationsPopout(); break;
             case "power": IslandService.togglePowerPopout(); break;
-            case "instantmix": IslandService.toggleMixerPopout(); break;
             case "settings": IslandService.toggleSettings(); break;
         }
     }

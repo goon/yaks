@@ -1,17 +1,14 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
 import qs
-import qs.services
 
-BaseContainer {
+ColumnLayout {
     id: root
 
-    implicitWidth: 400
-    spacing: 0
+    Layout.fillWidth: true
+    spacing: Globals.geometry.spacing.medium
 
-    property string panelState: "Closed"
     property string expandedSide: "" // "", "output", "input"
 
     // ── SECTION MODEL ───────────────────────────────────────────────────
@@ -190,9 +187,5 @@ BaseContainer {
                 }
             }
         }
-    }
-
-    Item {
-        Layout.fillHeight: true
     }
 }

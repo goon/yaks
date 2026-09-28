@@ -57,7 +57,6 @@ QtObject {
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
         "fullbar":       { source: "../modules/bar/Full.qml" },
         "power":         { source: "../modules/power/Power.qml" },
-        "mixer":         { source: "../modules/mixer/Mixer.qml" },
         "network":       { source: "../modules/network/Network.qml" },
         "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml" },
         "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
@@ -158,10 +157,6 @@ QtObject {
 
     function togglePowerPopout() {
         togglePanel("power");
-    }
-
-    function toggleMixerPopout() {
-        togglePanel("mixer");
     }
 
     function toggleNotificationsPopout() {

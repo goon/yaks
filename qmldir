@@ -69,6 +69,7 @@ Settings modules/settings/Settings.qml
 SettingsPage modules/settings/SettingsPage.qml
 SettingsGroup modules/settings/SettingsGroup.qml
 SettingsRow modules/settings/SettingsRow.qml
+SettingsMixer modules/settings/SettingsMixer.qml
 
 # Bar
 WallpaperBackground modules/wallpaper/WallpaperBackground.qml

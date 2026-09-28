@@ -54,11 +54,6 @@ Item {
         target: "notifications"
     }
 
-    IpcHandler {
-        function toggle() { IslandService.toggleMixerPopout(); }
-        target: "volume"
-    }
-
 
     IpcHandler {
         function toggle() { IslandService.toggleNetworkPopout(); }

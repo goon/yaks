@@ -59,6 +59,16 @@ Item {
                 onClicked: root.pushPage(modelData.page)
             }
         }
+
+        BaseSeparator {
+            Layout.fillWidth: true
+            Layout.topMargin: Globals.geometry.spacing.large
+            Layout.bottomMargin: Globals.geometry.spacing.large
+        }
+
+        SettingsMixer {
+            Layout.fillWidth: true
+        }
     }
 
     BaseIndicator {
