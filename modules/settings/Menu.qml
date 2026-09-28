@@ -17,12 +17,12 @@ Item {
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
     readonly property var _menuModel: [
-        { page: "Style.qml",         title: "Style",         subtitle: "Look, feel, and typography.",            icon: "paintbrush" },
-        { page: "Bar.qml",           title: "Bar",           subtitle: "Position, size, and layout of the bar.", icon: "panel-top" },
-        { page: "Notifications.qml", title: "Notifications", subtitle: "Behaviour, sounds, and display.",        icon: "bell" },
-        { page: "Animations.qml",    title: "Animations",    subtitle: "Speed, transitions, and motion.",        icon: "zap" },
-        { page: "Wallpaper.qml",     title: "Wallpaper",     subtitle: "Desktop background and transitions.",     icon: "image" },
-        { page: "Applications.qml",  title: "Applications",  subtitle: "External application themeing.",         icon: "layout-grid" },
+        { page: "Style.qml",         title: "Style",         icon: "paintbrush"  },
+        { page: "Bar.qml",           title: "Bar",           icon: "panel-top"   },
+        { page: "Notifications.qml", title: "Notifications", icon: "bell"        },
+        { page: "Animations.qml",    title: "Animations",    icon: "zap"         },
+        { page: "Wallpaper.qml",     title: "Wallpaper",     icon: "image"       },
+        { page: "Applications.qml",  title: "Applications",  icon: "layout-grid" },
     ]
 
     readonly property Item activeHover: {
@@ -34,7 +34,7 @@ Item {
     }
 
     function _hoverPredicate() {
-        return root.activeHover;
+        return mixerItem.hoveredSlider || root.activeHover;
     }
 
     ColumnLayout {
@@ -53,8 +53,9 @@ Item {
 
                 Layout.fillWidth: true
                 title: modelData.title
-                subtitle: modelData.subtitle
-                showSubtitleOnHover: true
+                bounceTitleOnHover: true
+                itemHeight: Globals.dimensions.settingsRowHeight
+                leftIconBoxSize: Globals.dimensions.barItemHeight
                 leftIcon: modelData.icon
                 onClicked: root.pushPage(modelData.page)
             }
@@ -67,11 +68,13 @@ Item {
         }
 
         SettingsMixer {
+            id: mixerItem
             Layout.fillWidth: true
         }
     }
 
     BaseIndicator {
         hoverPredicate: root._hoverPredicate
+        gapInterval: Globals.animations.fast
     }
 }

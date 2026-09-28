@@ -5,7 +5,7 @@ import qs
 Item {
     id: root
 
-    implicitHeight: Math.max(Globals.dimensions.listItemHeight, layout.implicitHeight)
+    implicitHeight: Math.max(root.itemHeight, layout.implicitHeight)
     implicitWidth: layout.implicitWidth
 
     property string title: ""
@@ -14,6 +14,9 @@ Item {
     property string subtitle: ""
     property int subtitleSize: Globals.typography.size.base
     property bool showSubtitleOnHover: false
+    property bool bounceTitleOnHover: false
+    property int itemHeight: Globals.dimensions.listItemHeight
+    property int leftIconBoxSize: Globals.dimensions.listItemHeight
     
     property string leftIcon: ""
     property bool leftIconInteractive: true
@@ -34,6 +37,20 @@ Item {
     readonly property bool containsMouse: mainMouseArea.containsMouse
     readonly property bool hovered: containsMouse
     readonly property bool _subtitleCollapsed: root.showSubtitleOnHover && !root.hovered
+
+    onHoveredChanged: {
+        if (root.bounceTitleOnHover && root.hovered) {
+            titlePulse.stop();
+            titleText.opacity = 1.0;
+            titleText.scale = 1.0;
+            titleBounce.restart();
+        } else {
+            titleBounce.stop();
+            titlePulse.stop();
+            titleText.scale = 1.0;
+            titleText.opacity = 1.0;
+        }
+    }
 
     signal clicked()
     signal leftIconClicked()
@@ -66,8 +83,8 @@ Item {
 
         Item {
             visible: root.leftIcon !== ""
-            Layout.preferredWidth: 40
-            Layout.preferredHeight: 40
+            Layout.preferredWidth: root.leftIconBoxSize
+            Layout.preferredHeight: root.leftIconBoxSize
             Layout.alignment: Qt.AlignVCenter
             scale: root.leftIconScale
 
@@ -117,6 +134,26 @@ Item {
                 horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
                 maximumLineCount: 1
+                transformOrigin: Item.Left
+
+                SequentialAnimation {
+                    id: titleBounce
+
+                    NumberAnimation { target: titleText; property: "scale"; to: 1.10; duration: Math.max(0, Math.round(130 / Preferences.animations.speedMultiplier)); easing.type: Easing.OutQuad }
+                    NumberAnimation { target: titleText; property: "scale"; to: 0.97; duration: Math.max(0, Math.round(90 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
+                    NumberAnimation { target: titleText; property: "scale"; to: 1.0; duration: Math.max(0, Math.round(150 / Preferences.animations.speedMultiplier)); easing.type: Easing.OutBack }
+
+                    onFinished: if (root.bounceTitleOnHover && root.hovered) titlePulse.start()
+                }
+
+                SequentialAnimation {
+                    id: titlePulse
+                    loops: Animation.Infinite
+
+                    NumberAnimation { target: titleText; property: "opacity"; from: 1.0; to: 0.8; duration: Math.max(0, Math.round(800 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
+                    NumberAnimation { target: titleText; property: "opacity"; from: 0.8; to: 1.0; duration: Math.max(0, Math.round(800 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
+                }
+
                 Behavior on color { BaseAnimation { } }
             }
 

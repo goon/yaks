@@ -23,6 +23,7 @@ Item {
     property string icon: ""
     property color iconColor: Globals.colors.text
     property int iconSize: Globals.dimensions.iconBase
+    property int iconGap: Globals.geometry.spacing.small
 
     readonly property int handleWidth: Globals.geometry.slider.handleWidth
     readonly property int handleHeight: Globals.geometry.slider.handleHeight
@@ -58,7 +59,7 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        spacing: Globals.geometry.spacing.small
+        spacing: root.iconGap
         opacity: root._baseOpacity
 
         BaseIcon {
