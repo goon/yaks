@@ -8,7 +8,7 @@ pragma Singleton
  * Wallpaper Service
  *
  * Maintains a scanned list of wallpapers (`wallpapers`) with pre-generated
- * 512px thumbnails. Each entry: { path, name, mtime, thumb }. The shell start
+ * 384x216 JPEG thumbnails. Each entry: { path, name, mtime, thumb }. The shell start
  * triggers scanWallpapers(), which runs `lib/thumbnailer.sh` synchronously to
  * regenerate any missing or stale thumbs into `~/.cache/yaks/thumbnails/`,
  * then reads the directory listing newest-first and emits the entries.
@@ -123,7 +123,7 @@ Item {
             "sh " + scriptJson + " " + wpdirJson + " \"$thumbdir\"; " +
             "find " + wpdirJson + " -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) -printf '%T@\\t%p\\n' | sort -rn | " +
             "while IFS=$'\\t' read -r mtime path; do " +
-            "  printf '%s\\t%s\\t%s\\n' \"$mtime\" \"$path\" \"$thumbdir/$(basename \"$path\").png\"; " +
+            "  printf '%s\\t%s\\t%s\\n' \"$mtime\" \"$path\" \"$thumbdir/$(basename \"$path\").jpg\"; " +
             "done"];
 
         isLoading = true;

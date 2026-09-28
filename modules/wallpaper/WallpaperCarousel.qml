@@ -12,17 +12,30 @@ import qs
  * coherent: lag is bounded by the time constant, not piled up across
  * per-tile retargeting animations. Tiles fade out at the strip edges so
  * the carousel ends soften instead of being hard-cut by the parent mask.
+ *
+ * The strip is circular: tile offsets are measured modulo the model length,
+ * so scrolling past either end wraps seamlessly with no duplicated model.
  */
 FocusScope {
     id: root
 
     property var model: Wallpaper.wallpapers
-    readonly property int currentIndex: focusIndex
+    readonly property int currentIndex: model.length > 0
+        ? ((focusIndex % model.length) + model.length) % model.length
+        : 0
     property real s: 1.3
     signal closeRequested()
 
     property int focusIndex: 0
     property real pos: 0
+
+    /**
+     * Tiles start decoding a couple of slots before they become visible
+     * (`visible` begins at `ao <= 3`), so the thumbnail is ready by the time
+     * it slides on stage. Thumbnails are small JPEGs and the preload window
+     * is tiny, so no further residency bookkeeping is needed.
+     */
+    readonly property int preloadRadius: 5
 
     /**
      * Pixel-valued slot tables (Ukishima-faithful). The wrapper sizes the
@@ -52,15 +65,22 @@ FocusScope {
     }
 
     function move(delta) {
-        if (model.length === 0)
+        var n = model.length;
+        if (n === 0)
             return;
-        focusIndex = Math.max(0, Math.min(model.length - 1, focusIndex + delta));
+        focusIndex += delta;
+        var shift = Math.floor(focusIndex / n) * n;
+        if (shift !== 0) {
+            focusIndex -= shift;
+            pos -= shift;
+        }
     }
 
     /**
      * Snap focus to the first wallpaper. Called by the wrapper when the
      * panel opens; skips the chase so the strip always opens on index 0
-     * rather than animating to it.
+     * rather than animating to it. Because the strip is circular, index 0's
+     * left neighbour is the last wallpaper, so both directions are populated.
      */
     function focusFirst() {
         if (!model || model.length === 0)
@@ -97,9 +117,12 @@ FocusScope {
             required property int index
             required property var modelData
 
-            readonly property real off: index - root.pos
+            readonly property real off: {
+                var raw = index - root.pos;
+                return raw - root.model.length * Math.round(raw / root.model.length);
+            }
             readonly property real ao: Math.abs(off)
-            readonly property bool focused: index === root.focusIndex
+            readonly property bool focused: index === root.currentIndex
             readonly property real bright: root.slotLerp(root.slotBright, ao)
             readonly property real sat:    root.slotLerp(root.slotSat, ao)
             readonly property real corner:  (8 + 2 * Math.max(0, 1 - ao)) * root.s
@@ -123,7 +146,14 @@ FocusScope {
             x: root.width / 2 + root.offsetX(off) - width / 2
             y: (root.height - height) / 2
             z: 10 - ao
-            visible: ao <= 2
+            /**
+             * A tile is on stage out to `ao = 3` so an incoming tile is already
+             * present while it slides in, fading via the opacity ramp below.
+             * Gating at `ao <= 2` hid it until the exponential settle had
+             * practically finished, so a slow single step looked like the new
+             * wallpaper was delayed; continuous scrolling masked the pop.
+             */
+            visible: ao <= 3
             opacity: edgeFade * (ao <= 2 ? 1 : Math.max(0, 3 - ao))
 
             ClippingRectangle {
@@ -143,9 +173,9 @@ FocusScope {
 
                 Image {
                     anchors.fill: parent
-                    source: tile.ao <= 4 ? tile.thumbSource : ""
-                    sourceSize.width: 512
-                    sourceSize.height: 288
+                    source: tile.ao <= root.preloadRadius ? tile.thumbSource : ""
+                    sourceSize.width: 384
+                    sourceSize.height: 216
                     fillMode: Image.PreserveAspectCrop
                     cache: true
                     asynchronous: true
