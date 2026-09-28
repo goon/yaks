@@ -33,6 +33,7 @@ Item {
 
     readonly property bool containsMouse: mainMouseArea.containsMouse
     readonly property bool hovered: containsMouse
+    readonly property bool _subtitleCollapsed: root.showSubtitleOnHover && !root.hovered
 
     signal clicked()
     signal leftIconClicked()
@@ -102,8 +103,10 @@ Item {
         ColumnLayout {
             Layout.fillWidth: true
             Layout.leftMargin: root.showVerticalSeparator ? 8 : 0
+            spacing: 0
 
             BaseText {
+                id: titleText
                 visible: root.title !== ""
                 text: root.title
                 pixelSize: root.titleSize
@@ -120,10 +123,12 @@ Item {
             Item {
                 Layout.fillWidth: true
                 visible: root.subtitle !== ""
-                Layout.preferredHeight: (root.showSubtitleOnHover && !root.hovered) ? 0 : subtitleText.implicitHeight
+                Layout.preferredHeight: root._subtitleCollapsed ? 0 : subtitleText.implicitHeight
+                Layout.topMargin: root._subtitleCollapsed ? 0 : Math.max(0, Globals.dimensions.listItemHeight - titleText.implicitHeight - subtitleText.implicitHeight)
                 Behavior on Layout.preferredHeight { BaseAnimation { easing.type: Easing.OutQuart } }
+                Behavior on Layout.topMargin { BaseAnimation { easing.type: Easing.OutQuart } }
                 clip: true
-                opacity: (root.showSubtitleOnHover && !root.hovered) ? 0.0 : 1.0
+                opacity: root._subtitleCollapsed ? 0.0 : 1.0
                 Behavior on opacity { BaseAnimation { } }
 
                 BaseText {
