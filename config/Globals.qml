@@ -75,6 +75,7 @@ QtObject {
     dimensions: QtObject {
         readonly property int barItemHeight: 32 * root.shellScale
         readonly property int listItemHeight: 44 * root.shellScale
+        readonly property int settingsRowHeight: 36 * root.shellScale
         readonly property int iconSmall: 16 * root.shellScale
         readonly property int iconBase: 18 * root.shellScale
         readonly property int iconMedium: 20 * root.shellScale
