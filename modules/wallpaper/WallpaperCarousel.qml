@@ -3,19 +3,6 @@ import QtQuick.Effects
 import Quickshell.Widgets
 import qs
 
-/**
- * Horizontal wallpaper carousel driven by a single real-valued `pos` that
- * chases `focusIndex` per frame. Every tile derives width, height, x, dim,
- * saturation, shadow and edge fade from `ao = |index - pos|` via five-stop
- * slot tables. The chase uses a frame-rate-independent exponential settle
- * (`1 - exp(-frameTime / τ)`), so wheel bursts and 40Hz key autorepeat stay
- * coherent: lag is bounded by the time constant, not piled up across
- * per-tile retargeting animations. Tiles fade out at the strip edges so
- * the carousel ends soften instead of being hard-cut by the parent mask.
- *
- * The strip is circular: tile offsets are measured modulo the model length,
- * so scrolling past either end wraps seamlessly with no duplicated model.
- */
 FocusScope {
     id: root
 
@@ -29,23 +16,19 @@ FocusScope {
     property int focusIndex: 0
     property real pos: 0
 
-    /**
-     * Tiles start decoding a couple of slots before they become visible
-     * (`visible` begins at `ao <= 3`), so the thumbnail is ready by the time
-     * it slides on stage. Thumbnails are small JPEGs and the preload window
-     * is tiny, so no further residency bookkeeping is needed.
-     */
     readonly property int preloadRadius: 5
 
-    /**
-     * Pixel-valued slot tables (Ukishima-faithful). The wrapper sizes the
-     * panel to fit the natural tile dimensions; `s` scales all geometry.
-     */
     readonly property var slotW:      [196, 126, 104, 88, 74]
     readonly property var slotH:      [110, 71, 59, 50, 42]
     readonly property var slotCX:     [0, 143, 244, 326, 393]
     readonly property var slotBright: [1.00, 0.56, 0.42, 0.30, 0.22]
     readonly property var slotSat:    [1.00, 0.65, 0.55, 0.45, 0.40]
+
+    readonly property int contentPadding: 11
+    readonly property int edgeFadeWidth: contentPadding
+
+    readonly property real naturalWidth: 2 * (slotCX[2] + slotW[2] / 2) * s + 2 * contentPadding
+    readonly property real naturalHeight: slotH[0] * s + 2 * contentPadding
 
     function slotLerp(arr, ao) {
         if (ao >= arr.length - 1)
@@ -76,12 +59,6 @@ FocusScope {
         }
     }
 
-    /**
-     * Snap focus to the first wallpaper. Called by the wrapper when the
-     * panel opens; skips the chase so the strip always opens on index 0
-     * rather than animating to it. Because the strip is circular, index 0's
-     * left neighbour is the last wallpaper, so both directions are populated.
-     */
     function focusFirst() {
         if (!model || model.length === 0)
             return;
@@ -127,18 +104,10 @@ FocusScope {
             readonly property real sat:    root.slotLerp(root.slotSat, ao)
             readonly property real corner:  (8 + 2 * Math.max(0, 1 - ao)) * root.s
             readonly property real edgeFade: {
-                var soft = 50;
                 var gap = Math.min(x, root.width - (x + width));
-                return Math.max(0, Math.min(1, gap / soft));
+                return Math.max(0, Math.min(1, gap / root.edgeFadeWidth));
             }
 
-            /**
-             * `?v=<mtime>` is a cache-buster for QPixmapCache. Image caches by
-             * URL, so a regenerated thumb with the same path keeps showing the
-             * stale frame unless the URL changes. Bumping on mtime (which
-             * changes only when the source file is replaced) means thumbs are
-             * re-fetched exactly when the underlying wallpaper changes.
-             */
             readonly property string thumbSource: "file://" + modelData.thumb + "?v=" + Math.round(modelData.mtime)
 
             width:  root.slotLerp(root.slotW, ao) * root.s
@@ -146,13 +115,7 @@ FocusScope {
             x: root.width / 2 + root.offsetX(off) - width / 2
             y: (root.height - height) / 2
             z: 10 - ao
-            /**
-             * A tile is on stage out to `ao = 3` so an incoming tile is already
-             * present while it slides in, fading via the opacity ramp below.
-             * Gating at `ao <= 2` hid it until the exponential settle had
-             * practically finished, so a slow single step looked like the new
-             * wallpaper was delayed; continuous scrolling masked the pop.
-             */
+
             visible: ao <= 3
             opacity: edgeFade * (ao <= 2 ? 1 : Math.max(0, 3 - ao))
 

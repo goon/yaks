@@ -8,8 +8,8 @@ FocusScope {
 
     property string panelState: "Closed"
 
-    implicitWidth: 900
-    implicitHeight: 165
+    implicitWidth: carousel.naturalWidth
+    implicitHeight: carousel.naturalHeight
 
     property Item initialFocusItem: carousel
 

@@ -3,28 +3,6 @@ import Quickshell
 import Quickshell.Wayland
 import qs
 
-/**
- * Wallpaper Background Window
- *
- * Manages the background layer across all screens. Two `Image` items
- * (`loaderA`, `loaderB`) hold the wallpapers; `loaderA` is always visible
- * and acts as the base layer, `loaderB` is the texture source for a
- * `Canvas` overlay that paints the transition. The Canvas's `onPaint`
- * dispatches on `activeTransition` to draw the right mask shape, then
- * the Canvas's `opacity` is driven by `progress` to give the crossfade.
- *
- * Transitions:
- *   - fade:    Canvas opacity 0→1 (no mask needed)
- *   - disc:    circular reveal from a random centre, growing to full radius
- *   - corner:  diagonal sweep from a random corner along the diagonal
- *   - wave:    diagonal sweep with a sinusoidal edge perpendicular to the
- *              wipe direction
- *
- * Mid-flight wallpaper changes commit `loaderB -> loaderA` before starting
- * the new transition (no flicker). Parallax fades out for the duration of
- * a transition so the mouse-driven image offset doesn't fight the
- * Canvas's motion.
- */
 PanelWindow {
     id: root
 
@@ -62,10 +40,6 @@ PanelWindow {
     function updateWallpaper(newPath) {
         if (!newPath || newPath === "" || newPath === activePath || newPath === pendingPath) return;
 
-        // First wallpaper on this surface (or after a shell reload): assign
-        // directly to loaderA and skip the transition. `Image.source` is a
-        // QUrl object, so an empty source compares as truthy under `=== ""`;
-        // stringify before checking.
         if (activePath === "" && String(loaderA.source).length === 0) {
             activePath = newPath;
             loaderA.source = "file://" + newPath;
@@ -87,8 +61,6 @@ PanelWindow {
 
         activeTransition = resolveTransitionMode();
         cornerDir = Math.floor(Math.random() * 4);
-        // Keep the disc centre inside the central 60% of the screen so the
-        // reveal stays dramatic.
         discCenterX = 0.2 + Math.random() * 0.6;
         discCenterY = 0.2 + Math.random() * 0.6;
         progress = 0;
@@ -207,9 +179,6 @@ PanelWindow {
         Image {
             id: loaderB
             anchors.fill: parent
-            // Visible so Qt renders loaderB into a texture that Canvas.drawImage
-            // can sample. Opacity 0 hides it; the Canvas paints it on top
-            // during transitions.
             visible: true
             opacity: 0
             fillMode: Image.PreserveAspectCrop
@@ -220,9 +189,7 @@ PanelWindow {
         }
 
         // ── TRANSITION CANVAS ─────────────────────────────────────────
-        // Draws loaderB into an aspect-preserving rect, clipped to the
-        // per-mode mask shape. Fade is special-cased via the Canvas's own
-        // opacity property (no clip needed).
+
         Canvas {
             id: transitionCanvas
             anchors.fill: parent
@@ -242,9 +209,6 @@ PanelWindow {
                     return;
                 }
 
-                // Compute an aspect-preserving draw rect (PreserveAspectCrop).
-                // Canvas.drawImage samples the raw texture and stretches to
-                // the destination rect, ignoring the Image's fillMode.
                 var imgW = loaderB.sourceSize.width;
                 var imgH = loaderB.sourceSize.height;
                 if (imgW <= 0 || imgH <= 0) {
@@ -257,9 +221,6 @@ PanelWindow {
                 var drawX = (width - drawW) * 0.5;
                 var drawY = (height - drawH) * 0.5;
 
-                // Apply mask via clip path (more reliable than destination-in
-                // across render targets). Fade skips the clip and relies on
-                // Canvas opacity instead.
                 if (root.activeTransition !== "fade") {
                     ctx.beginPath();
 
@@ -267,7 +228,6 @@ PanelWindow {
                         var r = Math.hypot(width, height) * root.progress;
                         ctx.arc(width * root.discCenterX, height * root.discCenterY, r, 0, 2 * Math.PI);
                     } else {
-                        // corner + wave: diagonal reveal from a random corner.
                         var corner;
                         if (root.cornerDir < 0.5) corner = [0, 0];
                         else if (root.cornerDir < 1.5) corner = [width, 0];
@@ -284,8 +244,6 @@ PanelWindow {
                         ctx.lineTo(corner[0] + perpX * L, corner[1] + perpY * L);
 
                         if (root.activeTransition === "wave") {
-                            // 80-step polyline traced across the wave front,
-                            // each point perturbed by sin(u * 14) * 0.05 * diagLen.
                             var steps = 80;
                             var diagLen = Math.hypot(oppX, oppY);
                             for (var i = 1; i <= steps; i++) {
@@ -299,7 +257,6 @@ PanelWindow {
                                 ctx.lineTo(px, py);
                             }
                         } else {
-                            // Corner: straight diagonal front, perpendicular extent.
                             var tc = root.progress;
                             var fx = corner[0] + oppX * tc;
                             var fy = corner[1] + oppY * tc;
