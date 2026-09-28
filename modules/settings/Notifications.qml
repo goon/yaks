@@ -16,30 +16,6 @@ SettingsPage {
             Layout.fillWidth: true
 
             SettingsRow {
-                icon: "volume"
-                label: "Sound Enabled"
-                
-                BaseSwitch {
-                    checked: Preferences.notifications.soundEnabled
-                    onToggled: Preferences.notifications.soundEnabled = checked
-                }
-            }
-
-            SettingsRow {
-                icon: "sliders-horizontal"
-                label: "Volume"
-
-                BaseSpinBox {
-                    from: 0
-                    to: 100
-                    stepSize: 5
-                    value: Preferences.notifications.soundVolume
-                    suffix: "%"
-                    onValueChanged: Preferences.notifications.soundVolume = value
-                }
-            }
-
-            SettingsRow {
                 icon: "timer"
                 label: "Timeout"
                 showSeparator: false

@@ -13,14 +13,10 @@ QtObject {
 
     property QtObject notifications: QtObject {
         property int mode: 0 // 0: Normal, 1: DND (Silent)
-        property bool soundEnabled: true
-        property int soundVolume: 35
 
         property int timeout: 5000
 
         onModeChanged: root.requestSave()
-        onSoundEnabledChanged: root.requestSave()
-        onSoundVolumeChanged: root.requestSave()
         onTimeoutChanged: root.requestSave()
     }
 
@@ -112,8 +108,6 @@ QtObject {
 
     property var _schema: [
         ["notifications", "mode"],
-        ["notifications", "soundEnabled"],
-        ["notifications", "soundVolume"],
         ["notifications", "timeout"],
         ["bar", "position"],
         ["globals", "scale"],

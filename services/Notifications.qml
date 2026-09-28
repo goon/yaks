@@ -39,14 +39,6 @@ Item {
             });
 
             if (Preferences.notifications.mode === 0) {
-                if (Preferences.notifications.soundEnabled) {
-                    ProcessService.runDetached([
-                        "pw-play", 
-                        "--volume", (Preferences.notifications.soundVolume / 100.0).toString(), 
-                        Globals.assetsDir + "/ping.mp3"
-                    ]);
-                }
-                
                 root._toastQueue.push(notification);
                 root._processQueue();
             }
