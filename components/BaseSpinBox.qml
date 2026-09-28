@@ -19,6 +19,8 @@ SpinBox {
     }
 
     readonly property bool expanded: root.hovered || root.activeFocus || hoverArea.hovered
+    readonly property bool atMin: root.value <= root.from
+    readonly property bool atMax: root.value >= root.to
 
 
     editable: true
@@ -100,8 +102,10 @@ SpinBox {
         x: root.width - width - 8
         y: (root.height - height) / 2
         icon: "plus"
-        color: root.up.pressed ? Globals.colors.primary : Globals.colors.text
-        opacity: root.expanded ? 1.0 : 0.0
+        color: root.atMax ? Globals.colors.muted
+                          : (root.up.pressed || root.up.hovered ? Globals.colors.primary : Globals.colors.text)
+        opacity: root.expanded ? (root.atMax ? 0.3 : 1.0) : 0.0
+        Behavior on color { BaseAnimation { } }
         Behavior on opacity { BaseAnimation { } }
     }
 
@@ -109,8 +113,10 @@ SpinBox {
         x: 8
         y: (root.height - height) / 2
         icon: "minus"
-        color: root.down.pressed ? Globals.colors.primary : Globals.colors.text
-        opacity: root.expanded ? 1.0 : 0.0
+        color: root.atMin ? Globals.colors.muted
+                          : (root.down.pressed || root.down.hovered ? Globals.colors.primary : Globals.colors.text)
+        opacity: root.expanded ? (root.atMin ? 0.3 : 1.0) : 0.0
+        Behavior on color { BaseAnimation { } }
         Behavior on opacity { BaseAnimation { } }
     }
 }

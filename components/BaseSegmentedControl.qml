@@ -14,6 +14,8 @@ Rectangle {
     signal activated(int index, var value)
 
     color: Globals.alpha(Globals.colors.surface, 0.5)
+    border.width: 1
+    border.color: Globals.alpha(Globals.colors.border, 0.5)
     radius: Globals.geometry.innerRadius.medium
 
     implicitHeight: 36
@@ -25,12 +27,14 @@ Rectangle {
     property real indicatorWidth: 0
     property bool isReady: false
 
-    BaseActiveBackground {
+    Rectangle {
         id: slidingIndicator
         y: root.padding
         height: root.height - (root.padding * 2)
         radius: Globals.geometry.innerRadius.medium - root.padding
-        premiumActive: true
+        color: Globals.alpha(Globals.colors.primary, 0.15)
+        border.width: 1
+        border.color: Globals.colors.primary
 
         opacity: root.isReady ? 1.0 : 0.0
 
@@ -62,6 +66,7 @@ Rectangle {
                 Layout.fillHeight: true
 
                 property bool isSelected: root.currentValue === (modelData[root.valueRole] !== undefined ? modelData[root.valueRole] : modelData)
+                readonly property bool hovered: mouseArea.containsMouse
 
                 radius: Globals.geometry.innerRadius.medium - root.padding
                 color: "transparent"
@@ -85,7 +90,9 @@ Rectangle {
                 BaseText {
                     anchors.centerIn: parent
                     text: modelData[root.textRole] !== undefined ? modelData[root.textRole] : modelData
-                    color: itemRect.isSelected ? Globals.colors.primary : Globals.colors.text
+                    color: itemRect.isSelected ? Globals.colors.primary
+                         : (itemRect.hovered ? Globals.colors.text : Globals.colors.muted)
+                    weight: itemRect.isSelected ? Globals.typography.weights.medium : Globals.typography.weights.normal
                 }
 
                 MouseArea {

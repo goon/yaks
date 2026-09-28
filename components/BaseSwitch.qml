@@ -15,6 +15,7 @@ Switch {
     
 
     property real progress: control.checked ? 1.0 : 0.0
+    readonly property bool trackActive: control.checked || control.hovered
     Behavior on progress {
         BaseAnimation { easing.type: Easing.OutQuint }
     }
@@ -97,10 +98,10 @@ Switch {
             height: 16
             radius: Math.max(0, Globals.geometry.innerRadius.small - 4)
             
-            color: control.enabled ? Globals.colors.primary : Globals.colors.muted
+            color: root.trackActive && control.enabled ? Globals.colors.raw.on_primary : (control.enabled ? Globals.colors.primary : Globals.colors.muted)
 
             border.width: 1
-            border.color: control.checked ? Globals.alpha(Globals.colors.primary, 0.2) : Globals.alpha(Globals.colors.border, 0.3)
+            border.color: root.trackActive ? Globals.alpha(Globals.colors.raw.on_primary, 0.25) : Globals.alpha(Globals.colors.border, 0.3)
 
             Behavior on color { BaseAnimation { } }
             Behavior on border.color { BaseAnimation { } }
