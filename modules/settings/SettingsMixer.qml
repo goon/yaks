@@ -8,27 +8,89 @@ Item {
     Layout.fillWidth: true
     implicitHeight: mainCol.implicitHeight
 
-    // ── SECTION MODEL ───────────────────────────────────────────────────
+    // ── ACTIVE SOURCE ───────────────────────────────────────────────────
 
-    readonly property var _sections: ["output", "input", "display"]
+    property string source: "output"
+
+    readonly property bool inputActive: root.source === "input"
+    readonly property bool activeMuted: root.inputActive ? Volume.inputMuted : Volume.muted
 
     readonly property Item hoveredSlider: {
-        for (var i = 0; i < sectionRepeater.count; i++) {
-            var item = sectionRepeater.itemAt(i);
-            if (item && item.slider && item.slider.hovered) return item.slider;
-        }
+        if (audioSlider.hovered) return audioSlider;
+        if (displaySlider.hovered) return displaySlider;
         return null;
     }
 
-    function _setVolume(type, val) {
-        if (type === "output") Volume.setVolume(val);
-        else if (type === "input") Volume.setInputVolume(val);
-        else if (type === "display") Display.setBrightness(val);
+    function _setActiveVolume(val) {
+        if (root.inputActive) Volume.setInputVolume(val);
+        else Volume.setVolume(val);
     }
 
-    function _toggleMute(type) {
-        if (type === "output") Volume.toggleMute();
-        else if (type === "input") Volume.toggleInputMute();
+    function _toggleActiveMute() {
+        if (root.inputActive) Volume.toggleInputMute();
+        else Volume.toggleMute();
+    }
+
+    // ── SOURCE TOGGLE ICON ──────────────────────────────────────────────
+
+    component SourceIcon: Item {
+        id: sourceIcon
+
+        property string primaryIcon: ""
+        property string secondaryIcon: ""
+        property bool secondary: false
+        property int size: Globals.dimensions.iconMedium
+        property color color: Globals.colors.text
+        property bool muted: false
+
+        signal clicked()
+        signal rightClicked()
+
+        implicitWidth: size
+        implicitHeight: size
+
+        opacity: muted ? 0.6 : 1.0
+        Behavior on opacity { BaseAnimation { } }
+
+        BaseIcon {
+            anchors.centerIn: parent
+            width: sourceIcon.size
+            height: sourceIcon.size
+            icon: sourceIcon.primaryIcon
+            size: sourceIcon.size
+            color: sourceIcon.color
+            opacity: sourceIcon.secondary ? 0 : 1
+            scale: sourceIcon.secondary ? 0.8 : 1.0
+            Behavior on opacity { BaseAnimation { } }
+            Behavior on scale { BaseAnimation { } }
+        }
+
+        BaseIcon {
+            anchors.centerIn: parent
+            width: sourceIcon.size
+            height: sourceIcon.size
+            icon: sourceIcon.secondaryIcon
+            size: sourceIcon.size
+            color: sourceIcon.color
+            opacity: sourceIcon.secondary ? 1 : 0
+            scale: sourceIcon.secondary ? 1.0 : 0.8
+            Behavior on opacity { BaseAnimation { } }
+            Behavior on scale { BaseAnimation { } }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -Globals.geometry.spacing.small
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            cursorShape: Qt.PointingHandCursor
+            onClicked: (mouse) => {
+                if (mouse.button === Qt.RightButton)
+                    sourceIcon.rightClicked();
+                else
+                    sourceIcon.clicked();
+            }
+        }
     }
 
     ColumnLayout {
@@ -36,60 +98,61 @@ Item {
         anchors.fill: parent
         spacing: Globals.geometry.spacing.small
 
-        Repeater {
-            id: sectionRepeater
-            model: root._sections
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: Globals.geometry.spacing.medium
+            spacing: Globals.geometry.spacing.large
 
-            delegate: Item {
-                id: sectionItem
-                required property int index
-                required property string modelData
-                readonly property Item slider: sectionSlider
+            SourceIcon {
+                Layout.alignment: Qt.AlignVCenter
+                size: Globals.dimensions.iconMedium
+                muted: root.activeMuted
+                secondary: root.inputActive
+                primaryIcon: Volume.muted ? "volume-off" : "volume-2"
+                secondaryIcon: Volume.inputMuted ? "mic-off" : "mic"
+                onClicked: root.source = root.inputActive ? "output" : "input"
+                onRightClicked: root._toggleActiveMute()
+            }
+
+            BaseSlider {
+                id: audioSlider
 
                 Layout.fillWidth: true
-                implicitHeight: sectionCol.implicitHeight
+                stepSize: 0.01
+                muted: root.activeMuted
 
-                ColumnLayout {
-                    id: sectionCol
-                    anchors.fill: parent
-                    spacing: Globals.geometry.spacing.small
-
-                    BaseSeparator {
-                        Layout.fillWidth: true
-                        visible: index > 0
-                        Layout.topMargin: Globals.geometry.spacing.small
-                        Layout.bottomMargin: Globals.geometry.spacing.small
-                    }
-
-                    BaseSlider {
-                        id: sectionSlider
-                        Layout.fillWidth: true
-                        Layout.leftMargin: Globals.geometry.spacing.medium
-                        iconSize: Globals.dimensions.iconMedium
-                        iconGap: Globals.geometry.spacing.large
-                        icon: {
-                            if (modelData === "output") return Volume.volumeIcon;
-                            if (modelData === "input") return Volume.inputMuted ? "mic-off" : "mic-vocal";
-                            return "sun";
-                        }
-                        muted: {
-                            if (modelData === "output") return Volume.muted;
-                            if (modelData === "input") return Volume.inputMuted;
-                            return false;
-                        }
-                        stepSize: 0.01
-
-                        Binding on value {
-                            value: modelData === "output" ? Volume.volume
-                                : (modelData === "input" ? Volume.inputVolume : Display.brightness)
-                            when: !sectionSlider.pressed
-                            restoreMode: Binding.RestoreBinding
-                        }
-                        onValueChangedByUser: root._setVolume(modelData, value)
-                        onRightClicked: root._toggleMute(modelData)
-                    }
+                Binding on value {
+                    value: root.inputActive ? Volume.inputVolume : Volume.volume
+                    when: !audioSlider.pressed
+                    restoreMode: Binding.RestoreBinding
                 }
+                onValueChangedByUser: root._setActiveVolume(value)
+                onRightClicked: root._toggleActiveMute()
             }
+        }
+
+        BaseSeparator {
+            Layout.fillWidth: true
+            Layout.topMargin: Globals.geometry.spacing.small
+            Layout.bottomMargin: Globals.geometry.spacing.small
+        }
+
+        BaseSlider {
+            id: displaySlider
+
+            Layout.fillWidth: true
+            Layout.leftMargin: Globals.geometry.spacing.medium
+            iconSize: Globals.dimensions.iconMedium
+            iconGap: Globals.geometry.spacing.large
+            icon: "sun"
+            stepSize: 0.01
+
+            Binding on value {
+                value: Display.brightness
+                when: !displaySlider.pressed
+                restoreMode: Binding.RestoreBinding
+            }
+            onValueChangedByUser: Display.setBrightness(value)
         }
     }
 }
