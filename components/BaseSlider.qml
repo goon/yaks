@@ -22,6 +22,7 @@ Item {
 
     property string icon: ""
     property color iconColor: Globals.colors.text
+    property int iconSize: Globals.dimensions.iconBase
 
     readonly property int handleWidth: Globals.geometry.slider.handleWidth
     readonly property int handleHeight: Globals.geometry.slider.handleHeight
@@ -52,7 +53,7 @@ Item {
     signal valueChangedByUser()
     signal rightClicked()
 
-    implicitHeight: Math.max(root.trackHeight, root.handleHeight, root.icon !== "" ? Globals.dimensions.iconBase : 0)
+    implicitHeight: Math.max(root.trackHeight, root.handleHeight, root.icon !== "" ? root.iconSize : 0)
     implicitWidth: 100
 
     RowLayout {
@@ -64,7 +65,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             visible: root.icon !== ""
             icon: root.icon
-            size: Globals.dimensions.iconBase
+            size: root.iconSize
             color: root.iconColor
         }
 

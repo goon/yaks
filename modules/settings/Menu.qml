@@ -62,8 +62,8 @@ Item {
 
         BaseSeparator {
             Layout.fillWidth: true
-            Layout.topMargin: Globals.geometry.spacing.large
-            Layout.bottomMargin: Globals.geometry.spacing.large
+            Layout.topMargin: Globals.geometry.spacing.medium
+            Layout.bottomMargin: Globals.geometry.spacing.medium
         }
 
         SettingsMixer {

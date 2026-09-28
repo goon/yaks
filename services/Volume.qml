@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
-import qs
 pragma Singleton
 
 Singleton {
@@ -24,19 +23,6 @@ Singleton {
             return "volume-1";
 
         return "volume-2";
-    }
-    property var sinks: Pipewire.nodes.values.filter((node) => {
-        return node.isSink && !node.isStream && node.audio;
-    }).sort((a, b) => root.getNodeName(a).localeCompare(root.getNodeName(b)))
-    property var sources: Pipewire.nodes.values.filter((node) => {
-        return !node.isSink && !node.isStream && node.audio;
-    }).sort((a, b) => root.getNodeName(a).localeCompare(root.getNodeName(b)))
-
-    function getNodeName(node) {
-        if (!node)
-            return "Unknown";
-
-        return node.nickname || node.properties["node.nick"] || node.description || node.properties["node.description"] || node.name || "Unknown";
     }
 
     function toggleMute() {
@@ -63,24 +49,6 @@ Singleton {
             audioSource.audio.muted = false;
             audioSource.audio.volume = val;
         }
-    }
-
-    function selectSink(id) {
-        var node = Pipewire.nodes.values.find((n) => {
-            return n.id === id;
-        });
-        if (node)
-            Pipewire.preferredDefaultAudioSink = node;
-
-    }
-
-    function selectSource(id) {
-        var node = Pipewire.nodes.values.find((n) => {
-            return n.id === id;
-        });
-        if (node)
-            Pipewire.preferredDefaultAudioSource = node;
-
     }
 
     // ── CORE PIPEWIRE TRACKER ───────────────────────────────────────
