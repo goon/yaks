@@ -14,10 +14,7 @@ QtObject {
     property QtObject notifications: QtObject {
         property int mode: 0 // 0: Normal, 1: DND (Silent)
 
-        property int timeout: 5000
-
         onModeChanged: root.requestSave()
-        onTimeoutChanged: root.requestSave()
     }
 
     property QtObject bar: QtObject {
@@ -106,7 +103,6 @@ QtObject {
 
     property var _schema: [
         ["notifications", "mode"],
-        ["notifications", "timeout"],
         ["bar", "position"],
         ["globals", "scale"],
         ["bar", "height"],

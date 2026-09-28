@@ -51,7 +51,7 @@ Item {
     
     Timer {
         id: toastTimer
-        interval: Preferences.notifications.timeout
+        interval: 5000
         onTriggered: {
             root.closeActiveToast();
         }
