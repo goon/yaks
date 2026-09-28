@@ -12,45 +12,8 @@ SettingsPage {
         spacing: Globals.geometry.spacing.large
         Layout.fillWidth: true
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Globals.geometry.spacing.small
-
-            BaseIcon {
-                icon: "triangle-alert"
-                color: Globals.colors.primary
-                Layout.alignment: Qt.AlignTop
-            }
-
-            BaseText {
-                text: "Enabling applications below inherit the currently applied theme. This overrides various configuration files and can be destructive."
-                pixelSize: Globals.typography.size.medium
-                color: Globals.colors.primary
-                Layout.fillWidth: true
-            }
-        }
-
-        BaseSeparator {
-            Layout.fillWidth: true
-        }
-
         SettingsGroup {
             Layout.fillWidth: true
-
-            SettingsRow {
-                icon: "droplet"
-                label: "Themed Apps Opacity"
-                showSeparator: true
-
-                BaseSpinBox {
-                    from: 30
-                    to: 100
-                    stepSize: 5
-                    value: Math.round(Preferences.applications.themedAppsOpacity * 100)
-                    suffix: "%"
-                    onValueChanged: Preferences.applications.themedAppsOpacity = value / 100.0
-                }
-            }
 
             SettingsRow {
                 id: appsTitleRow

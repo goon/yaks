@@ -59,10 +59,8 @@ QtObject {
             "steam": false,
             "zed": false
         })
-        property double themedAppsOpacity: 0.85
 
         onThemedAppsChanged: root.requestSave()
-        onThemedAppsOpacityChanged: root.requestSave()
     }
 
     property QtObject globals: QtObject {
@@ -121,7 +119,6 @@ QtObject {
         ["wallpaper", "transition"],
         ["wallpaper", "transitionDuration"],
         ["applications", "themedApps"],
-        ["applications", "themedAppsOpacity"],
         ["globals", "schemeType"],
         ["globals", "shellFont"],
         ["globals", "cornerRadius"],

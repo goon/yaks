@@ -171,7 +171,6 @@ Item {
         if (!Preferences.loaded) return;
 
         var ctx = {
-            "opacity": Preferences.applications.themedAppsOpacity,
             "mode": "dark",
             "context": context || "manual",
             "font": Preferences.globals.shellFont,
