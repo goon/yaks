@@ -5,7 +5,7 @@ import qs
 BaseContainer {
     id: root
     width: parent ? parent.width : 0
-    spacing: Globals.geometry.spacing.small
+    spacing: 0
     
     property string title: ""
     property string icon: ""
@@ -18,7 +18,6 @@ BaseContainer {
 
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.bottomMargin: Globals.geometry.spacing.small / 2
         spacing: Globals.geometry.spacing.small
 
         RowLayout {

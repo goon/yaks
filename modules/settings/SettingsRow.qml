@@ -18,7 +18,7 @@ Item {
 
     signal clicked()
 
-    implicitHeight: layout.implicitHeight + (showSeparator ? Globals.geometry.spacing.large * 2 + 1 : 0)
+    implicitHeight: Math.max(layout.implicitHeight, Globals.dimensions.settingsRowHeight) + Globals.geometry.spacing.large * 2 + 1
     Layout.fillWidth: true
 
     MouseArea {
@@ -35,10 +35,10 @@ Item {
         id: contentWrapper
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: parent.top
+        anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: Globals.geometry.spacing.medium
         anchors.rightMargin: Globals.geometry.spacing.medium
-        height: layout.implicitHeight
+        height: Math.max(layout.implicitHeight, Globals.dimensions.settingsRowHeight)
 
         RowLayout {
             id: layout
@@ -48,11 +48,12 @@ Item {
             BaseIcon {
                 visible: root.icon !== ""
                 icon: root.icon
+                Layout.alignment: Qt.AlignVCenter
             }
 
             ColumnLayout {
                 Layout.preferredWidth: parent.width * 0.4
-                Layout.alignment: Qt.AlignLeft
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 spacing: 2
 
                 BaseText {
@@ -71,7 +72,7 @@ Item {
             RowLayout {
                 id: controlContainer
                 Layout.preferredWidth: parent.width * 0.6
-                Layout.alignment: Qt.AlignRight
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 spacing: Globals.geometry.spacing.small
 
                 property bool hasFillWidthChild: {
@@ -95,7 +96,6 @@ Item {
     BaseSeparator {
         visible: root.showSeparator
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Globals.geometry.spacing.large
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: root.icon !== "" ? (Globals.geometry.spacing.medium + Globals.dimensions.iconMedium + Globals.geometry.spacing.medium) : Globals.geometry.spacing.medium
