@@ -151,13 +151,11 @@ Item {
 
     // Expected fallback dimensions during transition before component load completes
     function getExpectedPanelWidth(name) {
-        var panel = IslandService.panelRegistry[name];
-        return (panel && panel.width) ? panel.width : 420;
+        return IslandService.expectedWidth(name);
     }
 
     function getExpectedPanelHeight(name) {
-        var panel = IslandService.panelRegistry[name];
-        return (panel && panel.height) ? panel.height : 500;
+        return IslandService.expectedHeight(name);
     }
 
     readonly property real totalWidthPadding: (Globals.geometry.padding.island * 2)
@@ -321,8 +319,8 @@ Item {
                 Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
 
                 source: {
-                    var panel = IslandService.panelRegistry[islandRoot.loadedPanelName];
-                    return panel ? Qt.resolvedUrl(panel.source) : "";
+                    var src = IslandService.panelSource(islandRoot.loadedPanelName);
+                    return src ? Qt.resolvedUrl(src) : "";
                 }
 
                 onLoaded: {

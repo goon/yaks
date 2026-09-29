@@ -50,18 +50,39 @@ QtObject {
     }
 
     // ── PANEL REGISTRY ──────────────────────────────────────────────────
-
+    // Single source of truth for a panel's QML source and its expected
+    // dimensions. The dimensions are the pre-load estimate the island morphs
+    // toward before the panel's own implicitWidth/Height is available; keep
+    // them in step with each panel's declared implicit size.
     readonly property var panelRegistry: ({
-        "launcher":      { source: "../modules/launcher/Launcher.qml" },
-        "settings":      { source: "../modules/settings/Settings.qml" },
+        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 500, height: 500 },
+        "settings":      { source: "../modules/settings/Settings.qml",      width: 460, height: 500 },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
         "fullbar":       { source: "../modules/bar/Full.qml" },
-        "power":         { source: "../modules/power/Power.qml" },
-        "network":       { source: "../modules/network/Network.qml" },
-        "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml" },
-        "volumetoast":   { source: "../modules/toasts/VolumeToast.qml" },
-        "notificationtoast": { source: "../modules/toasts/NotificationToast.qml" }
+        "power":         { source: "../modules/power/Power.qml",            width: 240 },
+        "network":       { source: "../modules/network/Network.qml",        width: 400 },
+        "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml", width: 460 },
+        "volumetoast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300 },
+        "notificationtoast": { source: "../modules/toasts/NotificationToast.qml", width: 420 }
     })
+
+    // Fallback dimensions used while a panel is still loading, so the morph has
+    // a sane target. Prefer the registry entry, then a generic default.
+    function expectedWidth(name) {
+        var panel = root.panelRegistry[name];
+        return (panel && panel.width) ? panel.width : 420;
+    }
+
+    function expectedHeight(name) {
+        var panel = root.panelRegistry[name];
+        return (panel && panel.height) ? panel.height : 500;
+    }
+
+    // Resolve a panel's QML file from the registry; empty string if unknown.
+    function panelSource(name) {
+        var panel = root.panelRegistry[name];
+        return panel ? panel.source : "";
+    }
 
     // ── CONTROL APIS ──────────────────────────────────────────────────
     function togglePanel(name, screenX, barLeft, barRight, screen) {
