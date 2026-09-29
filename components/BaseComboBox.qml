@@ -82,7 +82,7 @@ ComboBox {
             Rectangle {
                 width: 3
                 height: 20
-                radius: 1.5
+                radius: width / 2
                 anchors.left: parent.left
                 anchors.leftMargin: Globals.geometry.spacing.small
                 anchors.verticalCenter: parent.verticalCenter

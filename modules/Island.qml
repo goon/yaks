@@ -261,7 +261,7 @@ Item {
 
         borderColor: Preferences.globals.islandOutline ? Globals.alpha(Globals.colors.border, 0.4) : "transparent"
         borderWidth: Preferences.globals.islandOutline ? 1 : 0
-        radius: Preferences.globals.cornerRadius || Globals.geometry.radius
+        radius: Globals.geometry.radius
         clip: true
 
         Behavior on x      { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }

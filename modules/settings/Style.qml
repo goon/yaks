@@ -92,13 +92,17 @@ SettingsPage {
                     icon: "spline"
                     label: "Rounding"
 
-                    BaseSpinBox {
-                        from: 0
-                        to: 30
-                        stepSize: 1
-                        value: Preferences.globals.cornerRadius
-                        suffix: "px"
-                        onValueChanged: Preferences.globals.cornerRadius = value
+                    BaseSegmentedControl {
+                        Layout.fillWidth: true
+                        model: [
+                            { "label": "Sharp", "value": "sharp" },
+                            { "label": "Soft",  "value": "soft" },
+                            { "label": "Round", "value": "round" }
+                        ]
+                        currentValue: Preferences.globals.rounding
+                        onActivated: (index, value) => {
+                            Preferences.globals.rounding = value;
+                        }
                     }
                 }
 

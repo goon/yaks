@@ -63,14 +63,14 @@ QtObject {
     property QtObject globals: QtObject {
         property string schemeType: "scheme-tonal-spot"
         property string shellFont: "Outfit"
-        property int cornerRadius: 30
+        property string rounding: "round"
         property double backgroundOpacity: 1.0
         property bool islandOutline: true
         property int scale: 1 // 0: 0.9x, 1: 1.0x, 2: 1.1x
 
         onSchemeTypeChanged: root.requestSave()
         onShellFontChanged: root.requestSave()
-        onCornerRadiusChanged: root.requestSave()
+        onRoundingChanged: root.requestSave()
         onBackgroundOpacityChanged: root.requestSave()
         onIslandOutlineChanged: root.requestSave()
         onScaleChanged: {
@@ -111,7 +111,7 @@ QtObject {
         ["applications", "themedApps"],
         ["globals", "schemeType"],
         ["globals", "shellFont"],
-        ["globals", "cornerRadius"],
+        ["globals", "rounding"],
         ["globals", "backgroundOpacity"],
         ["globals", "islandOutline"],
         ["indicators", "order"],
@@ -266,6 +266,10 @@ QtObject {
                     if (val !== undefined) _set(path, val);
                 }
 
+                // Capture the legacy free-form radius before the stale-key
+                // prune removes it, so it can be migrated to a preset below.
+                var legacyRadius = _getData(data, ["globals", "cornerRadius"]);
+
                 // ── PRUNE STALE KEYS ─────────────────────────────────
                 var allowed = Object.create(null);
                 for (var p = 0; p < _schema.length; p++) {
@@ -334,6 +338,15 @@ QtObject {
                     }
 
                     var migrated = false;
+
+                    // Legacy free-form cornerRadius -> nearest designed preset.
+                    if (legacyRadius !== undefined && _getData(data, ["globals", "rounding"]) === undefined) {
+                        root.globals.rounding = legacyRadius <= 10 ? "sharp"
+                                            : legacyRadius <= 20 ? "soft" : "round";
+                        console.log("[Preferences] Migrated legacy cornerRadius " + legacyRadius + " -> rounding=" + root.globals.rounding);
+                        migrated = true;
+                    }
+
                     if (Object.keys(loadedEnabled).length !== defaultValidComponents.length) {
                         root.bar.componentsEnabled = cleanedEnabled;
                         console.log("[Preferences] Cleaned up legacy/invalid components from bar configuration.");

@@ -122,7 +122,7 @@ BaseContainer {
             delegate: Rectangle {
                 width: 6
                 height: 6
-                radius: 3
+                radius: width / 2
                 color: Globals.colors.secondary
                 opacity: 0.8
                 property int itemIndex: index

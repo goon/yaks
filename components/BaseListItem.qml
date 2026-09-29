@@ -85,7 +85,7 @@ Item {
             Layout.preferredWidth: 3
             Layout.preferredHeight: 20
             Layout.alignment: Qt.AlignVCenter
-            radius: 1.5
+            radius: width / 2
             gradient: Gradient {
                 orientation: Gradient.Vertical
                 GradientStop { position: 0.0; color: Globals.colors.primary }

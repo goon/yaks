@@ -6,6 +6,11 @@ pragma Singleton
 QtObject {
     id: root
 
+    // ── ROUNDING PRESETS ──────────────────────────────────────────────────
+    // Fixed, designed panel radii (not arbitrary). Sub-radii derive from the
+    // selected base via geometry.radius / geometry.innerRadius.
+    readonly property var _roundingBases: ({ sharp: 8, soft: 16, round: 26 })
+
     // ── PATHS & EXTERNAL RESOURCES ────────────────────────────────────────
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string rootDir: homeDir + "/.config/yaks"
@@ -40,7 +45,7 @@ QtObject {
      * =========================================================================
      */
     readonly property QtObject geometry: QtObject {
-        readonly property int radius: Preferences.globals.cornerRadius * root.shellScale
+        readonly property int radius: (_roundingBases[Preferences.globals.rounding] || 26) * root.shellScale
         readonly property QtObject spacing: QtObject {
             readonly property int small: 6 * root.shellScale
             readonly property int medium: 8 * root.shellScale
