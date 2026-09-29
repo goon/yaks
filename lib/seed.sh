@@ -8,11 +8,12 @@ set -euo pipefail
 # win (so the most visible chromatic hue drives the theme, not the largest
 # near-grey cluster). Chroma policy lives downstream in lib/palette.js.
 #
-# Prints "<hue_deg> <sat> <mean_l>" on stdout:
-#   hue_deg  winning family hue, 0..360 (0 when achromatic)
-#   sat      representative saturation, 0..1, unclamped (0 when achromatic)
-#   mean_l   whole-image mean HSL lightness, 0..1 (drives the palette's tone)
-# Achromatic images emit "0 0 <mean_l>" so a grey wallpaper yields a grey theme.
+# Prints "<hue> <sat> <mean_l> <hue2> <sat2>" on stdout:
+#   hue/sat    dominant family hue (deg) and representative saturation (unclamped)
+#   mean_l     whole-image mean HSL lightness, 0..1 (drives the palette's tone)
+#   hue2/sat2  the wallpaper's second chromatic family, when it is substantial
+#              and far enough from the first; hue2 = -1 when there is none
+# Achromatic images emit "0 0 <mean_l> -1 0" so a grey wallpaper yields a grey theme.
 
 wp="${1:?usage: seed.sh <wallpaper>}"
 [ -f "$wp" ] || exit 1
@@ -66,13 +67,23 @@ function amin(a, b) { return a < b ? a : b }
 }
 END {
     mean_l = tot > 0 ? lum / tot : 0.12
-    best = -1
-    for (f in fam_score) if (fam_score[f] > best) { best = fam_score[f]; bf = f }
-    if (best <= 0) {                      # achromatic: grey theme downstream
-        printf "0 0 %.4f\n", mean_l
+    best = -1; second = -1; bf = -1; sf = -1
+    for (f in fam_score) {
+        if (fam_score[f] > best)      { second = best; sf = bf; best = fam_score[f]; bf = f }
+        else if (fam_score[f] > second) { second = fam_score[f]; sf = f }
+    }
+    if (bf < 0 || best <= 0) {            # achromatic: grey theme downstream
+        printf "0 0 %.4f -1 0\n", mean_l
         exit 0
     }
-    hue = (fam_hue[bf] / fam_score[bf]) * 360
-    sat = fam_score[bf] / fam_cnt[bf]     # raw representative saturation
-    printf "%.1f %.4f %.4f\n", hue, sat, mean_l
+    hue1 = (fam_hue[bf] / fam_score[bf]) * 360
+    sat1 = fam_score[bf] / fam_cnt[bf]
+    hue2 = -1; sat2 = 0
+    if (sf >= 0 && second >= 0.35 * best) {
+        h2 = (fam_hue[sf] / fam_score[sf]) * 360
+        s2 = fam_score[sf] / fam_cnt[sf]
+        d = h2 - hue1; if (d < 0) d = -d; if (d > 180) d = 360 - d
+        if (s2 >= sat_floor && d >= 40) { hue2 = h2; sat2 = s2 }
+    }
+    printf "%.1f %.4f %.4f %.1f %.4f\n", hue1, sat1, mean_l, hue2, sat2
 }'

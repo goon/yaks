@@ -27,7 +27,7 @@ Item {
      * in OKLCH from the wallpaper seed; consumed by Globals.colors (the shell)
      * and the app hooks.
      */
-    property var currentColors: Palette.build(root.defaultHue, root.defaultSat, root.defaultMeanL)
+    property var currentColors: Palette.build(root.defaultHue, root.defaultSat, root.defaultMeanL, -1, 0)
 
     // Fallback seed (no wallpaper): a soft periwinkle.
     readonly property real defaultHue: 258
@@ -56,13 +56,14 @@ Item {
         var wp = Wallpaper.currentWallpaper;
 
         if (!wp || wp === "") {
-            root._ingest(root.defaultHue, root.defaultSat, root.defaultMeanL);
+            root._ingest(root.defaultHue, root.defaultSat, root.defaultMeanL, -1, 0);
             return;
         }
 
-        // lib/seed.sh returns "<hue_deg> <sat> <mean_l>" — the wallpaper's most
-        // visible chromatic hue, its raw saturation, and the image's mean
-        // lightness. Achromatic images emit "0 0 <mean_l>" for a grey theme.
+        // lib/seed.sh returns "<hue> <sat> <mean_l> <hue2> <sat2>": the
+        // wallpaper's most visible chromatic hue, its raw saturation, the
+        // image's mean lightness, and its second chromatic hue (-1 = none).
+        // Achromatic images emit "0 0 <mean_l> -1 0" for a grey theme.
         var cmd = ["sh", "-c",
             'export PATH="' + root.toolPath + '"; exec sh "$1" "$2"',
             "--", root.seedScript, wp];
@@ -71,17 +72,21 @@ Item {
             var hue = parseFloat(parts[0]);
             var sat = parseFloat(parts[1]);
             var meanL = parseFloat(parts[2]);
+            var hue2 = parseFloat(parts[3]);
+            var sat2 = parseFloat(parts[4]);
             if (isNaN(hue) || isNaN(sat) || isNaN(meanL)) {
                 hue = root.defaultHue;
                 sat = root.defaultSat;
                 meanL = root.defaultMeanL;
             }
-            root._ingest(hue, sat, meanL);
+            if (isNaN(hue2)) hue2 = -1;
+            if (isNaN(sat2)) sat2 = 0;
+            root._ingest(hue, sat, meanL, hue2, sat2);
         });
     }
 
-    function _ingest(hue, sat, meanL) {
-        var colors = Palette.build(hue, sat, meanL);
+    function _ingest(hue, sat, meanL, hue2, sat2) {
+        var colors = Palette.build(hue, sat, meanL, hue2, sat2);
         root.currentColors = colors;
         root.ready = true;
 
