@@ -160,9 +160,11 @@ QtObject {
     // ── WRITE SERIALISATION ─────────────────────────────────────────────
     // FileView.setText() is asynchronous, so a save requested while one is
     // already in flight must not start a second overlapping write — the older
-    // one could land last and clobber the newer state. Queue the latest
-    // content instead and flush it on `saved`/`saveFailed`.
+    // one could land last and clobber the newer state. `_writing` guards that:
+    // while a write is in flight, `save()` only marks `_dirty` and the write
+    // is started when the current one completes, so at most one is ever live.
     property bool _dirty: false
+    property bool _writing: false
     property string _pendingContent: ""
 
     function save() {
@@ -177,9 +179,10 @@ QtObject {
     }
 
     function _flush() {
-        if (!root._dirty)
+        if (root._writing || !root._dirty)
             return;
         root._dirty = false;
+        root._writing = true;
         prefsWriter.setText(root._pendingContent);
     }
 
@@ -363,10 +366,15 @@ QtObject {
         path: root.prefsFile
         watchChanges: false
 
-        onSaved: root._flush()
+        onSaved: {
+            root._writing = false;
+            root._flush(); // Start a write queued while this one was in flight.
+        }
         onSaveFailed: function (error) {
             console.error("[Preferences] Failed to save preferences:", error);
-            root._dirty = false;
+            root._writing = false;
+            // Keep any newer queued content rather than dropping it; the next
+            // save or debounce will retry it.
         }
     }
 }

@@ -50,40 +50,31 @@ FocusScope {
         }
     }
 
-    // Feed the current StackView page to the shared navigator. The StackView's
-    // initialItem is assigned after this component completes, so bind on both
-    // the page change and the panel opening, and retry once on completion.
-    readonly property Item _currentPage: pageStack.currentItem
-
-    function _bindCurrentPage() {
-        if (root._currentPage)
-            SettingsNav.bind(root._currentPage);
-        else
-            bindRetry.restart();
+    // Feed the active StackView page to the shared navigator. `currentItem`
+    // changes on push/pop and when the panel first populates the stack, so a
+    // single Connections covers every case; the page's own rows may still be
+    // building when the item appears, which SettingsNav handles by watching
+    // those containers for child additions.
+    Connections {
+        target: pageStack
+        function onCurrentItemChanged() { SettingsNav.bind(pageStack.currentItem); }
     }
 
-    on_CurrentPageChanged: root._bindCurrentPage()
+    Component.onCompleted: SettingsNav.bind(pageStack.currentItem)
 
+    // Once the panel is fully open the page's rows have settled (visible), so
+    // recollect — this catches rows the initial bind saw while still hidden.
     onPanelStateChanged: {
-        if (panelState === "Opening" || panelState === "Open")
-            root._bindCurrentPage();
+        if (panelState === "Open")
+            SettingsNav.rebuild();
     }
 
-    Component.onCompleted: root._bindCurrentPage()
-
-    Timer {
-        id: bindRetry
-        interval: 60
-        repeat: true
-        property int tries: 0
-        onTriggered: {
-            tries++;
-            if (root._currentPage || tries > 30) {
-                stop();
-                if (root._currentPage)
-                    SettingsNav.bind(root._currentPage);
-            }
-        }
+    // Moving the pointer over the surface hands control back to the mouse:
+    // clear the keyboard selection so the indicator follows the pointer again.
+    // Keyboard use re-establishes it on the next arrow/enter press.
+    HoverHandler {
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onPointChanged: SettingsNav.releaseFocus()
     }
 
 

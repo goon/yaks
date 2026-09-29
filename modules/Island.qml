@@ -235,12 +235,8 @@ Item {
 
         readonly property real restLeft: Math.min(normalCapsuleX, capsule.x)
         readonly property real restRight: Math.max(normalCapsuleX + normalCapsuleWidth, capsule.x + capsule.width)
-        readonly property real topEdge: Preferences.bar.position === "top"
-            ? Math.min(normalCapsuleY, capsule.y)
-            : Math.min(normalCapsuleY, capsule.y)
-        readonly property real bottomEdge: Preferences.bar.position === "top"
-            ? Math.max(normalCapsuleY + normalCapsuleHeight, capsule.y + capsule.height)
-            : Math.max(normalCapsuleY + normalCapsuleHeight, capsule.y + capsule.height)
+        readonly property real topEdge: Math.min(normalCapsuleY, capsule.y)
+        readonly property real bottomEdge: Math.max(normalCapsuleY + normalCapsuleHeight, capsule.y + capsule.height)
 
         x: restLeft
         y: topEdge

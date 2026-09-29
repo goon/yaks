@@ -13,6 +13,15 @@ Switch {
 
     background: null
 
+    // A programmatic `checked` assignment does not emit `toggled` on this Qt
+    // build (only `checkedChanged`), which makes keyboard activation miss
+    // call sites wired to onToggled. Override toggle() so it flips `checked`
+    // and always emits toggled, giving callers one consistent signal.
+    function toggle() {
+        control.checked = !control.checked;
+        control.toggled();
+    }
+
     property real progress: control.checked ? 1.0 : 0.0
     readonly property real _p: Math.max(0, Math.min(1, progress))
     Behavior on progress {

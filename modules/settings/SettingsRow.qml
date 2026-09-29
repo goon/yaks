@@ -78,9 +78,12 @@ Item {
     function activate() {
         var c = root.control;
         if (c && c.checked !== undefined) {
-            // Flip `checked` directly; Qt emits toggled/checkedChanged whichever
-            // way it changes, so the control's own handler drives Preferences.
-            c.checked = !c.checked;
+            // Prefer toggle() so a control that emits toggled (e.g. BaseSwitch)
+            // reaches onToggled call sites; fall back to a checked assignment.
+            if (typeof c.toggle === "function")
+                c.toggle();
+            else
+                c.checked = !c.checked;
             return true;
         }
         if (root.clickable) {

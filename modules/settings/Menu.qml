@@ -33,13 +33,16 @@ Item {
     }
 
     function _hoverPredicate() {
-        // Keyboard navigation wins over hover.
+        // A hovered item always wins, so the pointer can take over from the
+        // keyboard immediately; the keyboard highlight only shows when nothing
+        // is hovered.
         if (mixerItem.hoveredSlider) return mixerItem.hoveredSlider;
+        if (root.activeHover) return root.activeHover;
         for (var i = 0; i < menuRepeater.count; i++) {
             var navItem = menuRepeater.itemAt(i);
             if (navItem && navItem.navHighlighted) return navItem;
         }
-        return root.activeHover;
+        return null;
     }
 
     ColumnLayout {

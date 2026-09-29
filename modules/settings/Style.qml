@@ -123,7 +123,7 @@ SettingsPage {
 
                     BaseSwitch {
                         checked: Preferences.globals.islandOutline
-                        onCheckedChanged: Preferences.globals.islandOutline = checked
+                        onToggled: Preferences.globals.islandOutline = checked
                     }
                 }
         }

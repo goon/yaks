@@ -21,6 +21,10 @@ QtObject {
     property var items: []
     property int index: -1
 
+    // Containers currently watched for child additions. Kept so they can be
+    // disconnected when a different page is bound.
+    property var _watched: []
+
     function bind(item) {
         // Transient nulls occur while a StackView swaps pages; ignore them and
         // keep the last real page bound rather than clearing the row list.
@@ -29,33 +33,61 @@ QtObject {
         if (root.currentRoot === item)
             return;
         root.clearHighlight();
+        root._unwatchAll();
         root.currentRoot = item;
         root.index = -1; // Start fresh on a new page; rebuild focuses the first row.
-        root._retries = 0;
-        // A StackView page is created before its children populate, so the first
-        // collection can run too early; retry briefly until rows appear.
-        root._deferredRebuild();
+        // A StackView page exists before its rows populate, so collect now and
+        // again whenever a watched container gains children. This is event-based
+        // rather than a retry timer, and self-heals for lazily-added rows.
+        root._watchContainers(item);
+        Qt.callLater(root.rebuild);
     }
 
-    property int _retries: 0
-
-    function _deferredRebuild() {
-        Qt.callLater(function () {
-            root.rebuild();
-            if (root.items.length === 0 && root.currentRoot && root._retries < 30) {
-                root._retries++;
-                retryTimer.restart();
-            }
-        });
+    // Attach a childrenChanged watcher to every container under `node` (the page
+    // root and each layout/group), so appearing rows trigger a rebuild. Stops
+    // descending at navigable items, since we never descend into them anyway.
+    function _watchContainers(node) {
+        if (!node || !node.children)
+            return;
+        root._watch(node);
+        for (var i = 0; i < node.children.length; i++) {
+            var c = node.children[i];
+            if (!c || root._isNavigable(c))
+                continue;
+            root._watchContainers(c);
+        }
     }
 
-    property Timer retryTimer: Timer {
-        interval: 60
-        repeat: false
-        onTriggered: root._deferredRebuild()
+    function _watch(container) {
+        for (var i = 0; i < root._watched.length; i++)
+            if (root._watched[i].container === container)
+                return;
+        var handler = function () { root._onChildrenChanged(); };
+        container.childrenChanged.connect(handler);
+        root._watched = root._watched.concat([{ container: container, handler: handler }]);
+    }
+
+    function _unwatchAll() {
+        for (var i = 0; i < root._watched.length; i++) {
+            var w = root._watched[i];
+            if (w.container && w.handler)
+                w.container.childrenChanged.disconnect(w.handler);
+        }
+        root._watched = [];
+    }
+
+    // A watched container gained a child: recollect, which also picks up any new
+    // container that itself needs watching.
+    function _onChildrenChanged() {
+        root.rebuild();
     }
 
     function rebuild() {
+        // Re-arm watchers: containers that appeared since the last pass (e.g. a
+        // lazily-built group) need watching so their later rows trigger a rebuild.
+        if (root.currentRoot)
+            root._watchContainers(root.currentRoot);
+
         var list = [];
         if (root.currentRoot)
             root._collect(root.currentRoot, list);
@@ -110,6 +142,15 @@ QtObject {
     function clearHighlight() {
         for (var i = 0; i < root.items.length; i++)
             root._setHighlight(root.items[i], false);
+    }
+
+    // Hand control back to the pointer: drop the keyboard selection so hover
+    // drives the indicator again. Called when the mouse moves over the surface.
+    function releaseFocus() {
+        if (root.index === -1)
+            return;
+        root.clearHighlight();
+        root.index = -1;
     }
 
     function move(delta) {
