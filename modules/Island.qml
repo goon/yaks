@@ -20,28 +20,14 @@ Item {
     property string loadedPanelName: ""
 
     // ── HOVER EXPAND STATE ────────────────────────────────────────────
-    property bool isHovered: false
-    onIsHoveredChanged: IslandService.isIslandHovered = isHovered;
-
+    // Whether the pointer is over the visible pill. Published to
+    // IslandService.isIslandHovered, which the volume toast reads to avoid
+    // auto-dismissing while the pointer rests on the island. Tracked directly
+    // off the capsule's HoverHandler — no settle delay, so the state is always
+    // current rather than lagging a trailing timer.
     readonly property bool isMouseOverCapsule: typeof capsuleHoverHandler !== "undefined" ? capsuleHoverHandler.hovered : false
-
-    onIsMouseOverCapsuleChanged: {
-        if (isMouseOverCapsule) {
-            hoverDelayTimer.stop();
-            islandRoot.isHovered = true;
-        } else {
-            hoverDelayTimer.start();
-        }
-    }
-
-    Timer {
-        id: hoverDelayTimer
-        interval: 250
-        repeat: false
-        onTriggered: {
-            islandRoot.isHovered = false;
-        }
-    }
+    property bool isHovered: isMouseOverCapsule
+    onIsHoveredChanged: IslandService.isIslandHovered = isHovered;
 
     // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
     readonly property bool isIslandMorphed: shouldBeMorphed || capsule.height > normalCapsuleHeight + 1
@@ -227,6 +213,39 @@ Item {
             hoverEnabled: true
             onClicked: {}
         }
+    }
+
+    // Union of the rest pill and the current (possibly mid-animation) capsule,
+    // spanning the top of the screen. While the pill is morphing the moving
+    // capsule can momentarily leave the single maskItem rect, which would drop
+    // input mid-animation; this union covers both extremes for the whole morph.
+    readonly property bool isSettled:
+        !isMorphed
+        || (Math.abs(capsule.x - targetCapsuleX) < 1
+            && Math.abs(capsule.y - targetCapsuleY) < 1
+            && Math.abs(capsule.width - targetCapsuleWidth) < 1
+            && Math.abs(capsule.height - targetCapsuleHeight) < 1)
+
+    readonly property alias maskItemUnion: maskUnion
+
+    Item {
+        id: maskUnion
+        visible: false
+        z: 2
+
+        readonly property real restLeft: Math.min(normalCapsuleX, capsule.x)
+        readonly property real restRight: Math.max(normalCapsuleX + normalCapsuleWidth, capsule.x + capsule.width)
+        readonly property real topEdge: Preferences.bar.position === "top"
+            ? Math.min(normalCapsuleY, capsule.y)
+            : Math.min(normalCapsuleY, capsule.y)
+        readonly property real bottomEdge: Preferences.bar.position === "top"
+            ? Math.max(normalCapsuleY + normalCapsuleHeight, capsule.y + capsule.height)
+            : Math.max(normalCapsuleY + normalCapsuleHeight, capsule.y + capsule.height)
+
+        x: restLeft
+        y: topEdge
+        width: Math.max(0, restRight - restLeft)
+        height: Math.max(0, bottomEdge - topEdge)
     }
 
     // ── MORPHING CAPSULE ──────────────────────────────────────────────

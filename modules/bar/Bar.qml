@@ -47,11 +47,27 @@ PanelWindow {
         right: 0
     }
 
-    mask: (island.isIslandMorphed && !island.isToast) ? null : capsuleRegion
+    // While the pill is settled (collapsed or fully expanded / a surface is
+    // open) the input region can be the exact capsule rect or the whole layer.
+    // While it is mid-morph the moving capsule can briefly leave the capsule
+    // rect, so the union of the rest pill and the animating capsule is used
+    // instead, keeping input stable across the transition.
+    mask: {
+        if (island.isIslandMorphed && !island.isToast)
+            return null;
+        if (!island.isSettled)
+            return unionRegion;
+        return capsuleRegion;
+    }
 
     Region {
         id: capsuleRegion
         item: island.maskItem
+    }
+
+    Region {
+        id: unionRegion
+        item: island.maskItemUnion
     }
 
     Island {
