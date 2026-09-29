@@ -80,6 +80,12 @@ Item {
 
     readonly property int debounceInterval: 300
 
+    // Explicit PATH for spawning external tools. The shell may be started from
+    // a systemd user service whose PATH lacks the system profiles, so tools that
+    // are installed (matugen, terminal emulators, theming CLIs) would otherwise
+    // be reported missing. Shared by every Probe/Process that shells out.
+    readonly property string toolPath: "/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:$HOME/.local/bin:$PATH"
+
     // ── THEME APPLICATION ─────────────────────────────────────────────
 
     function requestApply(context) {
@@ -105,7 +111,7 @@ Item {
         var writeCmd = 'mkdir -p "$(dirname "$1")" && printf "%s" "$2" > "$1"';
         ProcessService.run(["sh", "-c", writeCmd, "--", root.configPath, cfg], function() {
             // matugen may live outside the systemd user service PATH, so set it explicitly.
-            var script = 'export PATH="/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:$HOME/.local/bin:$PATH"; exec "$@"';
+            var script = 'export PATH="' + root.toolPath + '"; exec "$@"';
             var args = ["sh", "-c", script, "--", "matugen", "-c", root.configPath]
                 .concat(sourceArgs)
                 .concat(["-m", "dark", "-t", scheme, "--json", "hex", "--include-image-in-json=false"]);
@@ -233,7 +239,11 @@ Item {
         let apps = root.applications;
         let completed = 0;
         apps.forEach(app => {
-            ProcessService.run(["sh", "-c", app.binary + " > /dev/null 2>&1"], function(out, exitCode) {
+            // Run the probe with the same explicit PATH as tool invocations, so
+            // a tool that is installed but outside the service PATH is not
+            // wrongly reported missing.
+            var script = 'export PATH="' + root.toolPath + '"; ' + app.binary + ' > /dev/null 2>&1';
+            ProcessService.run(["sh", "-c", script], function(out, exitCode) {
                 newInstalled[app.id] = (exitCode === 0);
                 completed++;
                 if (completed === apps.length) root.installedApps = newInstalled;
