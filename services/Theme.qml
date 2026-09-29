@@ -21,15 +21,18 @@ Item {
     property bool ready: false
 
     /**
-     * The generated palette: flat single-word tokens (deep/bg/surface/raised,
-     * border/hair, bright/text/muted/subtle/dim/faint, primary/secondary/
-     * tertiary/error, ink) plus an `ansi` array of 16 terminal colours. Built
-     * by lib/palette.js from the wallpaper seed; consumed by Globals.colors
-     * (the shell) and the app hooks.
+     * The generated palette: flat single-word tokens (deep/well/bg/surface/
+     * raised/hair/border, text/muted/faint, primary/secondary/tertiary/error,
+     * ink) plus an `ansi` array of 16 terminal colours. Built by lib/palette.js
+     * in OKLCH from the wallpaper seed; consumed by Globals.colors (the shell)
+     * and the app hooks.
      */
-    property var currentColors: Palette.build(root.defaultSeedColor)
+    property var currentColors: Palette.build(root.defaultHue, root.defaultSat, root.defaultMeanL)
 
-    readonly property string defaultSeedColor: "#9d99e5"
+    // Fallback seed (no wallpaper): a soft periwinkle.
+    readonly property real defaultHue: 258
+    readonly property real defaultSat: 0.35
+    readonly property real defaultMeanL: 0.12
     readonly property string colorsPath: Globals.cacheDir + "/current_theme/colors.json"
     readonly property string seedScript: Globals.rootDir + "/lib/seed.sh"
 
@@ -53,32 +56,32 @@ Item {
         var wp = Wallpaper.currentWallpaper;
 
         if (!wp || wp === "") {
-            root._ingest(root.defaultSeedColor, NaN);
+            root._ingest(root.defaultHue, root.defaultSat, root.defaultMeanL);
             return;
         }
 
-        // Pick the seed ourselves. lib/seed.sh returns the wallpaper's most
-        // visible chromatic hue (Uki's saturation-floor rule) plus the image's
-        // mean lightness, so the palette's tone can follow the wallpaper. An
-        // achromatic image makes it exit non-zero and we fall back to the
-        // constant seed.
+        // lib/seed.sh returns "<hue_deg> <sat> <mean_l>" — the wallpaper's most
+        // visible chromatic hue, its raw saturation, and the image's mean
+        // lightness. Achromatic images emit "0 0 <mean_l>" for a grey theme.
         var cmd = ["sh", "-c",
             'export PATH="' + root.toolPath + '"; exec sh "$1" "$2"',
             "--", root.seedScript, wp];
         ProcessService.run(cmd, function(output, exitCode) {
             var parts = (exitCode === 0 && output) ? output.trim().split(/\s+/) : [];
-            var seed = parts[0] || "";
-            var meanL = parseFloat(parts[1]);
-            if (!/^#[0-9a-fA-F]{6}$/.test(seed)) {
-                seed = root.defaultSeedColor;
-                meanL = NaN;
+            var hue = parseFloat(parts[0]);
+            var sat = parseFloat(parts[1]);
+            var meanL = parseFloat(parts[2]);
+            if (isNaN(hue) || isNaN(sat) || isNaN(meanL)) {
+                hue = root.defaultHue;
+                sat = root.defaultSat;
+                meanL = root.defaultMeanL;
             }
-            root._ingest(seed, meanL);
+            root._ingest(hue, sat, meanL);
         });
     }
 
-    function _ingest(seed, meanL) {
-        var colors = Palette.build(seed, meanL);
+    function _ingest(hue, sat, meanL) {
+        var colors = Palette.build(hue, sat, meanL);
         root.currentColors = colors;
         root.ready = true;
 

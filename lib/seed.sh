@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Pick a source colour for Matugen from a wallpaper.
+# Extract the wallpaper seed for the palette generator.
 #
-# Matugen's own `image` extraction weights a huge near-grey cluster over
-# smaller vivid ones, so a desaturated wallpaper area can win the seed and
-# then get blown up by the scheme type into a hue that is barely present
-# (a grey-purple car body becoming loud pink). This script instead follows
-# Uki's rule: discard low-saturation pixels, bin the rest into 30-degree hue
-# families, and let the family with the most area x saturation win. Theme.qml
-# feeds the result to `matugen color hex` so the palette follows the
-# wallpaper's most visible hue.
+# Follows Uki's rule: discard low-saturation pixels, bin the rest into
+# 30-degree hue families, and let the family with the most area x saturation
+# win (so the most visible chromatic hue drives the theme, not the largest
+# near-grey cluster). Chroma policy lives downstream in lib/palette.js.
 #
-# Prints "#rrggbb <mean_l>" on stdout, or exits non-zero when the image is
-# achromatic. mean_l is the whole image's mean HSL lightness (0..1), so the
-# palette's tone can follow the wallpaper.
+# Prints "<hue_deg> <sat> <mean_l>" on stdout:
+#   hue_deg  winning family hue, 0..360 (0 when achromatic)
+#   sat      representative saturation, 0..1, unclamped (0 when achromatic)
+#   mean_l   whole-image mean HSL lightness, 0..1 (drives the palette's tone)
+# Achromatic images emit "0 0 <mean_l>" so a grey wallpaper yields a grey theme.
 
 wp="${1:?usage: seed.sh <wallpaper>}"
 [ -f "$wp" ] || exit 1
@@ -36,15 +34,11 @@ command -v magick &>/dev/null || exit 1
 
 # Tunables.
 sat_floor=0.15    # below this a pixel counts as grey and is ignored
-sat_min=0.30      # seed saturation floor (Uki's chromatic minimum)
-sat_max=0.85      # seed saturation ceiling
-seed_l=0.50       # seed lightness fed to matugen
 l_min=0.05        # ignore near-black
 l_max=0.92        # ignore near-white
 
 magick "$wp" -alpha off -resize 200x200 -colors 48 -depth 8 -format "%c" histogram:info:- 2>/dev/null |
-awk -v sat_floor="$sat_floor" -v sat_min="$sat_min" -v sat_max="$sat_max" \
-    -v seed_l="$seed_l" -v l_min="$l_min" -v l_max="$l_max" '
+awk -v sat_floor="$sat_floor" -v l_min="$l_min" -v l_max="$l_max" '
 function amax(a, b) { return a > b ? a : b }
 function amin(a, b) { return a < b ? a : b }
 {
@@ -74,22 +68,11 @@ END {
     mean_l = tot > 0 ? lum / tot : 0.12
     best = -1
     for (f in fam_score) if (fam_score[f] > best) { best = fam_score[f]; bf = f }
-    if (best <= 0) exit 1
-    hue = fam_hue[bf] / fam_score[bf]
-    sat = fam_score[bf] / fam_cnt[bf]
-    if (sat < sat_min) sat = sat_min
-    if (sat > sat_max) sat = sat_max
-    q = seed_l < 0.5 ? seed_l * (1 + sat) : seed_l + sat - seed_l * sat
-    p = 2 * seed_l - q
-    for (i = 1; i <= 3; i++) {
-        t = hue + (i == 1 ? 1.0 / 3 : (i == 2 ? 0 : -1.0 / 3))
-        if (t < 0) t += 1
-        if (t > 1) t -= 1
-        if (t < 1.0 / 6)      v = p + (q - p) * 6 * t
-        else if (t < 1.0 / 2) v = q
-        else if (t < 2.0 / 3) v = p + (q - p) * (2.0 / 3 - t) * 6
-        else                  v = p
-        rgb[i] = v
+    if (best <= 0) {                      # achromatic: grey theme downstream
+        printf "0 0 %.4f\n", mean_l
+        exit 0
     }
-    printf "#%02x%02x%02x %.4f\n", int(rgb[1] * 255 + 0.5), int(rgb[2] * 255 + 0.5), int(rgb[3] * 255 + 0.5), mean_l
+    hue = (fam_hue[bf] / fam_score[bf]) * 360
+    sat = fam_score[bf] / fam_cnt[bf]     # raw representative saturation
+    printf "%.1f %.4f %.4f\n", hue, sat, mean_l
 }'
