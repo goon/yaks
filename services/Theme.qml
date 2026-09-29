@@ -12,6 +12,7 @@ import "../lib/steam.js" as SteamHook
 import "../lib/discord.js" as DiscordHook
 import "../lib/nvim.js" as NvimHook
 import "../lib/zed.js" as ZedHook
+import "../lib/palette.js" as Palette
 pragma Singleton
 
 Item {
@@ -19,72 +20,25 @@ Item {
 
     property bool ready: false
 
-    property var currentColors: root._fallbackColors
+    /**
+     * The generated palette: flat single-word tokens (deep/bg/surface/raised,
+     * border/hair, bright/text/muted/subtle/dim/faint, primary/secondary/
+     * tertiary/error, ink) plus an `ansi` array of 16 terminal colours. Built
+     * by lib/palette.js from the wallpaper seed; consumed by Globals.colors
+     * (the shell) and the app hooks.
+     */
+    property var currentColors: Palette.build(root.defaultSeedColor)
 
     readonly property string defaultSeedColor: "#9d99e5"
-    readonly property string configPath: Globals.cacheDir + "/matugen/config.toml"
     readonly property string colorsPath: Globals.cacheDir + "/current_theme/colors.json"
     readonly property string seedScript: Globals.rootDir + "/lib/seed.sh"
-
-    readonly property var _fallbackColors: ({
-        "primary": "#adc6ff",
-        "on_primary": "#002e69",
-        "primary_container": "#004494",
-        "on_primary_container": "#d8e2ff",
-        "primary_fixed": "#d8e2ff",
-        "primary_fixed_dim": "#adc6ff",
-        "on_primary_fixed": "#001a41",
-        "on_primary_fixed_variant": "#004494",
-        "secondary": "#bbc6e4",
-        "on_secondary": "#253048",
-        "secondary_container": "#3b475f",
-        "on_secondary_container": "#d8e2ff",
-        "secondary_fixed": "#d8e2ff",
-        "secondary_fixed_dim": "#bbc6e4",
-        "on_secondary_fixed": "#0f1b32",
-        "on_secondary_fixed_variant": "#3b475f",
-        "tertiary": "#e5b8e8",
-        "on_tertiary": "#44244a",
-        "tertiary_container": "#5d3a62",
-        "on_tertiary_container": "#fed6ff",
-        "tertiary_fixed": "#fed6ff",
-        "tertiary_fixed_dim": "#e5b8e8",
-        "on_tertiary_fixed": "#2d0e34",
-        "on_tertiary_fixed_variant": "#5d3a62",
-        "error": "#ffb4ab",
-        "on_error": "#690005",
-        "error_container": "#93000a",
-        "on_error_container": "#ffb4ab",
-        "background": "#1b1b1f",
-        "on_background": "#e3e2e6",
-        "surface": "#1b1b1f",
-        "on_surface": "#e3e2e6",
-        "surface_variant": "#44474f",
-        "on_surface_variant": "#c4c6d0",
-        "surface_dim": "#1b1b1f",
-        "surface_bright": "#39393d",
-        "surface_container_lowest": "#161618",
-        "surface_container_low": "#232326",
-        "surface_container": "#27272b",
-        "surface_container_high": "#313135",
-        "surface_container_highest": "#3c3c40",
-        "surface_tint": "#adc6ff",
-        "outline": "#8e9099",
-        "outline_variant": "#44474f",
-        "shadow": "#000000",
-        "scrim": "#000000",
-        "inverse_surface": "#e3e2e6",
-        "inverse_on_surface": "#303033",
-        "inverse_primary": "#005ac1",
-        "source_color": "#4285f4"
-    })
 
     readonly property int debounceInterval: 300
 
     // Explicit PATH for spawning external tools. The shell may be started from
     // a systemd user service whose PATH lacks the system profiles, so tools that
-    // are installed (matugen, terminal emulators, theming CLIs) would otherwise
-    // be reported missing. Shared by every Probe/Process that shells out.
+    // are installed (terminals, theming CLIs) would otherwise be reported
+    // missing. Shared by every Probe/Process that shells out.
     readonly property string toolPath: "/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:$HOME/.local/bin:$PATH"
 
     // ── THEME APPLICATION ─────────────────────────────────────────────
@@ -96,158 +50,35 @@ Item {
     }
 
     function apply() {
-        var scheme = Preferences.globals.schemeType || "scheme-tonal-spot";
         var wp = Wallpaper.currentWallpaper;
 
         if (!wp || wp === "") {
-            root._runMatugen(["color", "hex", root.defaultSeedColor], scheme);
+            root._ingest(root.defaultSeedColor);
             return;
         }
 
-        // Pick the seed ourselves. Matugen's own image extraction weights a
-        // large near-grey cluster over smaller vivid ones, so a desaturated
-        // area can win the seed and then be amplified by the scheme type into
-        // a hue barely present in the wallpaper. lib/seed.sh instead returns
-        // the most visible chromatic hue (Uki's saturation-floor rule); only
-        // if it finds none (achromatic image) do we fall back to `image`.
+        // Pick the seed ourselves. lib/seed.sh returns the wallpaper's most
+        // visible chromatic hue (Uki's saturation-floor rule) rather than the
+        // largest near-grey cluster. An achromatic image makes it exit
+        // non-zero and we fall back to the constant seed.
         var cmd = ["sh", "-c",
             'export PATH="' + root.toolPath + '"; exec sh "$1" "$2"',
             "--", root.seedScript, wp];
         ProcessService.run(cmd, function(output, exitCode) {
             var seed = (exitCode === 0 && output) ? output.trim() : "";
-            if (/^#[0-9a-fA-F]{6}$/.test(seed))
-                root._runMatugen(["color", "hex", seed], scheme);
-            else
-                root._runMatugen(["image", wp], scheme);
+            if (!/^#[0-9a-fA-F]{6}$/.test(seed))
+                seed = root.defaultSeedColor;
+            root._ingest(seed);
         });
     }
 
-    function _runMatugen(sourceArgs, scheme) {
-        var cfg = '[config]\n'
-            + 'version_check = false\n'
-            + 'caching = false\n'
-            + 'fallback_color = "' + root.defaultSeedColor + '"\n'
-            + 'prefer = "closest-to-fallback"\n'
-            + '[templates]\n';
-
-        var writeCmd = 'mkdir -p "$(dirname "$1")" && printf "%s" "$2" > "$1"';
-        ProcessService.run(["sh", "-c", writeCmd, "--", root.configPath, cfg], function() {
-            // matugen may live outside the systemd user service PATH, so set it explicitly.
-            var script = 'export PATH="' + root.toolPath + '"; exec "$@"';
-            var args = ["sh", "-c", script, "--", "matugen", "-c", root.configPath]
-                .concat(sourceArgs)
-                .concat(["-m", "dark", "-t", scheme, "--json", "hex", "--include-image-in-json=false"]);
-
-            ProcessService.run(args, function(output, exitCode) {
-                if (exitCode !== 0 || !output || output.trim() === "") {
-                    console.warn("[Theme] matugen failed (exit " + exitCode + ")");
-                    return;
-                }
-                try {
-                    root._ingest(JSON.parse(output));
-                } catch (e) {
-                    console.warn("[Theme] Failed to parse matugen output:", e.message);
-                }
-            });
-        });
-    }
-
-    function _token(map, name, mode) {
-        if (!map || map[name] === undefined) return undefined;
-        if (typeof map[name] === "string") return map[name];
-        var entry = map[name][mode] !== undefined ? map[name][mode] : map[name]["default"];
-        if (entry === undefined) return undefined;
-        return (typeof entry === "string") ? entry : entry.color;
-    }
-
-    // ── SURFACE TINT ──────────────────────────────────────────────────
-    // MD3's neutral palette is near-grey in every scheme, so Matugen's
-    // surfaces carry almost no wallpaper chroma. Uki re-tints them: keep each
-    // token's lightness, but apply the extracted wallpaper hue at a floored
-    // saturation so even a low-chroma source reads as tinted. Done here (not
-    // in the role layer) so external app hooks, which read currentColors
-    // directly, share the exact same surfaces as the shell.
-
-    function _hexToRgb(hex) {
-        var h = String(hex).replace("#", "");
-        return {
-            r: parseInt(h.substr(0, 2), 16) / 255,
-            g: parseInt(h.substr(2, 2), 16) / 255,
-            b: parseInt(h.substr(4, 2), 16) / 255
-        };
-    }
-
-    function _rgbToHsl(c) {
-        var max = Math.max(c.r, c.g, c.b), min = Math.min(c.r, c.g, c.b);
-        var l = (max + min) / 2, h = 0, s = 0, d = max - min;
-        if (d !== 0) {
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            if (max === c.r) h = (c.g - c.b) / d + (c.g < c.b ? 6 : 0);
-            else if (max === c.g) h = (c.b - c.r) / d + 2;
-            else h = (c.r - c.g) / d + 4;
-            h /= 6;
-        }
-        return { h: h, s: s, l: l };
-    }
-
-    function _hslToHex(h, s, l) {
-        function hue(p, q, t) {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-        }
-        var r, g, b;
-        if (s === 0) {
-            r = g = b = l;
-        } else {
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-            r = hue(p, q, h + 1 / 3);
-            g = hue(p, q, h);
-            b = hue(p, q, h - 1 / 3);
-        }
-        function to(x) {
-            var v = Math.round(Math.max(0, Math.min(1, x)) * 255).toString(16);
-            return v.length < 2 ? "0" + v : v;
-        }
-        return "#" + to(r) + to(g) + to(b);
-    }
-
-    function _tintSurfaces(colors) {
-        var src = colors.source_color;
-        if (!src) return;
-        var hsl = root._rgbToHsl(root._hexToRgb(src));
-        var sat = hsl.s >= 0.04 ? Math.min(Math.max(hsl.s, 0.30), 0.45) : 0.0;
-        var names = [
-            "background", "surface", "surface_dim", "surface_bright", "surface_variant",
-            "surface_container_lowest", "surface_container_low", "surface_container",
-            "surface_container_high", "surface_container_highest", "outline", "outline_variant"
-        ];
-        for (var i = 0; i < names.length; i++) {
-            var h = colors[names[i]];
-            if (!h) continue;
-            colors[names[i]] = root._hslToHex(hsl.h, sat, root._rgbToHsl(root._hexToRgb(h)).l);
-        }
-    }
-
-    function _ingest(data) {
-        var mode = "dark";
-        var colors = Object.assign({}, root._fallbackColors);
-        var source = data.colors || {};
-        for (var name in source) {
-            var val = root._token(source, name, mode);
-            if (val) colors[name] = val;
-        }
-
-        root._tintSurfaces(colors);
+    function _ingest(seed) {
+        var colors = Palette.build(seed);
         root.currentColors = colors;
         root.ready = true;
 
         // Persist a flat copy for debugging.
-        var jsonStr = JSON.stringify({ md3: colors }, null, 2);
+        var jsonStr = JSON.stringify(colors, null, 2);
         var tmp = root.colorsPath + ".tmp";
         ProcessService.runDetached(["sh", "-c",
             'mkdir -p "$(dirname "$3")" && printf "%s" "$1" > "$2" && mv "$2" "$3"',
@@ -375,13 +206,6 @@ Item {
         target: Wallpaper
         function onCurrentWallpaperChanged() {
             root.requestApply("wallpaper");
-        }
-    }
-
-    Connections {
-        target: Preferences.globals
-        function onSchemeTypeChanged() {
-            root.requestApply("scheme");
         }
     }
 

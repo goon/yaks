@@ -16,39 +16,6 @@ SettingsPage {
             Layout.fillWidth: true
 
                 SettingsRow {
-                    icon: "palette"
-                    label: "Scheme"
-
-                    BaseComboBox {
-                        Layout.fillWidth: true
-                        textRole: "name"
-                        model: [
-                            { name: "Tonal Spot", value: "scheme-tonal-spot" },
-                            { name: "Content",    value: "scheme-content" },
-                            { name: "Expressive", value: "scheme-expressive" },
-                            { name: "Fidelity",   value: "scheme-fidelity" },
-                            { name: "Fruit Salad", value: "scheme-fruit-salad" },
-                            { name: "Monochrome", value: "scheme-monochrome" },
-                            { name: "Neutral",    value: "scheme-neutral" },
-                            { name: "Rainbow",    value: "scheme-rainbow" },
-                            { name: "Vibrant",    value: "scheme-vibrant" }
-                        ]
-                        currentIndex: {
-                            if (!model) return -1;
-                            for (var i = 0; i < model.length; i++) {
-                                if (model[i].value === Preferences.globals.schemeType) return i;
-                            }
-                            return -1;
-                        }
-                        onActivated: (index) => {
-                            if (index >= 0 && index < model.length)
-                                Preferences.globals.schemeType = model[index].value;
-                        }
-                    }
-                }
-
-
-                SettingsRow {
                     id: shellFontRow
                     icon: "type"
                     label: "Font"
@@ -123,11 +90,21 @@ SettingsPage {
                 SettingsRow {
                     icon: "frame"
                     label: "Outline"
-                    showSeparator: false
 
                     BaseSwitch {
                         checked: Preferences.globals.islandOutline
                         onToggled: Preferences.globals.islandOutline = checked
+                    }
+                }
+
+                SettingsRow {
+                    icon: "layers"
+                    label: "Shadow"
+                    showSeparator: false
+
+                    BaseSwitch {
+                        checked: Preferences.globals.shadow
+                        onToggled: Preferences.globals.shadow = checked
                     }
                 }
         }

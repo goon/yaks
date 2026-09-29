@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 import Quickshell
 import qs.services
 import qs
@@ -263,6 +264,18 @@ Item {
         borderWidth: Preferences.globals.islandOutline ? 1 : 0
         radius: Globals.geometry.radius
         clip: true
+
+        // Optional soft drop shadow (Settings > Bar), like Uki's pill. The
+        // offscreen layer is dropped while the capsule morphs so the shadow
+        // never re-renders per animation frame; it returns once settled.
+        layer.enabled: Preferences.globals.shadow && islandRoot.isSettled
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.4)
+            shadowBlur: 0.6
+            shadowHorizontalOffset: 0
+            shadowVerticalOffset: 2.5 * Globals.shellScale
+        }
 
         Behavior on x      { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
         Behavior on y      { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }

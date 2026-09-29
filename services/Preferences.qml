@@ -61,18 +61,18 @@ QtObject {
     }
 
     property QtObject globals: QtObject {
-        property string schemeType: "scheme-tonal-spot"
         property string shellFont: "Outfit"
         property string rounding: "round"
         property double backgroundOpacity: 1.0
         property bool islandOutline: true
+        property bool shadow: true
         property int scale: 1 // 0: 0.9x, 1: 1.0x, 2: 1.1x
 
-        onSchemeTypeChanged: root.requestSave()
         onShellFontChanged: root.requestSave()
         onRoundingChanged: root.requestSave()
         onBackgroundOpacityChanged: root.requestSave()
         onIslandOutlineChanged: root.requestSave()
+        onShadowChanged: root.requestSave()
         onScaleChanged: {
             if (scale === 0) root.bar.height = 50;
             else if (scale === 1) root.bar.height = 55;
@@ -109,11 +109,11 @@ QtObject {
         ["wallpaper", "transition"],
         ["wallpaper", "transitionDuration"],
         ["applications", "themedApps"],
-        ["globals", "schemeType"],
         ["globals", "shellFont"],
         ["globals", "rounding"],
         ["globals", "backgroundOpacity"],
         ["globals", "islandOutline"],
+        ["globals", "shadow"],
         ["indicators", "order"],
         ["currentWallpaper"]
     ]

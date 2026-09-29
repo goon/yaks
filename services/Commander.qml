@@ -41,9 +41,7 @@ Item {
     }
 
     IpcHandler {
-        function apply(scheme: string) {
-            if (scheme && scheme !== "")
-                Preferences.globals.schemeType = scheme;
+        function apply() {
             Theme.requestApply("manual");
         }
         target: "theme"

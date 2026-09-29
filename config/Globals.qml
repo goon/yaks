@@ -26,17 +26,18 @@ QtObject {
         readonly property var raw: Theme.currentColors || ({})
 
         // ── ROLE LAYER ────────────────────────────────────────────────────
-        readonly property color background: colorsRoot.raw.surface
+        readonly property color background: colorsRoot.raw.bg
 
         // Shell background gradient stops. The wallpaper hue is baked into the
-        // surface tokens upstream in Theme._ingest, so these are plain aliases.
-        readonly property color backgroundTop: colorsRoot.raw.surface_container_high
-        readonly property color backgroundBottom: colorsRoot.raw.surface_container_low
+        // surface tokens upstream by lib/palette.js, so these are plain aliases.
+        // Matches Uki's pill (card top ~0.20 -> card bottom ~0.165).
+        readonly property color backgroundTop: colorsRoot.raw.raised
+        readonly property color backgroundBottom: colorsRoot.raw.surface
 
-        readonly property color surface: colorsRoot.raw.surface_container
-        readonly property color border: colorsRoot.raw.outline_variant
-        readonly property color text: colorsRoot.raw.on_surface
-        readonly property color muted: colorsRoot.raw.on_surface_variant
+        readonly property color surface: colorsRoot.raw.surface
+        readonly property color border: colorsRoot.raw.border
+        readonly property color text: colorsRoot.raw.text
+        readonly property color muted: colorsRoot.raw.muted
         readonly property color primary: colorsRoot.raw.primary
         readonly property color secondary: colorsRoot.raw.secondary
     }
@@ -147,7 +148,7 @@ QtObject {
     effects: QtObject {
         readonly property QtObject
         shadow: QtObject {
-            readonly property color color: root.colors.raw.shadow || "#000000"
+            readonly property color color: "#000000"
             readonly property int radius: 20
             readonly property int offsetX: 0
             readonly property int offsetY: 0
