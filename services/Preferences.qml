@@ -157,16 +157,30 @@ QtObject {
 
     readonly property string prefsFile: Globals.dataDir + "/preferences.json"
 
+    // ── WRITE SERIALISATION ─────────────────────────────────────────────
+    // FileView.setText() is asynchronous, so a save requested while one is
+    // already in flight must not start a second overlapping write — the older
+    // one could land last and clobber the newer state. Queue the latest
+    // content instead and flush it on `saved`/`saveFailed`.
+    property bool _dirty: false
+    property string _pendingContent: ""
+
     function save() {
         if (!loaded) return;
         var data = {};
         for (var i = 0; i < _schema.length; i++)
             _setData(data, _schema[i], _get(_schema[i]));
 
-        const jsonContent = JSON.stringify(data, null, 2);
-        const tempFile = root.prefsFile + ".tmp";
-        const cmd = `mkdir -p "$(dirname "$3")" && printf '%s' "$1" > "$2" && mv "$2" "$3"`;
-        ProcessService.runDetached(["sh", "-c", cmd, "--", jsonContent, tempFile, root.prefsFile]);
+        root._pendingContent = JSON.stringify(data, null, 2);
+        root._dirty = true;
+        root._flush();
+    }
+
+    function _flush() {
+        if (!root._dirty)
+            return;
+        root._dirty = false;
+        prefsWriter.setText(root._pendingContent);
     }
 
     property Timer saveTimer: Timer {
@@ -179,19 +193,30 @@ QtObject {
         if (loaded) saveTimer.restart();
     }
 
+    // One-time bootstrap so the data directory exists before the first write.
+    // FileView.setText() does not create parent directories.
+    property Process _dataDirProc: Process {
+        command: ["mkdir", "-p", Globals.dataDir]
+    }
+
     // ── INITIALISATION ──────────────────────────────────────────────────
 
     Component.onCompleted: {
-        ProcessService.run(["sh", "-c", "test -f " + root.prefsFile], function(out, exitCode) {
-            if (exitCode !== 0) {
-                console.log("[Preferences] No preferences file found. Booting with defaults immediately.");
-                safetyTimer.stop();
-                root.loaded = true;
-                root.requestSave(); // Create the file
-            } else {
-                prefsFileView.reload();
-            }
+        // Create the data dir first; the first save can follow immediately after
+        // a missing-file boot, so sequencing here avoids a lost initial write.
+        _dataDirProc.onExited.connect(function () {
+            ProcessService.run(["sh", "-c", "test -f " + root.prefsFile], function(out, exitCode) {
+                if (exitCode !== 0) {
+                    console.log("[Preferences] No preferences file found. Booting with defaults immediately.");
+                    safetyTimer.stop();
+                    root.loaded = true;
+                    root.requestSave(); // Create the file
+                } else {
+                    prefsFileView.reload();
+                }
+            });
         });
+        _dataDirProc.running = true;
     }
 
     property Timer safetyTimer: Timer {
@@ -327,6 +352,21 @@ QtObject {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
                 }
             }
+        }
+    }
+
+    // Atomic writer (atomicWrites defaults to true): content is written to a
+    // temp file and renamed over the target only on success, so a crash mid
+    // write can never truncate preferences.json. Reads stay on prefsFileView;
+    // this view is write-only and does not watch for external changes.
+    property FileView prefsWriter: FileView {
+        path: root.prefsFile
+        watchChanges: false
+
+        onSaved: root._flush()
+        onSaveFailed: function (error) {
+            console.error("[Preferences] Failed to save preferences:", error);
+            root._dirty = false;
         }
     }
 }

@@ -44,6 +44,15 @@ Item {
         }
     }
 
+    // Atomic writer for the scanned-list cache (atomicWrites defaults to true),
+    // replacing the previous `printf > file` shell-out so a crash mid-write can
+    // not leave a truncated cache. Read side stays on listCacheView.
+    FileView {
+        id: listCacheWriter
+        path: root.wallpaperListFile
+        watchChanges: false
+    }
+
     Connections {
         target: Preferences
         function onLoadedChanged() {
@@ -155,8 +164,7 @@ Item {
             }
             root.wallpapers = entries;
 
-            ProcessService.runDetached(["sh", "-c", "printf '%s' \"$1\" > \"$2\"", "--", JSON.stringify(entries), root.wallpaperListFile]);
-
+            listCacheWriter.setText(JSON.stringify(entries));
             if (root.currentWallpaper === "" && entries.length > 0) {
                 setWallpaper(entries[0].path);
             }
