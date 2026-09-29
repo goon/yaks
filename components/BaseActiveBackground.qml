@@ -21,7 +21,7 @@ Rectangle {
            : "transparent"
 
     Behavior on color {
-        BaseAnimation { duration: Globals.animations.fast }
+        BaseMotion { duration: Globals.motion.hover }
     }
 
     // Premium Selection Gradient Border Layer
@@ -31,7 +31,7 @@ Rectangle {
         visible: opacity > 0.0 || root.isPremiumActive
         layer.enabled: opacity < 1.0 && opacity > 0.0
         
-        Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
+        Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
         
         // Outer Gradient "Border"
         Rectangle {

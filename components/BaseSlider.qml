@@ -32,7 +32,7 @@ Item {
     property real _animatedValue: value
     Behavior on _animatedValue {
         enabled: !mouseArea.pressed
-        BaseAnimation { }
+        BaseMotion { }
     }
 
     readonly property real normalizedValue: (_animatedValue - from) / (to - from)
@@ -41,7 +41,7 @@ Item {
     readonly property bool isActive: root.hovered || root.pressed
 
     property real _baseOpacity: root.muted ? 0.6 : 1.0
-    Behavior on _baseOpacity { BaseAnimation { } }
+    Behavior on _baseOpacity { BaseMotion { } }
 
     SequentialAnimation on breathOpacity {
         running: root.pressed
@@ -127,7 +127,7 @@ Item {
                 z: 10
 
                 scale: root.isActive ? 1.15 : 1.0
-                Behavior on scale { BaseAnimation { duration: 250; easing.type: Easing.OutBack } }
+                Behavior on scale { BaseMotion { duration: Globals.motion.hover; easing.type: Globals.motion.easeSpring } }
             }
 
             MouseArea {

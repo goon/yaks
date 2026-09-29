@@ -48,11 +48,11 @@ Item {
     onXChanged: if (_effectiveTarget) { _lastX = x; _hasPositioned = true; }
     onYChanged: if (_effectiveTarget) { _lastY = y; _hasPositioned = true; }
 
-    Behavior on x { enabled: root._hasPositioned; NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
-    Behavior on y { enabled: root._hasPositioned; NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuart } }
+    Behavior on x { enabled: root._hasPositioned; NumberAnimation { duration: Globals.motion.standard; easing.type: Easing.OutQuart } }
+    Behavior on y { enabled: root._hasPositioned; NumberAnimation { duration: Globals.motion.standard; easing.type: Easing.OutQuart } }
 
     opacity: _effectiveTarget ? 1.0 : 0.0
-    Behavior on opacity { NumberAnimation { duration: Globals.animations.fast } }
+    Behavior on opacity { NumberAnimation { duration: Globals.motion.hover } }
 
     z: 10
 

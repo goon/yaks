@@ -87,12 +87,6 @@ QtObject {
         onOrderChanged: root.requestSave()
     }
 
-    property QtObject animations: QtObject {
-        property real speedMultiplier: 1.0 // 0.5x - 2.5x
-
-        onSpeedMultiplierChanged: root.requestSave()
-    }
-
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
     property string currentWallpaper: ""
@@ -121,7 +115,6 @@ QtObject {
         ["globals", "backgroundOpacity"],
         ["globals", "islandOutline"],
         ["indicators", "order"],
-        ["animations", "speedMultiplier"],
         ["currentWallpaper"]
     ]
 

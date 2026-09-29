@@ -54,13 +54,11 @@ Item {
     // animates the row exactly like hover does.
     onHighlightedChanged: {
         if (root.bounceTitleOnHover && root.highlighted) {
-            titlePulse.stop();
             titleText.opacity = 1.0;
             titleText.scale = 1.0;
             titleBounce.restart();
         } else {
             titleBounce.stop();
-            titlePulse.stop();
             titleText.scale = 1.0;
             titleText.opacity = 1.0;
         }
@@ -118,7 +116,7 @@ Item {
                 icon: root.leftIcon
                 size: Globals.dimensions.iconMedium
                 color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
-                Behavior on color { BaseAnimation { } }
+                Behavior on color { BaseMotion { } }
             }
         }
 
@@ -153,22 +151,12 @@ Item {
                 SequentialAnimation {
                     id: titleBounce
 
-                    NumberAnimation { target: titleText; property: "scale"; to: 1.10; duration: Math.max(0, Math.round(130 / Preferences.animations.speedMultiplier)); easing.type: Easing.OutQuad }
-                    NumberAnimation { target: titleText; property: "scale"; to: 0.97; duration: Math.max(0, Math.round(90 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
-                    NumberAnimation { target: titleText; property: "scale"; to: 1.0; duration: Math.max(0, Math.round(150 / Preferences.animations.speedMultiplier)); easing.type: Easing.OutBack }
-
-                    onFinished: if (root.bounceTitleOnHover && root.highlighted) titlePulse.start()
+                    NumberAnimation { target: titleText; property: "scale"; to: 1.10; duration: Globals.motion.hover; easing.type: Easing.OutQuad }
+                    NumberAnimation { target: titleText; property: "scale"; to: 0.97; duration: Globals.motion.hover; easing.type: Easing.InOutQuad }
+                    NumberAnimation { target: titleText; property: "scale"; to: 1.0; duration: Globals.motion.hover; easing.type: Globals.motion.easeSpring }
                 }
 
-                SequentialAnimation {
-                    id: titlePulse
-                    loops: Animation.Infinite
-
-                    NumberAnimation { target: titleText; property: "opacity"; from: 1.0; to: 0.8; duration: Math.max(0, Math.round(800 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
-                    NumberAnimation { target: titleText; property: "opacity"; from: 0.8; to: 1.0; duration: Math.max(0, Math.round(800 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
-                }
-
-                Behavior on color { BaseAnimation { } }
+                Behavior on color { BaseMotion { } }
             }
 
             Item {
@@ -176,11 +164,11 @@ Item {
                 visible: root.subtitle !== ""
                 Layout.preferredHeight: root._subtitleCollapsed ? 0 : subtitleText.implicitHeight
                 Layout.topMargin: root._subtitleCollapsed ? 0 : Math.max(0, Globals.dimensions.listItemHeight - titleText.implicitHeight - subtitleText.implicitHeight)
-                Behavior on Layout.preferredHeight { BaseAnimation { easing.type: Easing.OutQuart } }
-                Behavior on Layout.topMargin { BaseAnimation { easing.type: Easing.OutQuart } }
+                Behavior on Layout.preferredHeight { BaseMotion { easing.type: Easing.OutQuart } }
+                Behavior on Layout.topMargin { BaseMotion { easing.type: Easing.OutQuart } }
                 clip: true
                 opacity: root._subtitleCollapsed ? 0.0 : 1.0
-                Behavior on opacity { BaseAnimation { } }
+                Behavior on opacity { BaseMotion { } }
 
                 BaseText {
                     id: subtitleText
@@ -201,7 +189,7 @@ Item {
             visible: root.rightIconVisible && root.rightIcon !== ""
             icon: root.rightIcon
             color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.text : Globals.colors.muted)
-            Behavior on color { BaseAnimation { } }
+            Behavior on color { BaseMotion { } }
             Layout.alignment: Qt.AlignVCenter
         }
     }

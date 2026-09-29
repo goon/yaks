@@ -30,8 +30,8 @@ Item {
 
     ParallelAnimation {
         id: entryAnim
-        BaseAnimation { target: root; property: "opacity"; to: 1; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)) }
-        BaseAnimation { target: entryTranslate; property: "y"; to: 0; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)); easing.type: Easing.OutBack }
+        BaseMotion { target: root; property: "opacity"; to: 1; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)) }
+        BaseMotion { target: entryTranslate; property: "y"; to: 0; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)); easing.type: Globals.motion.easeSpring }
     }
 
     Rectangle {
@@ -55,7 +55,7 @@ Item {
             spacing: Globals.geometry.spacing.large
 
             scale: mouseArea.pressed ? 0.98 : 1.0
-            Behavior on scale { BaseAnimation { } }
+            Behavior on scale { BaseMotion { } }
 
             Item {
                 Layout.preferredWidth: Globals.dimensions.iconLarge

@@ -66,7 +66,7 @@ SettingsPage {
                     BaseIcon {
                         icon: "chevron-right"
                         color: shellFontRow.hovered ? Globals.colors.text : Globals.colors.muted
-                        Behavior on color { BaseAnimation { } }
+                        Behavior on color { BaseMotion { } }
                     }
                 }
 

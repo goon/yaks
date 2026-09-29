@@ -43,11 +43,11 @@ Rectangle {
 
         Behavior on x {
             enabled: root.isReady
-            BaseAnimation { }
+            BaseMotion { }
         }
         Behavior on width {
             enabled: root.isReady
-            BaseAnimation { }
+            BaseMotion { }
         }
     }
 

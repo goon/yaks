@@ -44,7 +44,7 @@ BaseContainer {
             implicitWidth: isValid ? _itemSize : 0
 
             Behavior on implicitWidth {
-                NumberAnimation { duration: Globals.animations.fast; easing.type: Easing.OutQuad }
+                NumberAnimation { duration: Globals.motion.hover; easing.type: Easing.OutQuad }
             }
 
             Image {
@@ -62,13 +62,13 @@ BaseContainer {
                 opacity: (isFocused || isHovered) ? 1 : 0.6
 
                 Behavior on scale {
-                    BaseAnimation {
+                    BaseMotion {
                     }
 
                 }
 
                 Behavior on opacity {
-                    BaseAnimation {
+                    BaseMotion {
                     }
 
                 }
@@ -90,7 +90,7 @@ BaseContainer {
         move: Transition {
             NumberAnimation {
                 properties: "x,y"
-                duration: Globals.animations.normal
+                duration: Globals.motion.standard
                 easing.type: Easing.OutQuad
             }
 
@@ -101,15 +101,15 @@ BaseContainer {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: Globals.animations.fast
+                duration: Globals.motion.hover
             }
 
             NumberAnimation {
                 property: "scale"
                 from: 0
                 to: 1
-                duration: Globals.animations.fast
-                easing.type: Easing.OutBack
+                duration: Globals.motion.hover
+                easing.type: Globals.motion.easeSpring
             }
 
         }
@@ -118,13 +118,13 @@ BaseContainer {
             NumberAnimation {
                 property: "opacity"
                 to: 0
-                duration: Globals.animations.fast
+                duration: Globals.motion.hover
             }
 
             NumberAnimation {
                 property: "scale"
                 to: 0
-                duration: Globals.animations.fast
+                duration: Globals.motion.hover
             }
 
         }
@@ -132,7 +132,7 @@ BaseContainer {
         displaced: Transition {
             NumberAnimation {
                 properties: "x,y"
-                duration: Globals.animations.normal
+                duration: Globals.motion.standard
                 easing.type: Easing.OutQuad
             }
 

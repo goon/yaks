@@ -32,7 +32,7 @@ Item {
     property real _boost: 1
     property bool _appearing: false
 
-    readonly property int _appearMs: Math.max(1, Math.round(Globals.animations.fast / Preferences.animations.speedMultiplier))
+    readonly property int _appearMs: Globals.motion.hover
 
     width: Globals.dimensions.caretWidth
     visible: control.activeFocus && !control.readOnly

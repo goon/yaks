@@ -39,7 +39,7 @@ FocusScope {
 
     scale: (root.clickable && pressed) ? 0.98 : 1.0
 
-    Behavior on scale { BaseAnimation { duration: Globals.animations.fast } }
+    Behavior on scale { BaseMotion { duration: Globals.motion.hover } }
 
 
 

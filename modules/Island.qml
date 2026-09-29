@@ -107,7 +107,7 @@ Item {
 
     Timer {
         id: collapseTimer
-        interval: Globals.animations.normal
+        interval: Globals.motion.morph
         repeat: false
         onTriggered: {
             if (!islandRoot.isMorphed) {
@@ -264,10 +264,10 @@ Item {
         radius: Preferences.globals.cornerRadius || Globals.geometry.radius
         clip: true
 
-        Behavior on x      { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
-        Behavior on y      { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
-        Behavior on width  { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
-        Behavior on height { enabled: islandRoot._ready; PropertyAnimation { duration: Math.max(0, Math.round(Globals.animations.normal / Preferences.animations.speedMultiplier)); easing.type: Globals.animations.easingType; easing.bezierCurve: Globals.animations.bezierCurve } }
+        Behavior on x      { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
+        Behavior on y      { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
+        Behavior on width  { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
+        Behavior on height { enabled: islandRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
 
 
 
@@ -290,7 +290,7 @@ Item {
                 opacity: islandRoot.isIslandMorphed ? 0.0 : 1.0
                 enabled: opacity > 0.01
 
-                Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
+                Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
 
                 Full {
                     id: staticFull
@@ -331,7 +331,7 @@ Item {
 
                 opacity: islandRoot.isMorphed && status === Loader.Ready ? 1.0 : 0.0
                 visible: opacity > 0.0
-                Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
+                Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
 
                 source: {
                     var src = IslandService.panelSource(islandRoot.loadedPanelName);
@@ -364,7 +364,7 @@ Item {
 
             Timer {
                 id: openTimer
-                interval: Globals.animations.normal
+                interval: Globals.motion.morph
                 repeat: false
                 onTriggered: {
                     if (islandRoot.isMorphed && panelLoader.item) {

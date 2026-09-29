@@ -39,8 +39,8 @@ SettingsPage {
                     icon: "search"
                     color: searchInput.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
                     scale: searchInput.text.length > 0 ? 1.1 : 1.0
-                    Behavior on color { BaseAnimation { } }
-                    Behavior on scale { BaseAnimation { } }
+                    Behavior on color { BaseMotion { } }
+                    Behavior on scale { BaseMotion { } }
                 }
 
                 BaseInput {

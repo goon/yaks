@@ -25,7 +25,7 @@ Switch {
     property real progress: control.checked ? 1.0 : 0.0
     readonly property real _p: Math.max(0, Math.min(1, progress))
     Behavior on progress {
-        BaseAnimation { }
+        BaseMotion { }
     }
 
     HoverHandler {
@@ -41,7 +41,7 @@ Switch {
         y: parent.height / 2 - height / 2
         opacity: control.enabled ? 1.0 : 0.5
 
-        Behavior on opacity { BaseAnimation { } }
+        Behavior on opacity { BaseMotion { } }
 
         readonly property color accent: Globals.colors.primary
         readonly property color faceBase: Globals.alpha(Globals.colors.raw.on_surface, 0.88)
@@ -59,7 +59,7 @@ Switch {
             border.width: 2
             border.color: Globals.colors.raw.outline_variant
 
-            Behavior on color { BaseAnimation { } }
+            Behavior on color { BaseMotion { } }
         }
 
         // ── KNOB ──────────────────────────────────────────────────────
@@ -77,7 +77,7 @@ Switch {
             rotation: control.progress * 360
 
             scale: control.pressed ? 0.92 : (control.hovered ? 1.05 : 1.0)
-            Behavior on scale { BaseAnimation { duration: Globals.animations.fast } }
+            Behavior on scale { BaseMotion { duration: Globals.motion.hover } }
 
             color: control.checked
                 ? Qt.tint(indicatorContainer.faceBase, Globals.alpha(indicatorContainer.accent, 0.28))
@@ -85,7 +85,7 @@ Switch {
             border.width: 2
             border.color: Globals.colors.raw.outline_variant
 
-            Behavior on color { BaseAnimation { } }
+            Behavior on color { BaseMotion { } }
 
             layer.enabled: true
             layer.effect: MultiEffect {

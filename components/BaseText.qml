@@ -21,7 +21,7 @@ Text {
     wrapMode: Text.WordWrap
     layer.enabled: shadow
 
-    Behavior on color { BaseAnimation {} }
+    Behavior on color { BaseMotion {} }
 
     layer.effect: MultiEffect {
         shadowEnabled: true

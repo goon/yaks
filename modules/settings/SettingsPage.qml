@@ -28,7 +28,7 @@ BaseContainer {
                 icon: "chevron-left"
                 color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
                 Layout.alignment: Qt.AlignVCenter
-                Behavior on color { BaseAnimation { } }
+                Behavior on color { BaseMotion { } }
 
                 MouseArea {
                     id: backMouseArea

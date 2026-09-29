@@ -23,7 +23,7 @@ PanelWindow {
     property bool transitionPending: false
 
     readonly property int transitionDurationMs:
-        Math.max(100, Math.round(Preferences.wallpaper.transitionDuration / Preferences.animations.speedMultiplier))
+        Math.max(100, Math.round(Preferences.wallpaper.transitionDuration))
 
     readonly property bool transitioning: transitionAnim.running
 
@@ -155,7 +155,7 @@ PanelWindow {
             property: "parallaxScale"
             to: 0
             duration: 200
-            easing.type: Easing.OutCubic
+            easing.type: Globals.motion.easeStandard
         }
 
         NumberAnimation {
@@ -164,7 +164,7 @@ PanelWindow {
             property: "parallaxScale"
             to: 1
             duration: 450
-            easing.type: Easing.OutCubic
+            easing.type: Globals.motion.easeStandard
         }
 
         Image {

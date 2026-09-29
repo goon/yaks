@@ -75,13 +75,13 @@ Item {
                 opacity: isActive ? 1.0 : (mouseArea.containsMouse ? 1.0 : (hasWindows ? 0.6 : 0.2))
 
                 Behavior on width {
-                    BaseAnimation { }
+                    BaseMotion { }
                 }
                 Behavior on x {
-                    BaseAnimation { }
+                    BaseMotion { }
                 }
                 Behavior on opacity {
-                    BaseAnimation { }
+                    BaseMotion { }
                 }
 
                 MouseArea {
@@ -139,8 +139,8 @@ Item {
                     }
 
                     // Fade back to solid text colour when deactivated
-                    ColorAnimation { id: fadeGs1; target: gs1; property: "color"; to: Globals.colors.text; duration: Globals.animations.fast }
-                    ColorAnimation { id: fadeGs2; target: gs2; property: "color"; to: Globals.colors.text; duration: Globals.animations.fast }
+                    ColorAnimation { id: fadeGs1; target: gs1; property: "color"; to: Globals.colors.text; duration: Globals.motion.hover }
+                    ColorAnimation { id: fadeGs2; target: gs2; property: "color"; to: Globals.colors.text; duration: Globals.motion.hover }
                 }
             }
         }

@@ -184,7 +184,7 @@ Item {
             anchors.centerIn: parent
             icon: itemRoot.iconName
             opacity: dragArea.containsMouse ? 1.0 : 0.8
-            Behavior on opacity { BaseAnimation { duration: Globals.animations.fast } }
+            Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
 
             layer.enabled: true
             layer.effect: MultiEffect {
@@ -193,7 +193,7 @@ Item {
                 shadowBlur: 0.8
                 shadowHorizontalOffset: 0
                 shadowVerticalOffset: 0
-                Behavior on shadowColor { ColorAnimation { duration: Globals.animations.fast } }
+                Behavior on shadowColor { ColorAnimation { duration: Globals.motion.hover } }
             }
         }
 

@@ -26,7 +26,7 @@ BaseContainer {
             : Globals.alpha(Globals.colors.border, 0.75)
         border.width: 1
         
-        Behavior on border.color { BaseAnimation { } }
+        Behavior on border.color { BaseMotion { } }
 
         BaseActiveBackground {
             anchors.fill: parent

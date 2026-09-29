@@ -50,7 +50,7 @@ Item {
         implicitHeight: size
 
         opacity: muted ? 0.6 : 1.0
-        Behavior on opacity { BaseAnimation { } }
+        Behavior on opacity { BaseMotion { } }
 
         BaseIcon {
             anchors.centerIn: parent
@@ -61,8 +61,8 @@ Item {
             color: sourceIcon.color
             opacity: sourceIcon.secondary ? 0 : 1
             scale: sourceIcon.secondary ? 0.8 : 1.0
-            Behavior on opacity { BaseAnimation { } }
-            Behavior on scale { BaseAnimation { } }
+            Behavior on opacity { BaseMotion { } }
+            Behavior on scale { BaseMotion { } }
         }
 
         BaseIcon {
@@ -74,8 +74,8 @@ Item {
             color: sourceIcon.color
             opacity: sourceIcon.secondary ? 1 : 0
             scale: sourceIcon.secondary ? 1.0 : 0.8
-            Behavior on opacity { BaseAnimation { } }
-            Behavior on scale { BaseAnimation { } }
+            Behavior on opacity { BaseMotion { } }
+            Behavior on scale { BaseMotion { } }
         }
 
         MouseArea {

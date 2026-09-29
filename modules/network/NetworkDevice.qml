@@ -90,7 +90,7 @@ Item {
                         anchors.centerIn: parent
                         icon: root.iconName
                         color: root.isConnected ? Globals.colors.primary : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.muted : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
-                        Behavior on color { BaseAnimation { } }
+                        Behavior on color { BaseMotion { } }
                     }
                 }
 
@@ -106,7 +106,7 @@ Item {
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap
                         Layout.fillWidth: true
-                        Behavior on color { BaseAnimation { } }
+                        Behavior on color { BaseMotion { } }
                     }
 
                     BaseText {
@@ -193,7 +193,7 @@ Item {
                 }
             }
 
-            Behavior on Layout.preferredHeight { BaseAnimation { duration: 200 } }
+            Behavior on Layout.preferredHeight { BaseMotion { duration: Globals.motion.standard } }
         }
     }
 }

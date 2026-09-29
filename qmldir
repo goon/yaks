@@ -43,7 +43,7 @@ BaseText components/BaseText.qml
 BaseComboBox components/BaseComboBox.qml
 BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSwitch components/BaseSwitch.qml
-BaseAnimation components/BaseAnimation.qml
+BaseMotion components/BaseMotion.qml
 BaseSpinBox components/BaseSpinBox.qml
 BaseIndicator components/BaseIndicator.qml
 

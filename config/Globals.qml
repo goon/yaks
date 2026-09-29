@@ -118,11 +118,18 @@ QtObject {
      * =========================================================================
      */
     readonly property QtObject
-    animations: QtObject {
-        readonly property int fast: 250
-        readonly property int normal: 450
-        readonly property int easingType: Easing.OutQuint
-        readonly property var bezierCurve: [0.15, 0, 0, 1]
+    motion: QtObject {
+        // ── DURATIONS (ms) ──────────────────────────────────────────────
+        readonly property int hover: 140
+        readonly property int standard: 300
+        readonly property int morph: 420
+        readonly property int heat: 2000
+
+        // ── EASINGS ─────────────────────────────────────────────────────
+        readonly property int easeStandard: Easing.OutCubic
+        readonly property int easeSpring: Easing.OutBack
+        // Easing.BezierSpline curve; Qt expects point groups ending at 1,1.
+        readonly property var easeEmphasis: [0.16, 1, 0.3, 1, 1, 1]
     }
 
     readonly property QtObject

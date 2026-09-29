@@ -93,8 +93,8 @@ BaseContainer {
         Layout.preferredHeight: root.notifCount === 0 ? 250 : 0
         visible: root.notifCount === 0
         opacity: visible ? 1 : 0
-        Behavior on opacity { BaseAnimation { } }
-        Behavior on height { BaseAnimation { } }
+        Behavior on opacity { BaseMotion { } }
+        Behavior on height { BaseMotion { } }
         clip: true
 
         // ── STYLE 0: BOUNCING "DVD LOGO" BELL ────────────────────────────

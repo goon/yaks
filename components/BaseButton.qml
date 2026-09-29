@@ -41,7 +41,7 @@ Rectangle {
     implicitHeight: childrenLayout.implicitHeight + (root.paddingVertical * 2)
     scale: pressed ? 0.98 : 1.0
 
-    Behavior on scale { BaseAnimation { duration: Globals.animations.fast } }
+    Behavior on scale { BaseMotion { duration: Globals.motion.hover } }
 
     BaseActiveBackground {
         id: stateLayer

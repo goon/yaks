@@ -7,32 +7,32 @@ StackView {
 
     pushEnter: Transition {
         ParallelAnimation {
-            BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Globals.animations.normal }
-            BaseAnimation { property: "x"; from: 50; to: 0; duration: Globals.animations.normal }
+            BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
+            BaseMotion { property: "x"; from: 50; to: 0; duration: Globals.motion.standard }
         }
     }
     pushExit: Transition {
         ParallelAnimation {
-            BaseAnimation { property: "opacity"; from: 1; to: 0; duration: Globals.animations.normal }
-            BaseAnimation { property: "x"; from: 0; to: -50; duration: Globals.animations.normal }
+            BaseMotion { property: "opacity"; from: 1; to: 0; duration: Globals.motion.standard }
+            BaseMotion { property: "x"; from: 0; to: -50; duration: Globals.motion.standard }
         }
     }
     popEnter: Transition {
         ParallelAnimation {
-            BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Globals.animations.normal }
-            BaseAnimation { property: "x"; from: -50; to: 0; duration: Globals.animations.normal }
+            BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
+            BaseMotion { property: "x"; from: -50; to: 0; duration: Globals.motion.standard }
         }
     }
     popExit: Transition {
         ParallelAnimation {
-            BaseAnimation { property: "opacity"; from: 1; to: 0; duration: Globals.animations.normal }
-            BaseAnimation { property: "x"; from: 0; to: 50; duration: Globals.animations.normal }
+            BaseMotion { property: "opacity"; from: 1; to: 0; duration: Globals.motion.standard }
+            BaseMotion { property: "x"; from: 0; to: 50; duration: Globals.motion.standard }
         }
     }
     replaceEnter: Transition {
-        BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Globals.animations.normal }
+        BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
     }
     replaceExit: Transition {
-        BaseAnimation { property: "opacity"; from: 1; to: 0; duration: Globals.animations.normal }
+        BaseMotion { property: "opacity"; from: 1; to: 0; duration: Globals.motion.standard }
     }
 }

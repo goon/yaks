@@ -29,7 +29,7 @@ SpinBox {
     topPadding: 0
     bottomPadding: 0
 
-    Behavior on implicitWidth { BaseAnimation { } }
+    Behavior on implicitWidth { BaseMotion { } }
 
     background: Item {
         implicitWidth: root.expanded ? 120 : 0
@@ -105,8 +105,8 @@ SpinBox {
         color: root.atMax ? Globals.colors.muted
                           : (root.up.pressed || root.up.hovered ? Globals.colors.primary : Globals.colors.text)
         opacity: root.expanded ? (root.atMax ? 0.3 : 1.0) : 0.0
-        Behavior on color { BaseAnimation { } }
-        Behavior on opacity { BaseAnimation { } }
+        Behavior on color { BaseMotion { } }
+        Behavior on opacity { BaseMotion { } }
     }
 
     down.indicator: BaseIcon {
@@ -116,7 +116,7 @@ SpinBox {
         color: root.atMin ? Globals.colors.muted
                           : (root.down.pressed || root.down.hovered ? Globals.colors.primary : Globals.colors.text)
         opacity: root.expanded ? (root.atMin ? 0.3 : 1.0) : 0.0
-        Behavior on color { BaseAnimation { } }
-        Behavior on opacity { BaseAnimation { } }
+        Behavior on color { BaseMotion { } }
+        Behavior on opacity { BaseMotion { } }
     }
 }

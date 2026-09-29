@@ -98,7 +98,7 @@ ComboBox {
             enabled: !listView.moving
             SequentialAnimation {
                 PauseAnimation { duration: Math.min(delegateRoot.index * 12, 100) }
-                BaseAnimation { duration: Globals.animations.fast }
+                BaseMotion { duration: Globals.motion.hover }
             }
         }
     }
@@ -143,15 +143,15 @@ ComboBox {
 
         enter: Transition {
             ParallelAnimation {
-                BaseAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Globals.animations.fast }
-                BaseAnimation { property: "opacity"; from: 0; to: 1; duration: Globals.animations.fast }
+                BaseMotion { property: "scale"; from: 0.95; to: 1.0; duration: Globals.motion.standard }
+                BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
             }
         }
 
         exit: Transition {
             ParallelAnimation {
-                BaseAnimation { property: "scale"; to: 0.95; duration: Globals.animations.fast; easing.type: Easing.InQuint }
-                BaseAnimation { property: "opacity"; to: 0; duration: Globals.animations.fast }
+                BaseMotion { property: "scale"; to: 0.95; duration: Globals.motion.standard; easing.type: Easing.InQuint }
+                BaseMotion { property: "opacity"; to: 0; duration: Globals.motion.standard }
             }
         }
 

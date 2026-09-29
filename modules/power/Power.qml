@@ -45,7 +45,7 @@ BaseContainer {
             target: btn
             property: "holdProgress"
             to: 1.0
-            duration: 2000
+            duration: Globals.motion.heat
             easing.type: Easing.InOutQuad
         }
 
@@ -54,7 +54,7 @@ BaseContainer {
             target: btn
             property: "holdProgress"
             to: 0.0
-            duration: Globals.animations.fast
+            duration: Globals.motion.hover
             easing.type: Easing.OutQuad
         }
 
@@ -83,7 +83,7 @@ BaseContainer {
                         icon: btn.actionIcon
                         size: Globals.dimensions.iconMedium
                         color: btn.containsMouse ? Globals.colors.primary : Globals.colors.text
-                        Behavior on color { BaseAnimation { } }
+                        Behavior on color { BaseMotion { } }
                     }
                 }
 
@@ -101,7 +101,7 @@ BaseContainer {
                             color: Globals.colors.text
                             font.weight: Globals.typography.weights.medium
                             font.pixelSize: Globals.typography.size.medium
-                            Behavior on color { BaseAnimation { } }
+                            Behavior on color { BaseMotion { } }
                         }
 
                     }
@@ -111,7 +111,7 @@ BaseContainer {
                         implicitHeight: btn.containsMouse ? subtitleText.implicitHeight : 0
                         clip: true
                         opacity: btn.containsMouse ? 1.0 : 0.0
-                        Behavior on opacity { BaseAnimation { } }
+                        Behavior on opacity { BaseMotion { } }
 
                         BaseText {
                             id: subtitleText

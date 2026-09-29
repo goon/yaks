@@ -19,7 +19,6 @@ Item {
     readonly property var _menuModel: [
         { page: "Style.qml",         title: "Style",         icon: "paintbrush"  },
         { page: "Bar.qml",           title: "Bar",           icon: "panel-top"   },
-        { page: "Animations.qml",    title: "Animations",    icon: "zap"         },
         { page: "Wallpaper.qml",     title: "Wallpaper",     icon: "image"       },
         { page: "Applications.qml",  title: "Applications",  icon: "layout-grid" },
     ]
@@ -83,6 +82,6 @@ Item {
 
     BaseIndicator {
         hoverPredicate: root._hoverPredicate
-        gapInterval: Globals.animations.fast
+        gapInterval: Globals.motion.hover
     }
 }

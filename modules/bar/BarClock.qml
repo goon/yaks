@@ -65,34 +65,34 @@ BaseContainer {
             id: anim
 
             ParallelAnimation {
-                BaseAnimation {
+                BaseMotion {
                     target: currentText
                     property: "y"
                     to: segment.centerY + segment.height
-                    duration: 250
-                    easing.type: Easing.OutCubic
+                    duration: Globals.motion.standard
+                    easing.type: Globals.motion.easeStandard
                 }
-                BaseAnimation {
+                BaseMotion {
                     target: currentText
                     property: "opacity"
                     to: 0
-                    duration: 250
-                    easing.type: Easing.OutCubic
+                    duration: Globals.motion.standard
+                    easing.type: Globals.motion.easeStandard
                 }
-                BaseAnimation {
+                BaseMotion {
                     target: nextText
                     property: "y"
                     from: segment.centerY - segment.height
                     to: segment.centerY
-                    duration: 250
-                    easing.type: Easing.OutCubic
+                    duration: Globals.motion.standard
+                    easing.type: Globals.motion.easeStandard
                 }
-                BaseAnimation {
+                BaseMotion {
                     target: nextText
                     property: "opacity"
                     to: 1
-                    duration: 250
-                    easing.type: Easing.OutCubic
+                    duration: Globals.motion.standard
+                    easing.type: Globals.motion.easeStandard
                 }
             }
 

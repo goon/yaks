@@ -31,11 +31,11 @@ BaseContainer {
             icon: "search"
             color: input.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
 
-            Behavior on color { BaseAnimation { } }
+            Behavior on color { BaseMotion { } }
 
             // Subtle pulse when typing
             scale: input.text.length > 0 ? 1.1 : 1.0
-            Behavior on scale { BaseAnimation { } }
+            Behavior on scale { BaseMotion { } }
         }
 
         Item {
