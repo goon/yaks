@@ -25,7 +25,7 @@ Item {
      * in OKLCH from the wallpaper seed; consumed by Globals.colors (the shell)
      * and the app hooks.
      */
-    property var currentColors: Palette.build(root.defaultHue, root.defaultSat, root.defaultMeanL, -1, 0)
+    property var currentColors: Palette.build(root.defaultHue, root.defaultSat, root.defaultMeanL, -1, 0, [])
 
     // Fallback seed (no wallpaper): a soft periwinkle.
     readonly property real defaultHue: 258
@@ -54,14 +54,15 @@ Item {
         var wp = Wallpaper.currentWallpaper;
 
         if (!wp || wp === "") {
-            root._ingest(root.defaultHue, root.defaultSat, root.defaultMeanL, -1, 0);
+            root._ingest(root.defaultHue, root.defaultSat, root.defaultMeanL, -1, 0, []);
             return;
         }
 
-        // lib/seed.sh returns "<hue> <sat> <mean_l> <hue2> <sat2>": the
-        // wallpaper's most visible chromatic hue, its raw saturation, the
-        // image's mean lightness, and its second chromatic hue (-1 = none).
-        // Achromatic images emit "0 0 <mean_l> -1 0" for a grey theme.
+        // lib/seed.sh returns "<hue> <sat> <mean_l> <hue2> <sat2> [families]":
+        // the wallpaper's most visible chromatic hue, its raw saturation, the
+        // image's mean lightness, its second chromatic hue (-1 = none), and a
+        // comma-separated list of "hue:sat" chromatic families for the ANSI
+        // palette. Achromatic images emit "0 0 <mean_l> -1 0" for a grey theme.
         var cmd = ["sh", "-c",
             'export PATH="' + root.toolPath + '"; exec sh "$1" "$2"',
             "--", root.seedScript, wp];
@@ -79,12 +80,21 @@ Item {
             }
             if (isNaN(hue2)) hue2 = -1;
             if (isNaN(sat2)) sat2 = 0;
-            root._ingest(hue, sat, meanL, hue2, sat2);
+            var families = [];
+            if (parts[5]) {
+                var famParts = parts[5].split(",");
+                for (var i = 0; i < famParts.length; i++) {
+                    var hs = famParts[i].split(":");
+                    var fh = parseFloat(hs[0]), fs = parseFloat(hs[1]);
+                    if (!isNaN(fh) && !isNaN(fs)) families.push({ "h": fh, "s": fs });
+                }
+            }
+            root._ingest(hue, sat, meanL, hue2, sat2, families);
         });
     }
 
-    function _ingest(hue, sat, meanL, hue2, sat2) {
-        var colors = Palette.build(hue, sat, meanL, hue2, sat2);
+    function _ingest(hue, sat, meanL, hue2, sat2, families) {
+        var colors = Palette.build(hue, sat, meanL, hue2, sat2, families || []);
         root.currentColors = colors;
 
         // Persist a flat copy for debugging.

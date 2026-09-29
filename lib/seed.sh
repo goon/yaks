@@ -8,11 +8,14 @@ set -euo pipefail
 # win (so the most visible chromatic hue drives the theme, not the largest
 # near-grey cluster). Chroma policy lives downstream in lib/palette.js.
 #
-# Prints "<hue> <sat> <mean_l> <hue2> <sat2>" on stdout:
+# Prints "<hue> <sat> <mean_l> <hue2> <sat2> [families]" on stdout:
 #   hue/sat    dominant family hue (deg) and representative saturation (unclamped)
 #   mean_l     whole-image mean HSL lightness, 0..1 (drives the palette's tone)
 #   hue2/sat2  the wallpaper's second chromatic family, when it is substantial
 #              and far enough from the first; hue2 = -1 when there is none
+#   families   up to 6 distinct chromatic families as "hue:sat,hue:sat,...",
+#              gathered at a lower saturation floor so muted-but-real hues
+#              (e.g. a desaturated blue) reach the terminal palette
 # Achromatic images emit "0 0 <mean_l> -1 0" so a grey wallpaper yields a grey theme.
 
 wp="${1:?usage: seed.sh <wallpaper>}"
@@ -35,11 +38,12 @@ command -v magick &>/dev/null || exit 1
 
 # Tunables.
 sat_floor=0.15    # below this a pixel counts as grey and is ignored
+ans_floor=0.10    # lower floor for ANSI families: keep muted-but-real hues
 l_min=0.05        # ignore near-black
 l_max=0.92        # ignore near-white
 
 magick "$wp" -alpha off -resize 200x200 -colors 48 -depth 8 -format "%c" histogram:info:- 2>/dev/null |
-awk -v sat_floor="$sat_floor" -v l_min="$l_min" -v l_max="$l_max" '
+awk -v sat_floor="$sat_floor" -v ans_floor="$ans_floor" -v l_min="$l_min" -v l_max="$l_max" '
 function amax(a, b) { return a > b ? a : b }
 function amin(a, b) { return a < b ? a : b }
 # POSIX-awk hex parse (no gawk-only strtonum / match-array)
@@ -68,6 +72,14 @@ function hex2d(s,   i, c, v) {
     cnt = $1 + 0
     tot += cnt
     lum += cnt * l
+    # ANSI families: a lower floor keeps muted-but-real hues (e.g. a
+    # desaturated blue) available to the terminal palette.
+    if (s >= ans_floor && l >= l_min && l <= l_max) {
+        afam = int(h * 12)
+        afam_score[afam] += cnt * s
+        afam_hue[afam] += cnt * s * h
+        if (cnt * s > afam_best[afam]) { afam_best[afam] = cnt * s; afam_best_sat[afam] = s }
+    }
     if (s < sat_floor) next
     if (l < l_min || l > l_max) next
     fam = int(h * 12)
@@ -98,5 +110,30 @@ END {
         d = h2 - hue1; if (d < 0) d = -d; if (d > 180) d = 360 - d
         if (s2 >= sat_floor && d >= 40) { hue2 = h2; sat2 = s2 }
     }
-    printf "%.1f %.4f %.4f %.1f %.4f\n", hue1, sat1, mean_l, hue2, sat2
+    # Up to six distinct chromatic families for the ANSI palette, ordered by
+    # prominence and de-duplicated by hue.
+    nf = 0
+    for (f in afam_score) if (afam_score[f] > 0) cand[nf++] = f
+    for (i = 0; i < nf; i++) {
+        mi = i
+        for (j = i + 1; j < nf; j++) if (afam_score[cand[j]] > afam_score[cand[mi]]) mi = j
+        tmp = cand[i]; cand[i] = cand[mi]; cand[mi] = tmp
+    }
+    famstr = ""
+    picked = 0
+    for (i = 0; i < nf && picked < 6; i++) {
+        f = cand[i]
+        fh = (afam_hue[f] / afam_score[f]) * 360
+        fs = afam_best_sat[f]
+        dup = 0
+        for (j = 0; j < picked; j++) {
+            dd = fh - pfh[j]; if (dd < 0) dd = -dd; if (dd > 180) dd = 360 - dd
+            if (dd < 28) { dup = 1; break }
+        }
+        if (dup) continue
+        pfh[picked] = fh
+        famstr = famstr (picked > 0 ? "," : "") sprintf("%.1f:%.4f", fh, fs)
+        picked++
+    }
+    printf "%.1f %.4f %.4f %.1f %.4f %s\n", hue1, sat1, mean_l, hue2, sat2, famstr
 }'
