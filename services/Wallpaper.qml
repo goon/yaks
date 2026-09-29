@@ -24,6 +24,8 @@ Item {
 
     property bool isLoading: false
     property bool hasScanned: false
+    // A scan was requested while another was in flight; replayed on completion.
+    property bool pendingScan: false
 
     readonly property string displayWallpaper: currentWallpaper
 
@@ -111,7 +113,13 @@ Item {
      * to see up-to-date thumb files for every source it returns.
      */
     function scanWallpapers() {
-        if (isLoading) return;
+        if (isLoading) {
+            // A scan is already running; don't drop this request. Replay the
+            // newest one when the in-flight scan finishes, so a directory
+            // change arriving mid-scan is never lost.
+            root.pendingScan = true;
+            return;
+        }
 
         var dir = expandPath(Preferences.wallpaper.directory);
         if (!dir || dir === "") {
@@ -144,6 +152,7 @@ Item {
                 root.wallpapers = [];
                 console.warn("[WallpaperService] scan failed for", dir, "exit code", exitCode);
                 ProcessService.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image-error", "Wallpaper", "Could not scan directory: " + dir]);
+                root._replayPendingScan();
                 return;
             }
 
@@ -168,6 +177,8 @@ Item {
             if (root.currentWallpaper === "" && entries.length > 0) {
                 setWallpaper(entries[0].path);
             }
+
+            root._replayPendingScan();
         });
 
         if (!proc) {
@@ -175,6 +186,15 @@ Item {
             hasScanned = true;
             scanRetryTimer.start();
         }
+    }
+
+    // Run a scan that was requested while one was in flight, if any. Clears the
+    // flag first so the replayed scan can itself be superseded cleanly.
+    function _replayPendingScan() {
+        if (!root.pendingScan)
+            return;
+        root.pendingScan = false;
+        root.scanWallpapers();
     }
 
     property Timer scanRetryTimer: Timer {
