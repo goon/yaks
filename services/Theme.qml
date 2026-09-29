@@ -18,8 +18,6 @@ pragma Singleton
 Item {
     id: root
 
-    property bool ready: false
-
     /**
      * The generated palette: flat single-word tokens (deep/well/bg/surface/
      * raised/hair/border, text/muted/faint, primary/secondary/tertiary/error,
@@ -88,7 +86,6 @@ Item {
     function _ingest(hue, sat, meanL, hue2, sat2) {
         var colors = Palette.build(hue, sat, meanL, hue2, sat2);
         root.currentColors = colors;
-        root.ready = true;
 
         // Persist a flat copy for debugging.
         var jsonStr = JSON.stringify(colors, null, 2);

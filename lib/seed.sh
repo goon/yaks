@@ -42,11 +42,21 @@ magick "$wp" -alpha off -resize 200x200 -colors 48 -depth 8 -format "%c" histogr
 awk -v sat_floor="$sat_floor" -v l_min="$l_min" -v l_max="$l_max" '
 function amax(a, b) { return a > b ? a : b }
 function amin(a, b) { return a < b ? a : b }
+# POSIX-awk hex parse (no gawk-only strtonum / match-array)
+function hex2d(s,   i, c, v) {
+    v = 0
+    for (i = 1; i <= length(s); i++) {
+        c = tolower(substr(s, i, 1))
+        v = v * 16 + index("0123456789abcdef", c) - 1
+    }
+    return v
+}
 {
-    if (match($0, /#([0-9A-Fa-f]{6})/, m)) hx = m[1]; else next
-    r = strtonum("0x" substr(hx, 1, 2)) / 255
-    g = strtonum("0x" substr(hx, 3, 2)) / 255
-    b = strtonum("0x" substr(hx, 5, 2)) / 255
+    if (!match($0, /#[0-9A-Fa-f]{6}/)) next
+    hx = substr($0, RSTART + 1, 6)
+    r = hex2d(substr(hx, 1, 2)) / 255
+    g = hex2d(substr(hx, 3, 2)) / 255
+    b = hex2d(substr(hx, 5, 2)) / 255
     mx = amax(r, amax(g, b)); mn = amin(r, amin(g, b)); d = mx - mn
     l = (mx + mn) / 2
     if (d == 0) { s = 0; h = 0 } else {

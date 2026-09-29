@@ -271,7 +271,7 @@ Item {
         layer.enabled: Preferences.globals.shadow && islandRoot.isSettled
         layer.effect: MultiEffect {
             shadowEnabled: true
-            shadowColor: Qt.rgba(0, 0, 0, 0.4)
+            shadowColor: Globals.alpha(Globals.effects.shadow.color, 0.4)
             shadowBlur: 0.6
             shadowHorizontalOffset: 0
             shadowVerticalOffset: 2.5 * Globals.shellScale
