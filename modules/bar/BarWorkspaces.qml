@@ -7,6 +7,7 @@ import qs
 Item {
     id: root
 
+    readonly property int _waveMs: 2000
 
     // Compositor.workspaces already builds a 1..workspaceCount slot list;
     // it now also reacts to Preferences.bar.workspaceCountChanged via Compositor.qml.
@@ -122,8 +123,8 @@ Item {
                         running: indicator.isActive
                         // Snap to start colour so each loop begins correctly
                         ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: 0 }
-                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.secondary; duration: 2000; easing.type: Easing.InOutSine }
-                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: 2000; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.secondary; duration: root._waveMs; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: root._waveMs; easing.type: Easing.InOutSine }
                         onRunningChanged: if (!running) fadeGs1.start()
                     }
 
@@ -133,8 +134,8 @@ Item {
                         loops: Animation.Infinite
                         running: indicator.isActive
                         ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: 0 }
-                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.primary; duration: 2000; easing.type: Easing.InOutSine }
-                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: 2000; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.primary; duration: root._waveMs; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: root._waveMs; easing.type: Easing.InOutSine }
                         onRunningChanged: if (!running) fadeGs2.start()
                     }
 

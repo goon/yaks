@@ -38,6 +38,7 @@ Item {
     readonly property real normalizedValue: (_animatedValue - from) / (to - from)
 
     property real breathOpacity: 1.0
+    readonly property int _breathMs: 800
     readonly property bool isActive: root.hovered || root.pressed
 
     property real _baseOpacity: root.muted ? 0.6 : 1.0
@@ -46,8 +47,8 @@ Item {
     SequentialAnimation on breathOpacity {
         running: root.pressed
         loops: Animation.Infinite
-        NumberAnimation { from: 1.0; to: 0.6; duration: 800; easing.type: Easing.InOutQuad }
-        NumberAnimation { from: 0.6; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+        NumberAnimation { from: 1.0; to: 0.6; duration: root._breathMs; easing.type: Easing.InOutQuad }
+        NumberAnimation { from: 0.6; to: 1.0; duration: root._breathMs; easing.type: Easing.InOutQuad }
         onStopped: root.breathOpacity = 1.0
     }
 

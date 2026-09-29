@@ -7,6 +7,9 @@ import QtQuick.Layouts
 ComboBox {
     id: root
 
+    readonly property int _staggerStepMs: 12
+    readonly property int _staggerCapMs: 100
+
     property color textColor: Globals.colors.text
     property color backgroundColor: Globals.alpha(Globals.colors.surface, Globals.opacity.background)
     property color borderColor: Globals.colors.border
@@ -97,7 +100,7 @@ ComboBox {
         Behavior on opacity {
             enabled: !listView.moving
             SequentialAnimation {
-                PauseAnimation { duration: Math.min(delegateRoot.index * 12, 100) }
+                PauseAnimation { duration: Math.min(delegateRoot.index * root._staggerStepMs, root._staggerCapMs) }
                 BaseMotion { duration: Globals.motion.hover }
             }
         }

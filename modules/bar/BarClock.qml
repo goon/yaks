@@ -113,6 +113,10 @@ BaseContainer {
         spacing: 4
         anchors.verticalCenter: parent ? parent.verticalCenter : undefined
 
+        readonly property int _colonFadeMs: 400
+        readonly property int _colonStaggerMs: 200
+        readonly property int _colonHoldMs: 500
+
         Repeater {
             model: 2
             delegate: Rectangle {
@@ -126,10 +130,10 @@ BaseContainer {
                 SequentialAnimation on opacity {
                     loops: Animation.Infinite
                     running: true
-                    PauseAnimation { duration: itemIndex * 200 }
-                    NumberAnimation { to: 0.2; duration: 400; easing.type: Easing.InOutSine }
-                    NumberAnimation { to: 0.8; duration: 400; easing.type: Easing.InOutSine }
-                    PauseAnimation { duration: (1 - itemIndex) * 200 + 500 }
+                    PauseAnimation { duration: itemIndex * dots._colonStaggerMs }
+                    NumberAnimation { to: 0.2; duration: dots._colonFadeMs; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: 0.8; duration: dots._colonFadeMs; easing.type: Easing.InOutSine }
+                    PauseAnimation { duration: (1 - itemIndex) * dots._colonStaggerMs + dots._colonHoldMs }
                 }
             }
         }

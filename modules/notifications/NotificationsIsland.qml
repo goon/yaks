@@ -11,6 +11,11 @@ BaseContainer {
     property string panelState: "Closed"
     implicitWidth: 460
 
+    readonly property int _pulseMs: 2000
+    readonly property int _pulsePauseMs: 1000
+    readonly property int _bellDriftMs: 2000
+    readonly property int _bellSpinMs: 4000
+
     property var notificationManager: Notifications
     property int notifCount: notificationManager ? notificationManager.notificationHistory.count : 0
 
@@ -146,11 +151,11 @@ BaseContainer {
                             loops: Animation.Infinite
                             running: emptyPlaceholder.visible
                             
-                            NumberAnimation { target: pulseText; property: "opacity"; to: 1.0; duration: 2000; easing.type: Easing.InOutQuad }
-                            ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.secondary; duration: 2000; easing.type: Easing.InOutQuad }
-                            ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.primary; duration: 2000; easing.type: Easing.InOutQuad }
-                            NumberAnimation { target: pulseText; property: "opacity"; to: 0.0; duration: 2000; easing.type: Easing.InOutQuad }
-                            PauseAnimation { duration: 1000 }
+                            NumberAnimation { target: pulseText; property: "opacity"; to: 1.0; duration: root._pulseMs; easing.type: Easing.InOutQuad }
+                            ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.secondary; duration: root._pulseMs; easing.type: Easing.InOutQuad }
+                            ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.primary; duration: root._pulseMs; easing.type: Easing.InOutQuad }
+                            NumberAnimation { target: pulseText; property: "opacity"; to: 0.0; duration: root._pulseMs; easing.type: Easing.InOutQuad }
+                            PauseAnimation { duration: root._pulsePauseMs }
                         }
                     }
                 }
@@ -182,7 +187,7 @@ BaseContainer {
                     loops: Animation.Infinite
                     from: 0
                     to: 1
-                    duration: 2000
+                    duration: root._bellDriftMs
                     running: emptyPlaceholder.visible
                 }
                 
@@ -192,7 +197,7 @@ BaseContainer {
                     loops: Animation.Infinite
                     from: 0
                     to: 360
-                    duration: 4000
+                    duration: root._bellSpinMs
                     running: emptyPlaceholder.visible
                 }
                 

@@ -24,6 +24,7 @@ BaseContainer {
         property string actionLabel: ""
         
         property real holdProgress: 0.0
+        readonly property int _waveMs: 800
         signal actionTriggered()
 
         onContainsMouseChanged: {
@@ -132,7 +133,7 @@ BaseContainer {
                             
                             NumberAnimation on wavePhase {
                                 from: 0; to: Math.PI * 2
-                                duration: 800
+                                duration: btn._waveMs
                                 loops: Animation.Infinite
                                 running: btn.pressed
                             }

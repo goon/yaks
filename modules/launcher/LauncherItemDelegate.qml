@@ -5,6 +5,9 @@ import qs
 Item {
     id: root
 
+    readonly property int _staggerStepMs: 30
+    readonly property int _staggerCapMs: 300
+
     // ── API ───────────────────────────────────────────────────────────
     property string text: ""
     property string imageSource: ""
@@ -30,8 +33,8 @@ Item {
 
     ParallelAnimation {
         id: entryAnim
-        BaseMotion { target: root; property: "opacity"; to: 1; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)) }
-        BaseMotion { target: entryTranslate; property: "y"; to: 0; delay: Math.max(0, Math.min(root.itemIndex * 30, 300)); easing.type: Globals.motion.easeSpring }
+        BaseMotion { target: root; property: "opacity"; to: 1; delay: Math.max(0, Math.min(root.itemIndex * root._staggerStepMs, root._staggerCapMs)) }
+        BaseMotion { target: entryTranslate; property: "y"; to: 0; delay: Math.max(0, Math.min(root.itemIndex * root._staggerStepMs, root._staggerCapMs)); easing.type: Globals.motion.easeSpring }
     }
 
     Rectangle {

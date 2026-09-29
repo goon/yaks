@@ -7,6 +7,7 @@ BaseScrolling {
     id: root
     clip: true
     implicitHeight: mainLayout.implicitHeight
+    readonly property int _spinMs: 1000
 
     function resolveBluetoothIcon(bluezIcon) {
         if (!bluezIcon)
@@ -142,7 +143,7 @@ BaseScrolling {
                         target: refreshButton
                         property: "iconRotation"
                         from: 0; to: 360
-                        duration: 1000
+                        duration: root._spinMs
                         loops: Animation.Infinite
                         running: Bluetooth.scanning
                     }

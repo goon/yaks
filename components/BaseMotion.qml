@@ -3,7 +3,8 @@ import qs
 
 /**
  * BaseMotion - Standardized motion hub for the shell.
- * Can be used as a simple PropertyAnimation.
+ * A single-property animation with an optional delay, defaulting to the
+ * shared Globals.motion duration/easing tokens.
  */
 SequentialAnimation {
     id: root

@@ -12,6 +12,10 @@ PanelWindow {
 
     readonly property var transitionModes: ["fade", "disc", "corner", "wave"]
 
+    // ── MOTION ─────────────────────────────────────────────────────────
+    readonly property int _parallaxFadeOutMs: 200
+    readonly property int _parallaxFadeInMs: 450
+
     // ── STATE ──────────────────────────────────────────────────────────
     property string activePath: ""
     property string pendingPath: ""
@@ -154,7 +158,7 @@ PanelWindow {
             target: parallaxContainer
             property: "parallaxScale"
             to: 0
-            duration: 200
+            duration: root._parallaxFadeOutMs
             easing.type: Globals.motion.easeStandard
         }
 
@@ -163,7 +167,7 @@ PanelWindow {
             target: parallaxContainer
             property: "parallaxScale"
             to: 1
-            duration: 450
+            duration: root._parallaxFadeInMs
             easing.type: Globals.motion.easeStandard
         }
 
