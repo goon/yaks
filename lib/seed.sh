@@ -64,6 +64,9 @@ function amin(a, b) { return a < b ? a : b }
     fam_cnt[fam] += cnt
     fam_score[fam] += cnt * s
     fam_hue[fam] += cnt * s * h
+    # representative saturation: the most prominent (count x sat) pixel of the
+    # family, so the seed reflects wallpaper vividness, not a muted average
+    if (cnt * s > fam_best[fam]) { fam_best[fam] = cnt * s; fam_best_sat[fam] = s }
 }
 END {
     mean_l = tot > 0 ? lum / tot : 0.12
@@ -77,11 +80,11 @@ END {
         exit 0
     }
     hue1 = (fam_hue[bf] / fam_score[bf]) * 360
-    sat1 = fam_score[bf] / fam_cnt[bf]
+    sat1 = fam_best_sat[bf]
     hue2 = -1; sat2 = 0
     if (sf >= 0 && second >= 0.35 * best) {
         h2 = (fam_hue[sf] / fam_score[sf]) * 360
-        s2 = fam_score[sf] / fam_cnt[sf]
+        s2 = fam_best_sat[sf]
         d = h2 - hue1; if (d < 0) d = -d; if (d > 180) d = 360 - d
         if (s2 >= sat_floor && d >= 40) { hue2 = h2; sat2 = s2 }
     }
