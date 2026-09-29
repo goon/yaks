@@ -12,7 +12,9 @@ set -euo pipefail
 # feeds the result to `matugen color hex` so the palette follows the
 # wallpaper's most visible hue.
 #
-# Prints "#rrggbb" on stdout, or exits non-zero when the image is achromatic.
+# Prints "#rrggbb <mean_l>" on stdout, or exits non-zero when the image is
+# achromatic. mean_l is the whole image's mean HSL lightness (0..1), so the
+# palette's tone can follow the wallpaper.
 
 wp="${1:?usage: seed.sh <wallpaper>}"
 [ -f "$wp" ] || exit 1
@@ -58,15 +60,18 @@ function amin(a, b) { return a < b ? a : b }
         else if (mx == g) h = ((b - r) / d + 2) / 6
         else              h = ((r - g) / d + 4) / 6
     }
+    cnt = $1 + 0
+    tot += cnt
+    lum += cnt * l
     if (s < sat_floor) next
     if (l < l_min || l > l_max) next
-    cnt = $1 + 0
     fam = int(h * 12)
     fam_cnt[fam] += cnt
     fam_score[fam] += cnt * s
     fam_hue[fam] += cnt * s * h
 }
 END {
+    mean_l = tot > 0 ? lum / tot : 0.12
     best = -1
     for (f in fam_score) if (fam_score[f] > best) { best = fam_score[f]; bf = f }
     if (best <= 0) exit 1
@@ -86,5 +91,5 @@ END {
         else                  v = p
         rgb[i] = v
     }
-    printf "#%02x%02x%02x\n", int(rgb[1] * 255 + 0.5), int(rgb[2] * 255 + 0.5), int(rgb[3] * 255 + 0.5)
+    printf "#%02x%02x%02x %.4f\n", int(rgb[1] * 255 + 0.5), int(rgb[2] * 255 + 0.5), int(rgb[3] * 255 + 0.5), mean_l
 }'

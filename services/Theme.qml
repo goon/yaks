@@ -53,27 +53,32 @@ Item {
         var wp = Wallpaper.currentWallpaper;
 
         if (!wp || wp === "") {
-            root._ingest(root.defaultSeedColor);
+            root._ingest(root.defaultSeedColor, NaN);
             return;
         }
 
         // Pick the seed ourselves. lib/seed.sh returns the wallpaper's most
-        // visible chromatic hue (Uki's saturation-floor rule) rather than the
-        // largest near-grey cluster. An achromatic image makes it exit
-        // non-zero and we fall back to the constant seed.
+        // visible chromatic hue (Uki's saturation-floor rule) plus the image's
+        // mean lightness, so the palette's tone can follow the wallpaper. An
+        // achromatic image makes it exit non-zero and we fall back to the
+        // constant seed.
         var cmd = ["sh", "-c",
             'export PATH="' + root.toolPath + '"; exec sh "$1" "$2"',
             "--", root.seedScript, wp];
         ProcessService.run(cmd, function(output, exitCode) {
-            var seed = (exitCode === 0 && output) ? output.trim() : "";
-            if (!/^#[0-9a-fA-F]{6}$/.test(seed))
+            var parts = (exitCode === 0 && output) ? output.trim().split(/\s+/) : [];
+            var seed = parts[0] || "";
+            var meanL = parseFloat(parts[1]);
+            if (!/^#[0-9a-fA-F]{6}$/.test(seed)) {
                 seed = root.defaultSeedColor;
-            root._ingest(seed);
+                meanL = NaN;
+            }
+            root._ingest(seed, meanL);
         });
     }
 
-    function _ingest(seed) {
-        var colors = Palette.build(seed);
+    function _ingest(seed, meanL) {
+        var colors = Palette.build(seed, meanL);
         root.currentColors = colors;
         root.ready = true;
 
