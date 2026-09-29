@@ -16,6 +16,80 @@ Item {
     readonly property bool hovered: clickArea.containsMouse
     readonly property real contentCenterY: contentWrapper.y + contentWrapper.height / 2
 
+    // ── KEYBOARD NAVIGATION CONTRACT ───────────────────────────────────
+    // A row is navigable when it is visible and has something to do: either it
+    // is clickable (a nav row to a subpage) or it hosts an adjustable control.
+    readonly property bool focusable: visible && height > 0 && (clickable || control !== null)
+    property bool navFocused: false
+
+    // The first child in the default content slot, treated as this row's
+    // control when it understands one of the adjust/activate shapes below.
+    readonly property Item control: {
+        for (var i = 0; i < controlContainer.children.length; i++) {
+            var c = controlContainer.children[i];
+            if (c !== rightSpacer)
+                return c;
+        }
+        return null;
+    }
+
+    // Step the control by delta (Left/Right). Returns true if it consumed the
+    // input. Duck-typed so each Base* control can be driven without coupling.
+    function adjust(delta) {
+        var c = root.control;
+        if (!c) return false;
+
+        // BaseSegmentedControl: step currentValue through its model and emit.
+        if (c.activated !== undefined && c.model !== undefined && c.currentValue !== undefined) {
+            var n = c.model.length;
+            if (n <= 0) return false;
+            var cur = -1;
+            for (var i = 0; i < n; i++) {
+                var v = (c.valueRole !== undefined && c.model[i] && c.model[i][c.valueRole] !== undefined)
+                    ? c.model[i][c.valueRole] : c.model[i];
+                if (v === c.currentValue) { cur = i; break; }
+            }
+            if (cur < 0) cur = 0;
+            var next = Math.max(0, Math.min(n - 1, cur + (delta < 0 ? -1 : 1)));
+            if (next === cur) return true;
+            var nv = (c.valueRole !== undefined && c.model[next] && c.model[next][c.valueRole] !== undefined)
+                ? c.model[next][c.valueRole] : c.model[next];
+            c.currentValue = nv;
+            c.activated(next, nv);
+            return true;
+        }
+
+        if (typeof c.incrementCurrentIndex === "function" && c.model !== undefined) {
+            // ComboBox.
+            if (delta < 0) c.currentIndex = Math.max(0, c.currentIndex - 1);
+            else c.currentIndex = Math.min(c.count - 1, c.currentIndex + 1);
+            return true;
+        }
+        if (typeof c.increase === "function" && typeof c.decrease === "function") {
+            // SpinBox / Slider, both expose increase()/decrease().
+            if (delta < 0) c.decrease();
+            else c.increase();
+            return true;
+        }
+        return false;
+    }
+
+    // Enter/Space on the row: toggles a switch, or fires the row click.
+    function activate() {
+        var c = root.control;
+        if (c && c.checked !== undefined) {
+            // Flip `checked` directly; Qt emits toggled/checkedChanged whichever
+            // way it changes, so the control's own handler drives Preferences.
+            c.checked = !c.checked;
+            return true;
+        }
+        if (root.clickable) {
+            root.clicked();
+            return true;
+        }
+        return false;
+    }
+
     signal clicked()
 
     implicitHeight: Math.max(layout.implicitHeight, Globals.dimensions.settingsRowHeight) + Globals.geometry.spacing.large * 2 + 1

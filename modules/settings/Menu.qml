@@ -33,7 +33,13 @@ Item {
     }
 
     function _hoverPredicate() {
-        return mixerItem.hoveredSlider || root.activeHover;
+        // Keyboard navigation wins over hover.
+        if (mixerItem.hoveredSlider) return mixerItem.hoveredSlider;
+        for (var i = 0; i < menuRepeater.count; i++) {
+            var navItem = menuRepeater.itemAt(i);
+            if (navItem && navItem.navHighlighted) return navItem;
+        }
+        return root.activeHover;
     }
 
     ColumnLayout {

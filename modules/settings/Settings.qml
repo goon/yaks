@@ -34,9 +34,55 @@ FocusScope {
         if (event.key === Qt.Key_Escape) {
             IslandService.closeAll();
             event.accepted = true;
-        } else if (!event.accepted && event.key === Qt.Key_Backspace && pageStack.depth > 1) {
+        } else if (event.key === Qt.Key_Backspace && pageStack.depth > 1) {
             pageStack.pop(null);
             event.accepted = true;
+        } else if (event.key === Qt.Key_Down) {
+            if (SettingsNav.move(1)) event.accepted = true;
+        } else if (event.key === Qt.Key_Up) {
+            if (SettingsNav.move(-1)) event.accepted = true;
+        } else if (event.key === Qt.Key_Left) {
+            if (SettingsNav.adjust(-1)) event.accepted = true;
+        } else if (event.key === Qt.Key_Right) {
+            if (SettingsNav.adjust(1)) event.accepted = true;
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            if (SettingsNav.activate()) event.accepted = true;
+        }
+    }
+
+    // Feed the current StackView page to the shared navigator. The StackView's
+    // initialItem is assigned after this component completes, so bind on both
+    // the page change and the panel opening, and retry once on completion.
+    readonly property Item _currentPage: pageStack.currentItem
+
+    function _bindCurrentPage() {
+        if (root._currentPage)
+            SettingsNav.bind(root._currentPage);
+        else
+            bindRetry.restart();
+    }
+
+    on_CurrentPageChanged: root._bindCurrentPage()
+
+    onPanelStateChanged: {
+        if (panelState === "Opening" || panelState === "Open")
+            root._bindCurrentPage();
+    }
+
+    Component.onCompleted: root._bindCurrentPage()
+
+    Timer {
+        id: bindRetry
+        interval: 60
+        repeat: true
+        property int tries: 0
+        onTriggered: {
+            tries++;
+            if (root._currentPage || tries > 30) {
+                stop();
+                if (root._currentPage)
+                    SettingsNav.bind(root._currentPage);
+            }
         }
     }
 
