@@ -13,7 +13,10 @@ Rectangle {
     property color borderColor: "transparent"
     property real borderWidth: 1
 
-    color: Globals.alpha(Globals.colors.background, Globals.opacity.background)
+    gradient: Gradient {
+        GradientStop { position: 0.0; color: Globals.alpha(Globals.colors.backgroundTop, Globals.opacity.background) }
+        GradientStop { position: 1.0; color: Globals.alpha(Globals.colors.backgroundBottom, Globals.opacity.background) }
+    }
     radius: Globals.geometry.radius
     border.color: borderColor
     border.width: borderWidth

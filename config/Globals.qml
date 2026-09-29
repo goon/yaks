@@ -27,6 +27,12 @@ QtObject {
 
         // ── ROLE LAYER ────────────────────────────────────────────────────
         readonly property color background: colorsRoot.raw.surface
+
+        // Shell background gradient stops. The wallpaper hue is baked into the
+        // surface tokens upstream in Theme._ingest, so these are plain aliases.
+        readonly property color backgroundTop: colorsRoot.raw.surface_container_high
+        readonly property color backgroundBottom: colorsRoot.raw.surface_container_low
+
         readonly property color surface: colorsRoot.raw.surface_container
         readonly property color border: colorsRoot.raw.outline_variant
         readonly property color text: colorsRoot.raw.on_surface

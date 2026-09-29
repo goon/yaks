@@ -24,6 +24,7 @@ Item {
     readonly property string defaultSeedColor: "#9d99e5"
     readonly property string configPath: Globals.cacheDir + "/matugen/config.toml"
     readonly property string colorsPath: Globals.cacheDir + "/current_theme/colors.json"
+    readonly property string seedScript: Globals.rootDir + "/lib/seed.sh"
 
     readonly property var _fallbackColors: ({
         "primary": "#adc6ff",
@@ -97,10 +98,31 @@ Item {
     function apply() {
         var scheme = Preferences.globals.schemeType || "scheme-tonal-spot";
         var wp = Wallpaper.currentWallpaper;
-        var sourceArgs = (wp && wp !== "")
-            ? ["image", wp]
-            : ["color", "hex", root.defaultSeedColor];
 
+        if (!wp || wp === "") {
+            root._runMatugen(["color", "hex", root.defaultSeedColor], scheme);
+            return;
+        }
+
+        // Pick the seed ourselves. Matugen's own image extraction weights a
+        // large near-grey cluster over smaller vivid ones, so a desaturated
+        // area can win the seed and then be amplified by the scheme type into
+        // a hue barely present in the wallpaper. lib/seed.sh instead returns
+        // the most visible chromatic hue (Uki's saturation-floor rule); only
+        // if it finds none (achromatic image) do we fall back to `image`.
+        var cmd = ["sh", "-c",
+            'export PATH="' + root.toolPath + '"; exec sh "$1" "$2"',
+            "--", root.seedScript, wp];
+        ProcessService.run(cmd, function(output, exitCode) {
+            var seed = (exitCode === 0 && output) ? output.trim() : "";
+            if (/^#[0-9a-fA-F]{6}$/.test(seed))
+                root._runMatugen(["color", "hex", seed], scheme);
+            else
+                root._runMatugen(["image", wp], scheme);
+        });
+    }
+
+    function _runMatugen(sourceArgs, scheme) {
         var cfg = '[config]\n'
             + 'version_check = false\n'
             + 'caching = false\n'
@@ -138,6 +160,79 @@ Item {
         return (typeof entry === "string") ? entry : entry.color;
     }
 
+    // ── SURFACE TINT ──────────────────────────────────────────────────
+    // MD3's neutral palette is near-grey in every scheme, so Matugen's
+    // surfaces carry almost no wallpaper chroma. Uki re-tints them: keep each
+    // token's lightness, but apply the extracted wallpaper hue at a floored
+    // saturation so even a low-chroma source reads as tinted. Done here (not
+    // in the role layer) so external app hooks, which read currentColors
+    // directly, share the exact same surfaces as the shell.
+
+    function _hexToRgb(hex) {
+        var h = String(hex).replace("#", "");
+        return {
+            r: parseInt(h.substr(0, 2), 16) / 255,
+            g: parseInt(h.substr(2, 2), 16) / 255,
+            b: parseInt(h.substr(4, 2), 16) / 255
+        };
+    }
+
+    function _rgbToHsl(c) {
+        var max = Math.max(c.r, c.g, c.b), min = Math.min(c.r, c.g, c.b);
+        var l = (max + min) / 2, h = 0, s = 0, d = max - min;
+        if (d !== 0) {
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            if (max === c.r) h = (c.g - c.b) / d + (c.g < c.b ? 6 : 0);
+            else if (max === c.g) h = (c.b - c.r) / d + 2;
+            else h = (c.r - c.g) / d + 4;
+            h /= 6;
+        }
+        return { h: h, s: s, l: l };
+    }
+
+    function _hslToHex(h, s, l) {
+        function hue(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        }
+        var r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            r = hue(p, q, h + 1 / 3);
+            g = hue(p, q, h);
+            b = hue(p, q, h - 1 / 3);
+        }
+        function to(x) {
+            var v = Math.round(Math.max(0, Math.min(1, x)) * 255).toString(16);
+            return v.length < 2 ? "0" + v : v;
+        }
+        return "#" + to(r) + to(g) + to(b);
+    }
+
+    function _tintSurfaces(colors) {
+        var src = colors.source_color;
+        if (!src) return;
+        var hsl = root._rgbToHsl(root._hexToRgb(src));
+        var sat = hsl.s >= 0.04 ? Math.min(Math.max(hsl.s, 0.30), 0.45) : 0.0;
+        var names = [
+            "background", "surface", "surface_dim", "surface_bright", "surface_variant",
+            "surface_container_lowest", "surface_container_low", "surface_container",
+            "surface_container_high", "surface_container_highest", "outline", "outline_variant"
+        ];
+        for (var i = 0; i < names.length; i++) {
+            var h = colors[names[i]];
+            if (!h) continue;
+            colors[names[i]] = root._hslToHex(hsl.h, sat, root._rgbToHsl(root._hexToRgb(h)).l);
+        }
+    }
+
     function _ingest(data) {
         var mode = "dark";
         var colors = Object.assign({}, root._fallbackColors);
@@ -147,6 +242,7 @@ Item {
             if (val) colors[name] = val;
         }
 
+        root._tintSurfaces(colors);
         root.currentColors = colors;
         root.ready = true;
 
