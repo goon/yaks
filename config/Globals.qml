@@ -37,9 +37,10 @@ QtObject {
         readonly property color raised:  colorsRoot.raw.raised
         readonly property color well:    colorsRoot.raw.well
 
-        // shell background gradient (carries the user Opacity setting)
-        readonly property color top:    root.alpha(colorsRoot.raw.raised, root.opacity.background)
-        readonly property color bottom: root.alpha(colorsRoot.raw.surface, root.opacity.background)
+        // shell capsule gradient — vivid chrome tokens, shell-only, and the
+        // only place the user Opacity setting applies.
+        readonly property color top:    root.alpha(colorsRoot.raw.top, root.opacity.background)
+        readonly property color bottom: root.alpha(colorsRoot.raw.bottom, root.opacity.background)
 
         // lines
         readonly property color border: colorsRoot.raw.border
