@@ -169,7 +169,7 @@ BaseScrolling {
 
             BaseText {
                 text: "Searching devices..."
-                color: Globals.alpha(Globals.colors.text, 0.4)
+                color: Globals.colors.muted
                 font.pixelSize: Globals.typography.size.small
                 anchors.centerIn: parent
             }

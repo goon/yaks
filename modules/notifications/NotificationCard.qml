@@ -117,7 +117,7 @@ BaseContainer {
                         width: 36
                         height: 36
                         radius: Globals.geometry.radius
-                        color: Globals.alpha(Globals.colors.primary, 0.15)
+                        color: Globals.colors.tint
                         visible: symbolIcon.icon !== ""
                         z: 10
 

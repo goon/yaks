@@ -79,7 +79,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: Globals.geometry.innerRadius.small
-                    color: Globals.colors.surface
+                    color: Globals.colors.raised
                     visible: root.showFallbackIcon
 
                     BaseText {

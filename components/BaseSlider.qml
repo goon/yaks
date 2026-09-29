@@ -16,7 +16,7 @@ Item {
     property alias pressed: mouseArea.pressed
     readonly property bool hovered: mouseArea.containsMouse
 
-    property color trackColor: Globals.alpha(Globals.colors.surface, 0.5)
+    property color trackColor: Globals.colors.well
     property color fillColor: Globals.colors.primary
     property int trackHeight: Globals.geometry.slider.trackHeight
 

@@ -43,7 +43,7 @@ SettingsPage {
                         readonly property bool isInstalled: Theme.installedApps[modelData.id] !== false
                         readonly property bool isEnabled: (Preferences.applications.themedApps[modelData.id] || false) && isInstalled
 
-                        backgroundColor: isEnabled ? Globals.alpha(Globals.colors.primary, 0.1) : Globals.alpha(Globals.colors.surface, 0.5)
+                        backgroundColor: isEnabled ? Globals.colors.tint : Globals.colors.disabled
                         opacity: isInstalled ? 1.0 : 0.5
                         blockRadius: Globals.geometry.innerRadius.medium
 

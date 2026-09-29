@@ -44,8 +44,8 @@ Switch {
         Behavior on opacity { BaseMotion { } }
 
         readonly property color accent: Globals.colors.primary
-        readonly property color faceBase: Globals.alpha(Globals.colors.raw.text, 0.88)
-        readonly property color ink: Globals.alpha(Globals.colors.raw.deep, 0.9)
+        readonly property color faceBase: Globals.colors.text
+        readonly property color ink: Globals.colors.bg
 
         // ── TRACK ─────────────────────────────────────────────────────
         Rectangle {
@@ -55,9 +55,9 @@ Switch {
             radius: height / 2
             color: control.checked
                 ? Globals.alpha(indicatorContainer.accent, 0.75)
-                : Globals.colors.raw.deep
+                : Globals.colors.well
             border.width: 2
-            border.color: Globals.colors.raw.border
+            border.color: Globals.colors.border
 
             Behavior on color { BaseMotion { } }
         }
@@ -83,7 +83,7 @@ Switch {
                 ? Qt.tint(indicatorContainer.faceBase, Globals.alpha(indicatorContainer.accent, 0.28))
                 : indicatorContainer.faceBase
             border.width: 2
-            border.color: Globals.colors.raw.border
+            border.color: Globals.colors.border
 
             Behavior on color { BaseMotion { } }
 

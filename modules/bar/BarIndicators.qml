@@ -189,7 +189,7 @@ Item {
             layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
-                shadowColor: dragArea.containsMouse ? Globals.alpha(Globals.colors.text, 0.1) : "transparent"
+                shadowColor: dragArea.containsMouse ? Globals.colors.hover : "transparent"
                 shadowBlur: 0.8
                 shadowHorizontalOffset: 0
                 shadowVerticalOffset: 0

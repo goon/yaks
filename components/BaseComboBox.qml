@@ -11,7 +11,7 @@ ComboBox {
     readonly property int _staggerCapMs: 100
 
     property color textColor: Globals.colors.text
-    property color backgroundColor: Globals.alpha(Globals.colors.surface, Globals.opacity.background)
+    property color backgroundColor: Globals.colors.well
     property color borderColor: Globals.colors.border
     property color borderActiveColor: Globals.colors.primary
     property int maxVisibleItems: 10
@@ -77,7 +77,7 @@ ComboBox {
             
             visible: parent.highlighted || parent.hovered
             
-            color: Globals.alpha(Globals.colors.surface, 0.5)
+            color: Globals.colors.hover
 
             Rectangle {
                 width: 3

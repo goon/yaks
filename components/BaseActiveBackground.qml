@@ -58,7 +58,7 @@ Rectangle {
             anchors.margins: 1
             radius: Math.max(0, root.radius - 1)
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Globals.alpha(Globals.colors.text, 0.05) }
+                GradientStop { position: 0.0; color: Globals.colors.hover }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }

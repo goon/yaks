@@ -26,20 +26,37 @@ QtObject {
         readonly property var raw: Theme.currentColors || ({})
 
         // ── ROLE LAYER ────────────────────────────────────────────────────
-        readonly property color background: colorsRoot.raw.bg
+        // The only colours components consume. Everything derived (state
+        // layers, the recessed well, the background gradient's opacity) is
+        // resolved here once; call sites never touch raw tokens or do colour
+        // math.
 
-        // Shell background gradient stops. The wallpaper hue is baked into the
-        // surface tokens upstream by lib/palette.js, so these are plain aliases.
-        // Matches Uki's pill (card top ~0.20 -> card bottom ~0.165).
-        readonly property color backgroundTop: colorsRoot.raw.raised
-        readonly property color backgroundBottom: colorsRoot.raw.surface
-
+        // surfaces
+        readonly property color bg:      colorsRoot.raw.bg
         readonly property color surface: colorsRoot.raw.surface
+        readonly property color raised:  colorsRoot.raw.raised
+        readonly property color well:    colorsRoot.raw.well
+
+        // shell background gradient (carries the user Opacity setting)
+        readonly property color top:    root.alpha(colorsRoot.raw.raised, root.opacity.background)
+        readonly property color bottom: root.alpha(colorsRoot.raw.surface, root.opacity.background)
+
+        // lines
         readonly property color border: colorsRoot.raw.border
-        readonly property color text: colorsRoot.raw.text
+        readonly property color hair:   colorsRoot.raw.hair
+
+        // copy
+        readonly property color text:  colorsRoot.raw.text
         readonly property color muted: colorsRoot.raw.muted
-        readonly property color primary: colorsRoot.raw.primary
+
+        // accents
+        readonly property color primary:   colorsRoot.raw.primary
         readonly property color secondary: colorsRoot.raw.secondary
+
+        // states
+        readonly property color hover:    root.alpha(colorsRoot.raw.text, 0.08)
+        readonly property color tint:     root.alpha(colorsRoot.raw.primary, 0.15)
+        readonly property color disabled: root.alpha(colorsRoot.raw.bg, 0.50)
     }
 
     readonly property QtObject opacity: QtObject {

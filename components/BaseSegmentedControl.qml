@@ -13,9 +13,9 @@ Rectangle {
 
     signal activated(int index, var value)
 
-    color: Globals.alpha(Globals.colors.surface, 0.5)
+    color: Globals.colors.well
     border.width: 1
-    border.color: Globals.alpha(Globals.colors.border, 0.5)
+    border.color: Globals.colors.hair
     radius: Globals.geometry.innerRadius.medium
 
     implicitHeight: 36
@@ -32,7 +32,7 @@ Rectangle {
         y: root.padding
         height: root.height - (root.padding * 2)
         radius: Globals.geometry.innerRadius.medium - root.padding
-        color: Globals.alpha(Globals.colors.primary, 0.15)
+        color: Globals.colors.tint
         border.width: 1
         border.color: Globals.colors.primary
 

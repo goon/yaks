@@ -10,7 +10,7 @@ BaseText {
     visible: text !== ""
     weight: Globals.typography.weights.bold
     font.letterSpacing: 3.0
-    color: isActive ? Globals.colors.text : Globals.alpha(Globals.colors.text, 0.5)
+    color: isActive ? Globals.colors.text : Globals.colors.muted
     
     verticalAlignment: Text.AlignBottom
     Layout.preferredHeight: Globals.dimensions.iconMedium

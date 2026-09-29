@@ -155,7 +155,7 @@ SettingsPage {
             radius: Globals.geometry.innerRadius.medium
 
             // Flat well-style container pills
-            color:        rect.isEnabled ? Globals.alpha(Globals.colors.primary, 0.15) : Globals.alpha(Globals.colors.surface, 0.5)
+            color:        rect.isEnabled ? Globals.colors.tint : Globals.colors.disabled
             border.width: rect.isEnabled ? 1 : 0
             border.color: rect.isEnabled ? Globals.colors.primary : "transparent"
 
@@ -200,7 +200,7 @@ SettingsPage {
                 BaseIcon {
                     icon: "arrow-up-down"
                     size: Globals.dimensions.iconBase
-                    color: Globals.alpha(Globals.colors.text, 0.5)
+                    color: Globals.colors.muted
                 }
             }
 

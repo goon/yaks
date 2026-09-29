@@ -126,9 +126,9 @@ Item {
                     Layout.preferredHeight: 28
                     Layout.preferredWidth: 48
                     radius: Globals.geometry.innerRadius.medium
-                    color: Globals.alpha(Globals.colors.text, 0.05)
+                    color: Globals.colors.hover
                     border.width: 1
-                    border.color: Globals.alpha(Globals.colors.text, 0.1)
+                    border.color: Globals.colors.hair
 
                     RowLayout {
                         anchors.centerIn: parent
@@ -162,9 +162,9 @@ Item {
                 anchors.topMargin: Globals.geometry.padding.medium
                 anchors.left: parent.left
                 anchors.right: parent.right
-                color: Globals.colors.surface
+                color: Globals.colors.raised
                 border.width: 1
-                border.color: Globals.alpha(Globals.colors.border, 0.5)
+                border.color: Globals.colors.hair
                 radius: Globals.geometry.innerRadius.medium
                 implicitHeight: innerLayout.implicitHeight + (Globals.geometry.spacing.large * 2)
 

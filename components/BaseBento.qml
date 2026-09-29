@@ -5,7 +5,7 @@ import qs
 BaseContainer {
     id: root
 
-    property color backgroundColor: Globals.alpha(Globals.colors.surface, 0.4)
+    property color backgroundColor: Globals.colors.raised
     property int blockRadius: Globals.geometry.innerRadius.medium
 
     property bool premiumHover: true
@@ -22,8 +22,8 @@ BaseContainer {
         radius: root.blockRadius
         
         border.color: root.containsMouse 
-            ? Globals.alpha(Globals.colors.primary, 0.4) 
-            : Globals.alpha(Globals.colors.border, 0.75)
+            ? Globals.colors.primary 
+            : Globals.colors.border
         border.width: 1
         
         Behavior on border.color { BaseMotion { } }

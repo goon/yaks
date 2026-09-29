@@ -111,7 +111,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.exclusiveZone: root.exclusiveZone
     visible: true
-    color: Globals.colors.background
+    color: Globals.colors.bg
 
     anchors {
         top: true
