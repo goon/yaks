@@ -30,16 +30,30 @@ Item {
     
     property bool selected: false
 
+    // ── KEYBOARD NAVIGATION CONTRACT ───────────────────────────────────
+    // Set navigable: false on rows that should be skipped by SettingsNav.
+    property bool navigable: true
+    property bool navHighlighted: false
+
+    function activate() {
+        root.clicked();
+        return true;
+    }
+
     // Internal indicator (the gradient bar on the left edge).
     // Set to false when an external BaseIndicator is used instead (e.g. for hover-driven indicators).
     property bool showInternalIndicator: true
 
     readonly property bool containsMouse: mainMouseArea.containsMouse
     readonly property bool hovered: containsMouse
-    readonly property bool _subtitleCollapsed: root.showSubtitleOnHover && !root.hovered
+    // Highlight when either the pointer is over the row or keyboard nav is on it.
+    readonly property bool highlighted: root.navHighlighted || root.containsMouse
+    readonly property bool _subtitleCollapsed: root.showSubtitleOnHover && !root.highlighted
 
-    onHoveredChanged: {
-        if (root.bounceTitleOnHover && root.hovered) {
+    // Drive the bounce/pulse from the shared highlight so keyboard navigation
+    // animates the row exactly like hover does.
+    onHighlightedChanged: {
+        if (root.bounceTitleOnHover && root.highlighted) {
             titlePulse.stop();
             titleText.opacity = 1.0;
             titleText.scale = 1.0;
@@ -103,7 +117,7 @@ Item {
                 anchors.centerIn: parent
                 icon: root.leftIcon
                 size: Globals.dimensions.iconMedium
-                color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.primary : Globals.colors.text)
+                color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
                 Behavior on color { BaseAnimation { } }
             }
         }
@@ -129,7 +143,7 @@ Item {
                 pixelSize: root.titleSize
                 family: root.titleFamily
                 weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.medium
-                color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.primary : Globals.colors.text)
+                color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
@@ -143,7 +157,7 @@ Item {
                     NumberAnimation { target: titleText; property: "scale"; to: 0.97; duration: Math.max(0, Math.round(90 / Preferences.animations.speedMultiplier)); easing.type: Easing.InOutQuad }
                     NumberAnimation { target: titleText; property: "scale"; to: 1.0; duration: Math.max(0, Math.round(150 / Preferences.animations.speedMultiplier)); easing.type: Easing.OutBack }
 
-                    onFinished: if (root.bounceTitleOnHover && root.hovered) titlePulse.start()
+                    onFinished: if (root.bounceTitleOnHover && root.highlighted) titlePulse.start()
                 }
 
                 SequentialAnimation {
@@ -186,7 +200,7 @@ Item {
         BaseIcon {
             visible: root.rightIconVisible && root.rightIcon !== ""
             icon: root.rightIcon
-            color: root.selected ? Globals.colors.primary : (root.containsMouse ? Globals.colors.text : Globals.colors.muted)
+            color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.text : Globals.colors.muted)
             Behavior on color { BaseAnimation { } }
             Layout.alignment: Qt.AlignVCenter
         }
