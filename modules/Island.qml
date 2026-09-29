@@ -260,7 +260,11 @@ Item {
         z: 2
         
 
-        borderColor: Preferences.globals.islandOutline ? Globals.alpha(Globals.colors.border, 0.4) : "transparent"
+        // Outline baked to an opaque colour: the same 40%-border-over-fill blend
+        // the translucent stroke showed, but opaque so the shadow behind the
+        // capsule can't tint it (layer.effect below).
+        readonly property color _outline: Qt.tint(Globals.colors.surface, Globals.alpha(Globals.colors.border, 0.4))
+        borderColor: Preferences.globals.islandOutline ? _outline : "transparent"
         borderWidth: Preferences.globals.islandOutline ? 1 : 0
         radius: Globals.geometry.radius
         clip: true
