@@ -46,6 +46,10 @@ QtObject {
             };
             activePanelItem.panelStateChanged.connect(checkState);
             checkState();
+        } else {
+            // The panel unloaded and its item was destroyed; drop any callbacks
+            // that were waiting for it so they can't fire against a stale item.
+            _pendingCallbacks = [];
         }
     }
 

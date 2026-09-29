@@ -336,6 +336,15 @@ Item {
                         }
                     }
                 }
+
+                // When the loader deactivates (panel closed, or switched to a
+                // different source) the item is destroyed. Clear the shared
+                // reference so consumers (Binds, runWhenPanelReady, toasts) never
+                // see a dangling item pointing at a destroyed object.
+                onItemChanged: {
+                    if (panelLoader.item === null && IslandService.activePanelItem !== null)
+                        IslandService.activePanelItem = null;
+                }
             }
 
             Timer {
