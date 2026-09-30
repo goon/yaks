@@ -56,7 +56,11 @@ Item {
 
     readonly property int _appearMs: Globals.motion.hover
 
-    width: Globals.dimensions.caretWidth
+    // Caret metrics live here rather than in Globals: only this component
+    // draws a caret, so they're tuned in one place.
+    readonly property int caretWidth: Math.max(2, Math.round(2 * Globals.shellScale))
+
+    width: root.caretWidth
     visible: control.activeFocus && !control.readOnly
              && control.selectionStart === control.selectionEnd
              && !control.inputMethodComposing

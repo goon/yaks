@@ -103,7 +103,6 @@ QtObject {
         readonly property int iconSmall: 18 * root.shellScale
         readonly property int iconMedium: 20 * root.shellScale
         readonly property int iconLarge: 30 * root.shellScale
-        readonly property int caretWidth: Math.max(2, Math.round(2 * root.shellScale))
     }
 
     // ── TYPOGRAPHY ──────────────────────────────────────────────────────
