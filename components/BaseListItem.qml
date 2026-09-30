@@ -5,46 +5,66 @@ import qs
 Item {
     id: root
 
-    implicitHeight: Math.max(root.itemHeight, layout.implicitHeight)
+    // Row metrics live here rather than in Globals: this is the one row both the
+    // settings pages and the list menus use, so it owns its own height.
+    property int itemHeight: 36 * Globals.shellScale
+    property int leftIconBoxSize: Globals.dimensions.iconMedium
+    property int verticalPadding: Globals.geometry.spacing.large
+    property real controlWidthRatio: 0.6
+
+    implicitHeight: Math.max(root.itemHeight, layout.implicitHeight) + root.verticalPadding * 2
     implicitWidth: layout.implicitWidth
+    Layout.fillWidth: true
 
     property string title: ""
     property string titleFamily: Globals.typography.family
     property string subtitle: ""
     property bool bounceTitleOnHover: false
-    // Row metrics live here rather than in Globals: only this component sizes
-    // list rows, so they're tuned in one place. Both stay writable because
-    // Menu.qml overrides them per-instance.
-    property int itemHeight: 44 * Globals.shellScale
-    property int leftIconBoxSize: root.itemHeight
-    
+
     property string leftIcon: ""
-    property bool leftIconInteractive: true
+    property bool leftIconInteractive: false
     property bool leftIconActive: false
     property real leftIconScale: 1.0
-    
+
     property bool showVerticalSeparator: false
-    
-    property string rightIcon: "chevron-right"
-    property bool rightIconVisible: true
-    
-    property bool selected: false
 
-    // ── KEYBOARD NAVIGATION CONTRACT ───────────────────────────────────
-    // Set navigable: false on rows that should be skipped by SettingsNav.
-    property bool navigable: true
-    property bool navHighlighted: false
+    // Children dropped into a row land in the right-hand control slot.
+    default property alias content: controlRow.data
 
-    function activate() {
-        root.clicked();
-        return true;
+    // A row that hosts a control reads as a settings row: it keeps side
+    // padding, caps its label column so the control keeps its share, and draws
+    // a rule underneath. List rows (icon + title + chevron) do none of it.
+    readonly property bool settingsStyle: control !== null
+    property bool showSeparator: true
+
+    // The first child in the control slot, treated as this row's control.
+    // Non-Items (a Font.qml Timer, say) land here too, so skip them.
+    readonly property Item control: {
+        for (var i = 0; i < controlRow.children.length; i++) {
+            var c = controlRow.children[i];
+            if (c !== rightSpacer && c instanceof Item)
+                return c;
+        }
+        return null;
     }
 
-    // Internal indicator (the gradient bar on the left edge).
-    readonly property bool containsMouse: mainMouseArea.containsMouse
+    property string rightIcon: "chevron-right"
+    property bool rightIconVisible: true
+
+    property bool selected: false
+    property bool clickable: false
+
+    // ── KEYBOARD NAVIGATION CONTRACT ───────────────────────────────────
+    // A row is navigable when it is visible and has something to do: either it
+    // is clickable (a nav row to a subpage) or it hosts an adjustable control.
+    // SettingsNav owns the keyboard; the row only advertises itself.
+    readonly property bool navigable: visible && height > 0 && (root.clickable || control !== null)
+    property bool navHighlighted: false
+
+    readonly property bool containsMouse: root.clickable && mainMouseArea.containsMouse
     readonly property bool hovered: containsMouse
     // Highlight when either the pointer is over the row or keyboard nav is on it.
-    readonly property bool highlighted: root.navHighlighted || root.containsMouse
+    readonly property bool highlighted: root.clickable && (root.navHighlighted || root.containsMouse)
 
     // Drive the bounce/pulse from the shared highlight so keyboard navigation
     // animates the row exactly like hover does.
@@ -66,8 +86,9 @@ Item {
     MouseArea {
         id: mainMouseArea
         anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        enabled: root.clickable
+        hoverEnabled: root.clickable
+        cursorShape: root.clickable ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: root.clicked()
     }
 
@@ -75,6 +96,8 @@ Item {
         id: layout
         anchors.fill: parent
         spacing: Globals.geometry.spacing.medium
+        Layout.leftMargin: root.settingsStyle ? Globals.geometry.spacing.medium : 0
+        Layout.rightMargin: root.settingsStyle ? Globals.geometry.spacing.medium : 0
 
         Rectangle {
             visible: root.selected
@@ -105,7 +128,7 @@ Item {
                 onClicked: root.leftIconClicked()
                 z: 2 // Sit above the main MouseArea
             }
-            
+
             BaseIcon {
                 visible: !root.leftIconInteractive
                 anchors.centerIn: parent
@@ -127,7 +150,10 @@ Item {
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.leftMargin: root.showVerticalSeparator ? 8 : 0
+            Layout.maximumWidth: root.settingsStyle
+                ? layout.width * (1 - root.controlWidthRatio)
+                : Number.POSITIVE_INFINITY
+            Layout.leftMargin: root.showVerticalSeparator ? Globals.geometry.spacing.medium : 0
             spacing: 0
 
             BaseText {
@@ -177,12 +203,45 @@ Item {
             }
         }
 
+        RowLayout {
+            id: controlRow
+            visible: root.settingsStyle
+            Layout.preferredWidth: layout.width * root.controlWidthRatio
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            spacing: Globals.geometry.spacing.small
+
+            property bool hasFillWidthChild: {
+                for (var i = 0; i < children.length; i++) {
+                    var child = children[i];
+                    if (child === rightSpacer) continue;
+                    if (child.Layout && child.Layout.fillWidth) return true;
+                }
+                return false;
+            }
+
+            Item {
+                id: rightSpacer
+                Layout.fillWidth: !controlRow.hasFillWidthChild
+                visible: !controlRow.hasFillWidthChild
+            }
+        }
+
         BaseIcon {
-            visible: root.rightIconVisible && root.rightIcon !== ""
+            visible: root.rightIconVisible && root.rightIcon !== "" && !root.settingsStyle
             icon: root.rightIcon
             color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.text : Globals.colors.muted)
             Behavior on color { BaseMotion { } }
             Layout.alignment: Qt.AlignVCenter
         }
+    }
+
+    BaseSeparator {
+        visible: root.showSeparator && root.settingsStyle
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: root.leftIcon !== ""
+            ? Globals.geometry.spacing.medium + Globals.dimensions.iconMedium + Globals.geometry.spacing.medium
+            : Globals.geometry.spacing.medium
     }
 }

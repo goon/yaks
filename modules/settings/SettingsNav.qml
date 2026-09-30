@@ -6,10 +6,10 @@ pragma Singleton
  * Keyboard navigation for settings pages and the settings menu.
  *
  * The active page (or menu) hands its root item to `bind()`. Navigation walks
- * that tree depth-first, collecting every visible, focusable SettingsRow and
- * BaseListItem in visual order, and drives Up/Down (move), Left/Right (adjust
- * the focused row's control) and Enter/Space (activate). Backspace/Escape are
- * left to the page so they can pop the StackView.
+ * that tree depth-first, collecting every visible, navigable BaseListItem in
+ * visual order, and drives Up/Down (move), Left/Right (adjust the focused
+ * row's control) and Enter/Space (activate). Backspace/Escape are left to the
+ * page so they can pop the StackView.
  *
  * A single shared index means only one row is highlighted at a time, and the
  * focus marker is cleared whenever the bound page changes.
@@ -70,18 +70,12 @@ QtObject {
     }
 
     function _isNavigable(c) {
-        if (c.focusable !== undefined)
-            return c.focusable === true;
-        if (c.navigable !== undefined)
-            return c.navigable === true && c.visible !== false;
-        return false;
+        return c.navigable !== undefined && c.navigable === true;
     }
 
     function _setHighlight(item, on) {
-        if (item) {
-            if (item.navFocused !== undefined) item.navFocused = on;
-            if (item.navHighlighted !== undefined) item.navHighlighted = on;
-        }
+        if (item && item.navHighlighted !== undefined)
+            item.navHighlighted = on;
     }
 
     function applyHighlight() {
@@ -115,23 +109,60 @@ QtObject {
         return true;
     }
 
+    // Left/Right: step the focused row's control by delta. Returns true if it
+    // consumed the input. Duck-typed so each Base* control can be driven without
+    // coupling. BaseSegmentedControl: step currentValue through its model and
+    // emit. Nothing else implements an adjust protocol, so a SpinBox or Slider
+    // row is a no-op here.
     function adjust(delta) {
-        var item = root.items[root.index];
-        if (item && typeof item.adjust === "function")
-            return item.adjust(delta);
+        var c = root._control();
+        if (!c) return false;
+
+        if (c.activated !== undefined && c.model !== undefined && c.currentValue !== undefined) {
+            var n = c.model.length;
+            if (n <= 0) return false;
+            var cur = -1;
+            for (var i = 0; i < n; i++) {
+                var v = (c.valueRole !== undefined && c.model[i] && c.model[i][c.valueRole] !== undefined)
+                    ? c.model[i][c.valueRole] : c.model[i];
+                if (v === c.currentValue) { cur = i; break; }
+            }
+            if (cur < 0) cur = 0;
+            var next = Math.max(0, Math.min(n - 1, cur + (delta < 0 ? -1 : 1)));
+            if (next === cur) return true;
+            var nv = (c.valueRole !== undefined && c.model[next] && c.model[next][c.valueRole] !== undefined)
+                ? c.model[next][c.valueRole] : c.model[next];
+            c.currentValue = nv;
+            c.activated(next, nv);
+            return true;
+        }
         return false;
     }
 
+    // Enter/Space on the focused row: toggles a switch, or fires the row click.
     function activate() {
         var item = root.items[root.index];
         if (!item)
             return false;
-        if (typeof item.activate === "function")
-            return item.activate();
-        if (typeof item.onClicked === "function" || item.clicked !== undefined) {
+        var c = root._control();
+        if (c && c.checked !== undefined) {
+            // Prefer toggle() so a control that emits toggled (e.g. BaseSwitch)
+            // reaches onToggled call sites; fall back to a checked assignment.
+            if (typeof c.toggle === "function")
+                c.toggle();
+            else
+                c.checked = !c.checked;
+            return true;
+        }
+        if (item.clickable) {
             item.clicked();
             return true;
         }
         return false;
+    }
+
+    function _control() {
+        var item = root.items[root.index];
+        return item && item.control !== undefined ? item.control : null;
     }
 }

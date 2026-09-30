@@ -32,7 +32,7 @@ Item {
             var child = col.children[i];
             if (!child.visible || child.height === 0) continue;
             if (my >= child.y && my <= child.y + child.height) {
-                return child.indicatorTarget !== undefined ? child.indicatorTarget : child;
+                return child;
             }
         }
         return null;
@@ -40,13 +40,12 @@ Item {
 
     function _navTarget() {
         var item = SettingsNav.items[SettingsNav.index];
-        if (!item || !item.navFocused)
+        if (!item || !item.navHighlighted)
             return null;
         // Only claim the indicator if the focused row is a descendant here.
         for (var i = 0; i < col.children.length; i++) {
-            var child = col.children[i];
-            if (child === item)
-                return child.indicatorTarget !== undefined ? child.indicatorTarget : child;
+            if (col.children[i] === item)
+                return item;
         }
         return null;
     }

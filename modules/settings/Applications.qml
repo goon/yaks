@@ -14,11 +14,10 @@ SettingsPage {
         SettingsGroup {
             Layout.fillWidth: true
 
-            SettingsRow {
+            BaseListItem {
                 id: appsTitleRow
-                icon: "layout-grid"
-                label: "Applications"
-                showSeparator: false
+                leftIcon: "layout-grid"
+                title: "Applications"
             }
 
             GridLayout {

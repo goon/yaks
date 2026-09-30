@@ -15,10 +15,10 @@ SettingsPage {
         SettingsGroup {
             Layout.fillWidth: true
 
-                SettingsRow {
+                BaseListItem {
                     id: shellFontRow
-                    icon: "type"
-                    label: "Font"
+                    leftIcon: "type"
+                    title: "Font"
                     clickable: true
                     onClicked: root.StackView.view.pushPage(Qt.resolvedUrl("Font.qml"), "Font.qml")
 
@@ -37,9 +37,9 @@ SettingsPage {
                     }
                 }
 
-                SettingsRow {
-                    icon: "layout-grid"
-                    label: "Scale"
+                BaseListItem {
+                    leftIcon: "layout-grid"
+                    title: "Scale"
 
                     BaseSegmentedControl {
                         Layout.fillWidth: true
@@ -55,9 +55,9 @@ SettingsPage {
                     }
                 }
 
-                SettingsRow {
-                    icon: "spline"
-                    label: "Rounding"
+                BaseListItem {
+                    leftIcon: "spline"
+                    title: "Rounding"
 
                     BaseSegmentedControl {
                         Layout.fillWidth: true
@@ -73,9 +73,9 @@ SettingsPage {
                     }
                 }
 
-                SettingsRow {
-                    icon: "droplet"
-                    label: "Opacity"
+                BaseListItem {
+                    leftIcon: "droplet"
+                    title: "Opacity"
 
                     BaseSpinBox {
                         from: 50
@@ -87,9 +87,9 @@ SettingsPage {
                     }
                 }
 
-                SettingsRow {
-                    icon: "frame"
-                    label: "Outline"
+                BaseListItem {
+                    leftIcon: "frame"
+                    title: "Outline"
 
                     BaseSwitch {
                         checked: Preferences.globals.islandOutline
@@ -97,9 +97,9 @@ SettingsPage {
                     }
                 }
 
-                SettingsRow {
-                    icon: "layers"
-                    label: "Shadow"
+                BaseListItem {
+                    leftIcon: "layers"
+                    title: "Shadow"
                     showSeparator: false
 
                     BaseSwitch {

@@ -57,7 +57,6 @@ BaseContainer {
                 // ── WI-FI ──────────────────────────────────────────────
                 BaseListItem {
                     id: wifiItem
-                    Layout.fillWidth: true
 
                     title: Network.connected ? "Wi-Fi" : (Network.ethernetConnected ? "Network" : "Wi-Fi")
                     subtitle: {
@@ -74,6 +73,10 @@ BaseContainer {
                     leftIcon: Network.connected ? "wifi" : (Network.ethernetConnected ? "ethernet-port" : "wifi-off")
                     leftIconActive: Network.connected || Network.ethernetConnected
                     leftIconInteractive: !Network.ethernetConnected
+                    leftIconBoxSize: itemHeight
+                    clickable: true
+                    itemHeight: 44 * Globals.shellScale
+                    verticalPadding: 0
                     showVerticalSeparator: true
                     onClicked: root.pushPage("wifi")
                     onLeftIconClicked: {
@@ -86,7 +89,6 @@ BaseContainer {
                 // ── BLUETOOTH ──────────────────────────────────────────
                 BaseListItem {
                     id: btItem
-                    Layout.fillWidth: true
 
                     title: "Bluetooth"
                     subtitle: Bluetooth.powered ? (Bluetooth.connectedCount > 0 ? Bluetooth.connectedCount + " devices" : "On") : "Off"
@@ -94,6 +96,10 @@ BaseContainer {
                     leftIconActive: Bluetooth.powered
                     leftIconScale: 1.25
                     leftIconInteractive: false
+                    leftIconBoxSize: itemHeight
+                    clickable: true
+                    itemHeight: 44 * Globals.shellScale
+                    verticalPadding: 0
                     showVerticalSeparator: true
                     onClicked: root.pushPage("bluetooth")
                 }

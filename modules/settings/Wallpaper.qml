@@ -16,9 +16,9 @@ SettingsPage {
             Layout.fillWidth: true
             visible: Preferences.wallpaper.directory !== ""
 
-            SettingsRow {
-                icon: "folder"
-                label: "Directory"
+            BaseListItem {
+                leftIcon: "folder"
+                title: "Directory"
                 showSeparator: false
 
                 RowLayout {

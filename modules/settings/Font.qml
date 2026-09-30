@@ -42,8 +42,11 @@ SettingsPage {
 
             delegate: BaseListItem {
                 width: ListView.view.width
-                
+
                 title: modelData
+                clickable: true
+                itemHeight: 44 * Globals.shellScale
+                verticalPadding: 0
                 selected: root.currentValue === modelData
                 rightIconVisible: selected
                 rightIcon: "check"

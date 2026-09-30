@@ -58,10 +58,10 @@ Item {
                 required property int index
                 required property var modelData
 
-                Layout.fillWidth: true
                 title: modelData.title
+                clickable: true
                 bounceTitleOnHover: true
-                itemHeight: Globals.dimensions.settingsRow
+                verticalPadding: 0
                 leftIconBoxSize: root._iconBoxSize
                 leftIcon: modelData.icon
                 onClicked: root.pushPage(modelData.page)

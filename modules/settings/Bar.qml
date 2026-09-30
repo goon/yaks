@@ -15,9 +15,9 @@ SettingsPage {
         SettingsGroup {
             Layout.fillWidth: true
 
-            SettingsRow {
-                icon: "panel-top"
-                label: "Position"
+            BaseListItem {
+                leftIcon: "panel-top"
+                title: "Position"
 
                 BaseSegmentedControl {
                     Layout.fillWidth: true
@@ -30,9 +30,9 @@ SettingsPage {
             }
 
 
-            SettingsRow {
-                icon: "unfold-vertical"
-                label: "Height"
+            BaseListItem {
+                leftIcon: "unfold-vertical"
+                title: "Height"
 
                 BaseSpinBox {
                     from: 30
@@ -44,9 +44,9 @@ SettingsPage {
                 }
             }
 
-            SettingsRow {
-                icon: "grip-horizontal"
-                label: "Margin"
+            BaseListItem {
+                leftIcon: "grip-horizontal"
+                title: "Margin"
 
                 BaseSpinBox {
                     from: 0
@@ -58,10 +58,10 @@ SettingsPage {
                 }
             }
 
-            SettingsRow {
-                icon: "picture-in-picture-2"
-                label: "Overhang"
-                description: "Float the bar over window content"
+            BaseListItem {
+                leftIcon: "picture-in-picture-2"
+                title: "Overhang"
+                subtitle: "Float the bar over window content"
 
                 BaseSwitch {
                     checked: Preferences.bar.overhang
@@ -69,10 +69,10 @@ SettingsPage {
                 }
             }
 
-            SettingsRow {
-                icon: "move-vertical"
-                label: "Reserved"
-                description: "Bar height kept clear; the rest overhangs"
+            BaseListItem {
+                leftIcon: "move-vertical"
+                title: "Reserved"
+                subtitle: "Bar height kept clear; the rest overhangs"
 
                 BaseSpinBox {
                     from: 0
@@ -85,10 +85,9 @@ SettingsPage {
                 }
             }
 
-            SettingsRow {
-                icon: "layout-grid"
-                label: "Workspace Count"
-                showSeparator: true
+            BaseListItem {
+                leftIcon: "layout-grid"
+                title: "Workspace Count"
 
                 BaseSpinBox {
                     from: 1
@@ -100,12 +99,10 @@ SettingsPage {
 
 
 
-            SettingsRow {
+            BaseListItem {
                 id: activeComponentsTitle
-                icon: "grip-vertical"
-                label: "Components"
-                showSeparator: false
-                Layout.fillWidth: true
+                leftIcon: "grip-vertical"
+                title: "Components"
             }
 
             ColumnLayout {
