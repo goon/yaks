@@ -135,8 +135,8 @@ QtObject {
         readonly property string iconFamily: "Lucide"
         readonly property QtObject
         weights: QtObject {
-            readonly property int normal: 400
-            readonly property int medium: 500
+            readonly property int normal: 500
+            readonly property int medium: 600
             readonly property int bold: 700
         }
 
@@ -145,7 +145,7 @@ QtObject {
             readonly property int small: 12 * root.shellScale
             readonly property int base: 14 * root.shellScale
             readonly property int medium: 16 * root.shellScale
-            readonly property int large: 18 * root.shellScale
+            readonly property int large: 24 * root.shellScale
         }
 
     }

@@ -131,14 +131,14 @@ BaseContainer {
                                 if (root.isRecording) return "monitor-play";
                                 const ai = root.notification.appIcon || "";
                                 const img = root.notification.image || "";
-                                
+
                                 function extract(s) {
                                     if (s.startsWith("symbol:")) return s.substring(7);
                                     const idx = s.indexOf("symbol:");
                                     if (idx !== -1) return s.substring(idx + 7);
                                     return "";
                                 }
-                                
+
                                 const res = extract(ai);
                                 if (res) return res;
                                 return extract(img);
@@ -207,7 +207,7 @@ BaseContainer {
                     icon: "trash-2"
                     iconColor: containsMouse ? Globals.colors.surface : Globals.colors.primary
                     hoverColor: Globals.colors.primary
-                    size: Globals.typography.size.large
+                    size: Globals.typography.size.medium
                     onClicked: root.closeClicked()
                 }
 

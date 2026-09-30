@@ -105,25 +105,25 @@ BaseContainer {
         // ── STYLE 0: BOUNCING "DVD LOGO" BELL ────────────────────────────
         Item {
             anchors.fill: parent
-            
+
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: -8 // Tight vertical spacing for editorial look
-                
+
                 BaseText {
                     text: "you're"
                     muted: true
-                    pixelSize: Globals.typography.size.large
+                    pixelSize: Globals.typography.size.medium
                     font.italic: true
                     Layout.alignment: Qt.AlignLeft
                     Layout.leftMargin: 8
                 }
-                
+
                 Item {
                     width: 320
                     height: 64
                     Layout.alignment: Qt.AlignHCenter
-                    
+
                     BaseText {
                         anchors.fill: parent
                         horizontalAlignment: Text.AlignHCenter
@@ -134,7 +134,7 @@ BaseContainer {
                         weight: Globals.typography.weights.bold
                         font.letterSpacing: -1
                     }
-                    
+
                     BaseText {
                         id: pulseText
                         anchors.fill: parent
@@ -146,11 +146,11 @@ BaseContainer {
                         pixelSize: 48
                         weight: Globals.typography.weights.bold
                         font.letterSpacing: -1
-                        
+
                         SequentialAnimation {
                             loops: Animation.Infinite
                             running: emptyPlaceholder.visible
-                            
+
                             NumberAnimation { target: pulseText; property: "opacity"; to: 1.0; duration: root._pulseMs; easing.type: Easing.InOutQuad }
                             ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.secondary; duration: root._pulseMs; easing.type: Easing.InOutQuad }
                             ColorAnimation { target: pulseText; property: "color"; to: Globals.colors.primary; duration: root._pulseMs; easing.type: Easing.InOutQuad }
@@ -159,11 +159,11 @@ BaseContainer {
                         }
                     }
                 }
-                
+
                 BaseText {
                     text: "up."
                     color: Globals.colors.primary
-                    pixelSize: Globals.typography.size.large
+                    pixelSize: Globals.typography.size.medium
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: 8
                 }
@@ -174,15 +174,15 @@ BaseContainer {
                 z: -1 // CRITICAL: Explicitly layer the bell behind the text ColumnLayout
                 width: Globals.dimensions.iconExtraLarge
                 height: Globals.dimensions.iconExtraLarge
-                
+
                 property real vx: 1.5
                 property real vy: 1.2
-                
+
                 x: parent.width / 2
                 y: parent.height / 2
-                
+
                 property real offset: 0
-                
+
                 NumberAnimation on offset {
                     loops: Animation.Infinite
                     from: 0
@@ -190,9 +190,9 @@ BaseContainer {
                     duration: root._bellDriftMs
                     running: emptyPlaceholder.visible
                 }
-                
+
                 onOffsetChanged: requestPaint()
-                
+
                 RotationAnimation on rotation {
                     loops: Animation.Infinite
                     from: 0
@@ -200,20 +200,20 @@ BaseContainer {
                     duration: root._bellSpinMs
                     running: emptyPlaceholder.visible
                 }
-                
+
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.clearRect(0, 0, width, height);
-                    
+
                     // Oscillating gradient vector to create a smooth, continuous flow
                     var gradOffset = Math.sin(offset * Math.PI * 2);
                     var gradX1 = (width / 2) + (width / 2) * gradOffset;
                     var gradX2 = (width / 2) - (width / 2) * gradOffset;
-                    
+
                     var grad = ctx.createLinearGradient(gradX1, 0, gradX2, height);
                     grad.addColorStop(0.0, Globals.colors.primary);
                     grad.addColorStop(1.0, Globals.colors.secondary);
-                    
+
                     ctx.fillStyle = grad;
                     ctx.font = Globals.dimensions.iconExtraLarge + "px \"" + Globals.typography.iconFamily + "\"";
                     ctx.textAlign = "center";
@@ -221,7 +221,7 @@ BaseContainer {
                     ctx.globalAlpha = 0.7;
                     ctx.fillText("bell", width/2, height/2);
                 }
-                
+
                 Timer {
                     interval: 16
                     running: emptyPlaceholder.visible
@@ -229,7 +229,7 @@ BaseContainer {
                     onTriggered: {
                         var nx = bounceContainer.x + bounceContainer.vx;
                         var ny = bounceContainer.y + bounceContainer.vy;
-                        
+
                         if (nx <= 0 || nx + bounceContainer.width >= bounceContainer.parent.width) {
                             bounceContainer.vx *= -1;
                             nx = Math.max(0, Math.min(nx, bounceContainer.parent.width - bounceContainer.width));
@@ -238,7 +238,7 @@ BaseContainer {
                             bounceContainer.vy *= -1;
                             ny = Math.max(0, Math.min(ny, bounceContainer.parent.height - bounceContainer.height));
                         }
-                        
+
                         bounceContainer.x = nx;
                         bounceContainer.y = ny;
                     }
