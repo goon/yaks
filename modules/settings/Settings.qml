@@ -22,8 +22,8 @@ FocusScope {
 
     property alias pageStack: pageStack
 
-    function changePage(pageName) {
-        pageStack.push(pageName + ".qml");
+    function changePage(pageFile) {
+        pageStack.pushPage(Qt.resolvedUrl(pageFile), pageFile);
     }
 
     function closed() {

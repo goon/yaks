@@ -67,13 +67,21 @@ QtObject {
         root._watched = root._watched.concat([{ container: container, handler: handler }]);
     }
 
+    // Watched containers can already be destroyed when we get here (popping a
+    // StackView page tears down its item tree), and a destroyed QML object is
+    // still truthy in JS while its signals are gone — so `disconnect` on it
+    // throws. Clear the list first so a throw can never strand entries, and
+    // tolerate a dead container rather than letting it abort the caller's bind.
     function _unwatchAll() {
-        for (var i = 0; i < root._watched.length; i++) {
-            var w = root._watched[i];
-            if (w.container && w.handler)
-                w.container.childrenChanged.disconnect(w.handler);
-        }
+        var watched = root._watched;
         root._watched = [];
+        for (var i = 0; i < watched.length; i++) {
+            var w = watched[i];
+            try {
+                if (w.container && w.handler)
+                    w.container.childrenChanged.disconnect(w.handler);
+            } catch (e) { /* already destroyed; nothing left to disconnect */ }
+        }
     }
 
     // A watched container gained a child: recollect, which also picks up any new

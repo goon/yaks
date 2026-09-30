@@ -34,7 +34,7 @@ Item {
         }
 
         function apply(path: string) {
-            Wallpaper.applyWallpaper(path);
+            Wallpaper.setWallpaper(path);
         }
 
         target: "wallpaper"

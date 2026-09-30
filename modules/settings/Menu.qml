@@ -11,7 +11,7 @@ Item {
     property string title: "Settings"
 
     function pushPage(name) {
-        StackView.view.push(name);
+        StackView.view.pushPage(Qt.resolvedUrl(name), name);
     }
 
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────

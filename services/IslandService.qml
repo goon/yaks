@@ -134,7 +134,8 @@ QtObject {
         if (isCurrentlyOpen) {
             if (pageName !== undefined) {
                 if (activePanelItem) {
-                    if (activePanelItem.selectedPage === pageName) {
+                    var stack = activePanelItem.pageStack;
+                    if (stack && stack.selectedPage === pageName) {
                         closeAll();
                     } else if (typeof activePanelItem.changePage === "function") {
                         activePanelItem.changePage(pageName);
@@ -163,7 +164,7 @@ QtObject {
         var isCurrentlyOpen = (activePanelName === "network");
         
         if (isCurrentlyOpen) {
-            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.currentItem && activePanelItem.pageStack.currentItem.objectName === "NetworkBluetooth.qml") {
+            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.selectedPage === "NetworkBluetooth.qml") {
                 closeAll();
             } else {
                 if (activePanelItem && typeof activePanelItem.pushPage === "function") {

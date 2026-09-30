@@ -20,7 +20,7 @@ SettingsPage {
                     icon: "type"
                     label: "Font"
                     clickable: true
-                    onClicked: root.StackView.view.push("Font.qml")
+                    onClicked: root.StackView.view.pushPage(Qt.resolvedUrl("Font.qml"), "Font.qml")
 
                     BaseText {
                         text: Preferences.globals.shellFont

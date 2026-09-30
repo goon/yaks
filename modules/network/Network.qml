@@ -11,15 +11,15 @@ BaseContainer {
     property string panelState: "Closed"
     property alias pageStack: stackView
 
+    // Maps this panel's logical destinations to page files; the stack handles
+    // tagging and the duplicate-push guard.
     function pushPage(pageName) {
         var file = "";
         if (pageName === "wifi" || pageName === "network") file = "NetworkWifi.qml";
         if (pageName === "bluetooth") file = "NetworkBluetooth.qml";
-        
-        if (file !== "") {
-            if (stackView.currentItem && stackView.currentItem.objectName === file) return;
-            stackView.push(file, { objectName: file });
-        }
+
+        if (file !== "")
+            stackView.pushPage(Qt.resolvedUrl(file), file);
     }
 
     onPanelStateChanged: {
