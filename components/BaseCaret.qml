@@ -6,6 +6,7 @@ Item {
     id: root
 
     required property TextInput control
+    property bool parkInPlaceholder: false
 
     readonly property real _depth: 0.18
     readonly property real _squash: 0.14
@@ -32,12 +33,50 @@ Item {
     property real _boost: 1
     property bool _appearing: false
 
+    // ── PLACEHOLDER PARK ──────────────────────────────────────────────────
+    // Qt parks an empty field's caret at position 0, i.e. before the
+    // placeholder glyphs. We shift it by the placeholder's width so it reads as
+    // trailing the hint, and glide that shift away on the first keystroke. The
+    // glide lives on the delegate root rather than `ink` so the per-keystroke
+    // strike keeps its own timings.
+    readonly property real _parkOffset: {
+        if (!parkInPlaceholder || control.placeholderText.length === 0)
+            return 0;
+        return Math.max(0, Math.min(placeholderMetrics.width,
+            control.width - control.leftPadding - control.rightPadding - width));
+    }
+
+    readonly property real _placeholderOffset: control.text.length === 0 ? _parkOffset : 0
+
+    // Animated delta, 0 at rest. The first keystroke starts it at the park width
+    // and settles it to 0, which walks the caret from the end of the placeholder
+    // back to Qt's real cursor position. Kept separate from the bound rest offset
+    // so animating never breaks that binding.
+    property real _glide: 0
+
     readonly property int _appearMs: Globals.motion.hover
 
     width: Globals.dimensions.caretWidth
     visible: control.activeFocus && !control.readOnly
              && control.selectionStart === control.selectionEnd
              && !control.inputMethodComposing
+
+    transform: Translate { id: glideShift; x: root._placeholderOffset + root._glide }
+
+    TextMetrics {
+        id: placeholderMetrics
+        font: control.font
+        text: control.placeholderText
+    }
+
+    NumberAnimation {
+        id: glideAnim
+        target: root
+        property: "_glide"
+        to: 0
+        duration: Globals.motion.hover
+        easing.type: Globals.motion.easeStandard
+    }
 
     Rectangle {
         id: ink
@@ -187,6 +226,27 @@ Item {
 
         function onTextEdited() {
             root._solid();
+            // First character into an empty field: `_placeholderOffset` has just
+            // collapsed to 0, so pre-seed the delta with the park width to start
+            // the glide from the end of the placeholder.
+            if (control.text.length === 1 && root._parkOffset > 0) {
+                // Defer so the frame the character lands on still reads parked;
+                // the caret would otherwise hop to 0 and back within one frame.
+                Qt.callLater(function() {
+                    if (root.control.text.length === 0 || !root._glideAnim.running) {
+                        root._glide = root._parkOffset;
+                        root.glideAnim.restart();
+                    }
+                });
+            }
+        }
+
+        function onTextChanged() {
+            // Field cleared: drop any in-flight glide and park again.
+            if (root.control.text.length === 0) {
+                root.glideAnim.stop();
+                root._glide = 0;
+            }
         }
 
         function onCursorPositionChanged() {

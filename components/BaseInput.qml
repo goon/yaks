@@ -19,6 +19,7 @@ TextField {
 
     // ── TYPEWRITER CARET ─────────────────────────────────────────────────
     property int caretPulse: 0
+    property bool caretParksInPlaceholder: false
     property string _prevText: ""
     property var _pending: null
 
@@ -28,7 +29,10 @@ TextField {
     readonly property real _inkGrowShare: 0.45
 
     cursorDelegate: Component {
-        BaseCaret { control: root }
+        BaseCaret {
+            control: root
+            parkInPlaceholder: root.caretParksInPlaceholder
+        }
     }
 
     Item {
