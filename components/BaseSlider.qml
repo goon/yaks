@@ -18,16 +18,19 @@ Item {
 
     property color trackColor: Globals.colors.well
     property color fillColor: Globals.colors.primary
-    property int trackHeight: Globals.geometry.slider.trackHeight
+
+    // ── SLIDER METRICS ─────────────────────────────────────────────────
+    // Internal to this component — nothing else sizes a slider, so these live
+    // here rather than in Globals.
+    readonly property int trackHeight: 12 * Globals.shellScale
+    readonly property int handleWidth: 4 * Globals.shellScale
+    readonly property int handleHeight: 20 * Globals.shellScale
+    readonly property int gap: 5 * Globals.shellScale
 
     property string icon: ""
     property color iconColor: Globals.colors.text
     property int iconSize: Globals.dimensions.iconSmall
     property int iconGap: Globals.geometry.spacing.small
-
-    readonly property int handleWidth: Globals.geometry.slider.handleWidth
-    readonly property int handleHeight: Globals.geometry.slider.handleHeight
-    readonly property int gap: Globals.geometry.slider.gap
 
     property real _animatedValue: value
     Behavior on _animatedValue {
