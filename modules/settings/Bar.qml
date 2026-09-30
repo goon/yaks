@@ -108,223 +108,98 @@ SettingsPage {
                 Layout.fillWidth: true
             }
 
-            BarConfiguration {
-                Layout.fillWidth: true
-                property var indicatorTarget: activeComponentsTitle
-            }
-        }
-    }
-
-    // ── BarConfiguration component ────────────────────────────────────────
-    component BarConfiguration: ColumnLayout {
-        id: barRoot
-
-        readonly property var componentMetadata: ({
-            "workspaces": { name: "Workspaces", icon: "columns-4" },
-            "clock":      { name: "Clock",      icon: "clock"    },
-            "dock":       { name: "Dock",        icon: "columns-2" },
-            "indicators": { name: "Indicators",  icon: "layers"   },
-        })
-
-
-        function getList(listName) {
-            if (listName === "barComponents") return Array.from(Preferences.bar.components);
-            return [];
-        }
-
-        function updateList(listName, list) {
-            if (listName === "barComponents") Preferences.bar.components = list;
-        }
-
-        function moveComponent(componentId, sourceSection, targetSection, targetIndex) {
-            if (sourceSection !== targetSection) return;
-
-            var targetList = getList(targetSection);
-            var sourceIndex = targetList.indexOf(componentId);
-            
-            if (sourceIndex > -1) {
-                targetList.splice(sourceIndex, 1);
-                if (targetIndex === -1 || targetIndex >= targetList.length) {
-                    targetList.push(componentId);
-                } else {
-                    targetList.splice(targetIndex, 0, componentId);
-                }
-                updateList(targetSection, targetList);
-            }
-        }
-
-        Layout.fillWidth: true
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: Globals.geometry.spacing.medium
-
-            ComponentList {
+            ColumnLayout {
                 id: componentList
                 property var indicatorTarget: activeComponentsTitle
+                readonly property var metadata: ({
+                    "workspaces": { name: "Workspaces", icon: "columns-4" },
+                    "clock":      { name: "Clock",      icon: "clock"    },
+                    "dock":       { name: "Dock",        icon: "columns-2" },
+                    "indicators": { name: "Indicators",  icon: "layers"   },
+                })
+
                 Layout.fillWidth: true
                 Layout.margins: Globals.geometry.spacing.medium
                 Layout.topMargin: Globals.geometry.spacing.large
-                sectionName: "barComponents"
-                components: Preferences.bar.components
-            }
-        }
-    }
-
-    // ── BarComponentItem ─────────────────────────────────────────────────
-    component BarComponentItem: Item {
-        id: itemRoot
-
-        property string componentId
-        property string sourceSection
-        property string label
-        property var dragData: ({ componentId: componentId, sourceSection: sourceSection })
-
-        width:  parent ? parent.width : 200
-        height: rect.height
-        opacity: dragHandler.drag.active ? 0.3 : 1.0
-
-        Rectangle {
-            id: rect
-            property var  dragData: itemRoot.dragData
-            readonly property bool isActive: dragHandler.containsMouse || dragHandler.drag.active
-            readonly property bool isEnabled: Preferences.bar.componentsEnabled[itemRoot.componentId] === true
-
-            width:  parent.width
-            height: 48
-
-            radius: Globals.geometry.innerRadius.medium
-
-            // Flat well-style container pills
-            color:        rect.isEnabled ? Globals.colors.tint : Globals.colors.disabled
-            border.width: rect.isEnabled ? 1 : 0
-            border.color: rect.isEnabled ? Globals.colors.primary : "transparent"
-
-            MouseArea {
-                id: dragHandler
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton
-                drag.target: rect
-                drag.axis:   Drag.XAndYAxis
-                cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-
-                onReleased: { rect.Drag.drop(); rect.x = 0; rect.y = 0; }
-
-                onClicked: (mouse) => {
-                    let map = JSON.parse(JSON.stringify(Preferences.bar.componentsEnabled));
-                    map[componentId] = !rect.isEnabled;
-                    Preferences.bar.componentsEnabled = map;
-                }
-            }
-
-            RowLayout {
-                id: innerLayout
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: Globals.geometry.spacing.medium
-                anchors.rightMargin: Globals.geometry.spacing.medium
-                spacing: Globals.geometry.spacing.medium
-
-                BaseIcon {
-                    icon:  barRoot.componentMetadata[itemRoot.componentId]?.icon || "extension"
-                    size:  Globals.dimensions.iconSmall
-                    color: rect.isEnabled ? Globals.colors.primary : Globals.colors.text
-                }
-
-                BaseText {
-                    text:  itemRoot.label
-                    color: rect.isEnabled ? Globals.colors.primary : Globals.colors.text
-                    Layout.fillWidth: true
-                }
-
-                BaseIcon {
-                    icon: "arrow-up-down"
-                    size: Globals.dimensions.iconSmall
-                    color: Globals.colors.muted
-                }
-            }
-
-            Drag.active:    dragHandler.drag.active
-            Drag.keys:      ["bar-component"]
-            Drag.hotSpot.x: width  / 2
-            Drag.hotSpot.y: height / 2
-
-            states: [
-                State {
-                    when: dragHandler.drag.active
-                    ParentChange { target: rect; parent: root }
-                    AnchorChanges {
-                        target: rect
-                        anchors.horizontalCenter: undefined
-                        anchors.verticalCenter:   undefined
-                    }
-                }
-            ]
-        }
-    }
-
-    // ── ComponentList ────────────────────────────────────────────────────
-    component ComponentList: ColumnLayout {
-        id: section
-
-        required property string sectionName
-        required property var    components
-
-        spacing: Globals.geometry.spacing.small
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: Math.max(flow.height + Globals.geometry.spacing.medium * 2, 50)
-            color:        "transparent"
-            radius:       Globals.geometry.innerRadius.medium
-            border.width: 0
-
-            DropArea {
-                id: dropArea
-                anchors.fill: parent
-                keys: ["bar-component"]
-                onDropped: (drop) => {
-                    var data = drop.source && drop.source.dragData;
-                    if (!data) return;
-                    barRoot.moveComponent(data.componentId, data.sourceSection, section.sectionName, -1);
-                    drop.accept();
-                }
-            }
-
-
-
-            ColumnLayout {
-                id: flow
-                anchors.top:   parent.top
-                anchors.left:  parent.left
-                anchors.right: parent.right
-                anchors.margins: Globals.geometry.spacing.small
                 spacing: Globals.geometry.spacing.small
 
-                Repeater {
-                    model: components
-                    Item {
-                        Layout.fillWidth: true
-                        height: itemInstance.height
+                // Swap `componentId` with its neighbour: dir -1 is up, +1 is down.
+                function nudge(componentId, dir) {
+                    var list = Array.from(Preferences.bar.components);
+                    var i = list.indexOf(componentId);
+                    var j = i + dir;
+                    if (i < 0 || j < 0 || j >= list.length) return;
+                    var tmp = list[i];
+                    list[i] = list[j];
+                    list[j] = tmp;
+                    Preferences.bar.components = list;
+                }
 
-                        BarComponentItem {
-                            id: itemInstance
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            componentId:   modelData
-                            sourceSection: section.sectionName
-                            label:         barRoot.componentMetadata[modelData]?.name || modelData
+                Repeater {
+                    model: Preferences.bar.components
+
+                    Rectangle {
+                        id: pill
+                        readonly property bool isEnabled: Preferences.bar.componentsEnabled[modelData] === true
+
+                        Layout.fillWidth: true
+                        height: 48
+                        radius: Globals.geometry.innerRadius.medium
+
+                        // Flat well-style container pills
+                        color:        isEnabled ? Globals.colors.tint : Globals.colors.disabled
+                        border.width: isEnabled ? 1 : 0
+                        border.color: isEnabled ? Globals.colors.primary : "transparent"
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                let map = Object.assign({}, Preferences.bar.componentsEnabled);
+                                map[modelData] = !pill.isEnabled;
+                                Preferences.bar.componentsEnabled = map;
+                            }
                         }
 
-                        DropArea {
-                            anchors.fill: parent
-                            keys: ["bar-component"]
-                            onDropped: (drop) => {
-                                var data = drop.source && drop.source.dragData;
-                                if (!data) return;
-                                barRoot.moveComponent(data.componentId, data.sourceSection, section.sectionName, index);
-                                drop.accept();
+                        RowLayout {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: Globals.geometry.spacing.medium
+                            anchors.rightMargin: Globals.geometry.spacing.small
+                            spacing: Globals.geometry.spacing.small
+
+                            BaseIcon {
+                                icon:  componentList.metadata[modelData]?.icon || "extension"
+                                size:  Globals.dimensions.iconSmall
+                                color: pill.isEnabled ? Globals.colors.primary : Globals.colors.text
+                            }
+
+                            BaseText {
+                                text:  componentList.metadata[modelData]?.name || modelData
+                                color: pill.isEnabled ? Globals.colors.primary : Globals.colors.text
+                                Layout.fillWidth: true
+                            }
+
+                            BaseButton {
+                                icon: "chevron-up"
+                                enabled: index > 0
+                                paddingHorizontal: Globals.geometry.spacing.small
+                                paddingVertical: Globals.geometry.spacing.small
+                                hoverColor: Globals.alpha(Globals.colors.text, 0.1)
+                                iconColor: enabled ? Globals.colors.text : Globals.colors.disabled
+                                onClicked: componentList.nudge(modelData, -1)
+                            }
+
+                            BaseButton {
+                                icon: "chevron-down"
+                                enabled: index < repeater.count - 1
+                                paddingHorizontal: Globals.geometry.spacing.small
+                                paddingVertical: Globals.geometry.spacing.small
+                                hoverColor: Globals.alpha(Globals.colors.text, 0.1)
+                                iconColor: enabled ? Globals.colors.text : Globals.colors.disabled
+                                onClicked: componentList.nudge(modelData, 1)
                             }
                         }
                     }

@@ -4,7 +4,6 @@ import Quickshell
 import qs
 
 BaseContainer {
-    id: root
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false

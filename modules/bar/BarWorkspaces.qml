@@ -118,7 +118,6 @@ Item {
 
                     // Left stop: primary → secondary → primary (loops)
                     SequentialAnimation {
-                        id: wave1
                         loops: Animation.Infinite
                         running: indicator.isActive
                         // Snap to start colour so each loop begins correctly
@@ -130,7 +129,6 @@ Item {
 
                     // Right stop: secondary → primary → secondary (opposite phase)
                     SequentialAnimation {
-                        id: wave2
                         loops: Animation.Infinite
                         running: indicator.isActive
                         ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: 0 }

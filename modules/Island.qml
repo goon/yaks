@@ -198,7 +198,6 @@ Item {
 
         // Prevent click-throughs to clickOutsideShield inside the capsule bounds
         MouseArea {
-            id: capsuleHoverArea
             anchors.fill: parent
             hoverEnabled: true
             onClicked: {}
@@ -279,14 +278,12 @@ Item {
 
 
         MouseArea {
-            id: capsuleInnerHoverArea
             anchors.fill: parent
             hoverEnabled: true
             acceptedButtons: Qt.NoButton
 
             // ── NORMAL BAR LAYOUT ──────────────────────────────────────
             RowLayout {
-                id: contentLayout
 
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter

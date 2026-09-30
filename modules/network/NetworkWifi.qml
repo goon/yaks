@@ -180,7 +180,6 @@ BaseScrolling {
         id: wifiDelegate
 
         NetworkDevice {
-            id: delegateRoot
             deviceType: "wifi"
             property bool hovered: isHovered
 

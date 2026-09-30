@@ -4,7 +4,6 @@ import qs.services
 import qs
 
 FocusScope {
-    id: root
 
     property string panelState: "Closed"
 

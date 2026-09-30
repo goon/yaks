@@ -74,15 +74,15 @@ PanelWindow {
 
     Connections {
         target: Wallpaper
-        function onDisplayWallpaperChanged() {
-            root.updateWallpaper(Wallpaper.displayWallpaper);
+        function onCurrentWallpaperChanged() {
+            root.updateWallpaper(Wallpaper.currentWallpaper);
         }
     }
 
     Component.onCompleted: {
-        if (Wallpaper.displayWallpaper !== "") {
-            loaderA.source = "file://" + Wallpaper.displayWallpaper;
-            activePath = Wallpaper.displayWallpaper;
+        if (Wallpaper.currentWallpaper !== "") {
+            loaderA.source = "file://" + Wallpaper.currentWallpaper;
+            activePath = Wallpaper.currentWallpaper;
         }
     }
 

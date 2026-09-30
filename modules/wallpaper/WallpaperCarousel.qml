@@ -120,7 +120,6 @@ FocusScope {
             opacity: edgeFade * (ao <= 2 ? 1 : Math.max(0, 3 - ao))
 
             ClippingRectangle {
-                id: card
                 anchors.fill: parent
                 radius: tile.corner
                 color: Globals.colors.surface

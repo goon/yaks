@@ -76,7 +76,6 @@ BaseContainer {
                 width: parent.width
                 notification: modelData
                 time: receivedAt
-                showCloseButton: false
                 onRightClicked: {
                     if (modelData)
                         modelData.dismiss();

@@ -27,8 +27,6 @@ Item {
     // A scan was requested while another was in flight; replayed on completion.
     property bool pendingScan: false
 
-    readonly property string displayWallpaper: currentWallpaper
-
     readonly property string wallpaperListFile: Globals.cacheDir + "/wallpaper.json"
     readonly property string thumbDir: (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/yaks/thumbnails"
     readonly property string thumbScript: Globals.rootDir + "/lib/thumbnailer.sh"

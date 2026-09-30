@@ -155,7 +155,6 @@ Item {
         height: parent.height
         width: isVisible ? getItemWidth(itemKey) : 0
 
-        readonly property int targetX: getTargetX(itemKey)
         readonly property bool isDragging: dragArea.drag.active
 
         // Follow the actual coordinates when not dragged.

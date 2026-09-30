@@ -6,7 +6,6 @@ import qs.services
 import "../notifications"
 
 NotificationCard {
-    id: root
 
     property string panelState: "Closed"
 
@@ -14,7 +13,6 @@ NotificationCard {
     implicitWidth: 420
 
     notification: Notifications.activeToastNotification
-    showCloseButton: false
     showTime: false
     clickable: true
     
@@ -25,12 +23,4 @@ NotificationCard {
         Notifications.closeActiveToast();
     }
 
-    // It doesn't need to close via the X button because we hid it, 
-    // but just in case:
-    onCloseClicked: {
-        if (Notifications.activeToastNotification) {
-            Notifications.activeToastNotification.dismiss();
-        }
-        Notifications.closeActiveToast();
-    }
 }

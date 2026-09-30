@@ -193,7 +193,7 @@ BaseContainer {
         { label: "Shutdown", icon: "power",       onClicked: function() { IslandService.closeAll(); Power.shutdown(); } },
         { label: "Restart",  icon: "rotate-cw",   onClicked: function() { IslandService.closeAll(); Power.reboot(); } },
         { label: "Sleep",    icon: "moon",        onClicked: function() { IslandService.closeAll(); Power.suspend(); } },
-        { label: "Logout",   icon: "log-out",     onClicked: function() { IslandService.closeAll(); Power.logout(); } },
+        { label: "Logout",   icon: "log-out",     onClicked: function() { IslandService.closeAll(); Compositor.quit(); } },
     ]
 
     Item {

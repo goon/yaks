@@ -5,7 +5,6 @@ import qs.services
 import qs
 
 Item {
-    id: fullRoot
 
     property var barWindow: null
 
@@ -61,7 +60,6 @@ Item {
                     }
 
                     Loader {
-                        id: componentLoader
                         Layout.alignment: Qt.AlignVCenter
                         source: barWindow ? barWindow.resolveComponentSource(modelData) : ""
                     }

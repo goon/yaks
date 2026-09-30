@@ -8,8 +8,6 @@ Item {
     implicitHeight: mainCol.implicitHeight
     Layout.fillWidth: true
 
-    property string title: "Settings"
-
     readonly property int _iconBoxSize: 32 * Globals.shellScale
 
     function pushPage(name) {

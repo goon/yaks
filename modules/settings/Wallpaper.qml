@@ -5,7 +5,6 @@ import qs
 import qs.services
 
 SettingsPage {
-    id: root
 
     title: "Wallpaper"
 

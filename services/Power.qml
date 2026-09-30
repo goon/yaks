@@ -19,8 +19,4 @@ QtObject {
         ProcessService.runDetached(["systemctl", "suspend"]);
     }
 
-    function logout() {
-        Compositor.quit();
-    }
-
 }

@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import qs
 
 SettingsPage {
-    id: root
 
     title: "Applications"
 

@@ -9,12 +9,10 @@ BaseContainer {
     id: root
 
     property var notification: null
-    property bool showCloseButton: true
     property bool showTime: true
     property var time: new Date()
     property string timeString: "just now"
 
-    signal closeClicked()
 
     function updateTime() {
         if (!time) return;
@@ -112,7 +110,6 @@ BaseContainer {
                     // 3. Icon Symbol (Custom Fallback)
                     // Visible if appIcon or image starts with 'symbol:'
                     Rectangle {
-                        id: symbolIconContainer
                         anchors.centerIn: parent
                         width: 36
                         height: 36
@@ -160,13 +157,11 @@ BaseContainer {
                 }
 
                 RowLayout {
-                    id: headerRow
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
                     spacing: Globals.geometry.spacing.small
 
                     BaseText {
-                        id: summaryText
                         Layout.fillWidth: false
                         pixelSize: Globals.typography.size.large
                         weight: Globals.typography.weights.bold
@@ -178,14 +173,12 @@ BaseContainer {
                     }
 
                     BaseText {
-                        id: separator
                         text: "|"
                         muted: true
                         visible: root.showTime
                     }
 
                     BaseText {
-                        id: timeText
                         muted: true
                         visible: root.showTime
                         text: root.timeString
@@ -194,21 +187,6 @@ BaseContainer {
                         elide: Text.ElideRight
                     }
 
-                    Item {
-                        Layout.fillWidth: true
-                    }
-                }
-
-                BaseButton {
-                    Layout.preferredWidth: Globals.dimensions.iconMedium
-                    Layout.preferredHeight: Globals.dimensions.iconMedium
-                    Layout.alignment: Qt.AlignTop
-                    visible: root.showCloseButton
-                    icon: "trash-2"
-                    iconColor: containsMouse ? Globals.colors.surface : Globals.colors.primary
-                    hoverColor: Globals.colors.primary
-                    size: Globals.dimensions.iconSmall
-                    onClicked: root.closeClicked()
                 }
 
             }
@@ -216,7 +194,6 @@ BaseContainer {
             BaseText {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 200 // Hint to help Layout
-                bold: false
                 text: root.notification ? (root.notification.body || "") : ""
                 wrapMode: Text.Wrap
                 maximumLineCount: 8

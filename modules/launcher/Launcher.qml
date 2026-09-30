@@ -231,7 +231,6 @@ FocusScope {
         }
 
         Rectangle {
-            id: mainBackground
             anchors.fill: parent
             radius: Globals.geometry.innerRadius.medium
             color: "transparent"

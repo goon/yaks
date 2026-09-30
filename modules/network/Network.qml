@@ -100,7 +100,6 @@ BaseContainer {
             }
 
             BaseIndicator {
-                id: slidingPill
                 targetItem: {
                     if (wifiItem.hovered) return wifiItem;
                     if (btItem.hovered) return btItem;

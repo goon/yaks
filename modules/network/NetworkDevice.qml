@@ -34,7 +34,6 @@ Item {
         anchors.right: parent.right
 
         Item {
-            id: rowContainer
             Layout.fillWidth: true
             Layout.preferredHeight: 40
             implicitWidth: innerRowLayout.implicitWidth

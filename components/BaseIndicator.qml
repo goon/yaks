@@ -12,15 +12,12 @@ Item {
     property int gapInterval: 100
 
     // ── INTERNAL STATE ──────────────────────────────────────────────
-    property real _lastX: 0
     property real _lastY: 0
     property bool _hasPositioned: false
 
     readonly property Item _hoverCandidate: hoverPredicate ? hoverPredicate() : null
     property Item _hoverTarget: null
     readonly property Item _effectiveTarget: hoverPredicate ? root._hoverTarget : root.targetItem
-
-    readonly property real targetX: 0
 
     readonly property real targetY: {
         if (!_effectiveTarget || !root.parent) return _lastY;
@@ -30,13 +27,11 @@ Item {
         return _effectiveTarget.mapToItem(root.parent, 0, centerY).y - height / 2;
     }
 
-    x: targetX
+    x: 0
     y: targetY
 
-    onXChanged: if (_effectiveTarget) { _lastX = x; _hasPositioned = true; }
     onYChanged: if (_effectiveTarget) { _lastY = y; _hasPositioned = true; }
 
-    Behavior on x { enabled: root._hasPositioned; NumberAnimation { duration: Globals.motion.standard; easing.type: Easing.OutQuart } }
     Behavior on y { enabled: root._hasPositioned; NumberAnimation { duration: Globals.motion.standard; easing.type: Easing.OutQuart } }
 
     opacity: _effectiveTarget ? 1.0 : 0.0

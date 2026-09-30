@@ -5,7 +5,6 @@ import Quickshell.Hyprland
 import qs
 
 BaseContainer {
-    id: root
 
     readonly property real _itemSize: islandRoot.itemHeight
 
@@ -15,7 +14,6 @@ BaseContainer {
     paddingHorizontal: 0
     implicitHeight: _itemSize
     ListView {
-        id: listView
 
         Layout.alignment: Qt.AlignCenter
         orientation: ListView.Horizontal

@@ -5,7 +5,6 @@ import qs
 import qs.services
 
 Item {
-    id: root
     
     property string panelState: "Closed"
     

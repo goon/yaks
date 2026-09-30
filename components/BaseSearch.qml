@@ -7,7 +7,6 @@ BaseContainer {
 
     property alias text: input.text
     property alias placeholderText: input.placeholderText
-    readonly property alias input: input
 
     function focusInput() {
         input.forceActiveFocus();

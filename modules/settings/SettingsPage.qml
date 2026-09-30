@@ -8,7 +8,6 @@ BaseContainer {
     spacing: 0
     
     property string title: ""
-    property string icon: ""
 
     onRightClicked: {
         if (root.StackView.view && root.StackView.view.depth > 1) {
@@ -45,7 +44,6 @@ BaseContainer {
             }
 
             BaseHeader {
-                id: pageHeader
                 text: root.title.toUpperCase()
                 Layout.fillWidth: true
             }
