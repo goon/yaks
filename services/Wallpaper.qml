@@ -134,7 +134,7 @@ Item {
         var scriptJson = JSON.stringify(root.thumbScript);
 
         var cmd = ["sh", "-c",
-            "export PATH=\"/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:$HOME/.local/bin:$PATH\"; " +
+            "export PATH=\"" + Globals.toolPath + "\"; " +
             "thumbdir=" + thumbdirJson + "; " +
             "mkdir -p \"$thumbdir\"; " +
             "sh " + scriptJson + " " + wpdirJson + " \"$thumbdir\"; " +

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs
+import "../lib/apps.js" as Apps
 pragma Singleton
 
 QtObject {
@@ -46,16 +47,9 @@ QtObject {
     }
 
     property QtObject applications: QtObject {
-        property var themedApps: ({
-            "gtk": false,
-            "kitty": false,
-            "discord": false,
-            "obsidian": false,
-            "nvim": false,
-            "firefox": false,
-            "steam": false,
-            "zed": false
-        })
+        // Defaults come from the single hook registry (lib/apps.js), so
+        // registering an app there is enough to make its toggle appear here.
+        property var themedApps: Apps.defaultThemedApps()
 
         onThemedAppsChanged: root.requestSave()
     }

@@ -18,12 +18,18 @@ QtObject {
     readonly property string dataDir: homeDir + "/.local/share/yaks"
     readonly property string cacheDir: homeDir + "/.cache/yaks"
 
+    // Explicit PATH for spawning external tools. The shell may be started from
+    // a systemd user service whose PATH lacks the system profiles, so tools
+    // that are installed (terminals, theming CLIs) would otherwise be reported
+    // missing. Shared by every Process that shells out (Theme, Wallpaper).
+    readonly property string toolPath: "/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:$HOME/.local/bin:$PATH"
+
     // ── COLOURS ───────────────────────────────────────────────────────────
     readonly property QtObject colors: QtObject {
         id: colorsRoot
 
-        // ── RAW PASSTHROUGH ───────────────────────────────────────────────
-        readonly property var raw: Theme.currentColors || ({})
+        // ── RAW PASSTHROUGH (internal) ────────────────────────────────────
+        readonly property var _raw: Theme.currentColors || ({})
 
         // ── ROLE LAYER ────────────────────────────────────────────────────
         // The only colours components consume. Everything derived (state
@@ -32,32 +38,32 @@ QtObject {
         // math.
 
         // surfaces
-        readonly property color bg:      colorsRoot.raw.bg
-        readonly property color surface: colorsRoot.raw.surface
-        readonly property color raised:  colorsRoot.raw.raised
-        readonly property color well:    colorsRoot.raw.well
+        readonly property color bg:      colorsRoot._raw.bg
+        readonly property color surface: colorsRoot._raw.surface
+        readonly property color raised:  colorsRoot._raw.raised
+        readonly property color well:    colorsRoot._raw.well
 
         // shell capsule gradient — vivid chrome tokens, shell-only, and the
         // only place the user Opacity setting applies.
-        readonly property color top:    root.alpha(colorsRoot.raw.top, root.opacity.background)
-        readonly property color bottom: root.alpha(colorsRoot.raw.bottom, root.opacity.background)
+        readonly property color top:    root.alpha(colorsRoot._raw.top, root.opacity.background)
+        readonly property color bottom: root.alpha(colorsRoot._raw.bottom, root.opacity.background)
 
         // lines
-        readonly property color border: colorsRoot.raw.border
-        readonly property color hair:   colorsRoot.raw.hair
+        readonly property color border: colorsRoot._raw.border
+        readonly property color hair:   colorsRoot._raw.hair
 
         // copy
-        readonly property color text:  colorsRoot.raw.text
-        readonly property color muted: colorsRoot.raw.muted
+        readonly property color text:  colorsRoot._raw.text
+        readonly property color muted: colorsRoot._raw.muted
 
         // accents
-        readonly property color primary:   colorsRoot.raw.primary
-        readonly property color secondary: colorsRoot.raw.secondary
+        readonly property color primary:   colorsRoot._raw.primary
+        readonly property color secondary: colorsRoot._raw.secondary
 
         // states
-        readonly property color hover:    root.alpha(colorsRoot.raw.text, 0.08)
-        readonly property color tint:     root.alpha(colorsRoot.raw.primary, 0.15)
-        readonly property color disabled: root.alpha(colorsRoot.raw.bg, 0.50)
+        readonly property color hover:    root.alpha(colorsRoot._raw.text, 0.08)
+        readonly property color tint:     root.alpha(colorsRoot._raw.primary, 0.15)
+        readonly property color disabled: root.alpha(colorsRoot._raw.bg, 0.50)
     }
 
     readonly property QtObject opacity: QtObject {

@@ -13,18 +13,8 @@ thumb_w=384
 thumb_h=216
 thumb_quality=82
 
-if ! command -v magick &>/dev/null; then
-    for p in /run/current-system/sw/bin /etc/profiles/per-user/*/bin /nix/var/nix/profiles/default/bin; do
-        [ -x "$p/magick" ] && export PATH="$p:$PATH" && break
-    done
-fi
-if ! command -v magick &>/dev/null; then
-    _magick=$(find /nix/store -maxdepth 4 -name magick -path '*/bin/magick' -type f 2>/dev/null | tail -1)
-    if [ -n "$_magick" ]; then
-        export PATH="$(dirname "$_magick"):$PATH"
-    fi
-    unset _magick
-fi
+# The caller (Wallpaper) exports a PATH that includes ImageMagick.
+command -v magick &>/dev/null || exit 1
 
 mkdir -p "$thumbdir"
 
