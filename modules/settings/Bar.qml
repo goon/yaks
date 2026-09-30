@@ -136,6 +136,7 @@ SettingsPage {
                 }
 
                 Repeater {
+                    id: repeater
                     model: Preferences.bar.components
 
                     Rectangle {

@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import qs
 import ".."
-import QtQuick.Effects
 
 BaseContainer {
     id: root
@@ -23,7 +22,6 @@ BaseContainer {
         property string actionLabel: ""
         
         property real holdProgress: 0.0
-        readonly property int _waveMs: 800
         signal actionTriggered()
 
         onContainsMouseChanged: {
@@ -122,66 +120,22 @@ BaseContainer {
                             muted: true
                         }
 
-                        Canvas {
-                            id: waveMask
-                            anchors.fill: subtitleText
-                            visible: false
-                            
-                            property real progress: btn.holdProgress
-                            property real wavePhase: 0
-                            
-                            NumberAnimation on wavePhase {
-                                from: 0; to: Math.PI * 2
-                                duration: btn._waveMs
-                                loops: Animation.Infinite
-                                running: btn.pressed
-                            }
-                            
-                            onProgressChanged: requestPaint()
-                            onWavePhaseChanged: requestPaint()
-                            
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.clearRect(0, 0, width, height);
-                                
-                                if (progress <= 0) return;
-                                
-                                var w = width * progress;
-                                var h = height;
-                                var amplitude = 3;
-                                var frequency = 0.4;
-                                
-                                ctx.fillStyle = "black";
-                                ctx.beginPath();
-                                ctx.moveTo(0, 0);
-                                ctx.lineTo(0, h);
-                                
-                                // Draw wavy right edge from bottom to top
-                                for (var y = h; y >= 0; y -= 2) {
-                                    var xOffset = Math.sin(y * frequency + wavePhase) * amplitude;
-                                    ctx.lineTo(w + xOffset, y);
-                                }
-                                
-                                ctx.lineTo(w + Math.sin(wavePhase) * amplitude, 0);
-                                ctx.closePath();
-                                ctx.fill();
-                            }
-                        }
+                        Item {
+                            id: revealClip
+                            x: 0
+                            y: 0
+                            height: subtitleText.height
+                            width: subtitleText.width * btn.holdProgress
+                            clip: true
 
-                        BaseText {
-                            id: subtitleColoredText
-                            anchors.fill: subtitleText
-                            text: "Hold to " + btn.actionLabel.toLowerCase()
-                            pixelSize: Globals.typography.size.medium
-                            color: Globals.colors.text
-                            visible: false
-                        }
-                        
-                        MultiEffect {
-                            anchors.fill: subtitleText
-                            source: subtitleColoredText
-                            maskEnabled: true
-                            maskSource: waveMask
+                            BaseText {
+                                id: subtitleColoredText
+                                anchors.top: subtitleText.top
+                                anchors.left: subtitleText.left
+                                text: subtitleText.text
+                                pixelSize: Globals.typography.size.medium
+                                color: Globals.colors.text
+                            }
                         }
                     }
                 }

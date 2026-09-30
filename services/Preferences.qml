@@ -83,7 +83,7 @@ QtObject {
     }
 
     property QtObject indicators: QtObject {
-        property var order: ["notifications", "wifi", "settings", "power"]
+        property list<string> order: ["notifications", "wifi", "settings", "power"]
 
         onOrderChanged: root.requestSave()
     }
@@ -202,7 +202,7 @@ QtObject {
         // Create the data dir first; the first save can follow immediately after
         // a missing-file boot, so sequencing here avoids a lost initial write.
         _dataDirProc.onExited.connect(function () {
-            ProcessService.run(["sh", "-c", "test -f " + root.prefsFile], function(out, exitCode) {
+            ProcessService.run(["test", "-f", root.prefsFile], function(out, exitCode) {
                 if (exitCode !== 0) {
                     console.log("[Preferences] No preferences file found. Booting with defaults immediately.");
                     safetyTimer.stop();
@@ -245,9 +245,6 @@ QtObject {
                     var data = JSON.parse(rawText);
                     if (!data || typeof data !== "object") throw new Error("Invalid JSON");
 
-                    // Snapshot the default valid components BEFORE overwriting them with user data
-                    var defaultValidComponents = root.bar.components.slice();
-
                     // Snapshot default array values BEFORE the schema-driven load
                     // overwrites them — later used to prune stale array entries.
                     var arrayDefaults = Object.create(null);
@@ -263,101 +260,50 @@ QtObject {
                         var path = _schema[i];
                         // applications.themedApps is handled by merge below
                         if (path.length === 2 && path[0] === "applications" && path[1] === "themedApps") continue;
-                    var val = _getData(data, path);
-                    if (val !== undefined) _set(path, val);
-                }
-
-                // Capture the legacy free-form radius before the stale-key
-                // prune removes it, so it can be migrated to a preset below.
-                var legacyRadius = _getData(data, ["globals", "cornerRadius"]);
-
-                // ── PRUNE STALE KEYS ─────────────────────────────────
-                var allowed = Object.create(null);
-                for (var p = 0; p < _schema.length; p++) {
-                    var sp = _schema[p];
-                    if (!allowed[sp[0]]) allowed[sp[0]] = Object.create(null);
-                    if (sp.length > 1) allowed[sp[0]][sp[1]] = true;
-                }
-
-                var prunedAny = false;
-                for (var key in data) {
-                    if (!allowed[key]) {
-                        delete data[key];
-                        prunedAny = true;
-                        continue;
+                        var val = _getData(data, path);
+                        if (val !== undefined) _set(path, val);
                     }
-                    if (data[key] && typeof data[key] === "object") {
-                        for (var sub in data[key]) {
-                            if (!allowed[key][sub]) {
-                                delete data[key][sub];
-                                prunedAny = true;
-                            }
+
+                    // ── PRUNE STALE ARRAY ENTRIES ────────────────────────
+                    var prunedAny = false;
+                    for (var arrayKey in arrayDefaults) {
+                        var parts = arrayKey.split(".");
+                        var arr = _get(parts);
+                        if (!Array.isArray(arr)) continue;
+                        var validEntries = Object.create(null);
+                        for (var vi = 0; vi < arrayDefaults[arrayKey].length; vi++)
+                            validEntries[arrayDefaults[arrayKey][vi]] = true;
+                        var filtered = arr.filter(function(v) { return !!validEntries[v]; });
+                        if (filtered.length !== arr.length) {
+                            _set(parts, filtered);
+                            prunedAny = true;
                         }
                     }
-                }
-                for (var arrayKey in arrayDefaults) {
-                    var parts = arrayKey.split(".");
-                    var arr = _get(parts);
-                    if (!Array.isArray(arr)) continue;
-                    var validEntries = Object.create(null);
-                    for (var vi = 0; vi < arrayDefaults[arrayKey].length; vi++)
-                        validEntries[arrayDefaults[arrayKey][vi]] = true;
-                    var filtered = arr.filter(function(v) { return !!validEntries[v]; });
-                    if (filtered.length !== arr.length) {
-                        _set(parts, filtered);
-                        prunedAny = true;
-                    }
-                }
-                if (prunedAny)
-                    console.log("[Preferences] Pruned stale entries from preferences file.");
+                    if (prunedAny)
+                        console.log("[Preferences] Pruned stale entries from preferences file.");
 
-                // ── MERGE DICTIONARIES ─────────────────────────────────
+                    // ── MERGE DICTIONARIES ─────────────────────────────────
                     var savedApps = _getData(data, ["applications", "themedApps"]);
                     if (savedApps !== undefined && typeof savedApps === "object") {
                         var currentApps = root.applications.themedApps;
-                    var appsChanged = false;
-                    for (var key in savedApps) {
-                        if (!(key in currentApps)) continue;
-                        if (currentApps[key] !== savedApps[key]) {
-                            currentApps[key] = savedApps[key];
-                            appsChanged = true;
+                        var appsChanged = false;
+                        for (var appId in savedApps) {
+                            if (!(appId in currentApps)) continue;
+                            if (currentApps[appId] !== savedApps[appId]) {
+                                currentApps[appId] = savedApps[appId];
+                                appsChanged = true;
+                            }
+                        }
+                        if (appsChanged) {
+                            // Reassign to trigger property change
+                            root.applications.themedApps = Object.assign({}, currentApps);
                         }
                     }
-                    if (appsChanged) {
-                        // Reassign to trigger property change
-                        root.applications.themedApps = Object.assign({}, currentApps);
-                    }
-                }
 
-                    // ── MIGRATIONS ─────────────────────────────────────────
-
-                    var loadedEnabled = root.bar.componentsEnabled || {};
-                    var cleanedEnabled = {};
-                    for (var i = 0; i < defaultValidComponents.length; i++) {
-                        var c = defaultValidComponents[i];
-                        cleanedEnabled[c] = loadedEnabled[c] !== undefined ? loadedEnabled[c] : true;
-                    }
-
-                    var migrated = false;
-
-                    // Legacy free-form cornerRadius -> nearest designed preset.
-                    if (legacyRadius !== undefined && _getData(data, ["globals", "rounding"]) === undefined) {
-                        root.globals.rounding = legacyRadius <= 10 ? "sharp"
-                                            : legacyRadius <= 20 ? "soft" : "round";
-                        console.log("[Preferences] Migrated legacy cornerRadius " + legacyRadius + " -> rounding=" + root.globals.rounding);
-                        migrated = true;
-                    }
-
-                    if (Object.keys(loadedEnabled).length !== defaultValidComponents.length) {
-                        root.bar.componentsEnabled = cleanedEnabled;
-                        console.log("[Preferences] Cleaned up legacy/invalid components from bar configuration.");
-                        root.bar = Object.assign({}, root.bar);
-                        migrated = true;
-                    }
                     safetyTimer.stop();
                     root.loaded = true;
 
-                    if (migrated || prunedAny) root.requestSave();
+                    if (prunedAny) root.requestSave();
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
                 }

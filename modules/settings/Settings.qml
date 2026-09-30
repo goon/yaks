@@ -52,9 +52,8 @@ FocusScope {
 
     // Feed the active StackView page to the shared navigator. `currentItem`
     // changes on push/pop and when the panel first populates the stack, so a
-    // single Connections covers every case; the page's own rows may still be
-    // building when the item appears, which SettingsNav handles by watching
-    // those containers for child additions.
+    // single Connections covers every case; a page that adds navigable rows
+    // after it is built must call SettingsNav.rebuild() itself.
     Connections {
         target: pageStack
         function onCurrentItemChanged() { SettingsNav.bind(pageStack.currentItem); }

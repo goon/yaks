@@ -25,74 +25,31 @@ Item {
         { key: "power", icon: "power" }
     ]
 
-    function _modelIndex(key) {
-        for (var i = 0; i < _indicatorModel.length; i++) {
-            if (_indicatorModel[i].key === key) return i;
-        }
-        return -1;
-    }
+    // Saved order first, then any model key the saved order never mentions, so a
+    // stale or partial order can never hide an icon. Recomputed on demand
+    // rather than bound: the saved order lives behind a var property and a
+    // binding on it does not reliably re-evaluate.
+    property var orderedKeys: _computeOrderedKeys()
 
-    function getItemWidth(key) {
-        return indicatorItemWidth;
-    }
-
-    readonly property var visibleKeys: {
-        var keys = [];
-        for (var i = 0; i < Preferences.indicators.order.length; i++) {
-            var key = Preferences.indicators.order[i];
-            if (_modelIndex(key) !== -1) keys.push(key);
-        }
-        // Fallbacks for keys that aren't in indicatorsOrder yet
-        for (var j = 0; j < _indicatorModel.length; j++) {
-            if (keys.indexOf(_indicatorModel[j].key) === -1)
-                keys.push(_indicatorModel[j].key);
-        }
+    function _computeOrderedKeys() {
+        var model = _indicatorModel.map(function(m) { return m.key; });
+        var keys = Preferences.indicators.order.filter(function(k) { return model.indexOf(k) !== -1; });
+        model.forEach(function(k) {
+            if (keys.indexOf(k) === -1) keys.push(k);
+        });
         return keys;
     }
 
-    // Total content width based on animating widths of item components
-    readonly property int contentWidth: {
-        var w = 0;
-        var hasVisibleItem = false;
-
-        for (var i = 0; i < visibleKeys.length; i++) {
-            var idx = _modelIndex(visibleKeys[i]);
-            var item = (idx >= 0 && idx < indicatorRepeater.count) ? indicatorRepeater.itemAt(idx) : null;
-            var itemW = item ? item.width : getItemWidth(visibleKeys[i]);
-            if (itemW > 0) {
-                if (hasVisibleItem) w += spacing;
-                w += itemW;
-                hasVisibleItem = true;
-            }
-        }
-        return w;
+    Connections {
+        target: Preferences.indicators
+        function onOrderChanged() { root.orderedKeys = root._computeOrderedKeys() }
     }
 
-    // Get current animating X coordinate for positioning items in flow
+    readonly property int contentWidth:
+        orderedKeys.length * indicatorItemWidth + Math.max(0, orderedKeys.length - 1) * spacing
+
     function getActualX(key) {
-        var idx = visibleKeys.indexOf(key);
-        if (idx < 0) return 0;
-
-        var x = 0;
-        for (var i = 0; i < idx; i++) {
-            var k = visibleKeys[i];
-            var mi = _modelIndex(k);
-            var item = (mi >= 0 && mi < indicatorRepeater.count) ? indicatorRepeater.itemAt(mi) : null;
-            x += (item ? item.width : getItemWidth(k)) + spacing;
-        }
-        return x;
-    }
-
-    // Get static target position for drag and swap math
-    function getTargetX(key) {
-        var idx = visibleKeys.indexOf(key);
-        if (idx < 0) return 0;
-
-        var x = 0;
-        for (var i = 0; i < idx; i++) {
-            x += getItemWidth(visibleKeys[i]) + spacing;
-        }
-        return x;
+        return Math.max(0, orderedKeys.indexOf(key)) * (indicatorItemWidth + spacing);
     }
 
     function _openPanel(key) {
@@ -119,11 +76,10 @@ Item {
         Item {
             id: container
             implicitWidth: root.contentWidth
-    implicitHeight: islandRoot.itemHeight
+            implicitHeight: islandRoot.itemHeight
             height: parent.height
 
             Repeater {
-                id: indicatorRepeater
                 model: root._indicatorModel
 
                 delegate: IndicatorIcon {
@@ -144,16 +100,12 @@ Item {
     component IndicatorIcon: Item {
         id: itemRoot
 
-        required property int index
         required property var modelData
         required property string itemKey
         property string iconName
 
-        readonly property bool isVisible: _modelIndex(itemKey) !== -1
-
-        visible: isVisible
         height: parent.height
-        width: isVisible ? getItemWidth(itemKey) : 0
+        width: root.indicatorItemWidth
 
         readonly property bool isDragging: dragArea.drag.active
 
@@ -248,44 +200,33 @@ Item {
         }
 
         function checkAndSwap() {
-            let activeWidth = getItemWidth(itemKey);
-            let centerX = itemRoot.x + activeWidth / 2;
-
-            // Snapshot the array to avoid mutating a live binding mid-read
-            let keys = visibleKeys.slice();
-            let currentIdx = keys.indexOf(itemKey);
+            const keys = orderedKeys.slice();
+            const currentIdx = keys.indexOf(itemKey);
             if (currentIdx === -1) return;
 
+            const centerX = itemRoot.x + indicatorItemWidth / 2;
             let closestIdx = currentIdx;
-            let minDistance = 999999;
-
+            let minDistance = Infinity;
             for (let i = 0; i < keys.length; i++) {
-                let k = keys[i];
-                let centerI = getTargetX(k) + getItemWidth(k) / 2;
-                let dist = Math.abs(centerX - centerI);
+                const dist = Math.abs(centerX - getActualX(keys[i]) - indicatorItemWidth / 2);
                 if (dist < minDistance) {
                     minDistance = dist;
                     closestIdx = i;
                 }
             }
+            if (closestIdx === currentIdx) return;
 
-            if (closestIdx !== currentIdx) {
-                let activeKey = keys[currentIdx];
-                let targetKey = keys[closestIdx];
+            // Snapshot Preferences.indicators.order to avoid reactive mid-write
+            const order = Preferences.indicators.order.slice();
+            const from = order.indexOf(itemKey);
+            const to = order.indexOf(keys[closestIdx]);
+            if (from === -1 || to === -1) return;
 
-                // Snapshot Preferences.indicators.order to avoid reactive mid-write
-                let order = Preferences.indicators.order.slice();
-                let fullIdx1 = order.indexOf(activeKey);
-                let fullIdx2 = order.indexOf(targetKey);
-
-                if (fullIdx1 !== -1 && fullIdx2 !== -1) {
-                    // Move (shift) not swap: remove from current slot and insert at target slot.
-                    // All icons between the two positions shift by one — no teleporting.
-                    order.splice(fullIdx1, 1);
-                    order.splice(fullIdx2, 0, activeKey);
-                    Preferences.indicators.order = order;
-                }
-            }
+            // Move (shift) not swap: remove from current slot and insert at target slot.
+            // All icons between the two positions shift by one — no teleporting.
+            order.splice(from, 1);
+            order.splice(to, 0, itemKey);
+            Preferences.indicators.order = order;
         }
     }
 

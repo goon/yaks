@@ -99,6 +99,7 @@ QtObject {
         readonly property int iconSmall: 18 * root.shellScale
         readonly property int iconMedium: 20 * root.shellScale
         readonly property int iconLarge: 30 * root.shellScale
+        readonly property int settingsRow: 36 * root.shellScale
     }
 
     // ── TYPOGRAPHY ──────────────────────────────────────────────────────

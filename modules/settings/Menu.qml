@@ -61,7 +61,7 @@ Item {
                 Layout.fillWidth: true
                 title: modelData.title
                 bounceTitleOnHover: true
-                itemHeight: SettingsRow.rowHeight
+                itemHeight: Globals.dimensions.settingsRow
                 leftIconBoxSize: root._iconBoxSize
                 leftIcon: modelData.icon
                 onClicked: root.pushPage(modelData.page)
