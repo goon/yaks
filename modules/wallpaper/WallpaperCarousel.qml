@@ -27,8 +27,23 @@ FocusScope {
     readonly property int contentPadding: 11
     readonly property int edgeFadeWidth: contentPadding
 
+    readonly property int headerH: 34 * Globals.shellScale
+    readonly property int footerH: 34 * Globals.shellScale
+
+    readonly property bool editingDirectory: dirInput.activeFocus
+
+    // Directory is edited through the field itself, not a live binding: every change
+    // to Preferences.wallpaper.directory kicks off a full rescan (find +
+    // thumbnailer.sh), so it only fires on editingFinished (Return or focus loss).
+    function commitDirectory() {
+        // Assigning rescan kicks off refreshWallpapers(). Empty is a valid value
+        // (the settings page shows a warning and disables the gallery), and a
+        // same-value assign is a no-op, so Return's double-commit is harmless.
+        Preferences.wallpaper.directory = dirInput.text;
+    }
+
     readonly property real naturalWidth: 2 * (slotCX[2] + slotW[2] / 2) * s + 2 * contentPadding
-    readonly property real naturalHeight: slotH[0] * s + 2 * contentPadding
+    readonly property real naturalHeight: slotH[0] * s + 2 * contentPadding + headerH + footerH
 
     function slotLerp(arr, ao) {
         if (ao >= arr.length - 1)
@@ -64,6 +79,12 @@ FocusScope {
             return;
         focusIndex = 0;
         pos = 0;
+    }
+
+    // Called by the panel on Opening; also the one place the directory field is
+    // seeded, so it picks up changes made elsewhere (settings page) between opens.
+    function syncDirectory() {
+        dirInput.text = Preferences.wallpaper.directory;
     }
 
     onModelChanged: focusFirst()
@@ -113,7 +134,7 @@ FocusScope {
             width:  root.slotLerp(root.slotW, ao) * root.s
             height: root.slotLerp(root.slotH, ao) * root.s
             x: root.width / 2 + root.offsetX(off) - width / 2
-            y: (root.height - height) / 2
+            y: (root.height - root.headerH - root.footerH - height) / 2 + root.headerH
             z: 10 - ao
 
             visible: ao <= 3
@@ -172,4 +193,38 @@ FocusScope {
     }
 
     Keys.onPressed: (event) => Binds.handleKey(event)
+
+    // ── DIRECTORY ─────────────────────────────────────────────────────
+    BaseInput {
+        id: dirInput
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: root.contentPadding
+        width: parent.width - 2 * root.contentPadding
+        placeholderText: "/home/user/wallpapers"
+        font.pixelSize: Globals.typography.size.medium
+        color: Globals.colors.muted
+        placeholderTextColor: Globals.colors.muted
+        horizontalAlignment: TextInput.AlignHCenter
+        activeFocusOnTab: false
+        onEditingFinished: root.commitDirectory()
+        Keys.onReturnPressed: {
+            root.commitDirectory();
+            // Clear the field first, then hand focus to the carousel root.
+            // Setting `focus` on the input synchronously and only moving focus
+            // afterwards avoids TextInput reclaiming it mid-dispatch.
+            dirInput.focus = false;
+            Qt.callLater(root.forceActiveFocus);
+        }
+    }
+
+    // ── COUNTER ──────────────────────────────────────────────────────
+    BaseText {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: root.contentPadding
+        text: root.model.length > 0 ? (root.currentIndex + 1) + " / " + root.model.length : ""
+        font.pixelSize: Globals.typography.size.small
+        color: Globals.colors.muted
+    }
 }

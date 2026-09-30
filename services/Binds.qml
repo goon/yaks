@@ -60,6 +60,9 @@ QtObject {
         if (!panel) return;
         var carousel = panel.carouselItem || panel;
         if (!carousel || !carousel.move) return;
+        // The directory field owns its own keys (arrows, Return, Backspace) while
+        // focused; otherwise Return applies the wallpaper and closes the panel.
+        if (carousel.editingDirectory) return;
 
         if (event.key === Qt.Key_Left) {
             carousel.move(-1);

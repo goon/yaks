@@ -6,7 +6,7 @@ singleton Globals config/Globals.qml
 # Services (Singletons)
 singleton Theme services/Theme.qml
 singleton ProcessService services/ProcessService.qml
-singleton Zenity services/Zenity.qml
+
 singleton LauncherService services/LauncherService.qml
 singleton Compositor services/Compositor.qml
 singleton IslandService services/IslandService.qml

@@ -18,6 +18,7 @@ FocusScope {
         if (panelState === "Opening") {
             Wallpaper.ensureScanned();
             carousel.focusFirst();
+            carousel.syncDirectory();
         }
     }
 
