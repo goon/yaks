@@ -16,6 +16,11 @@ Item {
     readonly property bool hovered: clickArea.containsMouse
     readonly property real contentCenterY: contentWrapper.y + contentWrapper.height / 2
 
+    // Row metrics live here rather than in Globals: this is the only component
+    // that renders a settings row, so its height is tuned in one place. Menu
+    // references it for its own rows.
+    readonly property int rowHeight: 36 * Globals.shellScale
+
     // ── KEYBOARD NAVIGATION CONTRACT ───────────────────────────────────
     // A row is navigable when it is visible and has something to do: either it
     // is clickable (a nav row to a subpage) or it hosts an adjustable control.
@@ -89,7 +94,7 @@ Item {
 
     signal clicked()
 
-    implicitHeight: Math.max(layout.implicitHeight, Globals.dimensions.settingsRowHeight) + Globals.geometry.spacing.large * 2 + 1
+    implicitHeight: Math.max(layout.implicitHeight, root.rowHeight) + Globals.geometry.spacing.large * 2 + 1
     Layout.fillWidth: true
 
     MouseArea {
@@ -109,7 +114,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: Globals.geometry.spacing.medium
         anchors.rightMargin: Globals.geometry.spacing.medium
-        height: Math.max(layout.implicitHeight, Globals.dimensions.settingsRowHeight)
+        height: Math.max(layout.implicitHeight, root.rowHeight)
 
         RowLayout {
             id: layout

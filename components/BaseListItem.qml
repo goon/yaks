@@ -15,8 +15,11 @@ Item {
     property int subtitleSize: Globals.typography.size.medium
     property bool showSubtitleOnHover: false
     property bool bounceTitleOnHover: false
-    property int itemHeight: Globals.dimensions.listItemHeight
-    property int leftIconBoxSize: Globals.dimensions.listItemHeight
+    // Row metrics live here rather than in Globals: only this component sizes
+    // list rows, so they're tuned in one place. Both stay writable because
+    // Menu.qml overrides them per-instance.
+    property int itemHeight: 44 * Globals.shellScale
+    property int leftIconBoxSize: root.itemHeight
     
     property string leftIcon: ""
     property bool leftIconInteractive: true
@@ -163,7 +166,7 @@ Item {
                 Layout.fillWidth: true
                 visible: root.subtitle !== ""
                 Layout.preferredHeight: root._subtitleCollapsed ? 0 : subtitleText.implicitHeight
-                Layout.topMargin: root._subtitleCollapsed ? 0 : Math.max(0, Globals.dimensions.listItemHeight - titleText.implicitHeight - subtitleText.implicitHeight)
+                Layout.topMargin: root._subtitleCollapsed ? 0 : Math.max(0, root.itemHeight - titleText.implicitHeight - subtitleText.implicitHeight)
                 Behavior on Layout.preferredHeight { BaseMotion { easing.type: Easing.OutQuart } }
                 Behavior on Layout.topMargin { BaseMotion { easing.type: Easing.OutQuart } }
                 clip: true
