@@ -31,6 +31,20 @@ SettingsPage {
 
 
             SettingsRow {
+                icon: "unfold-vertical"
+                label: "Height"
+
+                BaseSpinBox {
+                    from: 30
+                    to: 100
+                    stepSize: 1
+                    value: Preferences.bar.height
+                    suffix: "px"
+                    onValueChanged: Preferences.bar.height = value
+                }
+            }
+
+            SettingsRow {
                 icon: "grip-horizontal"
                 label: "Margin"
 
@@ -41,6 +55,33 @@ SettingsPage {
                     value: Preferences.bar.marginTop
                     suffix: "px"
                     onValueChanged: Preferences.bar.marginTop = value
+                }
+            }
+
+            SettingsRow {
+                icon: "picture-in-picture-2"
+                label: "Overhang"
+                description: "Float the bar over window content"
+
+                BaseSwitch {
+                    checked: Preferences.bar.overhang
+                    onToggled: Preferences.bar.overhang = checked
+                }
+            }
+
+            SettingsRow {
+                icon: "move-vertical"
+                label: "Reserved"
+                description: "Bar height kept clear; the rest overhangs"
+
+                BaseSpinBox {
+                    from: 0
+                    to: 100
+                    stepSize: 5
+                    value: Preferences.bar.overhangReserve
+                    suffix: "%"
+                    enabled: Preferences.bar.overhang
+                    onValueChanged: Preferences.bar.overhangReserve = value
                 }
             }
 
@@ -187,7 +228,7 @@ SettingsPage {
 
                 BaseIcon {
                     icon:  barRoot.componentMetadata[itemRoot.componentId]?.icon || "extension"
-                    size:  Globals.dimensions.iconBase
+                    size:  Globals.dimensions.iconSmall
                     color: rect.isEnabled ? Globals.colors.primary : Globals.colors.text
                 }
 
@@ -199,7 +240,7 @@ SettingsPage {
 
                 BaseIcon {
                     icon: "arrow-up-down"
-                    size: Globals.dimensions.iconBase
+                    size: Globals.dimensions.iconSmall
                     color: Globals.colors.muted
                 }
             }

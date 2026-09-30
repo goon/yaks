@@ -25,34 +25,10 @@ SettingsPage {
         Layout.fillHeight: true
         spacing: Globals.geometry.spacing.medium
 
-        BaseContainer {
+        BaseSearch {
             Layout.fillWidth: true
-            Layout.preferredHeight: Globals.dimensions.launcherSearchHeight || 48
-            paddingHorizontal: Globals.geometry.spacing.large
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: Globals.geometry.spacing.large
-
-                BaseIcon {
-                    icon: "search"
-                    color: searchInput.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
-                    scale: searchInput.text.length > 0 ? 1.1 : 1.0
-                    Behavior on color { BaseMotion { } }
-                    Behavior on scale { BaseMotion { } }
-                }
-
-                BaseInput {
-                    id: searchInput
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    placeholderText: "Search fonts..."
-                    leftPadding: 8
-                    rightPadding: 8
-                    onTextChanged: root.searchText = text.toLowerCase()
-                }
-            }
+            placeholderText: "Search fonts..."
+            onTextChanged: root.searchText = text.toLowerCase()
         }
 
         ListView {

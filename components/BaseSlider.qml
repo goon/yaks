@@ -22,7 +22,7 @@ Item {
 
     property string icon: ""
     property color iconColor: Globals.colors.text
-    property int iconSize: Globals.dimensions.iconBase
+    property int iconSize: Globals.dimensions.iconSmall
     property int iconGap: Globals.geometry.spacing.small
 
     readonly property int handleWidth: Globals.geometry.slider.handleWidth

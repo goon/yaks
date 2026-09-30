@@ -74,7 +74,7 @@ SpinBox {
             
             text: root.textFromValue(root.value, root.locale)
             color: Globals.colors.text
-            font.pixelSize: Globals.typography.size.medium
+            font.pixelSize: Globals.typography.size.large
             font.family: Globals.typography.family
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter

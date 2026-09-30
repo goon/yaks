@@ -136,13 +136,13 @@ Item {
 
                         BaseIcon {
                             icon: "lock"
-                            size: 12
+                            size: Globals.dimensions.iconSmall
                             visible: root.isSecured
                         }
 
                         BaseIcon {
                             icon: "heart-pulse"
-                            size: 14
+                            size: Globals.dimensions.iconSmall
                             visible: root.isKnown
                         }
                     }

@@ -72,11 +72,7 @@ QtObject {
         readonly property real background: Math.max(0.3, Preferences.globals.backgroundOpacity)
     }
 
-    /*
-     * =========================================================================
-     *   📐 GEOMETRY (Style Tokens)
-     * =========================================================================
-     */
+    // ── GEOMETRY TOKENS ──────────────────────────────────────────────────
     readonly property QtObject geometry: QtObject {
         readonly property int radius: (_roundingBases[Preferences.globals.rounding] || 26) * root.shellScale
         readonly property QtObject spacing: QtObject {
@@ -104,57 +100,39 @@ QtObject {
         }
     }
 
-    /*
-     * =========================================================================
-     *   📏 DIMENSIONS (Component Sizing)
-     * =========================================================================
-     */
+    // ── DIMENSIONS ──────────────────────────────────────────────────────
     readonly property QtObject
     dimensions: QtObject {
         readonly property int barItemHeight: 32 * root.shellScale
         readonly property int listItemHeight: 44 * root.shellScale
         readonly property int settingsRowHeight: 36 * root.shellScale
-        readonly property int iconSmall: 16 * root.shellScale
-        readonly property int iconBase: 18 * root.shellScale
+        readonly property int iconSmall: 18 * root.shellScale
         readonly property int iconMedium: 20 * root.shellScale
-        readonly property int iconLarge: 32 * root.shellScale
-        readonly property int iconExtraLarge: 48 * root.shellScale
-        readonly property int launcherItemHeight: 54 * root.shellScale
-        readonly property int launcherSearchHeight: 50 * root.shellScale
+        readonly property int iconLarge: 30 * root.shellScale
         readonly property int caretWidth: Math.max(2, Math.round(2 * root.shellScale))
     }
 
-    /*
-     * =========================================================================
-     *   🔡 TYPOGRAPHY
-     * =========================================================================
-     */
+    // ── TYPOGRAPHY ──────────────────────────────────────────────────────
     readonly property QtObject
     typography: QtObject {
         readonly property string family: Preferences.globals.shellFont
         readonly property string iconFamily: "Lucide"
         readonly property QtObject
         weights: QtObject {
-            readonly property int normal: 500
+            readonly property int normal: 400
             readonly property int medium: 600
-            readonly property int bold: 700
+            readonly property int bold: 800
         }
 
         readonly property QtObject
         size: QtObject {
             readonly property int small: 12 * root.shellScale
-            readonly property int base: 14 * root.shellScale
-            readonly property int medium: 16 * root.shellScale
-            readonly property int large: 24 * root.shellScale
+            readonly property int medium: 14 * root.shellScale
+            readonly property int large: 16 * root.shellScale
         }
-
     }
 
-    /*
-     * =========================================================================
-     *   🎬 MOTION & EFFECTS
-     * =========================================================================
-     */
+    // ── MOTION ──────────────────────────────────────────────────────────
     readonly property QtObject
     motion: QtObject {
         // ── DURATIONS (ms) ──────────────────────────────────────────────

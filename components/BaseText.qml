@@ -16,7 +16,7 @@ Text {
     property int shadowRadius: Globals.effects.shadow.radius
     color: root.muted ? Globals.colors.muted : Globals.colors.text
     font.family: Globals.typography.family
-    font.pixelSize: Globals.typography.size.base
+    font.pixelSize: Globals.typography.size.medium
     font.weight: Globals.typography.weights.normal
     wrapMode: Text.WordWrap
     layer.enabled: shadow

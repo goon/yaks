@@ -113,7 +113,7 @@ BaseContainer {
                 BaseText {
                     text: "you're"
                     muted: true
-                    pixelSize: Globals.typography.size.medium
+                    pixelSize: Globals.typography.size.large
                     font.italic: true
                     Layout.alignment: Qt.AlignLeft
                     Layout.leftMargin: 8
@@ -163,7 +163,7 @@ BaseContainer {
                 BaseText {
                     text: "up."
                     color: Globals.colors.primary
-                    pixelSize: Globals.typography.size.medium
+                    pixelSize: Globals.typography.size.large
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: 8
                 }
@@ -172,8 +172,8 @@ BaseContainer {
             Canvas {
                 id: bounceContainer
                 z: -1 // CRITICAL: Explicitly layer the bell behind the text ColumnLayout
-                width: Globals.dimensions.iconExtraLarge
-                height: Globals.dimensions.iconExtraLarge
+                width: Globals.dimensions.iconLarge
+                height: Globals.dimensions.iconLarge
 
                 property real vx: 1.5
                 property real vy: 1.2
@@ -215,7 +215,7 @@ BaseContainer {
                     grad.addColorStop(1.0, Globals.colors.secondary);
 
                     ctx.fillStyle = grad;
-                    ctx.font = Globals.dimensions.iconExtraLarge + "px \"" + Globals.typography.iconFamily + "\"";
+                    ctx.font = Globals.dimensions.iconLarge + "px \"" + Globals.typography.iconFamily + "\"";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
                     ctx.globalAlpha = 0.7;

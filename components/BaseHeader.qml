@@ -9,9 +9,9 @@ BaseText {
 
     visible: text !== ""
     weight: Globals.typography.weights.bold
-    font.letterSpacing: 3.0
+    font.letterSpacing: 2
     color: isActive ? Globals.colors.text : Globals.colors.muted
-    
+
     verticalAlignment: Text.AlignBottom
     Layout.preferredHeight: Globals.dimensions.iconMedium
 

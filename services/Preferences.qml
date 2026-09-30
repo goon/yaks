@@ -22,13 +22,24 @@ QtObject {
         property string position: "top"
         property int height: 55
         property int marginTop: 10
+        property bool overhang: false
+        property int overhangReserve: 70
         property int workspaceCount: 5
         property var components: ["workspaces", "dock", "indicators", "clock"]
         property var componentsEnabled: ({"workspaces": true, "dock": true, "indicators": true, "clock": true})
 
+        // Space the bar reserves from its screen edge. With overhang on, only
+        // `overhangReserve`% of the bar height stays reserved (plus the top
+        // margin); the remainder of the floating capsule sits over windows.
+        readonly property int reservedZone: overhang
+            ? marginTop + Math.round(height * Math.max(0, Math.min(100, overhangReserve)) / 100)
+            : height + marginTop
+
         onPositionChanged: root.requestSave()
         onHeightChanged: root.requestSave()
         onMarginTopChanged: root.requestSave()
+        onOverhangChanged: root.requestSave()
+        onOverhangReserveChanged: root.requestSave()
         onWorkspaceCountChanged: root.requestSave()
         onComponentsChanged: root.requestSave()
         onComponentsEnabledChanged: root.requestSave()
@@ -95,6 +106,8 @@ QtObject {
         ["globals", "scale"],
         ["bar", "height"],
         ["bar", "marginTop"],
+        ["bar", "overhang"],
+        ["bar", "overhangReserve"],
         ["bar", "workspaceCount"],
         ["bar", "components"],
         ["bar", "componentsEnabled"],

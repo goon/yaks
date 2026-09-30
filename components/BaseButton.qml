@@ -15,7 +15,7 @@ Rectangle {
     property color textColor: {
         return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
     }
-    property int size: Globals.dimensions.iconBase
+    property int size: Globals.dimensions.iconSmall
     property real iconRotation: 0
     property int weight: Globals.typography.weights.normal
     property color hoverColor: "transparent"
@@ -68,7 +68,7 @@ Rectangle {
         BaseText {
             text: root.text
             color: root.textColor
-            pixelSize: Globals.typography.size.base
+            pixelSize: Globals.typography.size.medium
             weight: root.weight
             visible: root.text !== ""
         }

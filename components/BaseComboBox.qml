@@ -16,53 +16,29 @@ ComboBox {
     property color borderActiveColor: Globals.colors.primary
     property int maxVisibleItems: 10
 
-    property bool searchable: false
-    property bool filterLocally: true
-    property bool previewFonts: false
-    property string searchText: ""
-
     Layout.fillWidth: true
     implicitHeight: 36
     implicitWidth: 200
 
     font.family: Globals.typography.family
-    font.pixelSize: Globals.typography.size.base
+    font.pixelSize: Globals.typography.size.medium
     font.weight: Globals.typography.weights.normal
     
-    enabled: count > 0 || searchable
-    opacity: enabled ? 1.0 : 0.5
+    enabled: count > 0
 
     delegate: ItemDelegate {
         id: delegateRoot
         width: ListView.view ? ListView.view.width : root.width
-        height: isItemVisible ? 36 : 0
-
-        property bool isItemVisible: {
-            if (!root.searchable || !root.filterLocally || root.searchText === "") return true;
-            let t = (root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData;
-            return (t || "").toLowerCase().includes(root.searchText.toLowerCase());
-        }
-
-        visible: isItemVisible
+        height: 36
 
         contentItem: BaseText {
             id: delegateText
             text: (root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData
             color: delegateRoot.highlighted || delegateRoot.hovered ? Globals.colors.text : root.textColor
             weight: delegateRoot.highlighted || delegateRoot.hovered ? Globals.typography.weights.bold : Globals.typography.weights.normal
-            
-            property bool loadFont: !root.previewFonts
-            
-            Timer {
-                id: lazyLoadTimer
-                interval: 80
-                running: root.previewFonts && delegateRoot.visible && !delegateText.loadFont && !listView.moving
-                onTriggered: delegateText.loadFont = true
-            }
 
-            // Only preview if not moving to save CPU during scroll
-            font.family: loadFont && root.previewFonts ? ((root.textRole && typeof modelData === "object") ? modelData[root.textRole] : modelData) : Globals.typography.family
-            font.pixelSize: Globals.typography.size.base
+            font.family: Globals.typography.family
+            font.pixelSize: Globals.typography.size.medium
             font.weight: Globals.typography.weights.normal
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
@@ -110,7 +86,7 @@ ComboBox {
         text: root.displayText
         color: root.textColor
         font.family: Globals.typography.family
-        font.pixelSize: Globals.typography.size.base
+        font.pixelSize: Globals.typography.size.medium
         font.weight: Globals.typography.weights.normal
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -125,7 +101,7 @@ ComboBox {
         y: (root.availableHeight - height) / 2
         icon: "chevron-down"
         color: root.textColor
-        visible: (root.count > 0 || root.searchable) && !comboPopup.visible
+        visible: root.count > 0 && !comboPopup.visible
         opacity: visible ? 1.0 : 0.0
     }
 
@@ -141,7 +117,7 @@ ComboBox {
         id: comboPopup
         y: 0
         width: root.width
-        implicitHeight: contentLayout.implicitHeight + padding * 2
+        implicitHeight: listView.implicitHeight + padding * 2
         padding: Globals.geometry.spacing.medium
 
         enter: Transition {
@@ -158,53 +134,16 @@ ComboBox {
             }
         }
 
-        onOpened: {
-            if (root.searchable) {
-                searchInput.forceActiveFocus();
-            }
-        }
+        contentItem: ListView {
+            id: listView
+            clip: true
+            implicitHeight: Math.min(contentHeight, 36 * root.maxVisibleItems)
+            model: root.delegateModel
+            currentIndex: root.highlightedIndex
 
-        onClosed: {
-            root.searchText = "";
-        }
-
-        contentItem: ColumnLayout {
-            id: contentLayout
-
-            BaseInput {
-                id: searchInput
-                Layout.fillWidth: true
-                Layout.margins: Globals.geometry.spacing.small
-                Layout.preferredHeight: 36
-                placeholderText: "Search..."
-                visible: root.searchable
-                onTextChanged: root.searchText = text
-                
-                Keys.onPressed: (event) => {
-                    if (event.key === Qt.Key_Escape) {
-                        comboPopup.close();
-                    } else if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
-                        if (listView.count > 0) {
-                            root.currentIndex = listView.currentIndex;
-                            comboPopup.close();
-                        }
-                    }
-                }
-            }
-
-            ListView {
-                id: listView
-                Layout.fillWidth: true
-                Layout.preferredHeight: Math.min(contentHeight, 36 * root.maxVisibleItems)
-                clip: true
-                model: root.delegateModel
-                currentIndex: root.highlightedIndex
-                
-                // Optimization for large font lists
-                cacheBuffer: 100
-                reuseItems: true
-
-            }
+            // Optimization for large font lists
+            cacheBuffer: 100
+            reuseItems: true
         }
 
         background: Rectangle {

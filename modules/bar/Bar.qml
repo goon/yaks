@@ -28,7 +28,7 @@ PanelWindow {
     WlrLayershell.namespace: "yaks:bar"
     WlrLayershell.layer: WlrLayer.Top
     
-    WlrLayershell.exclusiveZone: Preferences.bar.height + Preferences.bar.marginTop
+    WlrLayershell.exclusiveZone: Preferences.bar.reservedZone
 
     implicitHeight: bar.screen ? bar.screen.height : 1080
     implicitWidth: 0

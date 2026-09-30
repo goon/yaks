@@ -46,6 +46,7 @@ BaseSwitch components/BaseSwitch.qml
 BaseMotion components/BaseMotion.qml
 BaseSpinBox components/BaseSpinBox.qml
 BaseIndicator components/BaseIndicator.qml
+BaseSearch components/BaseSearch.qml
 
 BaseStackView components/BaseStackView.qml
 
@@ -59,10 +60,6 @@ VolumeToast modules/toasts/VolumeToast.qml
 
 # Launcher
 Launcher modules/launcher/Launcher.qml
-LauncherSearch modules/launcher/LauncherSearch.qml
-LauncherListView modules/launcher/LauncherListView.qml
-LauncherItemDelegate modules/launcher/LauncherItemDelegate.qml
-LauncherApps modules/launcher/LauncherApps.qml
 
 # Settings
 Settings modules/settings/Settings.qml

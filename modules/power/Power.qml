@@ -101,7 +101,7 @@ BaseContainer {
                             text: btn.actionLabel
                             color: Globals.colors.text
                             font.weight: Globals.typography.weights.medium
-                            font.pixelSize: Globals.typography.size.medium
+                            font.pixelSize: Globals.typography.size.large
                             Behavior on color { BaseMotion { } }
                         }
 
@@ -119,7 +119,7 @@ BaseContainer {
                             anchors.top: parent.top
                             anchors.left: parent.left
                             text: "Hold to " + btn.actionLabel.toLowerCase()
-                            pixelSize: Globals.typography.size.base
+                            pixelSize: Globals.typography.size.medium
                             muted: true
                         }
 
@@ -173,7 +173,7 @@ BaseContainer {
                             id: subtitleColoredText
                             anchors.fill: subtitleText
                             text: "Hold to " + btn.actionLabel.toLowerCase()
-                            pixelSize: Globals.typography.size.base
+                            pixelSize: Globals.typography.size.medium
                             color: Globals.colors.text
                             visible: false
                         }

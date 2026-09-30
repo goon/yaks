@@ -121,8 +121,8 @@ PanelWindow {
     }
 
     margins {
-        top: (Preferences.bar.position === "top") ? -(Preferences.bar.height + Preferences.bar.marginTop) : 0
-        bottom: (Preferences.bar.position === "bottom") ? -(Preferences.bar.height + Preferences.bar.marginTop) : 0
+        top: (Preferences.bar.position === "top") ? -Preferences.bar.reservedZone : 0
+        bottom: (Preferences.bar.position === "bottom") ? -Preferences.bar.reservedZone : 0
     }
 
     // ── PARALLAX + TEXTURE PROVIDERS ──────────────────────────────────

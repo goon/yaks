@@ -135,7 +135,7 @@ Item {
 
                 BaseText {
                     text: root.label
-                    pixelSize: Globals.typography.size.medium
+                    pixelSize: Globals.typography.size.large
                     weight: Globals.typography.weights.medium
                 }
                 BaseText {

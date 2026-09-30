@@ -54,7 +54,7 @@ SettingsPage {
 
                             BaseIcon {
                                 icon: bento.isEnabled ? "check" : "circle"
-                                size: 24
+                                size: Globals.dimensions.iconLarge
                                 color: bento.isEnabled ? Globals.colors.primary : Globals.colors.text
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
                             }

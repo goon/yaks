@@ -72,7 +72,7 @@ Item {
     function getActualX(key) {
         var idx = visibleKeys.indexOf(key);
         if (idx < 0) return 0;
-        
+
         var x = 0;
         for (var i = 0; i < idx; i++) {
             var k = visibleKeys[i];
@@ -87,7 +87,7 @@ Item {
     function getTargetX(key) {
         var idx = visibleKeys.indexOf(key);
         if (idx < 0) return 0;
-        
+
         var x = 0;
         for (var i = 0; i < idx; i++) {
             x += getItemWidth(visibleKeys[i]) + spacing;

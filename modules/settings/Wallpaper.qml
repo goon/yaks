@@ -108,7 +108,7 @@ SettingsPage {
 
             BaseText {
                 text: "No Wallpaper Directory Set: The wallpaper gallery is disabled until you select a folder containing images."
-                pixelSize: Globals.typography.size.medium
+                pixelSize: Globals.typography.size.large
                 color: Globals.colors.primary
                 Layout.fillWidth: true
             }

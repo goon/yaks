@@ -124,7 +124,7 @@ BaseContainer {
                         BaseIcon {
                             id: symbolIcon
                             anchors.centerIn: parent
-                            size: Globals.dimensions.iconBase
+                            size: Globals.dimensions.iconSmall
                             icon: {
                                 if (!root.notification) return "";
                                 if (root.isScreenshot) return "image";
@@ -168,7 +168,7 @@ BaseContainer {
                     BaseText {
                         id: summaryText
                         Layout.fillWidth: false
-                        pixelSize: Globals.typography.size.medium
+                        pixelSize: Globals.typography.size.large
                         weight: Globals.typography.weights.bold
                         text: root.notification ? (root.notification.summary || "") : ""
                         maximumLineCount: 1
@@ -189,7 +189,7 @@ BaseContainer {
                         muted: true
                         visible: root.showTime
                         text: root.timeString
-                        pixelSize: Globals.typography.size.base
+                        pixelSize: Globals.typography.size.medium
                         font.italic: true
                         elide: Text.ElideRight
                     }
@@ -207,7 +207,7 @@ BaseContainer {
                     icon: "trash-2"
                     iconColor: containsMouse ? Globals.colors.surface : Globals.colors.primary
                     hoverColor: Globals.colors.primary
-                    size: Globals.typography.size.medium
+                    size: Globals.dimensions.iconSmall
                     onClicked: root.closeClicked()
                 }
 

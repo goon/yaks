@@ -9,10 +9,10 @@ Item {
     implicitWidth: layout.implicitWidth
 
     property string title: ""
-    property int titleSize: Globals.typography.size.medium
+    property int titleSize: Globals.typography.size.large
     property string titleFamily: Globals.typography.family
     property string subtitle: ""
-    property int subtitleSize: Globals.typography.size.base
+    property int subtitleSize: Globals.typography.size.medium
     property bool showSubtitleOnHover: false
     property bool bounceTitleOnHover: false
     property int itemHeight: Globals.dimensions.listItemHeight

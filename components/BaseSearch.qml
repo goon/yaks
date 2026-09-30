@@ -6,35 +6,30 @@ BaseContainer {
     id: root
 
     property alias text: input.text
+    property alias placeholderText: input.placeholderText
+    readonly property alias input: input
 
-    // Expose forceActiveFocus so parent can focus it
     function focusInput() {
         input.forceActiveFocus();
         input.cursorPosition = input.text.length;
     }
 
-    Layout.fillWidth: true
-    Layout.preferredHeight: Globals.dimensions.launcherSearchHeight
+    implicitHeight: 30 * Globals.shellScale
     paddingHorizontal: Globals.geometry.spacing.large
     clickable: true
+
+    onClicked: root.focusInput()
 
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.leftMargin: 0
-        Layout.rightMargin: 0
-        Layout.topMargin: 0
-        Layout.bottomMargin: 0
         spacing: Globals.geometry.spacing.large
 
         BaseIcon {
             icon: "search"
             color: input.text.length > 0 ? Globals.colors.primary : Globals.colors.muted
-
-            Behavior on color { BaseMotion { } }
-
-            // Subtle pulse when typing
             scale: input.text.length > 0 ? 1.1 : 1.0
+            Behavior on color { BaseMotion { } }
             Behavior on scale { BaseMotion { } }
         }
 
@@ -48,10 +43,9 @@ BaseContainer {
                 clip: true
                 leftPadding: 8
                 rightPadding: 8
-                font.pixelSize: Globals.typography.size.medium
+                font.pixelSize: Globals.typography.size.large
                 placeholderText: "Search..."
                 verticalAlignment: Text.AlignVCenter
-                focus: true
                 activeFocusOnTab: false
             }
         }

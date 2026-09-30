@@ -8,30 +8,68 @@ FocusScope {
 
     property string panelState: "Closed"
 
-    implicitWidth: 500
+    readonly property int itemHeight: 54 * Globals.shellScale
+
+    implicitWidth: 400
     implicitHeight: {
-        var searchHeight = Globals.dimensions.launcherSearchHeight;
+        var searchHeight = searchBar.implicitHeight;
         var padLarge = Globals.geometry.spacing.large;
 
-        var count = apps.listCount;
-        var visibleItems = Math.min(count, 8);
+        var visibleItems = Math.min(cachedModel.length, 6);
 
         if (visibleItems === 0) {
             return searchHeight + padLarge;
         }
 
-        var itemHeight = Globals.dimensions.launcherItemHeight;
         var listHeight = (visibleItems * itemHeight) + (Math.max(0, visibleItems - 1) * padLarge);
         return searchHeight + (2 * padLarge) + 1 + listHeight;
     }
 
     property Item initialFocusItem: searchBar
 
+    // ── SEARCH & MODEL STATE ──────────────────────────────────────────
+    property string searchText: searchBar.text
+    property var cachedModel: []
+    property string _lastQuery: ""
+
+    onSearchTextChanged: searchDebounceTimer.restart()
+
+    function performSearch() {
+        var query = searchText.trim();
+        var queryChanged = query !== _lastQuery;
+        _lastQuery = query;
+
+        cachedModel = LauncherService.searchApps(query, DesktopEntries.applications.values, 100);
+        updateCurrentIndex(queryChanged);
+    }
+
+    function updateCurrentIndex(queryChanged) {
+        if (queryChanged || appListView.currentIndex === -1) {
+            if (cachedModel.length > 0)
+                appListView.currentIndex = 0;
+            else
+                appListView.currentIndex = -1;
+        }
+    }
+
+    function activateCurrentItem() {
+        searchDebounceTimer.stop();
+        performSearch();
+
+        if (appListView.currentIndex < 0 && cachedModel.length > 0)
+            appListView.currentIndex = 0;
+
+        if (appListView.currentIndex >= 0 && appListView.currentIndex < cachedModel.length) {
+            LauncherService.executeItem(cachedModel[appListView.currentIndex]);
+            IslandService.closeAll();
+        }
+    }
+
     function opening() {
         LauncherService.resetInputStates();
         LauncherService.lastInputMethod = "keyboard";
         searchBar.text = "";
-        apps.performSearch();
+        performSearch();
     }
 
     function closing() {
@@ -39,7 +77,7 @@ FocusScope {
     }
 
     function getCurrentListView() {
-        return apps.listView;
+        return appListView;
     }
 
     function navigateDown() {
@@ -66,10 +104,6 @@ FocusScope {
         }
     }
 
-    function activateCurrentItem() {
-        apps.activateCurrentItem();
-    }
-
     function backToSearch(text) {
         LauncherService.resetInputStates();
         searchBar.focusInput();
@@ -87,6 +121,20 @@ FocusScope {
             listView.currentIndex = index;
     }
 
+    Connections {
+        target: DesktopEntries.applications
+        function onValuesChanged() {
+            root.performSearch();
+        }
+    }
+
+    Timer {
+        id: searchDebounceTimer
+        interval: 100
+        repeat: false
+        onTriggered: root.performSearch()
+    }
+
     Keys.onPressed: (event) => Binds.handleKey(event)
 
     anchors.fill: parent
@@ -96,29 +144,170 @@ FocusScope {
         anchors.fill: parent
         spacing: Globals.geometry.spacing.large
 
-        LauncherSearch {
+        BaseSearch {
             id: searchBar
         }
 
         BaseSeparator {
             Layout.fillWidth: true
-            visible: apps.listCount > 0
+            visible: cachedModel.length > 0
         }
 
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: apps.listCount > 0
+            visible: cachedModel.length > 0
             clip: true
 
-            LauncherApps {
-                id: apps
+            ListView {
+                id: appListView
                 anchors.fill: parent
-                isActive: true
-                searchText: searchBar.text
-                onCloseRequested: IslandService.closeAll()
-                onMouseMoveRequested: (index, mouse) => root.handleListMouseMove(apps.listView, index, mouse)
+                spacing: Globals.geometry.spacing.large
+                activeFocusOnTab: false
+                highlightMoveDuration: 0
+                highlightResizeDuration: 0
+                model: root.cachedModel
+
+                onCountChanged: {
+                    if (LauncherService.lastInputMethod === "keyboard" || currentIndex === -1) {
+                        if (count > 0 && currentIndex < 0)
+                            currentIndex = 0;
+                        else if (count === 0)
+                            currentIndex = -1;
+                    }
+                }
+
+                delegate: LauncherItemDelegate {
+                    itemHeight: root.itemHeight
+
+                    onClicked: (idx) => {
+                        appListView.currentIndex = idx;
+                        root.activateCurrentItem();
+                    }
+
+                    onMouseMoved: (idx, mouse) => root.handleListMouseMove(appListView, idx, mouse)
+                }
             }
+        }
+    }
+
+    component LauncherItemDelegate: Item {
+        id: delegateRoot
+
+        readonly property int _staggerStepMs: 30
+        readonly property int _staggerCapMs: 300
+
+        // ── MODEL ─────────────────────────────────────────────────────
+        required property int index
+        required property var modelData
+
+        // ── API ───────────────────────────────────────────────────────
+        required property int itemHeight
+        property color iconColor: Globals.colors.text
+
+        readonly property bool selected: ListView.view ? ListView.view.currentIndex === index : false
+        readonly property string entryName: modelData ? modelData.name : ""
+        readonly property string entryImage: modelData ? LauncherService.resolveIcon(modelData.icon) : ""
+        readonly property bool showFallbackIcon: entryImage === ""
+        readonly property string fallbackText: entryName.length > 0 ? entryName.charAt(0).toUpperCase() : "?"
+
+        signal clicked(int index)
+        signal mouseMoved(int index, var mouse)
+
+        width: ListView.view ? ListView.view.width : parent.width
+        height: itemHeight
+
+        opacity: 0
+        transform: Translate { id: entryTranslate; y: 20 }
+
+        Component.onCompleted: {
+            entryAnim.start();
+        }
+
+        ParallelAnimation {
+            id: entryAnim
+            BaseMotion { target: delegateRoot; property: "opacity"; to: 1; delay: Math.max(0, Math.min(delegateRoot.index * delegateRoot._staggerStepMs, delegateRoot._staggerCapMs)) }
+            BaseMotion { target: entryTranslate; property: "y"; to: 0; delay: Math.max(0, Math.min(delegateRoot.index * delegateRoot._staggerStepMs, delegateRoot._staggerCapMs)); easing.type: Globals.motion.easeSpring }
+        }
+
+        Rectangle {
+            id: mainBackground
+            anchors.fill: parent
+            radius: Globals.geometry.innerRadius.medium
+            color: "transparent"
+
+            BaseActiveBackground {
+                anchors.fill: parent
+                radius: parent.radius
+                hovered: mouseArea.containsMouse
+                premiumActive: delegateRoot.selected
+                hoverEnabled: false
+            }
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: Globals.geometry.spacing.large * 2
+                anchors.rightMargin: Globals.geometry.spacing.large * 2
+                spacing: Globals.geometry.spacing.large
+
+                scale: mouseArea.pressed ? 0.98 : 1.0
+                Behavior on scale { BaseMotion { } }
+
+                Item {
+                    Layout.preferredWidth: Globals.dimensions.iconLarge
+                    Layout.preferredHeight: Globals.dimensions.iconLarge
+                    Layout.alignment: Qt.AlignVCenter
+
+                    Image {
+                        anchors.fill: parent
+                        source: delegateRoot.entryImage
+                        asynchronous: false
+                        fillMode: Image.PreserveAspectFit
+                        sourceSize.width: Globals.dimensions.iconLarge
+                        sourceSize.height: Globals.dimensions.iconLarge
+                        mipmap: true
+                        visible: !!delegateRoot.entryImage && status === Image.Ready
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: Globals.geometry.innerRadius.small
+                        color: Globals.colors.raised
+                        visible: delegateRoot.showFallbackIcon
+
+                        BaseText {
+                            anchors.centerIn: parent
+                            text: delegateRoot.fallbackText
+                            color: delegateRoot.iconColor
+                            pixelSize: Globals.dimensions.iconLarge * 0.6
+                            weight: Globals.typography.weights.bold
+                        }
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+
+                    BaseText {
+                        Layout.fillWidth: true
+                        text: delegateRoot.entryName
+                        pixelSize: Globals.typography.size.large
+                        color: delegateRoot.selected ? Globals.colors.text : Globals.colors.muted
+                        weight: delegateRoot.selected ? Globals.typography.weights.bold : Globals.typography.weights.normal
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+        }
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+
+            onPositionChanged: (mouse) => delegateRoot.mouseMoved(delegateRoot.index, mouse)
+            onClicked: delegateRoot.clicked(delegateRoot.index)
         }
     }
 }
