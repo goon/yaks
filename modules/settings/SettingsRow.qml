@@ -59,12 +59,6 @@ Item {
             return true;
         }
 
-        if (typeof c.incrementCurrentIndex === "function" && c.model !== undefined) {
-            // ComboBox.
-            if (delta < 0) c.currentIndex = Math.max(0, c.currentIndex - 1);
-            else c.currentIndex = Math.min(c.count - 1, c.currentIndex + 1);
-            return true;
-        }
         if (typeof c.increase === "function" && typeof c.decrease === "function") {
             // SpinBox / Slider, both expose increase()/decrease().
             if (delta < 0) c.decrease();

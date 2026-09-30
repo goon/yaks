@@ -40,7 +40,6 @@ BaseScrolling components/BaseScrolling.qml
 BaseSeparator components/BaseSeparator.qml
 BaseSlider components/BaseSlider.qml
 BaseText components/BaseText.qml
-BaseComboBox components/BaseComboBox.qml
 BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSwitch components/BaseSwitch.qml
 BaseMotion components/BaseMotion.qml

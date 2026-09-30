@@ -46,14 +46,10 @@ QtObject {
     }
 
     property QtObject wallpaper: QtObject {
-        property double parallaxStrength: 25
         property string directory: ""
-        property string transition: "fade" // fade | disc | corner | wave
         property int transitionDuration: 1750
 
-        onParallaxStrengthChanged: root.requestSave()
         onDirectoryChanged: root.requestSave()
-        onTransitionChanged: root.requestSave()
         onTransitionDurationChanged: root.requestSave()
     }
 
@@ -111,9 +107,7 @@ QtObject {
         ["bar", "workspaceCount"],
         ["bar", "components"],
         ["bar", "componentsEnabled"],
-        ["wallpaper", "parallaxStrength"],
         ["wallpaper", "directory"],
-        ["wallpaper", "transition"],
         ["wallpaper", "transitionDuration"],
         ["applications", "themedApps"],
         ["globals", "shellFont"],
