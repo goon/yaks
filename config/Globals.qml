@@ -47,6 +47,8 @@ QtObject {
         // only place the user Opacity setting applies.
         readonly property color top:    root.alpha(colorsRoot._raw.top, root.opacity.background)
         readonly property color bottom: root.alpha(colorsRoot._raw.bottom, root.opacity.background)
+        // island outline: a lighter tint of the capsule background, shell-only.
+        readonly property color outline: colorsRoot._raw.outline
 
         // lines
         readonly property color border: colorsRoot._raw.border

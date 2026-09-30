@@ -260,7 +260,7 @@ Item {
         z: 2
         
 
-        borderColor: Preferences.globals.islandOutline ? Globals.colors.hair : "transparent"
+        borderColor: Preferences.globals.islandOutline ? Globals.colors.outline : "transparent"
         borderWidth: Preferences.globals.islandOutline ? 1 : 0
         radius: Globals.geometry.radius
         clip: true
