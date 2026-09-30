@@ -9,6 +9,7 @@ Item {
     id: islandRoot
 
     required property var barWindow
+    readonly property int itemHeight: 32 * Globals.shellScale
     property bool _ready: false
     Component.onCompleted: Qt.callLater(() => { _ready = true; })
     
@@ -127,7 +128,7 @@ Item {
     // Expose the mask element to Bar.qml for input region
     readonly property alias maskItem: maskItem
 
-    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - (Globals.dimensions.barItemHeight)) / 2)
+    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - islandRoot.itemHeight) / 2)
     readonly property real normalCapsuleWidth: staticFull.implicitWidth
     readonly property real normalCapsuleHeight: Preferences.bar.height
     readonly property real normalCapsuleX: (barWindow.width - normalCapsuleWidth) / 2

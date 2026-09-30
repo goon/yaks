@@ -33,7 +33,7 @@ Item {
     }
 
     Layout.fillWidth: false
-    implicitHeight: Globals.dimensions.barItemHeight
+    implicitHeight: islandRoot.itemHeight
     readonly property int _staticWidth: {
         var count = root.workspaces ? root.workspaces.length : 0;
         if (count === 0) return 0;
@@ -68,7 +68,7 @@ Item {
                 readonly property real targetWidth: isActive ? 28 : 8
                 readonly property real targetX: (layout.activeIndex !== -1 && index > layout.activeIndex) ? (index * 16 + 20) : (index * 16)
 
-                height: Globals.dimensions.barItemHeight
+                height: islandRoot.itemHeight
                 width: targetWidth
                 x: targetX
                 y: 0

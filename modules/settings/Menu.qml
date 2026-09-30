@@ -10,6 +10,8 @@ Item {
 
     property string title: "Settings"
 
+    readonly property int _iconBoxSize: 32 * Globals.shellScale
+
     function pushPage(name) {
         StackView.view.pushPage(Qt.resolvedUrl(name), name);
     }
@@ -62,7 +64,7 @@ Item {
                 title: modelData.title
                 bounceTitleOnHover: true
                 itemHeight: SettingsRow.rowHeight
-                leftIconBoxSize: Globals.dimensions.barItemHeight
+                leftIconBoxSize: root._iconBoxSize
                 leftIcon: modelData.icon
                 onClicked: root.pushPage(modelData.page)
             }

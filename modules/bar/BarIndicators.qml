@@ -11,7 +11,7 @@ Item {
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
     implicitWidth: background.implicitWidth
-    implicitHeight: Globals.dimensions.barItemHeight
+    implicitHeight: islandRoot.itemHeight
 
     readonly property int spacing: Globals.geometry.spacing.small
     readonly property int indicatorItemWidth: 32
@@ -113,13 +113,13 @@ Item {
         id: background
 
         anchors.fill: parent
-        implicitHeight: Globals.dimensions.barItemHeight
+        implicitHeight: islandRoot.itemHeight
         hoverEnabled: false
 
         Item {
             id: container
             implicitWidth: root.contentWidth
-            implicitHeight: Globals.dimensions.barItemHeight
+    implicitHeight: islandRoot.itemHeight
             height: parent.height
 
             Repeater {
