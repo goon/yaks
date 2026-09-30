@@ -25,7 +25,6 @@ singleton Binds services/Binds.qml
 Commander services/Commander.qml
 
 # Components
-BaseBackground components/BaseBackground.qml
 BaseActiveBackground components/BaseActiveBackground.qml
 BaseHeader components/BaseHeader.qml
 BaseBento components/BaseBento.qml
@@ -52,16 +51,9 @@ BaseStackView components/BaseStackView.qml
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml
-NotificationToast modules/toasts/NotificationToast.qml
-VolumeToast modules/toasts/VolumeToast.qml
 
-
-
-# Launcher
-Launcher modules/launcher/Launcher.qml
 
 # Settings
-Settings modules/settings/Settings.qml
 SettingsPage modules/settings/SettingsPage.qml
 SettingsGroup modules/settings/SettingsGroup.qml
 SettingsRow modules/settings/SettingsRow.qml

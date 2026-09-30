@@ -12,14 +12,10 @@ Rectangle {
     property color iconColor: {
         return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
     }
-    property color textColor: {
-        return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
-    }
     property int size: Globals.dimensions.iconSmall
     property real iconRotation: 0
     property int weight: Globals.typography.weights.normal
     property color hoverColor: "transparent"
-    property real customRadius: -1
     property bool hoverEnabled: true
     property int paddingHorizontal: text !== "" ? Globals.geometry.padding.medium : Globals.geometry.spacing.medium
     property int paddingVertical: Globals.geometry.spacing.medium
@@ -31,10 +27,7 @@ Rectangle {
     // ── SIGNALS ───────────────────────────────────────────────────────
     signal clicked()
 
-    radius: {
-        if (root.customRadius >= 0) return root.customRadius;
-        return Globals.geometry.innerRadius.medium;
-    }
+    radius: Globals.geometry.innerRadius.medium
     color: "transparent"
     
     implicitWidth: childrenLayout.implicitWidth + (root.paddingHorizontal * 2)
@@ -67,7 +60,7 @@ Rectangle {
 
         BaseText {
             text: root.text
-            color: root.textColor
+            color: root.iconColor
             pixelSize: Globals.typography.size.medium
             weight: root.weight
             visible: root.text !== ""

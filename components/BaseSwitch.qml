@@ -23,7 +23,6 @@ Switch {
     }
 
     property real progress: control.checked ? 1.0 : 0.0
-    readonly property real _p: Math.max(0, Math.min(1, progress))
     Behavior on progress {
         BaseMotion { }
     }
@@ -102,8 +101,8 @@ Switch {
                 text: "✘"
                 pixelSize: Math.round(parent.height * 0.5)
                 color: indicatorContainer.ink
-                opacity: 1 - control._p
-                scale: 1 - 0.5 * control._p
+                opacity: 1 - control.progress
+                scale: 1 - 0.5 * control.progress
             }
 
             BaseText {
@@ -111,8 +110,8 @@ Switch {
                 text: "✔"
                 pixelSize: Math.round(parent.height * 0.5)
                 color: indicatorContainer.ink
-                opacity: control._p
-                scale: 0.5 + 0.5 * control._p
+                opacity: control.progress
+                scale: 0.5 + 0.5 * control.progress
             }
         }
     }

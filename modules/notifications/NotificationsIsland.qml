@@ -8,7 +8,6 @@ import qs
 BaseContainer {
     id: root
 
-    property string panelState: "Closed"
     implicitWidth: 460
 
     readonly property int _pulseMs: 2000

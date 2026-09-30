@@ -15,7 +15,6 @@ FocusScope {
 
     property bool clickable: false
     property bool hoverEnabled: true
-    property bool autoFillWidth: true
 
     Keys.onPressed: (event) => Binds.handleKey(event)
     
@@ -33,7 +32,7 @@ FocusScope {
     signal clicked()
     signal rightClicked()
 
-    Layout.fillWidth: autoFillWidth
+    Layout.fillWidth: true
     implicitWidth: contentContainer.implicitWidth + (paddingHorizontal * 2)
     implicitHeight: contentContainer.implicitHeight + (paddingVertical * 2)
 
@@ -48,7 +47,6 @@ FocusScope {
 
         anchors.fill: parent
         enabled: root.clickable || root.hoverEnabled
-        hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.RightButton)

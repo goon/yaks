@@ -47,12 +47,10 @@ Singleton {
 
             wsMap[ws.id] = {
                 "id": ws.id,
-                "idx": ws.id,
                 "name": ws.name || ws.id.toString(),
                 "isActive": ws.active,
                 "isFocused": ws.focused,
-                "hasWindows": ws.toplevels.values.length > 0,
-                "monitor": ws.monitor ? ws.monitor.name : ""
+                "hasWindows": ws.toplevels.values.length > 0
             };
             if (ws.id > maxId) maxId = ws.id;
         }
@@ -63,10 +61,10 @@ Singleton {
                 res.push(wsMap[id]);
             } else {
                 res.push({
-                    "id": id, "idx": id,
+                    "id": id,
                     "name": id.toString(),
                     "isActive": false, "isFocused": false,
-                    "hasWindows": false, "monitor": ""
+                    "hasWindows": false
                 });
             }
         }
@@ -188,8 +186,6 @@ Singleton {
 
     // ── PUBLIC UTILITIES ──────────────────────────────────────────────
 
-    property bool usingLua: true
-
     // ── PUBLIC ACTIONS ────────────────────────────────────────────────
 
     function _dispatch(cmd) {
@@ -197,22 +193,14 @@ Singleton {
     }
 
     function switchToWorkspace(workspaceIdx) {
-        if (root.usingLua) {
-            _dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
-        } else {
-            _dispatch("workspace " + workspaceIdx.toString());
-        }
+        _dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
     }
 
     function focusWindow(windowId) {
         var addr = windowId.toString();
         if (!addr.startsWith("0x")) addr = "0x" + addr;
 
-        if (root.usingLua) {
-            _dispatch("(function() for _, w in ipairs(hl.get_windows()) do if w.address == \"" + addr + "\" then return hl.dsp.focus({ window = w }) end end end)()");
-        } else {
-            _dispatch("focuswindow address:" + addr);
-        }
+        _dispatch("(function() for _, w in ipairs(hl.get_windows()) do if w.address == \"" + addr + "\" then return hl.dsp.focus({ window = w }) end end end)()");
     }
 
     function quit() {

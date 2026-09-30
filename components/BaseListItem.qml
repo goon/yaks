@@ -9,11 +9,8 @@ Item {
     implicitWidth: layout.implicitWidth
 
     property string title: ""
-    property int titleSize: Globals.typography.size.large
     property string titleFamily: Globals.typography.family
     property string subtitle: ""
-    property int subtitleSize: Globals.typography.size.medium
-    property bool showSubtitleOnHover: false
     property bool bounceTitleOnHover: false
     // Row metrics live here rather than in Globals: only this component sizes
     // list rows, so they're tuned in one place. Both stay writable because
@@ -44,14 +41,10 @@ Item {
     }
 
     // Internal indicator (the gradient bar on the left edge).
-    // Set to false when an external BaseIndicator is used instead (e.g. for hover-driven indicators).
-    property bool showInternalIndicator: true
-
     readonly property bool containsMouse: mainMouseArea.containsMouse
     readonly property bool hovered: containsMouse
     // Highlight when either the pointer is over the row or keyboard nav is on it.
     readonly property bool highlighted: root.navHighlighted || root.containsMouse
-    readonly property bool _subtitleCollapsed: root.showSubtitleOnHover && !root.highlighted
 
     // Drive the bounce/pulse from the shared highlight so keyboard navigation
     // animates the row exactly like hover does.
@@ -84,7 +77,7 @@ Item {
         spacing: Globals.geometry.spacing.medium
 
         Rectangle {
-            visible: root.showInternalIndicator && root.selected
+            visible: root.selected
             Layout.preferredWidth: 3
             Layout.preferredHeight: 20
             Layout.alignment: Qt.AlignVCenter
@@ -141,7 +134,7 @@ Item {
                 id: titleText
                 visible: root.title !== ""
                 text: root.title
-                pixelSize: root.titleSize
+                pixelSize: Globals.typography.size.large
                 family: root.titleFamily
                 weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.medium
                 color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
@@ -165,13 +158,9 @@ Item {
             Item {
                 Layout.fillWidth: true
                 visible: root.subtitle !== ""
-                Layout.preferredHeight: root._subtitleCollapsed ? 0 : subtitleText.implicitHeight
-                Layout.topMargin: root._subtitleCollapsed ? 0 : Math.max(0, root.itemHeight - titleText.implicitHeight - subtitleText.implicitHeight)
-                Behavior on Layout.preferredHeight { BaseMotion { easing.type: Easing.OutQuart } }
-                Behavior on Layout.topMargin { BaseMotion { easing.type: Easing.OutQuart } }
+                Layout.preferredHeight: subtitleText.implicitHeight
+                Layout.topMargin: Math.max(0, root.itemHeight - titleText.implicitHeight - subtitleText.implicitHeight)
                 clip: true
-                opacity: root._subtitleCollapsed ? 0.0 : 1.0
-                Behavior on opacity { BaseMotion { } }
 
                 BaseText {
                     id: subtitleText
@@ -179,7 +168,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     text: root.subtitle
-                    pixelSize: root.subtitleSize
+                    pixelSize: Globals.typography.size.medium
                     muted: true
                     elide: Text.ElideRight
                     maximumLineCount: 1

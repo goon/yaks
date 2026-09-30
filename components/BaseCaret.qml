@@ -16,11 +16,10 @@ Item {
     readonly property real _advanceCw: 0.25
     readonly property int _advanceMs: 150
 
-    readonly property real _blinkSpeed: 0.8
     readonly property real _blinkBalance: 0.55
     readonly property real _blinkFade: 0.35
     readonly property int _blinkHoldMs: 550
-    readonly property real _blinkPeriod: 2500 / _blinkSpeed
+    readonly property real _blinkPeriod: 2500 / 0.8
     readonly property real _blinkHold: 1 - _blinkFade * 2
     readonly property real _blinkLit: _blinkPeriod * _blinkHold * _blinkBalance
     readonly property real _blinkDark: _blinkPeriod * _blinkHold * (1 - _blinkBalance)
@@ -54,13 +53,9 @@ Item {
     // so animating never breaks that binding.
     property real _glide: 0
 
-    readonly property int _appearMs: Globals.motion.hover
-
     // Caret metrics live here rather than in Globals: only this component
     // draws a caret, so they're tuned in one place.
-    readonly property int caretWidth: Math.max(2, Math.round(2 * Globals.shellScale))
-
-    width: root.caretWidth
+    width: Math.max(2, Math.round(2 * Globals.shellScale))
     visible: control.activeFocus && !control.readOnly
              && control.selectionStart === control.selectionEnd
              && !control.inputMethodComposing
@@ -208,7 +203,7 @@ Item {
         property: "opacity"
         from: 0
         to: 1
-        duration: root._appearMs
+        duration: Globals.motion.hover
         easing.type: Easing.InOutSine
 
         onFinished: {

@@ -29,14 +29,5 @@ BaseContainer {
             font.features: ({ "tnum": 1 })
             Layout.alignment: Qt.AlignBottom
         }
-
-//        BaseText {
-//            text: Qt.formatDateTime(systemClock.date, "ddd d MMM").toUpperCase()
-//           pixelSize: Globals.typography.size.small
-//            muted: true
-//            font.letterSpacing: 1
-//            renderType: Text.NativeRendering
-//            Layout.alignment: Qt.AlignVCenter
-        }
     }
-// }
+}

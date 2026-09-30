@@ -81,7 +81,6 @@ BaseScrolling {
                     icon: "refresh-cw"
                     width: 28
                     height: 28
-                    customRadius: Globals.geometry.innerRadius.medium
                     hoverEnabled: false
                     onClicked: Network.toggleScan()
 

@@ -5,7 +5,6 @@ SequentialAnimation {
     id: root
 
     property alias target: motion.target
-    property alias targets: motion.targets
     property alias property: motion.property
     property alias to: motion.to
     property alias from: motion.from

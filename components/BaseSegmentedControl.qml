@@ -8,7 +8,6 @@ Rectangle {
 
     property var model: []
     property var currentValue: undefined
-    property string textRole: "label"
     property string valueRole: "value"
 
     signal activated(int index, var value)
@@ -89,7 +88,7 @@ Rectangle {
 
                 BaseText {
                     anchors.centerIn: parent
-                    text: modelData[root.textRole] !== undefined ? modelData[root.textRole] : modelData
+                    text: modelData["label"] !== undefined ? modelData["label"] : modelData
                     color: itemRect.isSelected ? Globals.colors.primary
                          : (itemRect.hovered ? Globals.colors.text : Globals.colors.muted)
                     weight: itemRect.isSelected ? Globals.typography.weights.medium : Globals.typography.weights.normal

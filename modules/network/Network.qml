@@ -8,7 +8,6 @@ BaseContainer {
     id: root
     implicitWidth: 400
 
-    property string panelState: "Closed"
     property alias pageStack: stackView
 
     // Maps this panel's logical destinations to page files; the stack handles

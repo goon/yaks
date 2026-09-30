@@ -7,12 +7,8 @@ pragma Singleton
 QtObject {
     id: root
 
-    function poweroff() {
-        ProcessService.runDetached(["systemctl", "poweroff"]);
-    }
-
     function shutdown() {
-        poweroff();
+        ProcessService.runDetached(["systemctl", "poweroff"]);
     }
 
     function reboot() {

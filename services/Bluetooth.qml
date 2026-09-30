@@ -13,13 +13,7 @@ Singleton {
     property bool powered: adapter ? adapter.enabled : false
     property bool scanning: adapter ? adapter.discovering : false
     property var devices: adapter ? adapter.devices.values : []
-    property int connectedCount: {
-        var count = 0;
-        for (var i = 0; i < devices.length; i++) {
-            if (devices[i].connected) count++;
-        }
-        return count;
-    }
+    property int connectedCount: devices.filter(function(d) { return d.connected }).length
 
     function togglePower() {
         if (adapter)

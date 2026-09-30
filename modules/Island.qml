@@ -27,8 +27,7 @@ Item {
     // auto-dismissing while the pointer rests on the island. Tracked directly
     // off the capsule's HoverHandler — no settle delay, so the state is always
     // current rather than lagging a trailing timer.
-    readonly property bool isMouseOverCapsule: typeof capsuleHoverHandler !== "undefined" ? capsuleHoverHandler.hovered : false
-    property bool isHovered: isMouseOverCapsule
+    property bool isHovered: typeof capsuleHoverHandler !== "undefined" ? capsuleHoverHandler.hovered : false
     onIsHoveredChanged: IslandService.isIslandHovered = isHovered;
 
     // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
@@ -58,9 +57,6 @@ Item {
         if (panelLoader.item) {
             if (panelLoader.item.hasOwnProperty("panelState")) {
                 panelLoader.item.panelState = state;
-            }
-            if (panelLoader.item.hasOwnProperty("interactive")) {
-                panelLoader.item.interactive = (state === "Open");
             }
         }
     }
@@ -137,20 +133,12 @@ Item {
         : (barWindow.height - normalCapsuleHeight - Preferences.bar.marginTop)
 
 
-    // Expected fallback dimensions during transition before component load completes
-    function getExpectedPanelWidth(name) {
-        return IslandService.expectedWidth(name);
-    }
-
-    function getExpectedPanelHeight(name) {
-        return IslandService.expectedHeight(name);
-    }
-
     readonly property real totalWidthPadding: (Globals.geometry.padding.island * 2)
     readonly property real totalHeightPadding: (Globals.geometry.padding.island * 2)
 
-    property real activePanelWidth: activePanelItem ? (activePanelItem.implicitWidth || 0) + totalWidthPadding : getExpectedPanelWidth(activePanelName)
-    property real activePanelHeight: activePanelItem ? (activePanelItem.implicitHeight || 0) + totalHeightPadding : getExpectedPanelHeight(activePanelName)
+    // Fall back to the registry's expected size until the loaded panel reports its own.
+    property real activePanelWidth: activePanelItem ? (activePanelItem.implicitWidth || 0) + totalWidthPadding : IslandService.expectedWidth(activePanelName)
+    property real activePanelHeight: activePanelItem ? (activePanelItem.implicitHeight || 0) + totalHeightPadding : IslandService.expectedHeight(activePanelName)
 
     readonly property real targetCapsuleWidth: {
         if (isMorphed) {
@@ -247,9 +235,14 @@ Item {
     }
 
     // ── MORPHING CAPSULE ──────────────────────────────────────────────
-    BaseBackground {
+    Rectangle {
         id: capsule
-        
+
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Globals.colors.top }
+            GradientStop { position: 1.0; color: Globals.colors.bottom }
+        }
+
         HoverHandler {
             id: capsuleHoverHandler
         }
@@ -261,8 +254,8 @@ Item {
         z: 2
         
 
-        borderColor: Preferences.globals.islandOutline ? Globals.colors.outline : "transparent"
-        borderWidth: Preferences.globals.islandOutline ? 1 : 0
+        border.color: Preferences.globals.islandOutline ? Globals.colors.outline : "transparent"
+        border.width: Preferences.globals.islandOutline ? 1 : 0
         radius: Globals.geometry.radius
         clip: true
 

@@ -14,7 +14,6 @@ QtObject {
     // ── PATHS & EXTERNAL RESOURCES ────────────────────────────────────────
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string rootDir: homeDir + "/.config/yaks"
-    readonly property string assetsDir: rootDir + "/assets"
     readonly property string dataDir: homeDir + "/.local/share/yaks"
     readonly property string cacheDir: homeDir + "/.cache/yaks"
 

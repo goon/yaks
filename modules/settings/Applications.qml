@@ -77,7 +77,7 @@ SettingsPage {
                             hoverEnabled: true
                             cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                             onClicked: {
-                                let apps = JSON.parse(JSON.stringify(Preferences.applications.themedApps));
+                                let apps = structuredClone(Preferences.applications.themedApps);
                                 apps[modelData.id] = !bento.isEnabled;
                                 Preferences.applications.themedApps = apps;
                             }

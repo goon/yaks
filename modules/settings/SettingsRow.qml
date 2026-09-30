@@ -63,13 +63,6 @@ Item {
             c.activated(next, nv);
             return true;
         }
-
-        if (typeof c.increase === "function" && typeof c.decrease === "function") {
-            // SpinBox / Slider, both expose increase()/decrease().
-            if (delta < 0) c.decrease();
-            else c.increase();
-            return true;
-        }
         return false;
     }
 

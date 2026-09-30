@@ -7,9 +7,6 @@ Item {
     // ── VISUAL API ──────────────────────────────────────────────────
     property Item targetItem: null
 
-    property int orientation: Qt.Vertical
-    property bool retainLastPosition: true
-
     // ── HOVER-TRACKING API ─────────────────────────────────────────
     property var hoverPredicate: null
     property int gapInterval: 100
@@ -23,23 +20,14 @@ Item {
     property Item _hoverTarget: null
     readonly property Item _effectiveTarget: hoverPredicate ? root._hoverTarget : root.targetItem
 
-    readonly property real targetX: {
-        if (orientation === Qt.Horizontal) {
-            if (!_effectiveTarget || !root.parent) return retainLastPosition ? _lastX : 0;
-            return _effectiveTarget.mapToItem(root.parent, _effectiveTarget.width / 2, 0).x - width / 2;
-        }
-        return 0;
-    }
+    readonly property real targetX: 0
 
     readonly property real targetY: {
-        if (orientation === Qt.Vertical) {
-            if (!_effectiveTarget || !root.parent) return retainLastPosition ? _lastY : 0;
-            var centerY = (_effectiveTarget.contentCenterY !== undefined)
-                ? _effectiveTarget.contentCenterY
-                : _effectiveTarget.height / 2;
-            return _effectiveTarget.mapToItem(root.parent, 0, centerY).y - height / 2;
-        }
-        return parent ? parent.height - height : 0;
+        if (!_effectiveTarget || !root.parent) return _lastY;
+        var centerY = (_effectiveTarget.contentCenterY !== undefined)
+            ? _effectiveTarget.contentCenterY
+            : _effectiveTarget.height / 2;
+        return _effectiveTarget.mapToItem(root.parent, 0, centerY).y - height / 2;
     }
 
     x: targetX

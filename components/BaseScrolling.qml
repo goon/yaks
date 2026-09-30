@@ -8,9 +8,8 @@ Flickable {
 
     id: root
 
-    // Emulate ScrollView's availableWidth/availableHeight
+    // Emulate ScrollView's availableWidth
     readonly property real availableWidth: width - leftMargin - rightMargin
-    readonly property real availableHeight: height - topMargin - bottomMargin
 
     clip: true
     contentWidth: availableWidth

@@ -16,9 +16,6 @@ Item {
     property alias pressed: mouseArea.pressed
     readonly property bool hovered: mouseArea.containsMouse
 
-    property color trackColor: Globals.colors.well
-    property color fillColor: Globals.colors.primary
-
     // ── SLIDER METRICS ─────────────────────────────────────────────────
     // Internal to this component — nothing else sizes a slider, so these live
     // here rather than in Globals.
@@ -113,7 +110,7 @@ Item {
                 bottomLeftRadius: 0
                 topRightRadius: height / 2
                 bottomRightRadius: height / 2
-                color: root.trackColor
+                color: Globals.colors.well
             }
 
             Rectangle {
@@ -127,7 +124,7 @@ Item {
                 x: root.normalizedValue * (track.width - width)
                 y: (track.height - height) / 2
 
-                color: root.fillColor
+                color: Globals.colors.primary
                 z: 10
 
                 scale: root.isActive ? 1.15 : 1.0

@@ -98,7 +98,7 @@ Item {
                         } else {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();
-                            Compositor.switchToWorkspace(modelData.idx || modelData.id);
+                            Compositor.switchToWorkspace(modelData.id);
                         }
                     }
                 }

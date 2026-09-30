@@ -9,7 +9,6 @@ BaseContainer {
     spacing: 0
     implicitWidth: 240
 
-    property string panelState: "Closed"
     property Item activeHover: null
 
     component PowerButton: BaseButton {
@@ -17,7 +16,7 @@ BaseContainer {
 
         Layout.fillWidth: true
         Layout.fillHeight: true
-        customRadius: 0
+        radius: 0
         hoverEnabled: true
 
         property string actionIcon: ""
