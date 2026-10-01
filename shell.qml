@@ -31,11 +31,6 @@ ShellRoot {
     }
 
     IpcHandler {
-        function toggle() { Modules.toggleModule("power"); }
-        target: "power"
-    }
-
-    IpcHandler {
         function reload(hard: bool): void { Quickshell.reload(hard); }
         target: "shell"
     }

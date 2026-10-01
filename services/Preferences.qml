@@ -83,7 +83,7 @@ QtObject {
     }
 
     property QtObject indicators: QtObject {
-        property list<string> order: ["notifications", "wifi", "bluetooth", "settings", "power"]
+        property list<string> order: ["notifications", "wifi", "bluetooth", "settings"]
 
         onOrderChanged: root.requestSave()
     }
