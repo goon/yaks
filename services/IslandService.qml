@@ -119,15 +119,8 @@ QtObject {
         anchorMaxX = -1;
     }
 
-    // ── PANEL WRAPPER APIS ────────────────────────────────────────────
-    function toggleLauncher() {
-        togglePanel("launcher");
-    }
-
-    function toggleWallpaper() {
-        togglePanel("wallpaper");
-    }
-
+    // Plain toggles go through togglePanel(name); only panels needing stack
+    // navigation get a wrapper.
     function toggleSettings(pageName) {
         var isCurrentlyOpen = (activePanelName === "settings");
 
@@ -152,44 +145,8 @@ QtObject {
                         activePanelItem.changePage(pageName);
                     }
                 });
-            }
         }
     }
-
-    function toggleNetworkPopout() {
-        togglePanel("network");
-    }
-
-    function toggleBluetoothPopout() {
-        var isCurrentlyOpen = (activePanelName === "network");
-        
-        if (isCurrentlyOpen) {
-            if (activePanelItem && activePanelItem.pageStack && activePanelItem.pageStack.selectedPage === "NetworkBluetooth.qml") {
-                closeAll();
-            } else {
-                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
-                    activePanelItem.pushPage("bluetooth");
-                }
-            }
-        } else {
-            openPanel("network");
-            runWhenPanelReady(() => {
-                if (activePanelItem && typeof activePanelItem.pushPage === "function") {
-                    activePanelItem.pushPage("bluetooth");
-                }
-            });
-        }
-    }
-
-    function togglePowerPopout() {
-        togglePanel("power");
-    }
-
-    function toggleNotificationsPopout() {
-        togglePanel("notifications_island");
-    }
-
-
 
     // ── VOLUME TOAST LOGIC ────────────────────────────────────────────
     property bool _startupDelayFinished: false

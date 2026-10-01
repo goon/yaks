@@ -21,9 +21,6 @@ singleton Notifications services/Notifications.qml
 singleton Binds services/Binds.qml
 
 
-# Services (Types)
-Commander services/Commander.qml
-
 # Components
 BaseActiveBackground components/BaseActiveBackground.qml
 BaseHeader components/BaseHeader.qml

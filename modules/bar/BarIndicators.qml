@@ -54,9 +54,9 @@ Item {
 
     function _openPanel(key) {
         switch (key) {
-            case "wifi": IslandService.toggleNetworkPopout(); break;
-            case "notifications": IslandService.toggleNotificationsPopout(); break;
-            case "power": IslandService.togglePowerPopout(); break;
+            case "wifi": IslandService.togglePanel("network"); break;
+            case "notifications": IslandService.togglePanel("notifications_island"); break;
+            case "power": IslandService.togglePanel("power"); break;
             case "settings": IslandService.toggleSettings(); break;
         }
     }
