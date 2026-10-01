@@ -19,7 +19,6 @@ Item {
     readonly property var _menuModel: [
         { page: "Style.qml",         title: "Style",         icon: "paintbrush"  },
         { page: "Bar.qml",           title: "Bar",           icon: "panel-top"   },
-        
         { page: "Applications.qml",  title: "Applications",  icon: "layout-grid" },
     ]
 

@@ -144,10 +144,10 @@ BaseContainer {
     }
 
     readonly property var _actions: [
-        { label: "Shutdown", icon: "power",       onClicked: function() { Panels.closeAll(); Power.shutdown(); } },
-        { label: "Restart",  icon: "rotate-cw",   onClicked: function() { Panels.closeAll(); Power.reboot(); } },
-        { label: "Sleep",    icon: "moon",        onClicked: function() { Panels.closeAll(); Power.suspend(); } },
-        { label: "Logout",   icon: "log-out",     onClicked: function() { Panels.closeAll(); Compositor.quit(); } },
+        { label: "Shutdown", icon: "power",       onClicked: function() { Modules.closeAll(); Power.shutdown(); } },
+        { label: "Restart",  icon: "rotate-cw",   onClicked: function() { Modules.closeAll(); Power.reboot(); } },
+        { label: "Sleep",    icon: "moon",        onClicked: function() { Modules.closeAll(); Power.suspend(); } },
+        { label: "Logout",   icon: "log-out",     onClicked: function() { Modules.closeAll(); Compositor.quit(); } },
     ]
 
     Item {

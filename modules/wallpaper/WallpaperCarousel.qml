@@ -81,7 +81,7 @@ FocusScope {
         pos = 0;
     }
 
-    // Called by the panel on Opening; also the one place the directory field is
+    // Called by the module on Opening; also the one place the directory field is
     // seeded, so it picks up changes made elsewhere (settings page) between opens.
     function syncDirectory() {
         dirInput.text = Preferences.wallpaper.directory;

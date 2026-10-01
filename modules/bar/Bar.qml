@@ -23,7 +23,7 @@ PanelWindow {
     objectName: "bar"
     color: "transparent"
     
-    WlrLayershell.keyboardFocus: island.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: capsule.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
     WlrLayershell.namespace: "yaks:bar"
     WlrLayershell.layer: WlrLayer.Top
@@ -53,25 +53,25 @@ PanelWindow {
     // rect, so the union of the rest pill and the animating capsule is used
     // instead, keeping input stable across the transition.
     mask: {
-        if (island.isIslandMorphed && !island.isToast)
+        if (capsule.isCapsuleMorphed && !capsule.isToast)
             return null;
-        if (!island.isSettled)
+        if (!capsule.isSettled)
             return unionRegion;
         return capsuleRegion;
     }
 
     Region {
         id: capsuleRegion
-        item: island.maskItem
+        item: capsule.maskItem
     }
 
     Region {
         id: unionRegion
-        item: island.maskItemUnion
+        item: capsule.maskItemUnion
     }
 
-    Island {
-        id: island
+    Capsule {
+        id: capsule
         barWindow: bar
         anchors.fill: parent
     }

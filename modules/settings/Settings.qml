@@ -8,7 +8,7 @@ import qs
 FocusScope {
     id: root
 
-    property string panelState: "Closed"
+    property string moduleState: "Closed"
 
     readonly property var popupWindow: Window.window
 
@@ -32,7 +32,7 @@ FocusScope {
 
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Escape) {
-            Panels.closeAll();
+            Modules.closeAll();
             event.accepted = true;
         } else if (event.key === Qt.Key_Backspace && pageStack.depth > 1) {
             pageStack.pop(null);
@@ -51,7 +51,7 @@ FocusScope {
     }
 
     // Feed the active StackView page to the shared navigator. `currentItem`
-    // changes on push/pop and when the panel first populates the stack, so a
+    // changes on push/pop and when the module first populates the stack, so a
     // single Connections covers every case; a page that adds navigable rows
     // after it is built must call SettingsNav.rebuild() itself.
     Connections {
@@ -61,10 +61,10 @@ FocusScope {
 
     Component.onCompleted: SettingsNav.bind(pageStack.currentItem)
 
-    // Once the panel is fully open the page's rows have settled (visible), so
+    // Once the module is fully open the page's rows have settled (visible), so
     // recollect — this catches rows the initial bind saw while still hidden.
-    onPanelStateChanged: {
-        if (panelState === "Open")
+    onModuleStateChanged: {
+        if (moduleState === "Open")
             SettingsNav.rebuild();
     }
 

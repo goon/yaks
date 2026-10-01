@@ -65,14 +65,14 @@ QtObject {
         property string shellFont: "Outfit"
         property string rounding: "round"
         property double backgroundOpacity: 1.0
-        property bool islandOutline: true
+        property bool capsuleOutline: true
         property bool shadow: true
         property int scale: 1 // 0: 0.9x, 1: 1.0x, 2: 1.1x
 
         onShellFontChanged: root.requestSave()
         onRoundingChanged: root.requestSave()
         onBackgroundOpacityChanged: root.requestSave()
-        onIslandOutlineChanged: root.requestSave()
+        onCapsuleOutlineChanged: root.requestSave()
         onShadowChanged: root.requestSave()
         onScaleChanged: {
             if (scale === 0) root.bar.height = 50;
@@ -113,7 +113,7 @@ QtObject {
         ["globals", "shellFont"],
         ["globals", "rounding"],
         ["globals", "backgroundOpacity"],
-        ["globals", "islandOutline"],
+        ["globals", "capsuleOutline"],
         ["globals", "shadow"],
         ["indicators", "order"],
         ["currentWallpaper"]

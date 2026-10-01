@@ -5,7 +5,7 @@ import qs
 
 FocusScope {
 
-    property string panelState: "Closed"
+    property string moduleState: "Closed"
 
     implicitWidth: carousel.naturalWidth
     implicitHeight: carousel.naturalHeight
@@ -14,8 +14,8 @@ FocusScope {
 
     readonly property var carouselItem: carousel
 
-    onPanelStateChanged: {
-        if (panelState === "Opening") {
+    onModuleStateChanged: {
+        if (moduleState === "Opening") {
             Wallpaper.ensureScanned();
             carousel.focusFirst();
             carousel.syncDirectory();
@@ -50,7 +50,7 @@ FocusScope {
                 id: carousel
                 anchors.fill: parent
 
-                onCloseRequested: Panels.closeAll()
+                onCloseRequested: Modules.closeAll()
             }
         }
     }

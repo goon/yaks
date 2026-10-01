@@ -92,8 +92,8 @@ SettingsPage {
                     title: "Outline"
 
                     BaseSwitch {
-                        checked: Preferences.globals.islandOutline
-                        onToggled: Preferences.globals.islandOutline = checked
+                        checked: Preferences.globals.capsuleOutline
+                        onToggled: Preferences.globals.capsuleOutline = checked
                     }
                 }
 

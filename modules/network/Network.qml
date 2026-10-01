@@ -10,7 +10,7 @@ BaseContainer {
 
     property alias pageStack: stackView
 
-    // Maps this panel's logical destinations to page files; the stack handles
+    // Maps this module's logical destinations to page files; the stack handles
     // tagging and the duplicate-push guard.
     function pushPage(pageName) {
         var file = "";
@@ -21,8 +21,8 @@ BaseContainer {
             stackView.pushPage(Qt.resolvedUrl(file), file);
     }
 
-    onPanelStateChanged: {
-        if (panelState === "Closed") {
+    onModuleStateChanged: {
+        if (moduleState === "Closed") {
             stackView.pop(null); // pop to root
         }
     }

@@ -33,7 +33,7 @@ Item {
     }
 
     Layout.fillWidth: false
-    implicitHeight: islandRoot.itemHeight
+    implicitHeight: capsuleRoot.itemHeight
     readonly property int _staticWidth: {
         var count = root.workspaces ? root.workspaces.length : 0;
         if (count === 0) return 0;
@@ -68,7 +68,7 @@ Item {
                 readonly property real targetWidth: isActive ? 28 : 8
                 readonly property real targetX: (layout.activeIndex !== -1 && index > layout.activeIndex) ? (index * 16 + 20) : (index * 16)
 
-                height: islandRoot.itemHeight
+                height: capsuleRoot.itemHeight
                 width: targetWidth
                 x: targetX
                 y: 0
@@ -94,7 +94,7 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.RightButton) {
-                            Panels.toggleSettings("Workspaces");
+                            Modules.toggleSettings("Workspaces");
                         } else {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();

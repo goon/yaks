@@ -11,17 +11,17 @@ QtObject {
     // ── KEYBOARD ROUTING ─────────────────────────────────────────────
 
     function handleKey(event) {
-        var panel = Panels.activePanelName;
-        var item = Panels.activePanelItem;
+        var module = Modules.activeModuleName;
+        var item = Modules.activeModuleItem;
 
-        if (panel === "launcher") {
+        if (module === "launcher") {
             handleLauncherKey(event, item);
-        } else if (panel === "wallpaper") {
+        } else if (module === "wallpaper") {
             handleWallpaperKey(event, item);
         }
 
         if (event.key === Qt.Key_Escape) {
-            Panels.closeAll();
+            Modules.closeAll();
             event.accepted = true;
         }
     }
@@ -56,12 +56,12 @@ QtObject {
 
     // ── WALLPAPER ────────────────────────────────────────────────────
 
-    function handleWallpaperKey(event, panel) {
-        if (!panel) return;
-        var carousel = panel.carouselItem || panel;
+    function handleWallpaperKey(event, module) {
+        if (!module) return;
+        var carousel = module.carouselItem || module;
         if (!carousel || !carousel.move) return;
         // The directory field owns its own keys (arrows, Return, Backspace) while
-        // focused; otherwise Return applies the wallpaper and closes the panel.
+        // focused; otherwise Return applies the wallpaper and closes the module.
         if (carousel.editingDirectory) return;
 
         if (event.key === Qt.Key_Left) {
@@ -83,10 +83,10 @@ QtObject {
     // ── MOUSE WHEEL ROUTING ──────────────────────────────────────────
 
     function handleWheel(event) {
-        var panel = Panels.activePanelName;
+        var module = Modules.activeModuleName;
 
-        if (panel === "wallpaper") {
-            var panelItem = Panels.activePanelItem;
+        if (module === "wallpaper") {
+            var panelItem = Modules.activeModuleItem;
             var carousel = (panelItem && panelItem.carouselItem) ? panelItem.carouselItem : panelItem;
             if (carousel) {
                 _wheelAcc += event.angleDelta.y / 120;

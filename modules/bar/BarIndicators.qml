@@ -11,7 +11,7 @@ Item {
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
     implicitWidth: background.implicitWidth
-    implicitHeight: islandRoot.itemHeight
+    implicitHeight: capsuleRoot.itemHeight
 
     readonly property int spacing: Globals.geometry.spacing.small
     readonly property int indicatorItemWidth: 32
@@ -52,12 +52,12 @@ Item {
         return Math.max(0, orderedKeys.indexOf(key)) * (indicatorItemWidth + spacing);
     }
 
-    function _openPanel(key) {
+    function _openModule(key) {
         switch (key) {
-            case "wifi": Panels.togglePanel("network"); break;
-            case "notifications": Panels.togglePanel("notifications_island"); break;
-            case "power": Panels.togglePanel("power"); break;
-            case "settings": Panels.toggleSettings(); break;
+            case "wifi": Modules.toggleModule("network"); break;
+            case "notifications": Modules.toggleModule("notifications"); break;
+            case "power": Modules.toggleModule("power"); break;
+            case "settings": Modules.toggleSettings(); break;
         }
     }
 
@@ -70,13 +70,13 @@ Item {
         id: background
 
         anchors.fill: parent
-        implicitHeight: islandRoot.itemHeight
+        implicitHeight: capsuleRoot.itemHeight
         hoverEnabled: false
 
         Item {
             id: container
             implicitWidth: root.contentWidth
-            implicitHeight: islandRoot.itemHeight
+            implicitHeight: capsuleRoot.itemHeight
             height: parent.height
 
             Repeater {
@@ -125,9 +125,9 @@ Item {
 
         onIsDraggingChanged: {
             if (isDragging) {
-                // Only close other panels — do NOT close the fullbar we're dragging inside
-                if (Panels.activePanelName !== "fullbar") {
-                    Panels.closeAll();
+                // Only close other modules — do NOT close the fullbar we're dragging inside
+                if (Modules.activeModuleName !== "full_bar") {
+                    Modules.closeAll();
                 }
             }
         }
@@ -185,7 +185,7 @@ Item {
                 if (mouse.button === Qt.RightButton) {
                     root._handleRightClick(itemKey);
                 } else {
-                    root._openPanel(itemKey);
+                    root._openModule(itemKey);
                 }
             }
         }

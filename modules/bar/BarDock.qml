@@ -6,7 +6,7 @@ import qs
 
 BaseContainer {
 
-    readonly property real _itemSize: islandRoot.itemHeight
+    readonly property real _itemSize: capsuleRoot.itemHeight
 
     visible: Compositor.hasDockWindows
     Layout.alignment: Qt.AlignVCenter

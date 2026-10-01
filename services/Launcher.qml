@@ -159,7 +159,7 @@ QtObject {
         variations.push(lowerIcon + "-symbolic");
         variations.push(iconName + "-symbolic");
         variations.push(lowerIcon + "-indicator");
-        variations.push(lowerIcon + "-panel");
+        variations.push(lowerIcon + "-module");
 
         if (iconName.indexOf('.') !== -1)
             variations.push(iconName.split('.').pop());

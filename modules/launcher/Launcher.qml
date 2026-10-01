@@ -6,7 +6,7 @@ import qs
 FocusScope {
     id: root
 
-    property string panelState: "Closed"
+    property string moduleState: "Closed"
 
     readonly property int itemHeight: 54 * Globals.shellScale
 
@@ -61,7 +61,7 @@ FocusScope {
 
         if (appListView.currentIndex >= 0 && appListView.currentIndex < cachedModel.length) {
             Launcher.executeItem(cachedModel[appListView.currentIndex]);
-            Panels.closeAll();
+            Modules.closeAll();
         }
     }
 

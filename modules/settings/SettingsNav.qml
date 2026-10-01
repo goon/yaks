@@ -15,7 +15,7 @@ pragma Singleton
  * focus marker is cleared whenever the bound page changes.
  *
  * Rows are collected on `bind()` and again whenever the host calls `rebuild()`
- * (panel open, page change). A page that adds navigable rows after it is built
+ * (module open, page change). A page that adds navigable rows after it is built
  * must call `SettingsNav.rebuild()` itself.
  */
 QtObject {

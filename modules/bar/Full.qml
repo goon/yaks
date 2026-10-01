@@ -12,7 +12,7 @@ Item {
     implicitHeight: Preferences.bar.height
     implicitWidth: (contentLayout.implicitWidth || 0) + (dynamicEndMargin * 2)
 
-    readonly property real dynamicEndMargin: Globals.geometry.padding.island
+    readonly property real dynamicEndMargin: Globals.geometry.padding.capsule
     readonly property real horizontalSpacing: 20
 
     RowLayout {

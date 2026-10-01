@@ -61,11 +61,11 @@ Item {
         if (root.activeToastNotification === null && root._toastQueue.length > 0) {
             root.activeToastNotification = root._toastQueue.shift();
             
-            if (Panels.activePanelName === "" || Panels.activePanelName === "notificationtoast") {
-                Panels.openPanel("notificationtoast");
+            if (Modules.activeModuleName === "" || Modules.activeModuleName === "notification_toast") {
+                Modules.openModule("notification_toast");
                 toastTimer.restart();
             } else {
-                // If another panel is open, we skip showing the toast to avoid interrupting the user.
+                // If another module is open, we skip showing the toast to avoid interrupting the user.
                 // Or we could wait. For now, we just discard the toast.
                 root.activeToastNotification = null;
                 root._processQueue();
@@ -78,12 +78,12 @@ Item {
         toastTimer.stop();
         
         if (root._toastQueue.length > 0) {
-            // Immediately process the next one without closing the island
+            // Immediately process the next one without closing the capsule
             root._processQueue();
         } else {
-            // Queue is empty, safely close the island
-            if (Panels.activePanelName === "notificationtoast") {
-                Panels.closeAll();
+            // Queue is empty, safely close the capsule
+            if (Modules.activeModuleName === "notification_toast") {
+                Modules.closeAll();
             }
         }
     }
