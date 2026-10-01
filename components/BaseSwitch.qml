@@ -1,13 +1,12 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import qs
 
 Switch {
     id: control
 
-    implicitWidth: 56 * Globals.shellScale
-    implicitHeight: 28 * Globals.shellScale
+    implicitWidth: 36 * Globals.shellScale
+    implicitHeight: 20 * Globals.shellScale
     hoverEnabled: true
     padding: 0
 
@@ -35,8 +34,8 @@ Switch {
     indicator: Item {
         id: indicatorContainer
 
-        implicitWidth: 56 * Globals.shellScale
-        implicitHeight: 28 * Globals.shellScale
+        implicitWidth: control.implicitWidth
+        implicitHeight: control.implicitHeight
         x: control.leftPadding
         y: parent.height / 2 - height / 2
         opacity: control.enabled ? 1.0 : 0.5
@@ -45,7 +44,6 @@ Switch {
 
         readonly property color accent: Globals.colors.primary
         readonly property color faceBase: Globals.colors.text
-        readonly property color ink: Globals.colors.ink
 
         // ── TRACK ─────────────────────────────────────────────────────
         Rectangle {
@@ -56,7 +54,9 @@ Switch {
             color: control.checked
                 ? Globals.alpha(indicatorContainer.accent, 0.75)
                 : Globals.colors.well
-            border.width: Globals.geometry.borderWidth.thick
+            // A hairline only in the off state, where the knob has no fill
+            // contrast to separate itself with.
+            border.width: control.checked ? 0 : Globals.geometry.borderWidth.hair
             border.color: Globals.colors.border
 
             Behavior on color { BaseMotion { } }
@@ -67,14 +67,13 @@ Switch {
             id: thumb
 
             readonly property real inset: 3 * Globals.shellScale
-            readonly property real size: 22 * Globals.shellScale
+            readonly property real size: 13 * Globals.shellScale
 
             width: size
             height: size
             radius: size / 2
             y: (parent.height - height) / 2
             x: inset + control.progress * (indicatorContainer.width - size - inset * 2)
-            rotation: control.progress * 360
 
             scale: control.pressed ? 0.92 : (control.hovered ? 1.05 : 1.0)
             Behavior on scale { BaseMotion { duration: Globals.motion.hover } }
@@ -82,38 +81,8 @@ Switch {
             color: control.checked
                 ? Qt.tint(indicatorContainer.faceBase, Globals.alpha(indicatorContainer.accent, 0.28))
                 : indicatorContainer.faceBase
-            border.width: Globals.geometry.borderWidth.thick
-            border.color: Globals.colors.border
 
             Behavior on color { BaseMotion { } }
-
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: Globals.alpha(Globals.effects.shadow.color, 0.5)
-                shadowBlur: Globals.effects.shadow.radius / 20.0
-                shadowHorizontalOffset: Globals.effects.shadow.offsetX
-                shadowVerticalOffset: Globals.effects.shadow.offsetY
-            }
-
-            // X (OFF) -> tick (ON)
-            BaseText {
-                anchors.centerIn: parent
-                text: "✘"
-                pixelSize: Math.round(parent.height * 0.5)
-                color: indicatorContainer.ink
-                opacity: 1 - control.progress
-                scale: 1 - 0.5 * control.progress
-            }
-
-            BaseText {
-                anchors.centerIn: parent
-                text: "✔"
-                pixelSize: Math.round(parent.height * 0.5)
-                color: indicatorContainer.ink
-                opacity: control.progress
-                scale: 0.5 + 0.5 * control.progress
-            }
         }
     }
 }

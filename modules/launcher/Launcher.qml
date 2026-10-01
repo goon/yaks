@@ -235,12 +235,14 @@ FocusScope {
             radius: Globals.innerRadius(Globals.geometry.spacing.sm)
             color: "transparent"
 
-            BaseActiveBackground {
+            Rectangle {
+                // Same tile as the Wi-Fi / Bluetooth device rows: a light wash
+                // over the row, faded in on hover.
                 anchors.fill: parent
-                radius: parent.radius
-                hovered: mouseArea.containsMouse
-                premiumActive: delegateRoot.selected
-                hoverEnabled: false
+                radius: Globals.innerRadius(Globals.geometry.spacing.sm)
+                color: Globals.colors.hover
+                opacity: mouseArea.containsMouse || delegateRoot.selected ? 1 : 0
+                Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
             }
 
             RowLayout {

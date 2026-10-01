@@ -218,11 +218,14 @@ Item {
             }
             if (closestIdx === currentIdx) return;
 
-            // Snapshot Preferences.indicators.order to avoid reactive mid-write
-            const order = Preferences.indicators.order.slice();
-            const from = order.indexOf(itemKey);
-            const to = order.indexOf(keys[closestIdx]);
-            if (from === -1 || to === -1) return;
+            // Build the new order from `keys` (orderedKeys), not the persisted
+            // array: _computeOrderedKeys has already appended any model key the
+            // persisted order omits, and splicing the persisted array left an
+            // omitted key (bluetooth) with from === -1, so it could never move.
+            // Writing the merged list back also heals preferences.json.
+            const order = keys;
+            const from = currentIdx;
+            const to = closestIdx;
 
             // Move (shift) not swap: remove from current slot and insert at target slot.
             // All icons between the two positions shift by one — no teleporting.

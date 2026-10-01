@@ -66,7 +66,7 @@ QtObject {
         readonly property color ink:      colorsRoot._raw.ink
 
         // states
-        readonly property color hover:    root.alpha(colorsRoot._raw.text, 0.08)
+        readonly property color hover:    root.alpha(colorsRoot._raw.text, 0.055)
         readonly property color tint:     root.alpha(colorsRoot._raw.primary, 0.15)
         readonly property color disabled: root.alpha(colorsRoot._raw.bg, 0.50)
     }
