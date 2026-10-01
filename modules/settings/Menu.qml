@@ -77,7 +77,7 @@ Item {
             id: mixerItem
 
             Layout.fillWidth: true
-            implicitHeight: mainCol.implicitHeight
+            implicitHeight: mixerCol.implicitHeight
 
             property string source: "output"
 
@@ -161,7 +161,7 @@ Item {
             }
 
             ColumnLayout {
-                id: mainCol
+                id: mixerCol
                 anchors.fill: parent
                 spacing: Globals.geometry.spacing.small
 

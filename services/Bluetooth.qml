@@ -23,15 +23,12 @@ Singleton {
         connectedCount = n;
     }
 
-    Instantiator {
-        model: adapter ? adapter.devices : null
-        onObjectAdded: root.recount()
-        onObjectRemoved: root.recount()
-        delegate: Connections {
-            required property var modelData
-            target: modelData
-            function onConnectedChanged() { root.recount() }
-        }
+    Timer {
+        interval: 1000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: root.recount()
     }
 
     function togglePower() {
