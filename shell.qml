@@ -7,6 +7,7 @@ import qs.services
 
 ShellRoot {
     property var _display: Display
+    property var _peripherals: Peripherals
 
     objectName: "shellRoot"
 

@@ -11,7 +11,7 @@ Item {
     implicitWidth: mainLayout.implicitWidth
     Layout.fillWidth: true
 
-    property string deviceType: "bluetooth" // "bluetooth" | "wifi"
+    property string deviceType: "bluetooth" // "bluetooth" | "wifi" | "peripheral"
     
     property string title: ""
     property string subtitle: ""
@@ -21,7 +21,10 @@ Item {
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
     
     property bool expanded: false
-    readonly property bool isHovered: mainMouseArea.containsMouse
+    // A peripheral row is informational: no connect/disconnect/forget, so it
+    // must not advertise an action it cannot perform.
+    readonly property bool interactive: deviceType !== "peripheral"
+    readonly property bool isHovered: mainMouseArea.containsMouse && root.interactive
     
     signal connectClicked(string password)
     signal disconnectClicked()
@@ -42,8 +45,8 @@ Item {
                 id: mainMouseArea
                 anchors.fill: parent
                 hoverEnabled: true
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: root.interactive ? (Qt.LeftButton | Qt.RightButton) : Qt.NoButton
+                cursorShape: root.interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.RightButton) {
                         if (root.isKnown || root.isConnected) {

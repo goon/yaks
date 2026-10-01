@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Quickshell.Services.UPower
 import qs
 
 BaseScrolling {
@@ -33,6 +34,31 @@ BaseScrolling {
         }
     }
 
+    function resolvePeripheralIcon(type) {
+        switch (type) {
+        case UPowerDeviceType.Mouse:
+        case UPowerDeviceType.Touchpad:
+            return "mouse";
+        case UPowerDeviceType.Keyboard:
+            return "keyboard";
+        case UPowerDeviceType.GamingInput:
+        case UPowerDeviceType.RemoteControl:
+            return "gamepad-2";
+        case UPowerDeviceType.Headset:
+        case UPowerDeviceType.Headphones:
+        case UPowerDeviceType.Speakers:
+        case UPowerDeviceType.OtherAudio:
+            return "headset";
+        case UPowerDeviceType.MediaPlayer:
+            return "music";
+        case UPowerDeviceType.Monitor:
+        case UPowerDeviceType.Computer:
+            return "monitor";
+        default:
+            return "battery-medium";
+        }
+    }
+
     function isResolvable(name, address) {
         if (!name)
             return false;
@@ -61,6 +87,21 @@ BaseScrolling {
             if (aPaired !== bPaired) return aPaired ? -1 : 1;
             return (a.name || a.address).localeCompare(b.name || b.address);
         });
+    }
+
+    // One row per device: a Bluetooth device is joined with its UPower battery
+    // entry by MAC so it stays a single row, and peripherals with no MAC in
+    // their native path (USB dongles) are appended on their own.
+    readonly property var rows: {
+        var out = [];
+        for (var i = 0; i < root.sortedDevices.length; i++) {
+            var d = root.sortedDevices[i];
+            var key = String(d.address || "").toUpperCase().replace(/:/g, "");
+            out.push({ bt: d, up: Peripherals.byMac[key] || null });
+        }
+        for (var j = 0; j < Peripherals.unmatched.length; j++)
+            out.push({ bt: null, up: Peripherals.unmatched[j] });
+        return out;
     }
 
     MouseArea {
@@ -163,7 +204,7 @@ BaseScrolling {
         Item {
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? 64 : 0
-            visible: !!Bluetooth.powered && root.sortedDevices.length === 0
+            visible: !!Bluetooth.powered && root.rows.length === 0
             clip: true
 
             BaseText {
@@ -180,7 +221,7 @@ BaseScrolling {
             Layout.fillWidth: true
             implicitHeight: childCol.implicitHeight
             clip: true
-            visible: !!Bluetooth.powered && root.sortedDevices.length > 0
+            visible: root.rows.length > 0
 
             function _hoverPredicate() {
                 for (var i = 0; i < deviceRepeater.count; i++) {
@@ -209,7 +250,7 @@ BaseScrolling {
 
                 Repeater {
                     id: deviceRepeater
-                    model: root.sortedDevices
+                    model: root.rows
                     delegate: deviceDelegate
                 }
             }
@@ -222,19 +263,30 @@ BaseScrolling {
         NetworkDevice {
             property bool hovered: isHovered
 
-            title: modelData.name || modelData.address
-            subtitle: modelData.connecting ? "Connecting..." : ""
-            iconName: root.resolveBluetoothIcon(modelData.icon)
-            isConnected: modelData.connected
-            isKnown: modelData.paired || modelData.bonded || modelData.trusted
+            readonly property var bt: modelData.bt
+            readonly property var up: modelData.up
+
+            deviceType: bt ? "bluetooth" : "peripheral"
+            title: bt ? (bt.name || bt.address) : (up.model || up.nativePath)
+            subtitle: {
+                if (bt && bt.connecting)
+                    return "Connecting...";
+                if (!up)
+                    return "";
+                var s = Peripherals.pct(up) + "%";
+                return Peripherals.charging(up) ? s + " · Charging" : s;
+            }
+            iconName: bt ? root.resolveBluetoothIcon(bt.icon) : root.resolvePeripheralIcon(up.type)
+            isConnected: !!bt && bt.connected
+            isKnown: !!bt && (bt.paired || bt.bonded || bt.trusted)
 
             onActionClicked: {
-                if (!modelData.connected) {
-                    Bluetooth.connectDevice(modelData.address);
+                if (bt && !bt.connected) {
+                    Bluetooth.connectDevice(bt.address);
                 }
             }
-            onDisconnectClicked: Bluetooth.disconnectDevice(modelData.address)
-            onForgetClicked: Bluetooth.removeDevice(modelData.address)
+            onDisconnectClicked: if (bt) Bluetooth.disconnectDevice(bt.address)
+            onForgetClicked: if (bt) Bluetooth.removeDevice(bt.address)
         }
     }
 }
