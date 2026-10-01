@@ -50,7 +50,6 @@ NotificationCard modules/notifications/NotificationCard.qml
 # Settings
 SettingsPage modules/settings/SettingsPage.qml
 SettingsGroup modules/settings/SettingsGroup.qml
-SettingsMixer modules/settings/SettingsMixer.qml
 singleton SettingsNav modules/settings/SettingsNav.qml
 
 # Bar
