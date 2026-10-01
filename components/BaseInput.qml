@@ -393,9 +393,9 @@ TextField {
                         // Defer so the frame the character lands on still reads parked;
                         // the caret would otherwise hop to 0 and back within one frame.
                         Qt.callLater(function() {
-                            if (root.text.length === 0 || !caret.glideAnim.running) {
+                            if (root.text.length === 0 || !caret.glideAnim || !caret.glideAnim.running) {
                                 caret._glide = caret._parkOffset;
-                                caret.glideAnim.restart();
+                                if (caret.glideAnim) caret.glideAnim.restart();
                             }
                         });
                     }
@@ -404,7 +404,7 @@ TextField {
                 function onTextChanged() {
                     // Field cleared: drop any in-flight glide and park again.
                     if (root.text.length === 0) {
-                        caret.glideAnim.stop();
+                        if (caret.glideAnim) caret.glideAnim.stop();
                         caret._glide = 0;
                     }
                 }

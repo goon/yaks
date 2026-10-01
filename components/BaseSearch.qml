@@ -44,7 +44,7 @@ BaseContainer {
                 rightPadding: 8
                 font.pixelSize: Globals.typography.size.large
                 placeholderText: "Search..."
-                caretParksInPlaceholder: true
+                caretParksInPlaceholder: false
                 verticalAlignment: Text.AlignVCenter
                 activeFocusOnTab: false
             }

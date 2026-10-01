@@ -9,7 +9,7 @@ singleton Runner services/Runner.qml
 
 singleton Launcher services/Launcher.qml
 singleton Compositor services/Compositor.qml
-singleton Panels services/Panels.qml
+singleton Modules services/Modules.qml
 singleton Power services/Power.qml
 singleton Preferences services/Preferences.qml
 singleton Audio services/Audio.qml
@@ -28,7 +28,7 @@ BaseButton components/BaseButton.qml
 BaseIcon components/BaseIcon.qml
 BaseListItem components/BaseListItem.qml
 BaseInput components/BaseInput.qml
-Island modules/Island.qml
+Capsule modules/Capsule.qml
 BaseScrolling components/BaseScrolling.qml
 BaseSeparator components/BaseSeparator.qml
 BaseSlider components/BaseSlider.qml
@@ -62,6 +62,6 @@ BarDock modules/bar/BarDock.qml
 BarIndicators modules/bar/BarIndicators.qml
 Full modules/bar/Full.qml
 
-# Panels
+# Modules
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 NetworkDevice modules/network/NetworkDevice.qml

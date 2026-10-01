@@ -6,7 +6,7 @@ import qs
 FocusScope {
     id: root
 
-    property string panelState: "Closed"
+    property string moduleState: "Closed"
 
     property real padding: 0
     property real paddingHorizontal: padding

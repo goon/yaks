@@ -7,7 +7,7 @@ QtObject {
     id: root
 
     // ── ROUNDING PRESETS ──────────────────────────────────────────────────
-    // Fixed, designed panel radii (not arbitrary). Sub-radii derive from the
+    // Fixed, designed module radii (not arbitrary). Sub-radii derive from the
     // selected base via geometry.radius / geometry.innerRadius.
     readonly property var _roundingBases: ({ sharp: 8, soft: 16, round: 26 })
 
@@ -46,7 +46,7 @@ QtObject {
         // only place the user Opacity setting applies.
         readonly property color top:    root.alpha(colorsRoot._raw.top, root.opacity.background)
         readonly property color bottom: root.alpha(colorsRoot._raw.bottom, root.opacity.background)
-        // island outline: a lighter tint of the capsule background, shell-only.
+        // capsule outline: a lighter tint of the capsule background, shell-only.
         readonly property color outline: colorsRoot._raw.outline
 
         // lines
@@ -84,7 +84,7 @@ readonly property color faint: colorsRoot._raw.faint
         readonly property QtObject padding: QtObject {
             readonly property int small: 8 * root.shellScale
             readonly property int medium: 14 * root.shellScale
-            readonly property int island: Math.max(22 * root.shellScale, Math.ceil(root.geometry.radius * 0.5))
+            readonly property int capsule: Math.max(22 * root.shellScale, Math.ceil(root.geometry.radius * 0.5))
         }
 
         readonly property QtObject innerRadius: QtObject {

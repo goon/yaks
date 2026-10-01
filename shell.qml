@@ -15,22 +15,22 @@ ShellRoot {
     }
 
     IpcHandler {
-        function toggle() { Panels.togglePanel("launcher"); }
+        function toggle() { Modules.toggleModule("launcher"); }
         target: "launcher"
     }
 
     IpcHandler {
-        function toggle() { Panels.toggleSettings(); }
+        function toggle() { Modules.toggleSettings(); }
         target: "settings"
     }
 
     IpcHandler {
-        function toggle() { Panels.togglePanel("wallpaper"); }
+        function toggle() { Modules.toggleModule("wallpaper"); }
         target: "wallpaper"
     }
 
     IpcHandler {
-        function toggle() { Panels.togglePanel("power"); }
+        function toggle() { Modules.toggleModule("power"); }
         target: "power"
     }
 

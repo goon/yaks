@@ -17,7 +17,7 @@ StackView {
     //
     // `url` must already be resolved by the caller (Qt.resolvedUrl) — a relative
     // URL would resolve against this file's directory instead of the calling
-    // panel's, which is the wrong directory for that panel's pages.
+    // module's, which is the wrong directory for that module's pages.
     function pushPage(url, name) {
         if (root.selectedPage === name) return;
         root.push(url, { objectName: name });
