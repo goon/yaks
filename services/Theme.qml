@@ -60,8 +60,6 @@ Item {
 
     function _ingest(seed) {
         var s = seed || Color.DEFAULT_SEED;
-        console.log("[Theme] seed h=" + Math.round(s.hue) + " c=" + (s.chroma || 0).toFixed(3)
-            + " meanL=" + (s.meanL || 0).toFixed(3) + " colorful=" + (s.colorfulness || 0).toFixed(3));
         root.currentColors = Color.build(s);
         root.runHooks(executionTimer.pendingContext);
     }

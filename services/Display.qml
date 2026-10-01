@@ -103,7 +103,7 @@ Item {
                         brightnessUpdateTimer.restart();
                 });
             } else if (root.monitorBus !== "") {
-                Runner.run(["ddcutil", "setvcp", "10", val.toString(), "--bus", root.monitorBus, "--sleep-multiplier", "0.05", "--noverify", "--async"], function() {
+                Runner.run(["ddcutil", "setvcp", "10", val.toString(), "--bus", root.monitorBus, "--sleep-multiplier", "0.05", "--noverify"], function() {
                     root._brightnessUpdating = false;
                     if (root._targetBrightness !== -1)
                         brightnessUpdateTimer.restart();

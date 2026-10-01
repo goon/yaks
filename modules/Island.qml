@@ -21,6 +21,8 @@ Item {
     property string activePanelName: ""
     property string loadedPanelName: ""
 
+    readonly property string mode: isMorphed ? activePanelName : "rest"
+
     // ── HOVER EXPAND STATE ────────────────────────────────────────────
     // Whether the pointer is over the visible pill. Published to
     // Panels.isIslandHovered, which the volume toast reads to avoid
@@ -31,20 +33,16 @@ Item {
     onIsHoveredChanged: Panels.isIslandHovered = isHovered;
 
     // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
-    readonly property bool isIslandMorphed: shouldBeMorphed || capsule.height > normalCapsuleHeight + 1
+    readonly property bool isIslandMorphed: mode !== "rest" || capsule.height > normalCapsuleHeight + 1
 
     // Identify toast-like panels that should not capture full screen mouse inputs
-    readonly property bool isFullBar: loadedPanelName === "fullbar" || activePanelName === "fullbar"
-    readonly property bool isToast: loadedPanelName === "volumetoast" || loadedPanelName === "notificationtoast" ||
-                                    activePanelName === "volumetoast" || activePanelName === "notificationtoast" ||
-                                    isFullBar
+    readonly property bool isFullBar: mode === "fullbar"
+    readonly property bool isToast: mode === "volumetoast" || mode === "notificationtoast" || mode === "fullbar"
 
-    // Determine whether the island should grab keyboard focus (toasts shouldn't)
-    readonly property bool grabsFocus: isIslandMorphed &&
-        loadedPanelName !== "volumetoast" &&
-        loadedPanelName !== "notificationtoast" &&
-        loadedPanelName !== "fullbar" &&
-        loadedPanelName !== ""
+    readonly property bool grabsFocus: mode !== "rest" &&
+        mode !== "volumetoast" &&
+        mode !== "notificationtoast" &&
+        mode !== "fullbar"
 
     // Safely call lifecycle methods and set properties on loaded views
     function notifyPanel(funcName) {
@@ -79,6 +77,7 @@ Item {
             islandRoot.loadedPanelName = newName;
             islandRoot.isMorphed = true;
             collapseTimer.stop();
+            evictionTimer.stop();
             
             if (wasAlreadyLoaded && panelLoader.item) {
                 islandRoot.setPanelState("Opening");
@@ -113,8 +112,19 @@ Item {
                     islandRoot.setPanelState("Closed");
                     islandRoot.notifyPanel("closed");
                 }
-                loadedPanelName = "";
-                activePanelName = "";
+                evictionTimer.interval = Panels.evictionTime(islandRoot.loadedPanelName);
+                evictionTimer.start();
+            }
+        }
+    }
+
+    Timer {
+        id: evictionTimer
+        repeat: false
+        onTriggered: {
+            if (!islandRoot.isMorphed && islandRoot.loadedPanelName !== "") {
+                islandRoot.loadedPanelName = "";
+                islandRoot.activePanelName = "";
             }
         }
     }
@@ -141,8 +151,8 @@ Item {
     property real activePanelHeight: activePanelItem ? (activePanelItem.implicitHeight || 0) + totalHeightPadding : Panels.expectedHeight(activePanelName)
 
     readonly property real targetCapsuleWidth: {
-        if (isMorphed) {
-            if (activePanelName === "fullbar") {
+        if (mode !== "rest") {
+            if (mode === "fullbar") {
                 return (activePanelItem ? activePanelItem.implicitWidth : barWindow.width);
             }
             return activePanelWidth;
@@ -151,8 +161,8 @@ Item {
     }
 
     readonly property real targetCapsuleHeight: {
-        if (isMorphed) {
-            if (activePanelName === "fullbar") {
+        if (mode !== "rest") {
+            if (mode === "fullbar") {
                 return normalCapsuleHeight;
             }
             return activePanelHeight;
@@ -161,10 +171,10 @@ Item {
     }
 
     readonly property real targetCapsuleX: {
-        if (!isMorphed) return normalCapsuleX;
-        let actualPanelWidth = (activePanelName === "fullbar") ? targetCapsuleWidth : activePanelWidth;
+        if (mode === "rest") return normalCapsuleX;
+        let actualPanelWidth = (mode === "fullbar") ? targetCapsuleWidth : activePanelWidth;
         if (Panels.anchorX < 0) return (barWindow.width - actualPanelWidth) / 2;
-        
+
         var x = Panels.anchorX - (actualPanelWidth / 2);
         var radiusInset = Globals.geometry.radius;
         var minX = (Panels.anchorMinX >= 0) ? (Panels.anchorMinX + radiusInset) : 0;
@@ -172,15 +182,15 @@ Item {
         return Math.max(minX, Math.min(x, maxX));
     }
 
-    readonly property real targetCapsuleY: isMorphed 
-        ? (Preferences.bar.position === "top" ? Preferences.bar.marginTop : barWindow.height - (activePanelName === "fullbar" ? targetCapsuleHeight : activePanelHeight) - Preferences.bar.marginTop)
+    readonly property real targetCapsuleY: mode !== "rest"
+        ? (Preferences.bar.position === "top" ? Preferences.bar.marginTop : barWindow.height - (mode === "fullbar" ? targetCapsuleHeight : activePanelHeight) - Preferences.bar.marginTop)
         : normalCapsuleY
 
     // ── CLICK OUTSIDE SHIELD ──────────────────────────────────────────
     MouseArea {
         id: clickOutsideShield
         anchors.fill: parent
-        enabled: islandRoot.isMorphed && !islandRoot.isToast
+        enabled: islandRoot.mode !== "rest" && !islandRoot.isToast
         z: 1
         onClicked: {
             Panels.closeAll();
@@ -209,7 +219,7 @@ Item {
     // capsule can momentarily leave the single maskItem rect, which would drop
     // input mid-animation; this union covers both extremes for the whole morph.
     readonly property bool isSettled:
-        !isMorphed
+        mode === "rest"
         || (Math.abs(capsule.x - targetCapsuleX) < 1
             && Math.abs(capsule.y - targetCapsuleY) < 1
             && Math.abs(capsule.width - targetCapsuleWidth) < 1
@@ -308,7 +318,7 @@ Item {
                 id: panelLoader
                 anchors.fill: parent
                 anchors.margins: islandRoot.loadedPanelName === "fullbar" ? 0 : Globals.geometry.padding.island
-                
+
                 active: islandRoot.loadedPanelName !== ""
                 focus: true
 
@@ -345,7 +355,7 @@ Item {
                 onLoaded: {
                     if (item) {
                         Panels.activePanelItem = item;
-                        if (islandRoot.isMorphed) {
+                        if (islandRoot.mode !== "rest") {
                             islandRoot.setPanelState("Opening");
                             islandRoot.notifyPanel("opening");
                             openTimer.start();
@@ -371,7 +381,7 @@ Item {
                 interval: Globals.motion.morph
                 repeat: false
                 onTriggered: {
-                    if (islandRoot.isMorphed && panelLoader.item) {
+                    if (islandRoot.mode !== "rest" && panelLoader.item) {
                         islandRoot.setPanelState("Open");
                         islandRoot.notifyPanel("opened");
 

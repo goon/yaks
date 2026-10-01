@@ -11,18 +11,7 @@ Singleton {
     // ── PUBLIC STATE ───────────────────────────────────────────────────
     property var workspaces: []
     property var windowByAddress: ({})
-    readonly property bool hasDockWindows: {
-        var vals = Hyprland.toplevels.values;
-        var wba = root.windowByAddress;
-        for (var i = 0; i < vals.length; i++) {
-            var t = vals[i];
-            var addr = t ? t.address : null;
-            if (!addr) continue;
-            if (!addr.startsWith("0x")) addr = "0x" + addr;
-            if (wba[addr]) return true;
-        }
-        return false;
-    }
+    property bool hasDockWindows: false
     property int activeWorkspaceId: -1
 
 
@@ -83,9 +72,24 @@ Singleton {
                     }
                 }
                 root.windowByAddress = byAddr;
+                root._updateDockWindows();
             } catch (e) {
             }
         });
+    }
+
+    function _updateDockWindows() {
+        var vals = Hyprland.toplevels ? Hyprland.toplevels.values : null;
+        if (!vals) { root.hasDockWindows = false; return; }
+        var wba = root.windowByAddress;
+        for (var i = 0; i < vals.length; i++) {
+            var t = vals[i];
+            var addr = t ? t.address : null;
+            if (!addr) continue;
+            if (!addr.startsWith("0x")) addr = "0x" + addr;
+            if (wba[addr]) { root.hasDockWindows = true; return; }
+        }
+        root.hasDockWindows = false;
     }
 
     // ── INTERNAL UPDATE HELPERS ───────────────────────────────────────
@@ -93,6 +97,7 @@ Singleton {
         var data = _mapWorkspaces();
         root.workspaces = data.list;
         root.activeWorkspaceId = data.activeId;
+        root._updateDockWindows();
     }
 
     // ── EVENT-DRIVEN UPDATES ──────────────────────────────────────────

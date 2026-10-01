@@ -130,8 +130,8 @@ BaseContainer {
 
                             BaseText {
                                 id: subtitleColoredText
-                                anchors.top: subtitleText.top
-                                anchors.left: subtitleText.left
+                                anchors.top: parent.top
+                                anchors.left: parent.left
                                 text: subtitleText.text
                                 pixelSize: Globals.typography.size.medium
                                 color: Globals.colors.text

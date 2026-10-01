@@ -59,15 +59,15 @@ QtObject {
     // toward before the panel's own implicitWidth/Height is available; keep
     // them in step with each panel's declared implicit size.
     readonly property var panelRegistry: ({
-        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 500, height: 500 },
-        "settings":      { source: "../modules/settings/Settings.qml",      width: 460, height: 500 },
-        "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml" },
-        "fullbar":       { source: "../modules/bar/Full.qml" },
-        "power":         { source: "../modules/power/Power.qml",            width: 240 },
-        "network":       { source: "../modules/network/Network.qml",        width: 400 },
-        "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml", width: 460 },
-        "volumetoast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300 },
-        "notificationtoast": { source: "../modules/toasts/NotificationToast.qml", width: 420 }
+        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 500, height: 500, evictionTime: 10000 },
+        "settings":      { source: "../modules/settings/Settings.qml",      width: 460, height: 500, evictionTime: 10000 },
+        "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",    evictionTime: 3000 },
+        "fullbar":       { source: "../modules/bar/Full.qml",               evictionTime: 10000 },
+        "power":         { source: "../modules/power/Power.qml",            width: 240, evictionTime: 5000 },
+        "network":       { source: "../modules/network/Network.qml",        width: 400, evictionTime: 5000 },
+        "notifications_island": { source: "../modules/notifications/NotificationsIsland.qml", width: 460, evictionTime: 5000 },
+        "volumetoast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, evictionTime: 3000 },
+        "notificationtoast": { source: "../modules/toasts/NotificationToast.qml", width: 420, evictionTime: 3000 }
     })
 
     // Fallback dimensions used while a panel is still loading, so the morph has
@@ -80,6 +80,11 @@ QtObject {
     function expectedHeight(name) {
         var panel = root.panelRegistry[name];
         return (panel && panel.height) ? panel.height : 500;
+    }
+
+    function evictionTime(name) {
+        var panel = root.panelRegistry[name];
+        return (panel && panel.evictionTime) ? panel.evictionTime : 5000;
     }
 
     // Resolve a panel's QML file from the registry; empty string if unknown.
