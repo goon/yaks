@@ -107,44 +107,23 @@ Item {
                 anchors.leftMargin: Globals.geometry.spacing.lg
                 anchors.rightMargin: Globals.geometry.spacing.lg
 
-                Item {
-                    Layout.preferredWidth: 40
-                    Layout.preferredHeight: 40
-                    Layout.alignment: Qt.AlignVCenter
-                    visible: root.deviceType !== "wifi"
-
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
-                        color: Globals.colors.deep
-                        opacity: 0.75
-                    }
-
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
-                        color: "transparent"
-                        border.width: Globals.geometry.borderWidth.hair
-                        border.color: Globals.colors.hair
-                    }
-
-                    BaseIcon {
-                        anchors.centerIn: parent
-                        icon: root.iconName
-                        color: (root.isConnected || root.deviceType === "peripheral") ? Globals.colors.primary : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.muted : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
-                        Behavior on color { BaseMotion { } }
-                    }
-                }
-
+                // A row leads with text, never an icon: wifi's signal glyph and
+                // the bluetooth/peripheral device icon both sit on the right, so
+                // every device type starts its title at the same x.
                 ColumnLayout {
                     spacing: 2
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
-                    Layout.leftMargin: root.deviceType === "wifi" ? Globals.geometry.spacing.xs : 0
 
                     RowLayout {
+                        id: titleRow
                         Layout.fillWidth: true
                         spacing: Globals.geometry.spacing.xs
+
+                        // Trailing device glyph: the signal arcs read light next to
+                        // the 16px heart/lock, so it gets a small bump. One value
+                        // for every device type, so rows match whatever they end on.
+                        readonly property int trailingIcon: Globals.typography.icon.lg + Globals.geometry.spacing.xs
 
                         BaseText {
                             text: root.title
@@ -158,8 +137,23 @@ Item {
                             Behavior on color { BaseMotion { } }
                         }
 
+                        // Percentage first, then the badges: the same box and one
+                        // type step down, so the number reads the same size as the
+                        // glyph it sits beside.
+                        Item {
+                            Layout.preferredWidth: titleRow.trailingIcon
+                            Layout.preferredHeight: titleRow.trailingIcon
+                            visible: root.batteryPct >= 0
+
+                            BaseText {
+                                anchors.centerIn: parent
+                                text: Math.round(root.batteryPct) + "%"
+                                pixelSize: Globals.typography.size.md
+                            }
+                        }
+
                         RowLayout {
-                            visible: deviceType === "wifi" && (root.isSecured || root.isKnown || root.glyph !== null)
+                            visible: (root.isSecured || root.isKnown) || deviceType !== "wifi"
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             spacing: Globals.geometry.spacing.sm
 
@@ -167,33 +161,42 @@ Item {
                                 icon: "heart"
                                 size: Globals.typography.icon.sm
                                 color: Globals.colors.muted
-                                visible: root.isKnown
+                                visible: deviceType === "wifi" && root.isKnown
                             }
 
                             BaseIcon {
                                 icon: "lock"
                                 size: Globals.typography.icon.sm
                                 color: Globals.colors.muted
-                                visible: root.isSecured
+                                visible: deviceType === "wifi" && root.isSecured
                             }
 
-                            Loader {
-                                Layout.alignment: Qt.AlignVCenter
-                                // Signal arcs read light next to the 16px badge
-                                // icons, so the glyph gets a small bump.
-                                width: Globals.typography.icon.lg + Globals.geometry.spacing.xs
-                                height: width
-                                visible: root.glyph !== null
-                                sourceComponent: root.glyph
+                            // One box for the trailing device icon. The signal
+                            // arcs only span 17 of their 24, so a Lucide glyph at
+                            // the full box size reads bigger than the wifi one —
+                            // the glyph sits at icon.md inside the same box to land
+                            // on the same optical size.
+                            Item {
+                                Layout.preferredWidth: titleRow.trailingIcon
+                                Layout.preferredHeight: titleRow.trailingIcon
+
+                                Loader {
+                                    anchors.fill: parent
+                                    visible: root.glyph !== null
+                                    sourceComponent: root.glyph
+                                }
+
+                                BaseIcon {
+                                    anchors.centerIn: parent
+                                    visible: root.glyph === null
+                                    icon: root.iconName
+                                    size: Globals.typography.icon.md
+                                    color: (root.isConnected || root.deviceType === "peripheral" || root.isHovered) ? Globals.colors.primary : Globals.colors.text
+                                    Behavior on color { BaseMotion { } }
+                                }
                             }
                         }
 
-                        BaseText {
-                            visible: root.batteryPct >= 0
-                            Layout.alignment: Qt.AlignVCenter
-                            text: Math.round(root.batteryPct) + "%"
-                            pixelSize: Globals.typography.size.lg
-                        }
                     }
 
                     BaseSlider {

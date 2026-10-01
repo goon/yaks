@@ -18,9 +18,9 @@ BaseScrolling {
         case "audio-card":
         case "audio-headphones":
         case "audio-headset":
-            return "headset";
+            return "headphones";
         case "phone":
-            return "smartphone";
+            return "tablet-smartphone";
         case "video-display":
             return "computer";
         case "input-keyboard":
@@ -48,7 +48,7 @@ BaseScrolling {
         case UPowerDeviceType.Headphones:
         case UPowerDeviceType.Speakers:
         case UPowerDeviceType.OtherAudio:
-            return "headset";
+            return "headphones";
         case UPowerDeviceType.MediaPlayer:
             return "music";
         case UPowerDeviceType.Monitor:
