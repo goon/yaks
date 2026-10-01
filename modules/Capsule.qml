@@ -12,9 +12,9 @@ Item {
     readonly property int itemHeight: 32 * Globals.shellScale
     property bool _ready: false
     Component.onCompleted: Qt.callLater(() => { _ready = true; })
-    
+
     // ── DYNAMIC CAPSULE STATE ──────────────────────────────────────────
-    readonly property bool shouldBeMorphed: Modules.activeModuleName !== "" && 
+    readonly property bool shouldBeMorphed: Modules.activeModuleName !== "" &&
         (Modules.activeScreen === barWindow.screen || (!Modules.activeScreen && barWindow.screen === Quickshell.screens[0]))
 
     property bool isMorphed: false
@@ -63,7 +63,7 @@ Item {
         if (capsuleRoot.shouldBeMorphed) {
             var newName = Modules.activeModuleName;
             var wasAlreadyLoaded = (capsuleRoot.loadedModuleName !== "" && capsuleRoot.loadedModuleName === newName);
-            
+
             if (capsuleRoot.loadedModuleName !== "" && !wasAlreadyLoaded) {
                 // Transitioning directly between two modules
                 if (moduleLoader.item) {
@@ -78,7 +78,7 @@ Item {
             capsuleRoot.isMorphed = true;
             collapseTimer.stop();
             evictionTimer.stop();
-            
+
             if (wasAlreadyLoaded && moduleLoader.item) {
                 capsuleRoot.setModuleState("Opening");
                 capsuleRoot.notifyModule("opening");
@@ -147,7 +147,7 @@ Item {
     // out against this one value, handed to Full rather than read out of Globals
     // by two readers. It is `lg` because a container's edge separates from its
     // content at `lg`; a module must not stack an inset of its own on top.
-    readonly property real capsulePad: Globals.geometry.spacing.lg
+    readonly property real capsulePad: Globals.geometry.spacing.xl
     readonly property real totalWidthPadding: capsulePad * 2
     readonly property real totalHeightPadding: capsulePad * 2
 
@@ -268,13 +268,13 @@ Item {
         HoverHandler {
             id: capsuleHoverHandler
         }
-        
+
         x: targetCapsuleX
         y: targetCapsuleY
         width: targetCapsuleWidth
         height: targetCapsuleHeight
         z: 2
-        
+
 
         border.color: Preferences.globals.capsuleOutline ? Globals.colors.outline : "transparent"
         border.width: Preferences.globals.capsuleOutline ? 1 : 0
@@ -313,7 +313,7 @@ Item {
                 height: implicitHeight
                 width: normalCapsuleWidth
                 spacing: normalSideMargin
-                
+
                 opacity: capsuleRoot.isCapsuleMorphed ? 0.0 : 1.0
                 enabled: opacity > 0.01
 

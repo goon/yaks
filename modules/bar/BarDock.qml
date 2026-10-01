@@ -52,8 +52,8 @@ BaseContainer {
                 anchors.centerIn: parent
                 source: Launcher.resolveIcon(windowItem.windowAppId) || "image://icon/application-x-executable"
                 sourceSize: Qt.size(64, 64)
-                width: Globals.typography.icon.sm
-                height: Globals.typography.icon.sm
+                width: Globals.typography.icon.md
+                height: Globals.typography.icon.md
                 fillMode: Image.PreserveAspectFit
                 mipmap: true
                 scale: (isFocused || isHovered) ? 1.2 : 1

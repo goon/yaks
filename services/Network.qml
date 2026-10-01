@@ -115,6 +115,44 @@ QtObject {
         root.availableNetworks = nets;
     }
 
+    // ── LINK DETAIL (the connected row's subtitle) ─────────────────────
+    // "192.168.1.58 · 5 GHz 1170 Mbit/s". NetworkManager's QML binding exposes
+    // neither the address nor the band/rate, so ask nmcli: one call for the
+    // active network's BAND/RATE, one for the wifi device's address.
+    property string linkDetail: ""
+    readonly property int _linkPollMs: 5000
+
+    property Timer _linkPoller: Timer {
+        interval: root._linkPollMs
+        repeat: true
+        running: root.connected
+        onTriggered: root._refreshLinkDetail()
+    }
+
+    function _refreshLinkDetail() {
+        if (!connected) {
+            linkDetail = "";
+            return;
+        }
+        Runner.run(["nmcli", "-t", "-f", "IN-USE,BAND,RATE", "dev", "wifi", "list"], function (out) {
+            var band = "", rate = "";
+            var lines = (out || "").split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                var f = lines[i].split(":");
+                if (f[0] === "*") { band = f[1]; rate = f[2]; break; }
+            }
+            // -g prints just the value, scoped to the one device, so no
+            // per-device parsing: "192.168.1.58/24" → "192.168.1.58".
+            Runner.run(["nmcli", "-g", "IP4.ADDRESS", "device", "show", wifiDevice.name], function (addrOut) {
+                var bits = [];
+                var ip = (addrOut || "").trim().split("\n")[0].split("/")[0];
+                if (ip) bits.push(ip);
+                if (band) bits.push(rate ? band + " " + rate : band);
+                root.linkDetail = bits.join(" · ");
+            });
+        });
+    }
+
     // ── OPTIMISTIC UI STATE ───────────────────────────────────────────
     property string pendingConnectSsid: ""
     property string pendingDisconnectSsid: ""
@@ -189,8 +227,9 @@ QtObject {
         function onValuesChanged() { root._buildNetworksList(); }
     }
 
-    Component.onCompleted: { 
+    Component.onCompleted: {
         _buildNetworksList();
+        _refreshLinkDetail();
         if (wifiDevice) {
             wifiDevice.scannerEnabled = true;
         }

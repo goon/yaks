@@ -278,7 +278,7 @@ FocusScope {
                             anchors.centerIn: parent
                             text: delegateRoot.fallbackText
                             color: delegateRoot.iconColor
-                            pixelSize: Globals.typography.icon.sm
+                            pixelSize: Globals.typography.icon.md
                             weight: Globals.typography.weight.bold
                         }
                     }

@@ -121,7 +121,7 @@ BaseContainer {
                         BaseIcon {
                             id: symbolIcon
                             anchors.centerIn: parent
-                            size: Globals.typography.icon.sm
+                            size: Globals.typography.icon.md
                             icon: {
                                 if (!root.notification) return "";
                                 if (root.isScreenshot) return "image";

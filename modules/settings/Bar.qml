@@ -166,7 +166,7 @@ SettingsPage {
 
                             BaseIcon {
                                 icon:  componentList.metadata[modelData]?.icon || "extension"
-                                size:  Globals.typography.icon.sm
+                                size:  Globals.typography.icon.md
                                 color: pill.isEnabled ? Globals.colors.primary : Globals.colors.text
                             }
 

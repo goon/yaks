@@ -72,9 +72,7 @@ QtObject {
     }
 
     // ── GEOMETRY TOKENS ──────────────────────────────────────────────────
-    // A numeric scale is named xs/sm/md/lg/xl; a semantic set (rounding presets,
-    // motion) keeps its own words. Do not merge spacing and typography.size —
-    // they share a rhythm on purpose and their values are independent.
+
     readonly property QtObject geometry: QtObject {
         readonly property QtObject rounding: QtObject {
             readonly property int sharp: 8
@@ -88,8 +86,8 @@ QtObject {
             readonly property int xs: 4 * root.shellScale
             readonly property int sm: 8 * root.shellScale
             readonly property int md: 12 * root.shellScale
-            readonly property int lg: 20 * root.shellScale
-            readonly property int xl: 24 * root.shellScale
+            readonly property int lg: 18 * root.shellScale
+            readonly property int xl: 22 * root.shellScale
         }
 
         readonly property QtObject borderWidth: QtObject {
@@ -134,13 +132,11 @@ QtObject {
             readonly property int xl: 24 * root.shellScale
         }
 
-        // An icon glyph is a font size in iconFamily, so it lives here. Nested
-        // to match size/weight/borderWidth: the middle segment is what keeps
-        // icon.sm (18) from reading as a rival of size.sm (12).
         readonly property QtObject
         icon: QtObject {
-            readonly property int sm: 18 * root.shellScale
-            readonly property int md: 20 * root.shellScale
+            readonly property int sm: 16 * root.shellScale
+            readonly property int md: 18 * root.shellScale
+            readonly property int lg: 20 * root.shellScale
         }
     }
 
@@ -165,7 +161,7 @@ QtObject {
         readonly property QtObject
         shadow: QtObject {
             readonly property color color: "#000000"
-            readonly property int radius: 20 * root.shellScale
+            readonly property int radius: 20 * Globals.shellScale
             readonly property real opacity: 0.4
             readonly property int offsetX: 0
             readonly property int offsetY: 0

@@ -12,7 +12,7 @@ Rectangle {
     property color iconColor: {
         return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
     }
-    property int size: Globals.typography.icon.sm
+    property int size: Globals.typography.icon.md
     property real iconRotation: 0
     property int weight: Globals.typography.weight.normal
     property color hoverColor: "transparent"

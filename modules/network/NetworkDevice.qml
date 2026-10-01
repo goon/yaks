@@ -16,6 +16,9 @@ Item {
     property string title: ""
     property string subtitle: ""
     property string iconName: "bluetooth"
+    // Optional custom icon (e.g. the wifi signal glyph). Wifi has no Lucide
+    // equivalent for signal strength, so it hands the row a Component instead.
+    property Component glyph: null
     property bool isConnected: false
     property bool isSecured: false
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
@@ -32,6 +35,18 @@ Item {
     signal forgetClicked()
     signal actionClicked()
 
+    Rectangle {
+        // Sized to the row, which is already taller than its text, so the tile
+        // never reaches into the list gap above or below.
+        anchors.fill: parent
+        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
+        // The tile only shows under the pointer (or while the password drawer is
+        // open, so the input never sits on a bare background).
+        color: Globals.colors.hover
+        opacity: root.isHovered || root.expanded ? 1 : 0
+        Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
+    }
+
     ColumnLayout {
         id: mainLayout
         anchors.left: parent.left
@@ -40,7 +55,9 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: innerRowLayout.implicitHeight
+            // One step of air above and below the row's content, so the hover
+            // tile (which is exactly this row's box) stands clear of its text.
+            Layout.preferredHeight: innerRowLayout.implicitHeight + Globals.geometry.spacing.md * 2
             implicitWidth: innerRowLayout.implicitWidth
 
             MouseArea {
@@ -84,6 +101,11 @@ Item {
                 id: innerRowLayout
                 anchors.fill: parent
                 spacing: Globals.geometry.spacing.sm
+                // Anchored, not layout-managed: Layout.*Margin would be ignored
+                // here, so the inset that keeps content off the tile's edge is
+                // an anchors margin.
+                anchors.leftMargin: Globals.geometry.spacing.lg
+                anchors.rightMargin: Globals.geometry.spacing.lg
 
                 Item {
                     Layout.preferredWidth: 40
@@ -93,7 +115,6 @@ Item {
 
                     Rectangle {
                         anchors.fill: parent
-                        visible: root.deviceType !== "wifi"
                         radius: Globals.innerRadius(Globals.geometry.spacing.sm)
                         color: Globals.colors.deep
                         opacity: 0.75
@@ -101,7 +122,6 @@ Item {
 
                     Rectangle {
                         anchors.fill: parent
-                        visible: root.deviceType !== "wifi"
                         radius: Globals.innerRadius(Globals.geometry.spacing.sm)
                         color: "transparent"
                         border.width: Globals.geometry.borderWidth.hair
@@ -138,31 +158,33 @@ Item {
                             Behavior on color { BaseMotion { } }
                         }
 
-                        Rectangle {
-                            visible: deviceType === "wifi" && (root.isSecured || root.isKnown)
+                        RowLayout {
+                            visible: deviceType === "wifi" && (root.isSecured || root.isKnown || root.glyph !== null)
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            Layout.preferredHeight: 28
-                            Layout.preferredWidth: 48
-                            radius: Globals.innerRadius(Globals.geometry.spacing.sm)
-                            color: Globals.colors.hover
-                            border.width: Globals.geometry.borderWidth.hair
-                            border.color: Globals.colors.hair
+                            spacing: Globals.geometry.spacing.sm
 
-                            RowLayout {
-                                anchors.centerIn: parent
-                                spacing: 4
+                            BaseIcon {
+                                icon: "heart"
+                                size: Globals.typography.icon.sm
+                                color: Globals.colors.muted
+                                visible: root.isKnown
+                            }
 
-                                BaseIcon {
-                                    icon: "lock"
-                                    size: Globals.typography.icon.sm
-                                    visible: root.isSecured
-                                }
+                            BaseIcon {
+                                icon: "lock"
+                                size: Globals.typography.icon.sm
+                                color: Globals.colors.muted
+                                visible: root.isSecured
+                            }
 
-                                BaseIcon {
-                                    icon: "heart-pulse"
-                                    size: Globals.typography.icon.sm
-                                    visible: root.isKnown
-                                }
+                            Loader {
+                                Layout.alignment: Qt.AlignVCenter
+                                // Signal arcs read light next to the 16px badge
+                                // icons, so the glyph gets a small bump.
+                                width: Globals.typography.icon.lg + Globals.geometry.spacing.xs
+                                height: width
+                                visible: root.glyph !== null
+                                sourceComponent: root.glyph
                             }
                         }
 
@@ -189,7 +211,7 @@ Item {
                     BaseText {
                         text: root.subtitle
                         visible: root.subtitle !== ""
-                        pixelSize: Globals.typography.size.md
+                        pixelSize: Globals.typography.size.sm
                         muted: true
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap
@@ -209,8 +231,12 @@ Item {
                 id: drawerBox
                 anchors.top: parent.top
                 anchors.topMargin: Globals.geometry.spacing.xs
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Globals.geometry.spacing.xs
                 anchors.left: parent.left
+                anchors.leftMargin: Globals.geometry.spacing.lg
                 anchors.right: parent.right
+                anchors.rightMargin: Globals.geometry.spacing.lg
                 implicitHeight: innerLayout.implicitHeight
 
                 function _submit() {
@@ -240,7 +266,7 @@ Item {
 
                     BaseIcon {
                         icon: "corner-down-left"
-                        size: Globals.typography.icon.sm
+                        size: Globals.typography.icon.md
                         color: Globals.colors.primary
 
                         MouseArea {

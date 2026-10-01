@@ -157,27 +157,12 @@ BaseScrolling {
             clip: true
             visible: root.rows.length > 0
 
-            function _hoverPredicate() {
-                var repeaters = [connectedRepeater, pairedRepeater, nearbyRepeater];
-                for (var r = 0; r < repeaters.length; r++) {
-                    for (var i = 0; i < repeaters[r].count; i++) {
-                        var item = repeaters[r].itemAt(i);
-                        if (item && item.hovered) return item;
-                    }
-                }
-                return null;
-            }
-
             ColumnLayout {
                 id: childCol
                 anchors.left: parent.left
                 anchors.right: parent.right
                 spacing: Globals.geometry.spacing.sm
                 Layout.fillWidth: true
-
-                BaseIndicator {
-                    hoverPredicate: bluetoothBlock._hoverPredicate
-                }
 
                 ColumnLayout {
                     Layout.fillWidth: true
@@ -252,8 +237,6 @@ BaseScrolling {
         id: deviceDelegate
 
         NetworkDevice {
-            property bool hovered: isHovered
-
             readonly property var bt: modelData.bt
             readonly property var up: modelData.up
 
