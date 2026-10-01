@@ -8,8 +8,8 @@ BaseText {
     property bool isActive: true
 
     visible: text !== ""
-    weight: Globals.typography.weights.bold
-    font.letterSpacing: 2
+    weight: Globals.typography.weights.medium
+    font.letterSpacing: 3
     color: isActive ? Globals.colors.text : Globals.colors.muted
 
     verticalAlignment: Text.AlignBottom

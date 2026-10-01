@@ -37,6 +37,7 @@ QtObject {
         // math.
 
         // surfaces
+        readonly property color deep:    colorsRoot._raw.deep
         readonly property color bg:      colorsRoot._raw.bg
         readonly property color surface: colorsRoot._raw.surface
         readonly property color raised:  colorsRoot._raw.raised
@@ -53,10 +54,10 @@ QtObject {
         readonly property color border: colorsRoot._raw.border
         readonly property color hair:   colorsRoot._raw.hair
 
-// copy
-readonly property color text:  colorsRoot._raw.text
-readonly property color muted: colorsRoot._raw.muted
-readonly property color faint: colorsRoot._raw.faint
+        // copy
+        readonly property color text:  colorsRoot._raw.text
+        readonly property color muted: colorsRoot._raw.muted
+        readonly property color faint: colorsRoot._raw.faint
 
         // accents
         readonly property color primary:   colorsRoot._raw.primary

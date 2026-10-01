@@ -19,6 +19,9 @@ Item {
     property bool isConnected: false
     property bool isSecured: false
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
+    property real batteryPct: -1
+    property string badge: ""
+    property string actionText: ""
     
     property bool expanded: false
     // A peripheral row is informational: no connect/disconnect/forget, so it
@@ -38,7 +41,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
+            Layout.preferredHeight: innerRowLayout.implicitHeight
             implicitWidth: innerRowLayout.implicitWidth
 
             MouseArea {
@@ -87,7 +90,15 @@ Item {
                     Layout.preferredWidth: 40
                     Layout.preferredHeight: 40
                     Layout.alignment: Qt.AlignVCenter
-                    
+
+                    Rectangle {
+                        anchors.fill: parent
+                        visible: root.deviceType !== "wifi"
+                        radius: Globals.geometry.innerRadius.medium
+                        color: Globals.colors.deep
+                        opacity: 0.75
+                    }
+
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: root.iconName
@@ -101,14 +112,92 @@ Item {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
 
-                    BaseText {
-                        text: root.title
-                        weight: root.isConnected ? Globals.typography.weights.bold : Globals.typography.weights.medium
-                        color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
-                        elide: Text.ElideRight
-                        wrapMode: Text.NoWrap
+                    RowLayout {
                         Layout.fillWidth: true
-                        Behavior on color { BaseMotion { } }
+                        spacing: Globals.geometry.spacing.small
+
+                        BaseText {
+                            text: root.title
+                            weight: root.isConnected ? Globals.typography.weights.bold : Globals.typography.weights.medium
+                            color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                            Layout.fillWidth: true
+                            Behavior on color { BaseMotion { } }
+                        }
+
+                        Rectangle {
+                            visible: root.badge !== ""
+                            Layout.alignment: Qt.AlignVCenter
+                            implicitWidth: badgeText.implicitWidth + Globals.geometry.spacing.small * 2
+                            implicitHeight: badgeText.implicitHeight + Globals.geometry.spacing.small / 2
+                            radius: height / 2
+                            color: Globals.colors.hover
+                            border.width: 1
+                            border.color: Globals.colors.hair
+
+                            BaseText {
+                                id: badgeText
+                                anchors.centerIn: parent
+                                text: root.badge
+                                pixelSize: Globals.typography.size.small
+                                muted: true
+                            }
+                        }
+
+                        Rectangle {
+                            visible: deviceType === "wifi" && (root.isSecured || root.isKnown)
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            Layout.preferredHeight: 28
+                            Layout.preferredWidth: 48
+                            radius: Globals.geometry.innerRadius.medium
+                            color: Globals.colors.hover
+                            border.width: 1
+                            border.color: Globals.colors.hair
+
+                            RowLayout {
+                                anchors.centerIn: parent
+                                spacing: 4
+
+                                BaseIcon {
+                                    icon: "lock"
+                                    size: Globals.dimensions.iconSmall
+                                    visible: root.isSecured
+                                }
+
+                                BaseIcon {
+                                    icon: "heart-pulse"
+                                    size: Globals.dimensions.iconSmall
+                                    visible: root.isKnown
+                                }
+                            }
+                        }
+
+                        BaseText {
+                            visible: root.batteryPct >= 0
+                            Layout.alignment: Qt.AlignVCenter
+                            text: Math.round(root.batteryPct) + "%"
+                            weight: Globals.typography.weights.bold
+                        }
+
+                        BaseButton {
+                            visible: root.actionText !== ""
+                            Layout.alignment: Qt.AlignVCenter
+                            text: root.actionText
+                            border.width: 1
+                            border.color: Globals.colors.hair
+                            onClicked: root.actionClicked()
+                        }
+                    }
+
+                    BaseSlider {
+                        visible: root.batteryPct >= 0
+                        Layout.fillWidth: true
+                        interactive: false
+                        trackHeight: Globals.geometry.spacing.small
+                        value: root.batteryPct
+                        from: 0
+                        to: 100
                     }
 
                     BaseText {
@@ -119,34 +208,6 @@ Item {
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap
                         Layout.fillWidth: true
-                    }
-                }
-
-                Rectangle {
-                    visible: deviceType === "wifi" && (root.isSecured || root.isKnown)
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    Layout.preferredHeight: 28
-                    Layout.preferredWidth: 48
-                    radius: Globals.geometry.innerRadius.medium
-                    color: Globals.colors.hover
-                    border.width: 1
-                    border.color: Globals.colors.hair
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 4
-
-                        BaseIcon {
-                            icon: "lock"
-                            size: Globals.dimensions.iconSmall
-                            visible: root.isSecured
-                        }
-
-                        BaseIcon {
-                            icon: "heart-pulse"
-                            size: Globals.dimensions.iconSmall
-                            visible: root.isKnown
-                        }
                     }
                 }
             }

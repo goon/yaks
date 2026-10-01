@@ -7,6 +7,7 @@ import qs
 BaseScrolling {
     id: root
     clip: true
+    implicitWidth: 400
     implicitHeight: mainLayout.implicitHeight
     readonly property int _spinMs: 1000
 
@@ -104,23 +105,20 @@ BaseScrolling {
         return out;
     }
 
+    readonly property var connectedRows: root.rows.filter(function(r) { return r.bt ? r.bt.connected : true; })
+    readonly property var nearbyRows: root.rows.filter(function(r) { return r.bt && !r.bt.connected; })
+
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: {
-            if (root.StackView.view && root.StackView.view.depth > 1) {
-                root.StackView.view.pop(null);
-            }
-        }
+        onClicked: Modules.closeAll()
         z: -1
     }
 
     focus: true
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Backspace) {
-            if (root.StackView.view && root.StackView.view.depth > 1) {
-                root.StackView.view.pop(null);
-            }
+            Modules.closeAll();
             event.accepted = true;
         }
     }
@@ -152,11 +150,7 @@ BaseScrolling {
                         anchors.margins: -8
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (root.StackView.view) {
-                                root.StackView.view.pop();
-                            }
-                        }
+                        onClicked: Modules.closeAll()
                     }
                 }
 
@@ -224,9 +218,12 @@ BaseScrolling {
             visible: root.rows.length > 0
 
             function _hoverPredicate() {
-                for (var i = 0; i < deviceRepeater.count; i++) {
-                    var item = deviceRepeater.itemAt(i);
-                    if (item && item.hovered) return item;
+                var repeaters = [connectedRepeater, nearbyRepeater];
+                for (var r = 0; r < repeaters.length; r++) {
+                    for (var i = 0; i < repeaters[r].count; i++) {
+                        var item = repeaters[r].itemAt(i);
+                        if (item && item.hovered) return item;
+                    }
                 }
                 return null;
             }
@@ -248,10 +245,40 @@ BaseScrolling {
                     }
                 }
 
-                Repeater {
-                    id: deviceRepeater
-                    model: root.rows
-                    delegate: deviceDelegate
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    visible: root.connectedRows.length > 0
+                    spacing: Globals.geometry.spacing.small
+
+                    BaseHeader {
+                        text: "CONNECTED"
+                        isActive: false
+                        pixelSize: Globals.typography.size.small
+                    }
+
+                    Repeater {
+                        id: connectedRepeater
+                        model: root.connectedRows
+                        delegate: deviceDelegate
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    visible: root.nearbyRows.length > 0
+                    spacing: Globals.geometry.spacing.small
+
+                    BaseHeader {
+                        text: "NEARBY"
+                        isActive: false
+                        pixelSize: Globals.typography.size.small
+                    }
+
+                    Repeater {
+                        id: nearbyRepeater
+                        model: root.nearbyRows
+                        delegate: deviceDelegate
+                    }
                 }
             }
         }
@@ -271,14 +298,18 @@ BaseScrolling {
             subtitle: {
                 if (bt && bt.connecting)
                     return "Connecting...";
-                if (!up)
-                    return "";
-                var s = Peripherals.pct(up) + "%";
-                return Peripherals.charging(up) ? s + " · Charging" : s;
+                if (bt && !bt.connected)
+                    return "disconnected · " + bt.address;
+                if (up && Peripherals.charging(up))
+                    return "Charging";
+                return "";
             }
             iconName: bt ? root.resolveBluetoothIcon(bt.icon) : root.resolvePeripheralIcon(up.type)
             isConnected: !!bt && bt.connected
             isKnown: !!bt && (bt.paired || bt.bonded || bt.trusted)
+            batteryPct: up ? Peripherals.pct(up) : -1
+            badge: bt ? "" : "USB"
+            actionText: (bt && !bt.connected) ? "Pair" : ""
 
             onActionClicked: {
                 if (bt && !bt.connected) {

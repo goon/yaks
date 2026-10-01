@@ -20,6 +20,7 @@ Item {
 
     readonly property var _indicatorModel: [
         { key: "wifi", icon: "wifi-pen" },
+        { key: "bluetooth", icon: "bluetooth" },
         { key: "notifications", icon: "bell" },
         { key: "settings", icon: "settings" },
         { key: "power", icon: "power" }
@@ -54,7 +55,8 @@ Item {
 
     function _openModule(key) {
         switch (key) {
-            case "wifi": Modules.toggleModule("network"); break;
+            case "wifi": Modules.toggleModule("wifi"); break;
+            case "bluetooth": Modules.toggleModule("bluetooth"); break;
             case "notifications": Modules.toggleModule("notifications"); break;
             case "power": Modules.toggleModule("power"); break;
             case "settings": Modules.toggleSettings(); break;

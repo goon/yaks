@@ -6,26 +6,21 @@ import qs
 BaseScrolling {
     id: root
     clip: true
+    implicitWidth: 400
     implicitHeight: mainLayout.implicitHeight
     readonly property int _spinMs: 1000
 
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: {
-            if (root.StackView.view && root.StackView.view.depth > 1) {
-                root.StackView.view.pop(null);
-            }
-        }
+        onClicked: Modules.closeAll()
         z: -1
     }
 
     focus: true
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Backspace) {
-            if (root.StackView.view && root.StackView.view.depth > 1) {
-                root.StackView.view.pop(null);
-            }
+            Modules.closeAll();
             event.accepted = true;
         }
     }
@@ -57,11 +52,7 @@ BaseScrolling {
                         anchors.margins: -8
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (root.StackView.view) {
-                                root.StackView.view.pop();
-                            }
-                        }
+                        onClicked: Modules.closeAll()
                     }
                 }
 

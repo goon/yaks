@@ -19,7 +19,7 @@ Item {
     // ── SLIDER METRICS ─────────────────────────────────────────────────
     // Internal to this component — nothing else sizes a slider, so these live
     // here rather than in Globals.
-    readonly property int trackHeight: 12 * Globals.shellScale
+    property int trackHeight: 12 * Globals.shellScale
     readonly property int handleWidth: 4 * Globals.shellScale
     readonly property int handleHeight: 20 * Globals.shellScale
     readonly property int gap: 5 * Globals.shellScale
@@ -55,7 +55,11 @@ Item {
     signal valueChangedByUser()
     signal rightClicked()
 
-    implicitHeight: Math.max(root.trackHeight, root.handleHeight, root.icon !== "" ? root.iconSize : 0)
+    readonly property real _fillWidth: root.interactive
+        ? Math.max(0, handle.x - root.gap)
+        : track.width * root.normalizedValue
+
+    implicitHeight: Math.max(root.trackHeight, root.interactive ? root.handleHeight : 0, root.icon !== "" ? root.iconSize : 0)
     implicitWidth: 100
 
     RowLayout {
@@ -84,7 +88,7 @@ Item {
 
                 x: 0
                 y: 0
-                width: Math.max(0, handle.x - root.gap)
+                width: root._fillWidth
                 height: parent.height
                 topLeftRadius: height / 2
                 bottomLeftRadius: height / 2
@@ -102,7 +106,7 @@ Item {
             Rectangle {
                 id: inactiveTrack
 
-                x: handle.x + handle.width + root.gap
+                x: root.interactive ? handle.x + handle.width + root.gap : root._fillWidth
                 y: 0
                 width: Math.max(0, parent.width - x)
                 height: parent.height

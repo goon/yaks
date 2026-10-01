@@ -6,7 +6,7 @@ BaseContainer {
     id: root
     width: parent ? parent.width : 0
     spacing: 0
-    
+
     property string title: ""
 
     onRightClicked: {
@@ -48,7 +48,7 @@ BaseContainer {
                 Layout.fillWidth: true
             }
         }
-        
+
         BaseSeparator {
             Layout.fillWidth: true
         }
