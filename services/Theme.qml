@@ -15,10 +15,17 @@ Item {
      * The generated palette: flat single-word tokens (deep/well/bg/surface/
      * raised/hair/border, text/muted/faint, primary/secondary/tertiary/error,
      * ink) plus an `ansi` array of 16 terminal colours. Built by lib/color.js
-     * in OKLCH from the wallpaper seed; consumed by Globals.colors (the shell)
-     * and the app hooks.
+     * in OKLCH from the wallpaper seed; consumed by Globals.colors (the shell).
      */
     property var currentColors: Color.build(Color.DEFAULT_SEED)
+
+    /**
+     * The same palette, sunk and quieted for app hooks. A window is a large
+     * area of colour, so at the shell's own lightness an app canvas matches the
+     * bar instead of sitting behind it. Rebuilt alongside `currentColors` on
+     * every apply; the shell never reads it.
+     */
+    property var hookColors: Color.build(Color.DEFAULT_SEED, { forApps: true })
 
     // Fallback seed (no wallpaper) lives with the generator: Color.DEFAULT_SEED.
     readonly property string seedScript: Globals.rootDir + "/lib/seed.sh"
@@ -61,6 +68,7 @@ Item {
     function _ingest(seed) {
         var s = seed || Color.DEFAULT_SEED;
         root.currentColors = Color.build(s);
+        root.hookColors = Color.build(s, { forApps: true });
         root.runHooks(executionTimer.pendingContext);
     }
 
@@ -83,7 +91,7 @@ Item {
             var hook = app.hook;
             if (typeof hook !== "function") continue;
 
-            var result = hook(root.currentColors, ctx);
+            var result = hook(root.hookColors, ctx);
             if (!result) continue;
 
             root._writeHookFiles(result.files);
