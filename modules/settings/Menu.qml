@@ -3,10 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs
 
-Item {
+SettingsPage {
     id: root
-    implicitHeight: mainCol.implicitHeight
-    Layout.fillWidth: true
 
     function pushPage(name) {
         StackView.view.pushPage(Qt.resolvedUrl(name), name);
@@ -43,9 +41,10 @@ Item {
 
     ColumnLayout {
         id: mainCol
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+        Layout.fillWidth: true
+        // The nav rows above and the mixer below are separate blocks, each
+        // closed by its own rule, so the blocks touch.
+        spacing: 0
 
         Repeater {
             id: menuRepeater
@@ -69,8 +68,8 @@ Item {
 
         BaseSeparator {
             Layout.fillWidth: true
-            Layout.topMargin: Globals.geometry.spacing.sm
-            Layout.bottomMargin: Globals.geometry.spacing.sm
+            Layout.topMargin: Globals.geometry.spacing.md
+            Layout.bottomMargin: Globals.geometry.spacing.md
         }
 
         Item {
@@ -200,8 +199,8 @@ Item {
 
                 BaseSeparator {
                     Layout.fillWidth: true
-                    Layout.topMargin: Globals.geometry.spacing.xs
-                    Layout.bottomMargin: Globals.geometry.spacing.xs
+                    Layout.topMargin: Globals.geometry.spacing.md
+                    Layout.bottomMargin: Globals.geometry.spacing.md
                 }
 
                 BaseSlider {

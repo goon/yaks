@@ -67,7 +67,7 @@ QtObject {
         "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 325, evictionTime: 5000 },
         "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, evictionTime: 5000 },
         "notifications": { source: "../modules/notifications/NotificationsIsland.qml", width: 460, evictionTime: 5000 },
-        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 276, evictionTime: 3000 },
+        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, evictionTime: 3000 },
         "notification_toast": { source: "../modules/toasts/NotificationToast.qml", width: 420, evictionTime: 3000 }
     })
 

@@ -35,8 +35,9 @@ SettingsPage {
             Layout.preferredHeight: Math.min(contentHeight, 600)
             clip: true
             model: root.fontModel
-            spacing: Globals.geometry.spacing.xs
-            
+            // A scan list: the rows carry the rule, so the list must not also
+            // gap them. `BaseListItem.showSeparator` defaults to true.
+            spacing: 0
 
             delegate: BaseListItem {
                 width: ListView.view.width

@@ -143,10 +143,11 @@ Item {
         : (barWindow.height - normalCapsuleHeight - Preferences.bar.marginTop)
 
 
-    // The capsule's own inset. This is the capsule's metric, not a global: only
-    // the capsule and the full bar lay modules out against it, so it is owned
-    // here and handed to Full rather than read out of Globals by two readers.
-    readonly property real capsulePad: Math.max(22 * Globals.shellScale, Math.ceil(Globals.geometry.radius * 0.5))
+    // The capsule's own inset, and the only one. Every module lays its content
+    // out against this one value, handed to Full rather than read out of Globals
+    // by two readers. It is `lg` because a container's edge separates from its
+    // content at `lg`; a module must not stack an inset of its own on top.
+    readonly property real capsulePad: Globals.geometry.spacing.lg
     readonly property real totalWidthPadding: capsulePad * 2
     readonly property real totalHeightPadding: capsulePad * 2
 

@@ -8,8 +8,10 @@ Item {
     
     property string moduleState: "Closed"
     
-    implicitWidth: 300 - (Globals.geometry.spacing.md * 2)
-    implicitHeight: Math.max(0, Preferences.bar.height - (Globals.geometry.spacing.md * 2))
+    // No inset shaved off the size: the capsule's `capsulePad` is the popout's
+    // inset, so the toast fills the space it is given.
+    implicitWidth: 300
+    implicitHeight: Math.max(0, Preferences.bar.height)
     
     BaseSlider {
         id: slider

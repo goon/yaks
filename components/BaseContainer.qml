@@ -11,7 +11,7 @@ FocusScope {
     property real padding: 0
     property real paddingHorizontal: padding
     property real paddingVertical: padding
-    property real spacing: Globals.geometry.spacing.sm
+    property real spacing: Globals.geometry.spacing.md
 
     property bool clickable: false
     property bool hoverEnabled: true

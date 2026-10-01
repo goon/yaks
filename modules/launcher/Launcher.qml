@@ -245,8 +245,8 @@ FocusScope {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Globals.geometry.spacing.md * 2
-                anchors.rightMargin: Globals.geometry.spacing.md * 2
+                anchors.leftMargin: Globals.geometry.spacing.xl
+                anchors.rightMargin: Globals.geometry.spacing.xl
                 spacing: Globals.geometry.spacing.md
 
                 scale: mouseArea.pressed ? 0.98 : 1.0

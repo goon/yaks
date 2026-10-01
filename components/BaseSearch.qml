@@ -14,6 +14,7 @@ BaseContainer {
     }
 
     implicitHeight: 30 * Globals.shellScale
+    // A control, not a page: the search field is the one field that takes md.
     paddingHorizontal: Globals.geometry.spacing.md
     clickable: true
 
