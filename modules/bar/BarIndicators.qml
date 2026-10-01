@@ -22,8 +22,7 @@ Item {
         { key: "wifi", icon: "wifi" },
         { key: "bluetooth", icon: "bluetooth" },
         { key: "notifications", icon: "bell" },
-        { key: "settings", icon: "settings" },
-        { key: "power", icon: "power" }
+        { key: "settings", icon: "settings" }
     ]
 
     // Saved order first, then any model key the saved order never mentions, so a
@@ -58,7 +57,6 @@ Item {
             case "wifi": Modules.toggleModule("wifi"); break;
             case "bluetooth": Modules.toggleModule("bluetooth"); break;
             case "notifications": Modules.toggleModule("notifications"); break;
-            case "power": Modules.toggleModule("power"); break;
             case "settings": Modules.toggleSettings(); break;
         }
     }
