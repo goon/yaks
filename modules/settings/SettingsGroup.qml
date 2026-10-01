@@ -55,7 +55,6 @@ Item {
     }
 
     BaseIndicator {
-        parent: root
         hoverPredicate: root._hoverPredicate
     }
 }

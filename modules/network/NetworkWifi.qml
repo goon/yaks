@@ -87,21 +87,15 @@ BaseScrolling {
                 spacing: Globals.geometry.spacing.sm
                 Layout.fillWidth: true
 
-                    Item {
-                        z: 100
-                        Layout.preferredWidth: 0
-                        Layout.preferredHeight: 0
+                BaseIndicator {
+                    hoverPredicate: wifiListSection._hoverPredicate
+                }
 
-                        BaseIndicator {
-                            hoverPredicate: wifiListSection._hoverPredicate
-                        }
-                    }
-
-                    Repeater {
-                        id: deviceRepeater
-                        model: wifiListSection.allNetworksList
-                        delegate: wifiDelegate
-                    }
+                Repeater {
+                    id: deviceRepeater
+                    model: wifiListSection.allNetworksList
+                    delegate: wifiDelegate
+                }
             }
         }
 

@@ -39,11 +39,19 @@ Item {
 
     z: 10
 
-    width: 3 * Globals.shellScale
-    height: 20 * Globals.shellScale
+    width: 0
+    // Deliberately zero-sized. This Item is an overlay that positions itself
+    // with `x`/`y` and is routinely a direct child of a page's ColumnLayout,
+    // where a layout honours an explicit `width`/`height` and would reserve
+    // space for it. Keeping the box at 0×0 makes it invisible to every layout,
+    // so call sites need no wrapper Item and no reparenting. The visible pill
+    // carries its own size and centres on this anchor point.
 
     Rectangle {
-        anchors.fill: parent
+        x: 0
+        width: 3 * Globals.shellScale
+        height: 20 * Globals.shellScale
+        anchors.verticalCenter: parent.verticalCenter
         radius: width / 2
         gradient: Gradient {
             orientation: Gradient.Vertical

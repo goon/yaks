@@ -175,14 +175,8 @@ BaseScrolling {
                 spacing: Globals.geometry.spacing.sm
                 Layout.fillWidth: true
 
-                Item {
-                    z: 100
-                    Layout.preferredWidth: 0
-                    Layout.preferredHeight: 0
-
-                    BaseIndicator {
-                        hoverPredicate: bluetoothBlock._hoverPredicate
-                    }
+                BaseIndicator {
+                    hoverPredicate: bluetoothBlock._hoverPredicate
                 }
 
                 ColumnLayout {
