@@ -21,7 +21,7 @@ BaseContainer {
 
         BaseText {
             text: Qt.formatDateTime(systemClock.date, "HH:mm")
-            pixelSize: Math.round(24 * Globals.shellScale)
+            pixelSize: Globals.typography.size.xl
             weight: Globals.typography.weights.medium
             font.letterSpacing: 1
             renderType: Text.NativeRendering

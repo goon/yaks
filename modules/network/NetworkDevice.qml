@@ -36,6 +36,7 @@ Item {
         id: mainLayout
         anchors.left: parent.left
         anchors.right: parent.right
+        spacing: 0
 
         Item {
             Layout.fillWidth: true
@@ -88,6 +89,7 @@ Item {
                     Layout.preferredWidth: 40
                     Layout.preferredHeight: 40
                     Layout.alignment: Qt.AlignVCenter
+                    visible: root.deviceType !== "wifi"
 
                     Rectangle {
                         anchors.fill: parent
@@ -125,8 +127,9 @@ Item {
 
                         BaseText {
                             text: root.title
-                            pixelSize: Globals.typography.size.large
-                            weight: root.isConnected ? Globals.typography.weights.bold : Globals.typography.weights.medium
+                            pixelSize: Globals.typography.size.lg
+                            weight: root.isConnected ? Globals.typography.weights.medium : Globals.typography.weights.normal
+                            font.capitalization: Font.AllUppercase
                             color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
                             elide: Text.ElideRight
                             wrapMode: Text.NoWrap
@@ -166,7 +169,7 @@ Item {
                             visible: root.batteryPct >= 0
                             Layout.alignment: Qt.AlignVCenter
                             text: Math.round(root.batteryPct) + "%"
-                            pixelSize: Globals.typography.size.large
+                            pixelSize: Globals.typography.size.lg
                         }
                     }
 
@@ -185,7 +188,7 @@ Item {
                     BaseText {
                         text: root.subtitle
                         visible: root.subtitle !== ""
-                        pixelSize: Globals.typography.size.medium
+                        pixelSize: Globals.typography.size.md
                         muted: true
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap
@@ -197,42 +200,52 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Globals.geometry.padding.medium : 0
+            Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Globals.geometry.spacing.small : 0
             clip: true
             visible: deviceType === "wifi" && root.isSecured && !root.isConnected && !root.isKnown
 
-            Rectangle {
+            Item {
                 id: drawerBox
                 anchors.top: parent.top
-                anchors.topMargin: Globals.geometry.padding.medium
+                anchors.topMargin: Globals.geometry.spacing.small
                 anchors.left: parent.left
                 anchors.right: parent.right
-                color: Globals.colors.raised
-                border.width: 1
-                border.color: Globals.colors.hair
-                radius: Globals.geometry.innerRadius.medium
-                implicitHeight: innerLayout.implicitHeight + (Globals.geometry.spacing.large * 2)
+                implicitHeight: innerLayout.implicitHeight
+
+                function _submit() {
+                    if (passwordInput.text.length > 0) {
+                        root.connectClicked(passwordInput.text);
+                        passwordInput.text = "";
+                        root.expanded = false;
+                    }
+                }
 
                 RowLayout {
                     id: innerLayout
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.margins: Globals.geometry.spacing.large
                     spacing: Globals.geometry.spacing.medium
 
                     BaseInput {
                         id: passwordInput
                         Layout.fillWidth: true
                         Layout.preferredHeight: 36
-                        placeholderText: "Network password..."
+                        leftPadding: 0
+                        placeholderText: "Password"
                         echoMode: TextInput.Password
-                        onAccepted: {
-                            if (text.length > 0) {
-                                root.connectClicked(text);
-                                text = "";
-                                root.expanded = false;
-                            }
+                        onAccepted: drawerBox._submit()
+                    }
+
+                    BaseIcon {
+                        icon: "corner-down-left"
+                        size: Globals.dimensions.iconSmall
+                        color: Globals.colors.primary
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: drawerBox._submit()
                         }
                     }
                 }

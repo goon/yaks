@@ -5,8 +5,6 @@ import qs
 
 SettingsPage {
 
-    title: "Applications"
-
     ColumnLayout {
         spacing: Globals.geometry.spacing.large
         Layout.fillWidth: true

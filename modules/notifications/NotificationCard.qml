@@ -163,7 +163,7 @@ BaseContainer {
 
                     BaseText {
                         Layout.fillWidth: false
-                        pixelSize: Globals.typography.size.large
+                        pixelSize: Globals.typography.size.lg
                         weight: Globals.typography.weights.bold
                         text: root.notification ? (root.notification.summary || "") : ""
                         maximumLineCount: 1
@@ -182,7 +182,7 @@ BaseContainer {
                         muted: true
                         visible: root.showTime
                         text: root.timeString
-                        pixelSize: Globals.typography.size.medium
+                        pixelSize: Globals.typography.size.md
                         font.italic: true
                         elide: Text.ElideRight
                     }

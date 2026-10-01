@@ -7,7 +7,7 @@ TextField {
 
     color: Globals.colors.text
     font.family: Globals.typography.family
-    font.pixelSize: Globals.typography.size.medium
+    font.pixelSize: Globals.typography.size.md
     font.letterSpacing: (root.echoMode === TextInput.Password && root.text.length > 0) ? 4 : 0
     placeholderTextColor: Globals.colors.muted
     leftPadding: Globals.geometry.padding.small

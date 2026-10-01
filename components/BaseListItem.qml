@@ -14,6 +14,8 @@ Item {
 
     implicitHeight: Math.max(root.itemHeight, layout.implicitHeight) + root.verticalPadding * 2
     implicitWidth: layout.implicitWidth
+
+    readonly property real edgeInset: Math.max(0, (root.implicitHeight - layout.implicitHeight) / 2)
     Layout.fillWidth: true
 
     property string title: ""
@@ -160,7 +162,7 @@ Item {
                 id: titleText
                 visible: root.title !== ""
                 text: root.title
-                pixelSize: Globals.typography.size.large
+                pixelSize: Globals.typography.size.lg
                 family: root.titleFamily
                 weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.medium
                 color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
@@ -194,7 +196,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     text: root.subtitle
-                    pixelSize: Globals.typography.size.medium
+                    pixelSize: Globals.typography.size.md
                     muted: true
                     elide: Text.ElideRight
                     maximumLineCount: 1

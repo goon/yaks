@@ -143,8 +143,9 @@ Item {
         : (barWindow.height - normalCapsuleHeight - Preferences.bar.marginTop)
 
 
-    readonly property real totalWidthPadding: (Globals.geometry.padding.capsule * 2)
-    readonly property real totalHeightPadding: (Globals.geometry.padding.capsule * 2)
+    readonly property real _modulePad: Globals.geometry.padding.capsule
+    readonly property real totalWidthPadding: _modulePad * 2
+    readonly property real totalHeightPadding: _modulePad * 2
 
     // The capsule gradient ramps over a fixed band (the bar's height) instead of
     // the whole capsule, so every module shows the same sheen no matter how tall
@@ -325,7 +326,7 @@ Item {
             Loader {
                 id: moduleLoader
                 anchors.fill: parent
-                anchors.margins: capsuleRoot.loadedModuleName === "full_bar" ? 0 : Globals.geometry.padding.capsule
+                anchors.margins: capsuleRoot.loadedModuleName === "full_bar" ? 0 : capsuleRoot._modulePad
 
                 active: capsuleRoot.loadedModuleName !== ""
                 focus: true

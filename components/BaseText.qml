@@ -11,7 +11,7 @@ Text {
 
     color: root.muted ? Globals.colors.muted : Globals.colors.text
     font.family: Globals.typography.family
-    font.pixelSize: Globals.typography.size.medium
+    font.pixelSize: Globals.typography.size.md
     font.weight: Globals.typography.weights.normal
     wrapMode: Text.WordWrap
 

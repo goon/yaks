@@ -202,7 +202,7 @@ FocusScope {
         anchors.topMargin: root.contentPadding
         width: parent.width - 2 * root.contentPadding
         placeholderText: "/home/user/wallpapers"
-        font.pixelSize: Globals.typography.size.medium
+        font.pixelSize: Globals.typography.size.md
         color: Globals.colors.muted
         placeholderTextColor: Globals.colors.muted
         horizontalAlignment: TextInput.AlignHCenter
@@ -224,7 +224,7 @@ FocusScope {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: root.contentPadding
         text: root.model.length > 0 ? (root.currentIndex + 1) + " / " + root.model.length : ""
-        font.pixelSize: Globals.typography.size.small
+        font.pixelSize: Globals.typography.size.sm
         color: Globals.colors.muted
     }
 }

@@ -5,16 +5,13 @@ import qs
 BaseText {
     id: root
 
-    property bool isActive: true
+    pixelSize: Globals.typography.size.xs
+    weight: Globals.typography.weights.normal
+    font.capitalization: Font.AllUppercase
+    font.letterSpacing: 1.5
+    muted: true
 
-    visible: text !== ""
-    weight: Globals.typography.weights.medium
-    font.letterSpacing: 4
-    color: isActive ? Globals.colors.text : Globals.colors.muted
-
-    verticalAlignment: Text.AlignBottom
-    Layout.preferredHeight: Globals.dimensions.iconMedium
-
-    Layout.bottomMargin: Globals.geometry.spacing.small / 2
+    visible: root.text !== ""
     Layout.fillWidth: true
+    Layout.bottomMargin: Globals.geometry.spacing.small / 2
 }

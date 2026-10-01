@@ -42,7 +42,7 @@ BaseContainer {
                 clip: true
                 leftPadding: 8
                 rightPadding: 8
-                font.pixelSize: Globals.typography.size.large
+                font.pixelSize: Globals.typography.size.lg
                 placeholderText: "Search..."
                 caretParksInPlaceholder: false
                 verticalAlignment: Text.AlignVCenter

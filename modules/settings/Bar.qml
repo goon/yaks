@@ -6,8 +6,6 @@ import qs
 SettingsPage {
     id: root
 
-    title: "Bar"
-
     ColumnLayout {
         Layout.fillWidth: true
         spacing: Globals.geometry.spacing.large

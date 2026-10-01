@@ -30,7 +30,7 @@ BaseContainer {
             spacing: Globals.geometry.spacing.small
 
             BaseHeader {
-                text: "NOTIFICATIONS (" + root.notifCount + ")"
+                text: String(root.notifCount)
             }
 
             Item { Layout.fillWidth: true }
@@ -111,7 +111,7 @@ BaseContainer {
                 BaseText {
                     text: "you're"
                     muted: true
-                    pixelSize: Globals.typography.size.large
+                    pixelSize: Globals.typography.size.lg
                     font.italic: true
                     Layout.alignment: Qt.AlignLeft
                     Layout.leftMargin: 8
@@ -161,7 +161,7 @@ BaseContainer {
                 BaseText {
                     text: "up."
                     color: Globals.colors.primary
-                    pixelSize: Globals.typography.size.large
+                    pixelSize: Globals.typography.size.lg
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: 8
                 }

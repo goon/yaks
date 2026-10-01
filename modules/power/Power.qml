@@ -98,7 +98,7 @@ BaseContainer {
                             text: btn.actionLabel
                             color: Globals.colors.text
                             font.weight: Globals.typography.weights.medium
-                            font.pixelSize: Globals.typography.size.large
+                            font.pixelSize: Globals.typography.size.lg
                             Behavior on color { BaseMotion { } }
                         }
 
@@ -116,7 +116,7 @@ BaseContainer {
                             anchors.top: parent.top
                             anchors.left: parent.left
                             text: "Hold to " + btn.actionLabel.toLowerCase()
-                            pixelSize: Globals.typography.size.medium
+                            pixelSize: Globals.typography.size.md
                             muted: true
                         }
 
@@ -133,7 +133,7 @@ BaseContainer {
                                 anchors.top: parent.top
                                 anchors.left: parent.left
                                 text: subtitleText.text
-                                pixelSize: Globals.typography.size.medium
+                                pixelSize: Globals.typography.size.md
                                 color: Globals.colors.text
                             }
                         }
@@ -157,17 +157,6 @@ BaseContainer {
         ColumnLayout {
             id: layout
             anchors.fill: parent
-
-        BaseHeader {
-            text: "POWER"
-            isActive: root.activeHover !== null
-            Layout.bottomMargin: Globals.geometry.spacing.large
-        }
-
-        BaseSeparator {
-            Layout.fillWidth: true
-            Layout.bottomMargin: Globals.geometry.spacing.large
-        }
 
         Repeater {
             model: root._actions

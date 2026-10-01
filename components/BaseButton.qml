@@ -61,7 +61,7 @@ Rectangle {
         BaseText {
             text: root.text
             color: root.iconColor
-            pixelSize: Globals.typography.size.medium
+            pixelSize: Globals.typography.size.md
             weight: root.weight
             visible: root.text !== ""
         }

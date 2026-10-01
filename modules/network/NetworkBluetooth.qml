@@ -132,18 +132,7 @@ BaseScrolling {
         Item {
             Layout.fillWidth: true
             Layout.bottomMargin: Globals.geometry.spacing.small / 2
-            implicitHeight: Math.max(pageHeader.implicitHeight, 28)
-
-            RowLayout {
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Globals.geometry.spacing.small
-
-                BaseHeader {
-                    id: pageHeader
-                    text: "BLUETOOTH"
-                }
-            }
+            implicitHeight: 28
 
             RowLayout {
                 anchors.right: parent.right
@@ -234,12 +223,6 @@ BaseScrolling {
                     visible: root.connectedRows.length > 0
                     spacing: Globals.geometry.spacing.small
 
-                    BaseHeader {
-                        text: "CONNECTED"
-                        isActive: false
-                        pixelSize: Globals.typography.size.small
-                    }
-
                     Repeater {
                         id: connectedRepeater
                         model: root.connectedRows
@@ -252,10 +235,19 @@ BaseScrolling {
                     visible: root.pairedRows.length > 0
                     spacing: Globals.geometry.spacing.small
 
-                    BaseHeader {
-                        text: "PAIRED"
-                        isActive: false
-                        pixelSize: Globals.typography.size.small
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: Globals.geometry.spacing.small
+
+                        BaseHeader {
+                            text: "Paired"
+                            Layout.fillWidth: false
+                            Layout.bottomMargin: 0
+                        }
+
+                        BaseSeparator {
+                            Layout.alignment: Qt.AlignVCenter
+                        }
                     }
 
                     Repeater {
@@ -270,10 +262,19 @@ BaseScrolling {
                     visible: root.nearbyRows.length > 0
                     spacing: Globals.geometry.spacing.small
 
-                    BaseHeader {
-                        text: "NEARBY"
-                        isActive: false
-                        pixelSize: Globals.typography.size.small
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: Globals.geometry.spacing.small
+
+                        BaseHeader {
+                            text: "Nearby"
+                            Layout.fillWidth: false
+                            Layout.bottomMargin: 0
+                        }
+
+                        BaseSeparator {
+                            Layout.alignment: Qt.AlignVCenter
+                        }
                     }
 
                     Repeater {

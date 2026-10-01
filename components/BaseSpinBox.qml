@@ -74,7 +74,7 @@ SpinBox {
             
             text: root.textFromValue(root.value, root.locale)
             color: Globals.colors.text
-            font.pixelSize: Globals.typography.size.large
+            font.pixelSize: Globals.typography.size.lg
             font.family: Globals.typography.family
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
@@ -93,7 +93,7 @@ SpinBox {
             y: textInput.y + (textInput.height - height) / 2 + 1 // +1 for baseline adjustment
             text: root.suffix
             visible: root.suffix !== ""
-            pixelSize: Globals.typography.size.small
+            pixelSize: Globals.typography.size.sm
             color: Globals.colors.muted
         }
     }

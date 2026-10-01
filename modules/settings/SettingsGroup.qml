@@ -5,13 +5,17 @@ import qs
 Item {
     id: root
     Layout.fillWidth: true
-    implicitHeight: col.implicitHeight
+    implicitHeight: col.implicitHeight - 2 * _edgeInset
+
+    readonly property real _edgeInset: col.children.length > 0 ? (col.children[0].edgeInset || 0) : 0
 
     default property alias content: col.data
 
     ColumnLayout {
         id: col
         anchors.fill: parent
+        anchors.topMargin: -root._edgeInset
+        anchors.bottomMargin: -root._edgeInset
         spacing: 0
     }
 

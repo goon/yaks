@@ -6,8 +6,6 @@ import qs
 SettingsPage {
     id: root
     
-    title: "Shell Font"
-
     property string searchText: ""
     property var allFonts: Array.from(Theme.allFontFamilies || [])
     property string currentValue: Preferences.globals.shellFont

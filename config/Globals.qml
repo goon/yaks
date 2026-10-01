@@ -117,9 +117,11 @@ QtObject {
 
         readonly property QtObject
         size: QtObject {
-            readonly property int small: 13 * root.shellScale
-            readonly property int medium: 14 * root.shellScale
-            readonly property int large: 15 * root.shellScale
+            readonly property int xs: 11 * root.shellScale
+            readonly property int sm: 12 * root.shellScale
+            readonly property int md: 13 * root.shellScale
+            readonly property int lg: 15 * root.shellScale
+            readonly property int xl: 24 * root.shellScale
         }
     }
 

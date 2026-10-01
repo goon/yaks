@@ -33,18 +33,7 @@ BaseScrolling {
         Item {
             Layout.fillWidth: true
             Layout.bottomMargin: Globals.geometry.spacing.small / 2
-            implicitHeight: Math.max(pageHeader.implicitHeight, 28)
-
-            RowLayout {
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Globals.geometry.spacing.small
-
-                BaseHeader {
-                    id: pageHeader
-                    text: "WI-FI"
-                }
-            }
+            implicitHeight: 28
 
             RowLayout {
                 anchors.right: parent.right
@@ -171,13 +160,6 @@ BaseScrolling {
                 return modelData.active ? "" : (modelData.saved ? "Saved" : "");
             }
 
-            iconName: {
-                var sig = modelData.signal;
-                if (sig > 75) return "wifi";
-                if (sig > 50) return "signal-high";
-                if (sig > 25) return "signal-medium";
-                return "signal-low";
-            }
             isSecured: modelData.secured
             isKnown: modelData.known || modelData.active || isPendingConnect
             isConnected: modelData.active || isPendingConnect
