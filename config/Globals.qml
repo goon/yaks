@@ -57,6 +57,10 @@ QtObject {
         // accents
         readonly property color primary:   colorsRoot._raw.primary
         readonly property color secondary: colorsRoot._raw.secondary
+        // `primary` stepped in lightness, for the capsule's top-lit bevel on a
+        // filled control (slider tracks, the workspace pill). Same hue/chroma.
+        readonly property color accentTop:    colorsRoot._raw.accentTop
+        readonly property color accentBottom: colorsRoot._raw.accentBottom
         // Text drawn on top of an accent. The palette contrast-enforces this
         // against every accent, so never substitute bg or text for it.
         readonly property color ink:      colorsRoot._raw.ink

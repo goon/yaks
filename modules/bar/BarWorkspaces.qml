@@ -109,31 +109,34 @@ Item {
                     height: 8
                     radius: height / 2
 
-                    // Gradient fills the rounded shape — no clipping needed
+                    // Gradient fills the rounded shape — no clipping needed.
+                    // Top-lit bevel, same shape as the capsule gradient. Two
+                    // stops, not a band: at 8px tall the band is invisible, and
+                    // binding a third stop to an animated one warns every frame.
                     gradient: Gradient {
-                        orientation: Gradient.Horizontal
+                        orientation: Gradient.Vertical
                         GradientStop { id: gs1; position: 0.0; color: Globals.colors.text }
                         GradientStop { id: gs2; position: 1.0; color: Globals.colors.text }
                     }
 
-                    // Left stop: primary → secondary → primary (loops)
+                    // Top stop: accentTop → accentBottom → accentTop (loops)
                     SequentialAnimation {
                         loops: Animation.Infinite
                         running: indicator.isActive
                         // Snap to start colour so each loop begins correctly
-                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: 0 }
-                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.secondary; duration: root._waveMs; easing.type: Easing.InOutSine }
-                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.primary; duration: root._waveMs; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.accentTop; duration: 0 }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.accentBottom; duration: root._waveMs; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs1; property: "color"; to: Globals.colors.accentTop; duration: root._waveMs; easing.type: Easing.InOutSine }
                         onRunningChanged: if (!running) fadeGs1.start()
                     }
 
-                    // Right stop: secondary → primary → secondary (opposite phase)
+                    // Bottom stop: accentBottom → accentTop → accentBottom (opposite phase)
                     SequentialAnimation {
                         loops: Animation.Infinite
                         running: indicator.isActive
-                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: 0 }
-                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.primary; duration: root._waveMs; easing.type: Easing.InOutSine }
-                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.secondary; duration: root._waveMs; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.accentBottom; duration: 0 }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.accentTop; duration: root._waveMs; easing.type: Easing.InOutSine }
+                        ColorAnimation { target: gs2; property: "color"; to: Globals.colors.accentBottom; duration: root._waveMs; easing.type: Easing.InOutSine }
                         onRunningChanged: if (!running) fadeGs2.start()
                     }
 

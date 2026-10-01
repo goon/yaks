@@ -97,10 +97,12 @@ Item {
                 bottomRightRadius: root.roundActiveEnd ? height / 2 : 0
                 opacity: root.pressed ? root.breathOpacity : 1.0
 
+                // Top-lit bevel, same shape as the capsule gradient.
                 gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: Globals.colors.primary }
-                    GradientStop { position: 1.0; color: Globals.colors.secondary }
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Globals.colors.accentTop }
+                    GradientStop { position: 0.55; color: Globals.colors.accentTop }
+                    GradientStop { position: 1.0; color: Globals.colors.accentBottom }
                 }
             }
 
