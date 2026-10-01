@@ -63,7 +63,7 @@ QtObject {
         "settings":      { source: "../modules/settings/Settings.qml",      width: 400, height: 500, evictionTime: 10000 },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",    evictionTime: 3000 },
         "full_bar":       { source: "../modules/bar/Full.qml",               evictionTime: 10000 },
-        "power":         { source: "../modules/power/Power.qml",            width: 240, evictionTime: 5000 },
+        "power":         { source: "../modules/power/Power.qml",            width: 236, evictionTime: 5000 },
         "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 325, evictionTime: 5000 },
         "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, evictionTime: 5000 },
         "notifications": { source: "../modules/notifications/NotificationsIsland.qml", width: 460, evictionTime: 5000 },

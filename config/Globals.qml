@@ -151,7 +151,7 @@ QtObject {
         readonly property int hover: 140
         readonly property int standard: 300
         readonly property int morph: 420
-        readonly property int heat: 2000
+        readonly property int heat: 1100
 
         // ── EASINGS ─────────────────────────────────────────────────────
         readonly property int easeStandard: Easing.OutCubic

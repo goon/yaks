@@ -1,177 +1,121 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Widgets
 import qs
 import ".."
 
 BaseContainer {
     id: root
-    spacing: 0
-    implicitWidth: 240
 
-    property Item activeHover: null
+    // A power tile is a fixed square, so its metrics live here rather than in
+    // Globals: no other component wants a number this shape.
+    readonly property int tileSize: 50 * Globals.shellScale
 
-    component PowerButton: BaseButton {
-        id: btn
-
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        radius: 0
-        hoverEnabled: true
-
-        property string actionIcon: ""
-        property string actionLabel: ""
-        
-        property real holdProgress: 0.0
-        signal actionTriggered()
-
-        onContainsMouseChanged: {
-            if (containsMouse) root.activeHover = btn;
-            else if (root.activeHover === btn) root.activeHover = null;
-        }
-
-        onPressedChanged: {
-            if (pressed) {
-                holdAnim.restart()
-            } else {
-                holdAnim.stop()
-                holdAnimReverse.restart()
-            }
-        }
-
-        NumberAnimation {
-            id: holdAnim
-            target: btn
-            property: "holdProgress"
-            to: 1.0
-            duration: Globals.motion.heat
-            easing.type: Easing.InOutQuad
-        }
-
-        NumberAnimation {
-            id: holdAnimReverse
-            target: btn
-            property: "holdProgress"
-            to: 0.0
-            duration: Globals.motion.hover
-            easing.type: Easing.OutQuad
-        }
-
-        onHoldProgressChanged: {
-            if (holdProgress >= 1.0 && pressed) {
-                btn.actionTriggered()
-                holdAnim.stop()
-                holdProgress = 0.0
-            }
-        }
-
-        Item {
-            anchors.fill: parent
-
-            RowLayout {
-                anchors.fill: parent
-                spacing: Globals.geometry.spacing.sm
-                
-                Item {
-                    Layout.preferredWidth: 40
-                    Layout.preferredHeight: 40
-                    Layout.alignment: Qt.AlignVCenter
-                    
-                    BaseIcon {
-                        anchors.centerIn: parent
-                        icon: btn.actionIcon
-                        size: Globals.typography.icon.md
-                        color: btn.containsMouse ? Globals.colors.primary : Globals.colors.text
-                        Behavior on color { BaseMotion { } }
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-
-                    Item {
-                        Layout.fillWidth: true
-                        implicitHeight: baseText.implicitHeight
-                        
-                        BaseText {
-                            id: baseText
-                            text: btn.actionLabel
-                            color: Globals.colors.text
-                            font.weight: Globals.typography.weight.demi
-                            font.pixelSize: Globals.typography.size.lg
-                            Behavior on color { BaseMotion { } }
-                        }
-
-                    }
-
-                    Item {
-                        Layout.fillWidth: true
-                        implicitHeight: btn.containsMouse ? subtitleText.implicitHeight : 0
-                        clip: true
-                        opacity: btn.containsMouse ? 1.0 : 0.0
-                        Behavior on opacity { BaseMotion { } }
-
-                        BaseText {
-                            id: subtitleText
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            text: "Hold to " + btn.actionLabel.toLowerCase()
-                            pixelSize: Globals.typography.size.md
-                            muted: true
-                        }
-
-                        Item {
-                            id: revealClip
-                            x: 0
-                            y: 0
-                            height: subtitleText.height
-                            width: subtitleText.width * btn.holdProgress
-                            clip: true
-
-                            BaseText {
-                                id: subtitleColoredText
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                text: subtitleText.text
-                                pixelSize: Globals.typography.size.md
-                                color: Globals.colors.text
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // Only the hovered tile lights. Rebuilt from the row's own state because a
+    // tile row carries its own lit treatment — the BaseIndicator bar exists for
+    // vertical lists where nothing else shows the cursor.
+    property string hoveredKey: ""
 
     readonly property var _actions: [
-        { label: "Shutdown", icon: "power",       onClicked: function() { Modules.closeAll(); Power.shutdown(); } },
-        { label: "Restart",  icon: "rotate-cw",   onClicked: function() { Modules.closeAll(); Power.reboot(); } },
-        { label: "Sleep",    icon: "moon",        onClicked: function() { Modules.closeAll(); Power.suspend(); } },
-        { label: "Logout",   icon: "log-out",     onClicked: function() { Modules.closeAll(); Compositor.quit(); } },
+        { key: "logout",   icon: "log-out",  confirm: false, run: function() { Modules.closeAll(); Compositor.quit(); } },
+        { key: "suspend",  icon: "moon",     confirm: false, run: function() { Modules.closeAll(); Power.suspend(); } },
+        { key: "reboot",   icon: "rotate-cw", confirm: true,  run: function() { Modules.closeAll(); Power.reboot(); } },
+        { key: "shutdown", icon: "power",    confirm: true,  run: function() { Modules.closeAll(); Power.shutdown(); } }
     ]
 
-    Item {
-        Layout.fillWidth: true
-        implicitHeight: layout.implicitHeight
-
-        ColumnLayout {
-            id: layout
-            anchors.fill: parent
+    Row {
+        id: tiles
+        Layout.alignment: Qt.AlignHCenter
+        spacing: Globals.geometry.spacing.md
 
         Repeater {
             model: root._actions
-            delegate: PowerButton {
-                Layout.fillWidth: true
-                implicitHeight: 56
-                actionIcon: modelData.icon
-                actionLabel: modelData.label
-                onActionTriggered: modelData.onClicked()
+
+            delegate: Item {
+                id: tile
+                required property var modelData
+
+                width: root.tileSize
+                height: root.tileSize
+
+                readonly property bool lit: root.hoveredKey === modelData.key
+                // The radius of a tile nested inside the capsule: the capsule's
+                // radius less the gap it sits behind.
+                readonly property real corner: Globals.innerRadius(Globals.geometry.borderWidth.thick)
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: tile.corner
+                    color: tile.lit ? Globals.colors.raised : Globals.colors.well
+                    border.width: Globals.geometry.borderWidth.hair
+                    border.color: tile.lit ? Globals.colors.border : Globals.colors.hair
+
+                    Behavior on color { BaseMotion { duration: Globals.motion.hover } }
+                }
+
+                // The rising fill needs a clip that carries the tile's own
+                // corners. A plain Rectangle clamps its radius to height/2
+                // while the fill is still flat, so its corners poke outside
+                // the tile outline on the first beat of every hold.
+                ClippingRectangle {
+                    anchors.fill: parent
+                    anchors.margins: Globals.geometry.borderWidth.hair
+                    radius: tile.corner - Globals.geometry.borderWidth.hair
+                    color: "transparent"
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        height: parent.height * hold.hold
+                        visible: hold.holding
+                        gradient: Gradient {
+                            orientation: Gradient.Vertical
+                            GradientStop { position: 0.0; color: Globals.colors.accentTop }
+                            GradientStop { position: 1.0; color: Globals.colors.accentBottom }
+                        }
+                    }
+                }
+
+                BaseIcon {
+                    anchors.centerIn: parent
+                    icon: modelData.icon
+                    size: Globals.typography.icon.lg
+                    color: hold.holding ? Globals.colors.accentTop
+                                        : (tile.lit ? Globals.colors.text : Globals.colors.faint)
+
+                    Behavior on color { BaseMotion { duration: Globals.motion.hover } }
+                }
+
+                BaseHold {
+                    id: hold
+                    onConfirmed: modelData.run()
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+
+                    onEntered: root.hoveredKey = modelData.key
+                    // Leaving mid-hold drains instead of confirming, so a
+                    // pointer that slides off never fires the action.
+                    onExited: {
+                        if (root.hoveredKey === modelData.key)
+                            root.hoveredKey = "";
+                        if (modelData.confirm)
+                            hold.cancel();
+                    }
+
+                    onPressed: if (modelData.confirm) hold.press()
+                    onReleased: if (modelData.confirm) hold.release()
+                    onClicked: if (!modelData.confirm) modelData.run()
+                }
             }
         }
     }
 
-        BaseIndicator {
-            hoverPredicate: function() { return root.activeHover }
-        }
+    onModuleStateChanged: {
+        if (moduleState === "Closed" || moduleState === "Closing")
+            root.hoveredKey = "";
     }
 }

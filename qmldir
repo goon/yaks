@@ -36,6 +36,7 @@ BaseText components/BaseText.qml
 BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSwitch components/BaseSwitch.qml
 BaseMotion components/BaseMotion.qml
+BaseHold components/BaseHold.qml
 BaseSpinBox components/BaseSpinBox.qml
 BaseIndicator components/BaseIndicator.qml
 BaseSearch components/BaseSearch.qml
