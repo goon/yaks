@@ -127,7 +127,7 @@ Item {
 
                         BaseText {
                             text: root.title
-                            pixelSize: Globals.typography.size.lg
+                            pixelSize: Globals.typography.size.md
                             weight: root.isConnected ? Globals.typography.weights.medium : Globals.typography.weights.normal
                             font.capitalization: Font.AllUppercase
                             color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
