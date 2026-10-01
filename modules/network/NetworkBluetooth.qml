@@ -9,7 +9,6 @@ BaseScrolling {
     clip: true
     implicitWidth: 325
     implicitHeight: mainLayout.implicitHeight
-    readonly property int _spinMs: 1000
 
     function resolveBluetoothIcon(bluezIcon) {
         if (!bluezIcon)
@@ -127,46 +126,14 @@ BaseScrolling {
     ColumnLayout {
         id: mainLayout
         width: root.availableWidth
-        spacing: Globals.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.sm
 
-        Item {
+        NetworkHeader {
             Layout.fillWidth: true
-            Layout.bottomMargin: Globals.geometry.spacing.small / 2
-            implicitHeight: 28
-
-            RowLayout {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Globals.geometry.spacing.small
-
-                BaseButton {
-                    id: refreshButton
-                    icon: "refresh-cw"
-                    width: 28
-                    height: 28
-                    hoverEnabled: false
-                    onClicked: Bluetooth.scan()
-
-                    NumberAnimation {
-                        target: refreshButton
-                        property: "iconRotation"
-                        from: 0; to: 360
-                        duration: root._spinMs
-                        loops: Animation.Infinite
-                        running: Bluetooth.scanning
-                    }
-                }
-
-                BaseSwitch {
-                    checked: Bluetooth.powered
-                    onClicked: Bluetooth.togglePower()
-                }
-            }
-        }
-
-        BaseSeparator {
-            Layout.fillWidth: true
-            visible: !!Bluetooth.powered
+            enabled: !!Bluetooth.powered
+            scanning: Bluetooth.scanning
+            onScanClicked: Bluetooth.scan()
+            onToggleClicked: Bluetooth.togglePower()
         }
 
         Item {
@@ -205,7 +172,7 @@ BaseScrolling {
                 id: childCol
                 anchors.left: parent.left
                 anchors.right: parent.right
-                spacing: Globals.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.sm
                 Layout.fillWidth: true
 
                 Item {
@@ -221,7 +188,7 @@ BaseScrolling {
                 ColumnLayout {
                     Layout.fillWidth: true
                     visible: root.connectedRows.length > 0
-                    spacing: Globals.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.xs
 
                     Repeater {
                         id: connectedRepeater
@@ -233,11 +200,11 @@ BaseScrolling {
                 ColumnLayout {
                     Layout.fillWidth: true
                     visible: root.pairedRows.length > 0
-                    spacing: Globals.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.xs
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Globals.geometry.spacing.small
+                        spacing: Globals.geometry.spacing.xs
 
                         BaseHeader {
                             text: "Paired"
@@ -260,11 +227,11 @@ BaseScrolling {
                 ColumnLayout {
                     Layout.fillWidth: true
                     visible: root.nearbyRows.length > 0
-                    spacing: Globals.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.xs
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Globals.geometry.spacing.small
+                        spacing: Globals.geometry.spacing.xs
 
                         BaseHeader {
                             text: "Nearby"

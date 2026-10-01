@@ -8,8 +8,8 @@ Item {
     
     property string moduleState: "Closed"
     
-    implicitWidth: 300 - (Globals.geometry.spacing.large * 2)
-    implicitHeight: Math.max(0, Preferences.bar.height - (Globals.geometry.spacing.large * 2))
+    implicitWidth: 300 - (Globals.geometry.spacing.md * 2)
+    implicitHeight: Math.max(0, Preferences.bar.height - (Globals.geometry.spacing.md * 2))
     
     BaseSlider {
         id: slider

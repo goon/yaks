@@ -12,13 +12,13 @@ Rectangle {
     property color iconColor: {
         return (root.pressed || root.containsMouse) ? Globals.colors.primary : Globals.colors.text;
     }
-    property int size: Globals.dimensions.iconSmall
+    property int size: Globals.typography.icon.sm
     property real iconRotation: 0
-    property int weight: Globals.typography.weights.normal
+    property int weight: Globals.typography.weight.normal
     property color hoverColor: "transparent"
     property bool hoverEnabled: true
-    property int paddingHorizontal: text !== "" ? Globals.geometry.padding.medium : Globals.geometry.spacing.medium
-    property int paddingVertical: Globals.geometry.spacing.medium
+    property int paddingHorizontal: text !== "" ? Globals.geometry.spacing.lg : Globals.geometry.spacing.sm
+    property int paddingVertical: Globals.geometry.spacing.sm
 
     // ── STATE PROXIES ─────────────────────────────────────────────────
     readonly property bool containsMouse: mouseArea.containsMouse
@@ -27,7 +27,7 @@ Rectangle {
     // ── SIGNALS ───────────────────────────────────────────────────────
     signal clicked()
 
-    radius: Globals.geometry.innerRadius.medium
+    radius: Globals.innerRadius(Globals.geometry.spacing.sm)
     color: "transparent"
     
     implicitWidth: childrenLayout.implicitWidth + (root.paddingHorizontal * 2)
@@ -48,7 +48,7 @@ Rectangle {
     RowLayout {
         id: childrenLayout
         anchors.centerIn: parent
-        spacing: root.text !== "" && root.icon !== "" ? Globals.geometry.spacing.medium : 0
+        spacing: root.text !== "" && root.icon !== "" ? Globals.geometry.spacing.sm : 0
 
         BaseIcon {
             icon: root.icon

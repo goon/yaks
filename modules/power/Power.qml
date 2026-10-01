@@ -69,7 +69,7 @@ BaseContainer {
 
             RowLayout {
                 anchors.fill: parent
-                spacing: Globals.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.sm
                 
                 Item {
                     Layout.preferredWidth: 40
@@ -79,7 +79,7 @@ BaseContainer {
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: btn.actionIcon
-                        size: Globals.dimensions.iconMedium
+                        size: Globals.typography.icon.md
                         color: btn.containsMouse ? Globals.colors.primary : Globals.colors.text
                         Behavior on color { BaseMotion { } }
                     }
@@ -97,7 +97,7 @@ BaseContainer {
                             id: baseText
                             text: btn.actionLabel
                             color: Globals.colors.text
-                            font.weight: Globals.typography.weights.medium
+                            font.weight: Globals.typography.weight.demi
                             font.pixelSize: Globals.typography.size.lg
                             Behavior on color { BaseMotion { } }
                         }

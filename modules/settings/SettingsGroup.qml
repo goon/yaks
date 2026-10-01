@@ -57,6 +57,5 @@ Item {
     BaseIndicator {
         parent: root
         hoverPredicate: root._hoverPredicate
-        gapInterval: 80
     }
 }

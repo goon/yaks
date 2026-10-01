@@ -13,7 +13,7 @@ Item {
     implicitWidth: background.implicitWidth
     implicitHeight: capsuleRoot.itemHeight
 
-    readonly property int spacing: Globals.geometry.spacing.small
+    readonly property int spacing: Globals.geometry.spacing.xs
     readonly property int indicatorItemWidth: 32
 
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────

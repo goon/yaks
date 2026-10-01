@@ -8,7 +8,7 @@ SettingsPage {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
 
         SettingsGroup {
             Layout.fillWidth: true

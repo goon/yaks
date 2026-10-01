@@ -12,7 +12,7 @@ Text {
     color: root.muted ? Globals.colors.muted : Globals.colors.text
     font.family: Globals.typography.family
     font.pixelSize: Globals.typography.size.md
-    font.weight: Globals.typography.weights.normal
+    font.weight: Globals.typography.weight.normal
     wrapMode: Text.WordWrap
 
     Behavior on color { BaseMotion {} }

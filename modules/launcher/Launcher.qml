@@ -13,7 +13,7 @@ FocusScope {
     implicitWidth: 400
     implicitHeight: {
         var searchHeight = searchBar.implicitHeight;
-        var padLarge = Globals.geometry.spacing.large;
+        var padLarge = Globals.geometry.spacing.md;
 
         var visibleItems = Math.min(cachedModel.length, 6);
 
@@ -142,7 +142,7 @@ FocusScope {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
 
         BaseSearch {
             id: searchBar
@@ -162,7 +162,7 @@ FocusScope {
             ListView {
                 id: appListView
                 anchors.fill: parent
-                spacing: Globals.geometry.spacing.large
+                spacing: Globals.geometry.spacing.md
                 activeFocusOnTab: false
                 highlightMoveDuration: 0
                 highlightResizeDuration: 0
@@ -232,7 +232,7 @@ FocusScope {
 
         Rectangle {
             anchors.fill: parent
-            radius: Globals.geometry.innerRadius.medium
+            radius: Globals.innerRadius(Globals.geometry.spacing.sm)
             color: "transparent"
 
             BaseActiveBackground {
@@ -245,16 +245,16 @@ FocusScope {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Globals.geometry.spacing.large * 2
-                anchors.rightMargin: Globals.geometry.spacing.large * 2
-                spacing: Globals.geometry.spacing.large
+                anchors.leftMargin: Globals.geometry.spacing.md * 2
+                anchors.rightMargin: Globals.geometry.spacing.md * 2
+                spacing: Globals.geometry.spacing.md
 
                 scale: mouseArea.pressed ? 0.98 : 1.0
                 Behavior on scale { BaseMotion { } }
 
                 Item {
-                    Layout.preferredWidth: Globals.dimensions.iconLarge
-                    Layout.preferredHeight: Globals.dimensions.iconLarge
+                    Layout.preferredWidth: Globals.dimensions.thumbnail
+                    Layout.preferredHeight: Globals.dimensions.thumbnail
                     Layout.alignment: Qt.AlignVCenter
 
                     Image {
@@ -262,15 +262,15 @@ FocusScope {
                         source: delegateRoot.entryImage
                         asynchronous: false
                         fillMode: Image.PreserveAspectFit
-                        sourceSize.width: Globals.dimensions.iconLarge
-                        sourceSize.height: Globals.dimensions.iconLarge
+                        sourceSize.width: Globals.dimensions.thumbnail
+                        sourceSize.height: Globals.dimensions.thumbnail
                         mipmap: true
                         visible: !!delegateRoot.entryImage && status === Image.Ready
                     }
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: Globals.geometry.innerRadius.small
+                        radius: Globals.innerRadius(Globals.geometry.spacing.xs)
                         color: Globals.colors.raised
                         visible: delegateRoot.showFallbackIcon
 
@@ -278,8 +278,8 @@ FocusScope {
                             anchors.centerIn: parent
                             text: delegateRoot.fallbackText
                             color: delegateRoot.iconColor
-                            pixelSize: Globals.dimensions.iconLarge * 0.6
-                            weight: Globals.typography.weights.bold
+                            pixelSize: Globals.typography.icon.sm
+                            weight: Globals.typography.weight.bold
                         }
                     }
                 }
@@ -293,7 +293,7 @@ FocusScope {
                         text: delegateRoot.entryName
                         pixelSize: Globals.typography.size.lg
                         color: delegateRoot.selected ? Globals.colors.text : Globals.colors.muted
-                        weight: delegateRoot.selected ? Globals.typography.weights.bold : Globals.typography.weights.normal
+                        weight: delegateRoot.selected ? Globals.typography.weight.bold : Globals.typography.weight.normal
                         elide: Text.ElideRight
                     }
                 }

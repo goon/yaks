@@ -6,11 +6,6 @@ pragma Singleton
 QtObject {
     id: root
 
-    // ── ROUNDING PRESETS ──────────────────────────────────────────────────
-    // Fixed, designed module radii (not arbitrary). Sub-radii derive from the
-    // selected base via geometry.radius / geometry.innerRadius.
-    readonly property var _roundingBases: ({ sharp: 8, soft: 16, round: 26 })
-
     // ── PATHS & EXTERNAL RESOURCES ────────────────────────────────────────
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string rootDir: homeDir + "/.config/yaks"
@@ -62,6 +57,9 @@ QtObject {
         // accents
         readonly property color primary:   colorsRoot._raw.primary
         readonly property color secondary: colorsRoot._raw.secondary
+        // Text drawn on top of an accent. The palette contrast-enforces this
+        // against every accent, so never substitute bg or text for it.
+        readonly property color ink:      colorsRoot._raw.ink
 
         // states
         readonly property color hover:    root.alpha(colorsRoot._raw.text, 0.08)
@@ -74,33 +72,44 @@ QtObject {
     }
 
     // ── GEOMETRY TOKENS ──────────────────────────────────────────────────
+    // A numeric scale is named xs/sm/md/lg/xl; a semantic set (rounding presets,
+    // motion) keeps its own words. Do not merge spacing and typography.size —
+    // they share a rhythm on purpose and their values are independent.
     readonly property QtObject geometry: QtObject {
-        readonly property int radius: (_roundingBases[Preferences.globals.rounding] || 26) * root.shellScale
+        readonly property QtObject rounding: QtObject {
+            readonly property int sharp: 8
+            readonly property int soft: 16
+            readonly property int round: 26
+        }
+
+        readonly property int radius: (rounding[Preferences.globals.rounding] || rounding.round) * root.shellScale
+
         readonly property QtObject spacing: QtObject {
-            readonly property int small: 6 * root.shellScale
-            readonly property int medium: 8 * root.shellScale
-            readonly property int large: 12 * root.shellScale
+            readonly property int xs: 4 * root.shellScale
+            readonly property int sm: 8 * root.shellScale
+            readonly property int md: 12 * root.shellScale
+            readonly property int lg: 16 * root.shellScale
+            readonly property int xl: 24 * root.shellScale
         }
 
-        readonly property QtObject padding: QtObject {
-            readonly property int small: 8 * root.shellScale
-            readonly property int medium: 14 * root.shellScale
-            readonly property int capsule: Math.max(22 * root.shellScale, Math.ceil(root.geometry.radius * 0.5))
+        readonly property QtObject borderWidth: QtObject {
+            readonly property int hair: 1 * root.shellScale
+            readonly property int thick: 2 * root.shellScale
         }
+    }
 
-        readonly property QtObject innerRadius: QtObject {
-            readonly property int small: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.small)
-            readonly property int medium: root.geometry.radius === 0 ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - root.geometry.spacing.medium)
-        }
-
+    // The radius of a control nested one step inside another. Takes the gap
+    // between the two rather than the gap itself, so it tracks the scale.
+    function innerRadius(step) {
+        return root.geometry.radius === 0
+            ? 0 : Math.max(4 * root.shellScale, root.geometry.radius - step);
     }
 
     // ── DIMENSIONS ──────────────────────────────────────────────────────
     readonly property QtObject
     dimensions: QtObject {
-        readonly property int iconSmall: 18 * root.shellScale
-        readonly property int iconMedium: 20 * root.shellScale
-        readonly property int iconLarge: 30 * root.shellScale
+        readonly property int thumbnail: 30 * root.shellScale
+        readonly property int controlHeightSmall: 28 * root.shellScale
     }
 
     // ── TYPOGRAPHY ──────────────────────────────────────────────────────
@@ -108,10 +117,11 @@ QtObject {
     typography: QtObject {
         readonly property string family: Preferences.globals.shellFont
         readonly property string iconFamily: "Lucide"
+
         readonly property QtObject
-        weights: QtObject {
+        weight: QtObject {
             readonly property int normal: 500
-            readonly property int medium: 600
+            readonly property int demi: 600
             readonly property int bold: 700
         }
 
@@ -122,6 +132,15 @@ QtObject {
             readonly property int md: 14 * root.shellScale
             readonly property int lg: 16 * root.shellScale
             readonly property int xl: 24 * root.shellScale
+        }
+
+        // An icon glyph is a font size in iconFamily, so it lives here. Nested
+        // to match size/weight/borderWidth: the middle segment is what keeps
+        // icon.sm (18) from reading as a rival of size.sm (12).
+        readonly property QtObject
+        icon: QtObject {
+            readonly property int sm: 18 * root.shellScale
+            readonly property int md: 20 * root.shellScale
         }
     }
 
@@ -146,7 +165,8 @@ QtObject {
         readonly property QtObject
         shadow: QtObject {
             readonly property color color: "#000000"
-            readonly property int radius: 20
+            readonly property int radius: 20 * Globals.shellScale
+            readonly property real opacity: 0.4
             readonly property int offsetX: 0
             readonly property int offsetY: 0
         }

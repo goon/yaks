@@ -27,8 +27,8 @@ Item {
 
     property string icon: ""
     property color iconColor: Globals.colors.text
-    property int iconSize: Globals.dimensions.iconSmall
-    property int iconGap: Globals.geometry.spacing.small
+    property int iconSize: Globals.typography.icon.sm
+    property int iconGap: Globals.geometry.spacing.xs
 
     property real _animatedValue: value
     Behavior on _animatedValue {

@@ -6,12 +6,12 @@ BaseText {
     id: root
 
     pixelSize: Globals.typography.size.xs
-    weight: Globals.typography.weights.normal
+    weight: Globals.typography.weight.normal
     font.capitalization: Font.AllUppercase
     font.letterSpacing: 1.5
     muted: true
 
     visible: root.text !== ""
     Layout.fillWidth: true
-    Layout.bottomMargin: Globals.geometry.spacing.small / 2
+    Layout.bottomMargin: Globals.geometry.spacing.xs
 }

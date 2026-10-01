@@ -83,7 +83,7 @@ Item {
             RowLayout {
                 id: innerRowLayout
                 anchors.fill: parent
-                spacing: Globals.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.sm
 
                 Item {
                     Layout.preferredWidth: 40
@@ -94,7 +94,7 @@ Item {
                     Rectangle {
                         anchors.fill: parent
                         visible: root.deviceType !== "wifi"
-                        radius: Globals.geometry.innerRadius.medium
+                        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
                         color: Globals.colors.deep
                         opacity: 0.75
                     }
@@ -102,9 +102,9 @@ Item {
                     Rectangle {
                         anchors.fill: parent
                         visible: root.deviceType !== "wifi"
-                        radius: Globals.geometry.innerRadius.medium
+                        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
                         color: "transparent"
-                        border.width: 1
+                        border.width: Globals.geometry.borderWidth.hair
                         border.color: Globals.colors.hair
                     }
 
@@ -120,16 +120,16 @@ Item {
                     spacing: 2
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
-                    Layout.leftMargin: root.deviceType === "wifi" ? Globals.geometry.spacing.small : 0
+                    Layout.leftMargin: root.deviceType === "wifi" ? Globals.geometry.spacing.xs : 0
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Globals.geometry.spacing.small
+                        spacing: Globals.geometry.spacing.xs
 
                         BaseText {
                             text: root.title
                             pixelSize: Globals.typography.size.md
-                            weight: root.isConnected ? Globals.typography.weights.medium : Globals.typography.weights.normal
+                            weight: root.isConnected ? Globals.typography.weight.demi : Globals.typography.weight.normal
                             font.capitalization: Font.AllUppercase
                             color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
                             elide: Text.ElideRight
@@ -143,9 +143,9 @@ Item {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             Layout.preferredHeight: 28
                             Layout.preferredWidth: 48
-                            radius: Globals.geometry.innerRadius.medium
+                            radius: Globals.innerRadius(Globals.geometry.spacing.sm)
                             color: Globals.colors.hover
-                            border.width: 1
+                            border.width: Globals.geometry.borderWidth.hair
                             border.color: Globals.colors.hair
 
                             RowLayout {
@@ -154,13 +154,13 @@ Item {
 
                                 BaseIcon {
                                     icon: "lock"
-                                    size: Globals.dimensions.iconSmall
+                                    size: Globals.typography.icon.sm
                                     visible: root.isSecured
                                 }
 
                                 BaseIcon {
                                     icon: "heart-pulse"
-                                    size: Globals.dimensions.iconSmall
+                                    size: Globals.typography.icon.sm
                                     visible: root.isKnown
                                 }
                             }
@@ -177,10 +177,10 @@ Item {
                     BaseSlider {
                         visible: root.batteryPct >= 0
                         Layout.fillWidth: true
-                        Layout.topMargin: Globals.geometry.spacing.small
+                        Layout.topMargin: Globals.geometry.spacing.xs
                         interactive: false
                         roundActiveEnd: true
-                        trackHeight: Globals.geometry.spacing.small
+                        trackHeight: 6 * Globals.shellScale
                         value: root.batteryPct
                         from: 0
                         to: 100
@@ -201,14 +201,14 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Globals.geometry.spacing.small : 0
+            Layout.preferredHeight: root.expanded ? drawerBox.implicitHeight + Globals.geometry.spacing.xs : 0
             clip: true
             visible: deviceType === "wifi" && root.isSecured && !root.isConnected && !root.isKnown
 
             Item {
                 id: drawerBox
                 anchors.top: parent.top
-                anchors.topMargin: Globals.geometry.spacing.small
+                anchors.topMargin: Globals.geometry.spacing.xs
                 anchors.left: parent.left
                 anchors.right: parent.right
                 implicitHeight: innerLayout.implicitHeight
@@ -226,7 +226,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: Globals.geometry.spacing.medium
+                    spacing: Globals.geometry.spacing.sm
 
                     BaseInput {
                         id: passwordInput
@@ -240,7 +240,7 @@ Item {
 
                     BaseIcon {
                         icon: "corner-down-left"
-                        size: Globals.dimensions.iconSmall
+                        size: Globals.typography.icon.sm
                         color: Globals.colors.primary
 
                         MouseArea {

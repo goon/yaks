@@ -8,7 +8,6 @@ BaseScrolling {
     clip: true
     implicitWidth: 325
     implicitHeight: mainLayout.implicitHeight
-    readonly property int _spinMs: 1000
 
     MouseArea {
         anchors.fill: parent
@@ -28,46 +27,14 @@ BaseScrolling {
     ColumnLayout {
         id: mainLayout
         width: root.availableWidth
-        spacing: Globals.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.sm
 
-        Item {
+        NetworkHeader {
             Layout.fillWidth: true
-            Layout.bottomMargin: Globals.geometry.spacing.small / 2
-            implicitHeight: 28
-
-            RowLayout {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Globals.geometry.spacing.small
-
-                BaseButton {
-                    id: refreshButton
-                    icon: "refresh-cw"
-                    width: 28
-                    height: 28
-                    hoverEnabled: false
-                    onClicked: Network.toggleScan()
-
-                    NumberAnimation {
-                        target: refreshButton
-                        property: "iconRotation"
-                        from: 0; to: 360
-                        duration: root._spinMs
-                        loops: Animation.Infinite
-                        running: Network.scanning
-                    }
-                }
-
-                BaseSwitch {
-                    checked: Network.wifiEnabled
-                    onClicked: Network.toggleWifi()
-                }
-            }
-        }
-
-        BaseSeparator {
-            Layout.fillWidth: true
-            visible: Network.wifiEnabled
+            enabled: Network.wifiEnabled
+            scanning: Network.scanning
+            onScanClicked: Network.toggleScan()
+            onToggleClicked: Network.toggleWifi()
         }
 
         Item {
@@ -117,7 +84,7 @@ BaseScrolling {
                 id: childCol
                 anchors.left: parent.left
                 anchors.right: parent.right
-                spacing: Globals.geometry.spacing.medium
+                spacing: Globals.geometry.spacing.sm
                 Layout.fillWidth: true
 
                     Item {

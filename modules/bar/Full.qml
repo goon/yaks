@@ -7,13 +7,15 @@ import qs
 Item {
 
     property var barWindow: null
+    // The capsule inset, owned by Capsule and passed in so the full bar lines
+    // up with every other module without reaching into Globals for it.
+    required property real capsulePad
 
     // Explicitly define height matching the pill clock capsule height
     implicitHeight: Preferences.bar.height
-    implicitWidth: (contentLayout.implicitWidth || 0) + (dynamicEndMargin * 2)
+    implicitWidth: (contentLayout.implicitWidth || 0) + (capsulePad * 2)
 
-    readonly property real dynamicEndMargin: Globals.geometry.padding.capsule
-    readonly property real horizontalSpacing: 20
+    readonly property real horizontalSpacing: Globals.geometry.spacing.lg
 
     RowLayout {
         id: contentLayout

@@ -13,8 +13,12 @@ Rectangle {
 
     property int orientation: BaseSeparator.Horizontal
 
-    implicitWidth: orientation === BaseSeparator.Vertical ? 1 : 20
-    implicitHeight: orientation === BaseSeparator.Horizontal ? 1 : 20
+    implicitWidth: orientation === BaseSeparator.Vertical
+        ? Globals.geometry.borderWidth.hair
+        : 20 * Globals.shellScale
+    implicitHeight: orientation === BaseSeparator.Horizontal
+        ? Globals.geometry.borderWidth.hair
+        : 20 * Globals.shellScale
 
     Layout.fillWidth: orientation === BaseSeparator.Horizontal
     Layout.fillHeight: orientation === BaseSeparator.Vertical

@@ -10,8 +10,8 @@ TextField {
     font.pixelSize: Globals.typography.size.md
     font.letterSpacing: (root.echoMode === TextInput.Password && root.text.length > 0) ? 4 : 0
     placeholderTextColor: Globals.colors.muted
-    leftPadding: Globals.geometry.padding.small
-    rightPadding: Globals.geometry.padding.small
+    leftPadding: Globals.geometry.spacing.sm
+    rightPadding: Globals.geometry.spacing.sm
     topPadding: 0
     bottomPadding: 0
     verticalAlignment: Text.AlignVCenter
@@ -59,7 +59,7 @@ TextField {
                 color: root.color
                 font.family: root.font.family
                 font.pixelSize: stamp.inkSize
-                font.weight: Globals.typography.weights.bold
+                font.weight: Globals.typography.weight.bold
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 transformOrigin: Item.Center

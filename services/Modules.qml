@@ -59,15 +59,15 @@ QtObject {
     // toward before the module's own implicitWidth/Height is available; keep
     // them in step with each module's declared implicit size.
     readonly property var moduleRegistry: ({
-        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 500, height: 500, evictionTime: 10000 },
-        "settings":      { source: "../modules/settings/Settings.qml",      width: 460, height: 500, evictionTime: 10000 },
+        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 400, height: 500, evictionTime: 10000 },
+        "settings":      { source: "../modules/settings/Settings.qml",      width: 400, height: 500, evictionTime: 10000 },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",    evictionTime: 3000 },
         "full_bar":       { source: "../modules/bar/Full.qml",               evictionTime: 10000 },
         "power":         { source: "../modules/power/Power.qml",            width: 240, evictionTime: 5000 },
-        "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 400, evictionTime: 5000 },
-        "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 400, evictionTime: 5000 },
+        "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 325, evictionTime: 5000 },
+        "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, evictionTime: 5000 },
         "notifications": { source: "../modules/notifications/NotificationsIsland.qml", width: 460, evictionTime: 5000 },
-        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, evictionTime: 3000 },
+        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 276, evictionTime: 3000 },
         "notification_toast": { source: "../modules/toasts/NotificationToast.qml", width: 420, evictionTime: 3000 }
     })
 

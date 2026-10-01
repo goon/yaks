@@ -39,8 +39,8 @@ Item {
 
     z: 10
 
-    width: 3
-    height: 20
+    width: 3 * Globals.shellScale
+    height: 20 * Globals.shellScale
 
     Rectangle {
         anchors.fill: parent

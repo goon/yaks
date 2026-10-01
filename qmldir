@@ -65,3 +65,4 @@ Full modules/bar/Full.qml
 # Modules
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 NetworkDevice modules/network/NetworkDevice.qml
+NetworkHeader modules/network/NetworkHeader.qml

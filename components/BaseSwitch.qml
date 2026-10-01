@@ -6,8 +6,8 @@ import qs
 Switch {
     id: control
 
-    implicitWidth: 56
-    implicitHeight: 28
+    implicitWidth: 56 * Globals.shellScale
+    implicitHeight: 28 * Globals.shellScale
     hoverEnabled: true
     padding: 0
 
@@ -35,8 +35,8 @@ Switch {
     indicator: Item {
         id: indicatorContainer
 
-        implicitWidth: 56
-        implicitHeight: 28
+        implicitWidth: 56 * Globals.shellScale
+        implicitHeight: 28 * Globals.shellScale
         x: control.leftPadding
         y: parent.height / 2 - height / 2
         opacity: control.enabled ? 1.0 : 0.5
@@ -45,7 +45,7 @@ Switch {
 
         readonly property color accent: Globals.colors.primary
         readonly property color faceBase: Globals.colors.text
-        readonly property color ink: Globals.colors.bg
+        readonly property color ink: Globals.colors.ink
 
         // ── TRACK ─────────────────────────────────────────────────────
         Rectangle {
@@ -56,7 +56,7 @@ Switch {
             color: control.checked
                 ? Globals.alpha(indicatorContainer.accent, 0.75)
                 : Globals.colors.well
-            border.width: 2
+            border.width: Globals.geometry.borderWidth.thick
             border.color: Globals.colors.border
 
             Behavior on color { BaseMotion { } }
@@ -66,8 +66,8 @@ Switch {
         Rectangle {
             id: thumb
 
-            readonly property real inset: 3
-            readonly property real size: 22
+            readonly property real inset: 3 * Globals.shellScale
+            readonly property real size: 22 * Globals.shellScale
 
             width: size
             height: size
@@ -82,7 +82,7 @@ Switch {
             color: control.checked
                 ? Qt.tint(indicatorContainer.faceBase, Globals.alpha(indicatorContainer.accent, 0.28))
                 : indicatorContainer.faceBase
-            border.width: 2
+            border.width: Globals.geometry.borderWidth.thick
             border.color: Globals.colors.border
 
             Behavior on color { BaseMotion { } }

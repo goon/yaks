@@ -6,7 +6,7 @@ import qs
 SettingsPage {
 
     ColumnLayout {
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
         Layout.fillWidth: true
 
         SettingsGroup {

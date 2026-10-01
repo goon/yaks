@@ -12,13 +12,11 @@ BaseContainer {
 
     readonly property int _pulseMs: 2000
     readonly property int _pulsePauseMs: 1000
-    readonly property int _bellDriftMs: 2000
-    readonly property int _bellSpinMs: 4000
 
     property var notificationManager: Notifications
     property int notifCount: notificationManager ? notificationManager.notificationHistory.count : 0
 
-    spacing: Globals.geometry.spacing.large
+    spacing: Globals.geometry.spacing.md
 
     ColumnLayout {
         Layout.fillWidth: true
@@ -26,8 +24,8 @@ BaseContainer {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.bottomMargin: Globals.geometry.spacing.large
-            spacing: Globals.geometry.spacing.small
+            Layout.bottomMargin: Globals.geometry.spacing.md
+            spacing: Globals.geometry.spacing.xs
 
             BaseHeader {
                 text: String(root.notifCount)
@@ -64,13 +62,13 @@ BaseContainer {
         Layout.fillWidth: true
         implicitHeight: contentHeight
         model: root.notificationManager ? root.notificationManager.notificationHistory : null
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
         interactive: false
         visible: root.notifCount > 0
 
         delegate: Column {
             width: ListView.view.width
-            spacing: Globals.geometry.spacing.large
+            spacing: Globals.geometry.spacing.md
 
             NotificationCard {
                 width: parent.width
@@ -93,14 +91,13 @@ BaseContainer {
     Item {
         id: emptyPlaceholder
         Layout.fillWidth: true
-        Layout.preferredHeight: root.notifCount === 0 ? 250 : 0
+        Layout.preferredHeight: root.notifCount === 0 ? 140 : 0
         visible: root.notifCount === 0
         opacity: visible ? 1 : 0
         Behavior on opacity { BaseMotion { } }
         Behavior on height { BaseMotion { } }
         clip: true
 
-        // ── STYLE 0: BOUNCING "DVD LOGO" BELL ────────────────────────────
         Item {
             anchors.fill: parent
 
@@ -114,12 +111,12 @@ BaseContainer {
                     pixelSize: Globals.typography.size.lg
                     font.italic: true
                     Layout.alignment: Qt.AlignLeft
-                    Layout.leftMargin: 8
+                    Layout.leftMargin: Globals.geometry.spacing.sm
                 }
 
                 Item {
-                    width: 320
-                    height: 64
+                    width: parent.width
+                    height: 64 * Globals.shellScale
                     Layout.alignment: Qt.AlignHCenter
 
                     BaseText {
@@ -128,8 +125,8 @@ BaseContainer {
                         verticalAlignment: Text.AlignVCenter
                         text: "ALL CAUGHT"
                         opacity: 0.4
-                        pixelSize: 48
-                        weight: Globals.typography.weights.bold
+                        pixelSize: Globals.typography.size.xl * 3
+                        weight: Globals.typography.weight.bold
                         font.letterSpacing: -1
                     }
 
@@ -141,8 +138,8 @@ BaseContainer {
                         text: "ALL CAUGHT"
                         color: Globals.colors.primary
                         opacity: 0.0
-                        pixelSize: 48
-                        weight: Globals.typography.weights.bold
+                        pixelSize: Globals.typography.size.xl * 3
+                        weight: Globals.typography.weight.bold
                         font.letterSpacing: -1
 
                         SequentialAnimation {
@@ -163,83 +160,7 @@ BaseContainer {
                     color: Globals.colors.primary
                     pixelSize: Globals.typography.size.lg
                     Layout.alignment: Qt.AlignRight
-                    Layout.rightMargin: 8
-                }
-            }
-
-            Canvas {
-                id: bounceContainer
-                z: -1 // CRITICAL: Explicitly layer the bell behind the text ColumnLayout
-                width: Globals.dimensions.iconLarge
-                height: Globals.dimensions.iconLarge
-
-                property real vx: 1.5
-                property real vy: 1.2
-
-                x: parent.width / 2
-                y: parent.height / 2
-
-                property real offset: 0
-
-                NumberAnimation on offset {
-                    loops: Animation.Infinite
-                    from: 0
-                    to: 1
-                    duration: root._bellDriftMs
-                    running: emptyPlaceholder.visible
-                }
-
-                onOffsetChanged: requestPaint()
-
-                RotationAnimation on rotation {
-                    loops: Animation.Infinite
-                    from: 0
-                    to: 360
-                    duration: root._bellSpinMs
-                    running: emptyPlaceholder.visible
-                }
-
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-
-                    // Oscillating gradient vector to create a smooth, continuous flow
-                    var gradOffset = Math.sin(offset * Math.PI * 2);
-                    var gradX1 = (width / 2) + (width / 2) * gradOffset;
-                    var gradX2 = (width / 2) - (width / 2) * gradOffset;
-
-                    var grad = ctx.createLinearGradient(gradX1, 0, gradX2, height);
-                    grad.addColorStop(0.0, Globals.colors.primary);
-                    grad.addColorStop(1.0, Globals.colors.secondary);
-
-                    ctx.fillStyle = grad;
-                    ctx.font = Globals.dimensions.iconLarge + "px \"" + Globals.typography.iconFamily + "\"";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.globalAlpha = 0.7;
-                    ctx.fillText("bell", width/2, height/2);
-                }
-
-                Timer {
-                    interval: 16
-                    running: emptyPlaceholder.visible
-                    repeat: true
-                    onTriggered: {
-                        var nx = bounceContainer.x + bounceContainer.vx;
-                        var ny = bounceContainer.y + bounceContainer.vy;
-
-                        if (nx <= 0 || nx + bounceContainer.width >= bounceContainer.parent.width) {
-                            bounceContainer.vx *= -1;
-                            nx = Math.max(0, Math.min(nx, bounceContainer.parent.width - bounceContainer.width));
-                        }
-                        if (ny <= 0 || ny + bounceContainer.height >= bounceContainer.parent.height) {
-                            bounceContainer.vy *= -1;
-                            ny = Math.max(0, Math.min(ny, bounceContainer.parent.height - bounceContainer.height));
-                        }
-
-                        bounceContainer.x = nx;
-                        bounceContainer.y = ny;
-                    }
+                    Layout.rightMargin: Globals.geometry.spacing.sm
                 }
             }
         }

@@ -13,14 +13,14 @@ Rectangle {
     signal activated(int index, var value)
 
     color: Globals.colors.well
-    border.width: 1
+    border.width: Globals.geometry.borderWidth.hair
     border.color: Globals.colors.hair
-    radius: Globals.geometry.innerRadius.medium
+    radius: Globals.innerRadius(Globals.geometry.spacing.sm)
 
-    implicitHeight: 36
+    implicitHeight: 36 * Globals.shellScale
     implicitWidth: rowLayout.implicitWidth + (padding * 2)
 
-    property int padding: 4
+    property int padding: Globals.geometry.spacing.xs
 
     property real indicatorX: padding
     property real indicatorWidth: 0
@@ -30,9 +30,9 @@ Rectangle {
         id: slidingIndicator
         y: root.padding
         height: root.height - (root.padding * 2)
-        radius: Globals.geometry.innerRadius.medium - root.padding
+        radius: Globals.innerRadius(Globals.geometry.spacing.sm) - root.padding
         color: Globals.colors.tint
-        border.width: 1
+        border.width: Globals.geometry.borderWidth.hair
         border.color: Globals.colors.primary
 
         opacity: root.isReady ? 1.0 : 0.0
@@ -54,7 +54,7 @@ Rectangle {
         id: rowLayout
         anchors.fill: parent
         anchors.margins: root.padding
-        spacing: 4
+        spacing: Globals.geometry.spacing.xs
 
         Repeater {
             model: root.model
@@ -67,7 +67,7 @@ Rectangle {
                 property bool isSelected: root.currentValue === (modelData[root.valueRole] !== undefined ? modelData[root.valueRole] : modelData)
                 readonly property bool hovered: mouseArea.containsMouse
 
-                radius: Globals.geometry.innerRadius.medium - root.padding
+                radius: Globals.innerRadius(Globals.geometry.spacing.sm) - root.padding
                 color: "transparent"
 
                 onIsSelectedChanged: {
@@ -91,7 +91,7 @@ Rectangle {
                     text: modelData["label"] !== undefined ? modelData["label"] : modelData
                     color: itemRect.isSelected ? Globals.colors.primary
                          : (itemRect.hovered ? Globals.colors.text : Globals.colors.muted)
-                    weight: itemRect.isSelected ? Globals.typography.weights.medium : Globals.typography.weights.normal
+                    weight: itemRect.isSelected ? Globals.typography.weight.demi : Globals.typography.weight.normal
                 }
 
                 MouseArea {

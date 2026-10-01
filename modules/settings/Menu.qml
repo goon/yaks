@@ -60,14 +60,17 @@ Item {
                 bounceTitleOnHover: true
                 verticalPadding: 0
                 leftIcon: modelData.icon
+                // The nav list is one block, closed by the separator below it,
+                // so it opts out of the per-row rule every settings row draws.
+                showSeparator: false
                 onClicked: root.pushPage(modelData.page)
             }
         }
 
         BaseSeparator {
             Layout.fillWidth: true
-            Layout.topMargin: Globals.geometry.spacing.medium
-            Layout.bottomMargin: Globals.geometry.spacing.medium
+            Layout.topMargin: Globals.geometry.spacing.sm
+            Layout.bottomMargin: Globals.geometry.spacing.sm
         }
 
         Item {
@@ -103,7 +106,7 @@ Item {
                 property string primaryIcon: ""
                 property string secondaryIcon: ""
                 property bool secondary: false
-                property int size: Globals.dimensions.iconMedium
+                property int size: Globals.typography.icon.md
                 property color color: Globals.colors.text
                 property bool muted: false
 
@@ -144,7 +147,7 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    anchors.margins: -Globals.geometry.spacing.small
+                    anchors.margins: -Globals.geometry.spacing.xs
                     hoverEnabled: true
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     cursorShape: Qt.PointingHandCursor
@@ -160,16 +163,16 @@ Item {
             ColumnLayout {
                 id: mixerCol
                 anchors.fill: parent
-                spacing: Globals.geometry.spacing.small
+                spacing: Globals.geometry.spacing.xs
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.leftMargin: Globals.geometry.spacing.medium
-                    spacing: Globals.geometry.spacing.large
+                    Layout.leftMargin: Globals.geometry.spacing.sm
+                    spacing: Globals.geometry.spacing.md
 
                     SourceIcon {
                         Layout.alignment: Qt.AlignVCenter
-                        size: Globals.dimensions.iconMedium
+                        size: Globals.typography.icon.md
                         muted: mixerItem.activeMuted
                         secondary: mixerItem.inputActive
                         primaryIcon: Audio.muted ? "volume-off" : "volume-2"
@@ -197,17 +200,17 @@ Item {
 
                 BaseSeparator {
                     Layout.fillWidth: true
-                    Layout.topMargin: Globals.geometry.spacing.small
-                    Layout.bottomMargin: Globals.geometry.spacing.small
+                    Layout.topMargin: Globals.geometry.spacing.xs
+                    Layout.bottomMargin: Globals.geometry.spacing.xs
                 }
 
                 BaseSlider {
                     id: displaySlider
 
                     Layout.fillWidth: true
-                    Layout.leftMargin: Globals.geometry.spacing.medium
-                    iconSize: Globals.dimensions.iconMedium
-                    iconGap: Globals.geometry.spacing.large
+                    Layout.leftMargin: Globals.geometry.spacing.sm
+                    iconSize: Globals.typography.icon.md
+                    iconGap: Globals.geometry.spacing.md
                     icon: "sun"
                     stepSize: 0.01
 
@@ -224,6 +227,5 @@ Item {
 
     BaseIndicator {
         hoverPredicate: root._hoverPredicate
-        gapInterval: Globals.motion.hover
     }
 }

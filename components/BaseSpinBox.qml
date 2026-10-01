@@ -33,12 +33,12 @@ SpinBox {
 
     background: Item {
         implicitWidth: root.expanded ? 120 : 0
-        implicitHeight: 36
+        implicitHeight: 36 * Globals.shellScale
     }
 
     contentItem: Item {
         implicitWidth: textInput.implicitWidth + (suffixText.visible ? suffixText.implicitWidth + 4 : 0)
-        implicitHeight: Math.max(textInput.implicitHeight, 36)
+        implicitHeight: Math.max(textInput.implicitHeight, 36 * Globals.shellScale)
         property alias text: textInput.text
 
         MouseArea {

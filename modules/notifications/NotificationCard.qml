@@ -63,11 +63,11 @@ BaseContainer {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
         Layout.alignment: Qt.AlignTop
 
                 Rectangle {
-                    Layout.preferredWidth: Globals.dimensions.iconLarge
+                    Layout.preferredWidth: Globals.dimensions.thumbnail
                     Layout.preferredHeight: Layout.preferredWidth
                     Layout.alignment: Qt.AlignTop
 
@@ -83,7 +83,7 @@ BaseContainer {
                     Image {
                         id: specificImage
                         anchors.centerIn: parent
-                        width: Math.min(Globals.dimensions.iconLarge, parent.width - 4)
+                        width: Math.min(Globals.dimensions.thumbnail, parent.width - 4)
                         height: width
 
                         source: parent.resolveSource(root.notification ? root.notification.image : "")
@@ -98,7 +98,7 @@ BaseContainer {
                     Image {
                         id: appIconImage
                         anchors.centerIn: parent
-                        width: Math.min(Globals.dimensions.iconLarge, parent.width - 4)
+                        width: Math.min(Globals.dimensions.thumbnail, parent.width - 4)
                         height: width
 
                         source: parent.resolveSource(root.notification ? root.notification.appIcon : "")
@@ -121,7 +121,7 @@ BaseContainer {
                         BaseIcon {
                             id: symbolIcon
                             anchors.centerIn: parent
-                            size: Globals.dimensions.iconSmall
+                            size: Globals.typography.icon.sm
                             icon: {
                                 if (!root.notification) return "";
                                 if (root.isScreenshot) return "image";
@@ -159,12 +159,12 @@ BaseContainer {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
-                    spacing: Globals.geometry.spacing.small
+                    spacing: Globals.geometry.spacing.xs
 
                     BaseText {
                         Layout.fillWidth: false
                         pixelSize: Globals.typography.size.lg
-                        weight: Globals.typography.weights.bold
+                        weight: Globals.typography.weight.bold
                         text: root.notification ? (root.notification.summary || "") : ""
                         maximumLineCount: 1
                         elide: Text.ElideRight

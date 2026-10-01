@@ -143,9 +143,12 @@ Item {
         : (barWindow.height - normalCapsuleHeight - Preferences.bar.marginTop)
 
 
-    readonly property real _modulePad: Globals.geometry.padding.capsule
-    readonly property real totalWidthPadding: _modulePad * 2
-    readonly property real totalHeightPadding: _modulePad * 2
+    // The capsule's own inset. This is the capsule's metric, not a global: only
+    // the capsule and the full bar lay modules out against it, so it is owned
+    // here and handed to Full rather than read out of Globals by two readers.
+    readonly property real capsulePad: Math.max(22 * Globals.shellScale, Math.ceil(Globals.geometry.radius * 0.5))
+    readonly property real totalWidthPadding: capsulePad * 2
+    readonly property real totalHeightPadding: capsulePad * 2
 
     // The capsule gradient ramps over a fixed band (the bar's height) instead of
     // the whole capsule, so every module shows the same sheen no matter how tall
@@ -283,9 +286,9 @@ Item {
         layer.enabled: Preferences.globals.shadow && capsuleRoot.isSettled
         layer.effect: MultiEffect {
             shadowEnabled: true
-            shadowColor: Globals.alpha(Globals.effects.shadow.color, 0.4)
+            shadowColor: Globals.alpha(Globals.effects.shadow.color, Globals.effects.shadow.opacity)
             shadowBlur: 0.6
-            shadowHorizontalOffset: 0
+            shadowHorizontalOffset: Globals.effects.shadow.offsetX
             shadowVerticalOffset: 2.5 * Globals.shellScale
         }
 
@@ -318,6 +321,7 @@ Item {
                 Full {
                     id: staticFull
                     barWindow: capsuleRoot.barWindow
+                    capsulePad: capsuleRoot.capsulePad
                     Layout.alignment: Qt.AlignCenter
                 }
             }
@@ -326,7 +330,7 @@ Item {
             Loader {
                 id: moduleLoader
                 anchors.fill: parent
-                anchors.margins: capsuleRoot.loadedModuleName === "full_bar" ? 0 : capsuleRoot._modulePad
+                anchors.margins: capsuleRoot.loadedModuleName === "full_bar" ? 0 : capsuleRoot.capsulePad
 
                 active: capsuleRoot.loadedModuleName !== ""
                 focus: true

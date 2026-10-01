@@ -5,7 +5,7 @@ Item {
     id: root
 
     property string icon: ""
-    property int size: Globals.dimensions.iconMedium
+    property int size: Globals.typography.icon.md
     property color color: Globals.colors.text
 
     implicitWidth: size

@@ -8,7 +8,7 @@ SettingsPage {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
 
         SettingsGroup {
             Layout.fillWidth: true
@@ -112,9 +112,9 @@ SettingsPage {
                 })
 
                 Layout.fillWidth: true
-                Layout.margins: Globals.geometry.spacing.medium
-                Layout.topMargin: Globals.geometry.spacing.large
-                spacing: Globals.geometry.spacing.small
+                Layout.margins: Globals.geometry.spacing.sm
+                Layout.topMargin: Globals.geometry.spacing.md
+                spacing: Globals.geometry.spacing.xs
 
                 // Swap `componentId` with its neighbour: dir -1 is up, +1 is down.
                 function nudge(componentId, dir) {
@@ -138,7 +138,7 @@ SettingsPage {
 
                         Layout.fillWidth: true
                         height: 48
-                        radius: Globals.geometry.innerRadius.medium
+                        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
 
                         // Flat well-style container pills
                         color:        isEnabled ? Globals.colors.tint : Globals.colors.disabled
@@ -160,13 +160,13 @@ SettingsPage {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: Globals.geometry.spacing.medium
-                            anchors.rightMargin: Globals.geometry.spacing.small
-                            spacing: Globals.geometry.spacing.small
+                            anchors.leftMargin: Globals.geometry.spacing.sm
+                            anchors.rightMargin: Globals.geometry.spacing.xs
+                            spacing: Globals.geometry.spacing.xs
 
                             BaseIcon {
                                 icon:  componentList.metadata[modelData]?.icon || "extension"
-                                size:  Globals.dimensions.iconSmall
+                                size:  Globals.typography.icon.sm
                                 color: pill.isEnabled ? Globals.colors.primary : Globals.colors.text
                             }
 
@@ -179,9 +179,9 @@ SettingsPage {
                             BaseButton {
                                 icon: "chevron-up"
                                 enabled: index > 0
-                                paddingHorizontal: Globals.geometry.spacing.small
-                                paddingVertical: Globals.geometry.spacing.small
-                                hoverColor: Globals.alpha(Globals.colors.text, 0.1)
+                                paddingHorizontal: Globals.geometry.spacing.xs
+                                paddingVertical: Globals.geometry.spacing.xs
+                                hoverColor: Globals.colors.hover
                                 iconColor: enabled ? Globals.colors.text : Globals.colors.disabled
                                 onClicked: componentList.nudge(modelData, -1)
                             }
@@ -189,9 +189,9 @@ SettingsPage {
                             BaseButton {
                                 icon: "chevron-down"
                                 enabled: index < repeater.count - 1
-                                paddingHorizontal: Globals.geometry.spacing.small
-                                paddingVertical: Globals.geometry.spacing.small
-                                hoverColor: Globals.alpha(Globals.colors.text, 0.1)
+                                paddingHorizontal: Globals.geometry.spacing.xs
+                                paddingVertical: Globals.geometry.spacing.xs
+                                hoverColor: Globals.colors.hover
                                 iconColor: enabled ? Globals.colors.text : Globals.colors.disabled
                                 onClicked: componentList.nudge(modelData, 1)
                             }

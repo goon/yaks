@@ -21,7 +21,7 @@ SettingsPage {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Globals.geometry.spacing.medium
+        spacing: Globals.geometry.spacing.sm
 
         BaseSearch {
             Layout.fillWidth: true
@@ -35,7 +35,7 @@ SettingsPage {
             Layout.preferredHeight: Math.min(contentHeight, 600)
             clip: true
             model: root.fontModel
-            spacing: Globals.geometry.spacing.small
+            spacing: Globals.geometry.spacing.xs
             
 
             delegate: BaseListItem {

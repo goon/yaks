@@ -8,8 +8,8 @@ Item {
     // Row metrics live here rather than in Globals: this is the one row both the
     // settings pages and the list menus use, so it owns its own height.
     property int itemHeight: 36 * Globals.shellScale
-    property int leftIconBoxSize: Globals.dimensions.iconMedium + 2 * Globals.geometry.spacing.small
-    property int verticalPadding: Globals.geometry.spacing.large
+    property int leftIconBoxSize: 32 * Globals.shellScale
+    property int verticalPadding: Globals.geometry.spacing.md
     property real controlWidthRatio: 0.6
 
     implicitHeight: Math.max(root.itemHeight, layout.implicitHeight) + root.verticalPadding * 2
@@ -33,10 +33,6 @@ Item {
     // Children dropped into a row land in the right-hand control slot.
     default property alias content: controlRow.data
 
-    // A row that hosts a control reads as a settings row: it keeps side
-    // padding, caps its label column so the control keeps its share, and draws
-    // a rule underneath. List rows (icon + title + chevron) do none of it.
-    readonly property bool settingsStyle: control !== null
     property bool showSeparator: true
 
     // The first child in the control slot, treated as this row's control.
@@ -97,14 +93,14 @@ Item {
     RowLayout {
         id: layout
         anchors.fill: parent
-        spacing: Globals.geometry.spacing.medium
-        Layout.leftMargin: root.settingsStyle ? Globals.geometry.spacing.medium : 0
-        Layout.rightMargin: root.settingsStyle ? Globals.geometry.spacing.medium : 0
+        spacing: Globals.geometry.spacing.sm
+        Layout.leftMargin: Globals.geometry.spacing.sm
+        Layout.rightMargin: Globals.geometry.spacing.sm
 
         Rectangle {
             visible: root.selected
-            Layout.preferredWidth: 3
-            Layout.preferredHeight: 20
+            Layout.preferredWidth: 3 * Globals.shellScale
+            Layout.preferredHeight: 20 * Globals.shellScale
             Layout.alignment: Qt.AlignVCenter
             radius: width / 2
             gradient: Gradient {
@@ -125,7 +121,7 @@ Item {
                 visible: root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: Globals.dimensions.iconMedium
+                size: Globals.typography.icon.md
                 iconColor: root.leftIconActive ? Globals.colors.primary : Globals.colors.text
                 onClicked: root.leftIconClicked()
                 z: 2 // Sit above the main MouseArea
@@ -135,7 +131,7 @@ Item {
                 visible: !root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: Globals.dimensions.iconMedium
+                size: Globals.typography.icon.md
                 color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
                 Behavior on color { BaseMotion { } }
             }
@@ -145,17 +141,18 @@ Item {
             visible: root.showVerticalSeparator
             orientation: BaseSeparator.Vertical
             Layout.fillHeight: true
-            Layout.topMargin: Globals.geometry.spacing.medium
-            Layout.bottomMargin: Globals.geometry.spacing.medium
+            Layout.topMargin: Globals.geometry.spacing.sm
+            Layout.bottomMargin: Globals.geometry.spacing.sm
             opacity: 0.3
         }
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.maximumWidth: root.settingsStyle
+            // The label yields room to the control slot, but only when there is one.
+            Layout.maximumWidth: root.control !== null
                 ? layout.width * (1 - root.controlWidthRatio)
                 : Number.POSITIVE_INFINITY
-            Layout.leftMargin: root.showVerticalSeparator ? Globals.geometry.spacing.medium : 0
+            Layout.leftMargin: root.showVerticalSeparator ? Globals.geometry.spacing.sm : 0
             spacing: 0
 
             BaseText {
@@ -164,7 +161,7 @@ Item {
                 text: root.title
                 pixelSize: Globals.typography.size.lg
                 family: root.titleFamily
-                weight: root.selected ? Globals.typography.weights.bold : Globals.typography.weights.medium
+                weight: root.selected ? Globals.typography.weight.bold : Globals.typography.weight.demi
                 color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.primary : Globals.colors.text)
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
@@ -207,10 +204,10 @@ Item {
 
         RowLayout {
             id: controlRow
-            visible: root.settingsStyle
+            visible: root.control !== null
             Layout.preferredWidth: layout.width * root.controlWidthRatio
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            spacing: Globals.geometry.spacing.small
+            spacing: Globals.geometry.spacing.xs
 
             property bool hasFillWidthChild: {
                 for (var i = 0; i < children.length; i++) {
@@ -229,7 +226,9 @@ Item {
         }
 
         BaseIcon {
-            visible: root.rightIconVisible && root.rightIcon !== "" && !root.settingsStyle
+            // The right slot belongs to the control when there is one, so a chevron
+            // only ever renders on a row that is purely navigation.
+            visible: root.rightIconVisible && root.rightIcon !== "" && root.control === null
             icon: root.rightIcon
             color: root.selected ? Globals.colors.primary : (root.highlighted ? Globals.colors.text : Globals.colors.muted)
             Behavior on color { BaseMotion { } }
@@ -238,12 +237,12 @@ Item {
     }
 
     BaseSeparator {
-        visible: root.showSeparator && root.settingsStyle
+        visible: root.showSeparator
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: root.leftIcon !== ""
-            ? Globals.geometry.spacing.medium + Globals.dimensions.iconMedium + Globals.geometry.spacing.medium
-            : Globals.geometry.spacing.medium
+            ? Globals.geometry.spacing.sm + Globals.typography.icon.md + Globals.geometry.spacing.sm
+            : Globals.geometry.spacing.sm
     }
 }

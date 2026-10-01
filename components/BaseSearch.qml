@@ -14,7 +14,7 @@ BaseContainer {
     }
 
     implicitHeight: 30 * Globals.shellScale
-    paddingHorizontal: Globals.geometry.spacing.large
+    paddingHorizontal: Globals.geometry.spacing.md
     clickable: true
 
     onClicked: root.focusInput()
@@ -22,7 +22,7 @@ BaseContainer {
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Globals.geometry.spacing.large
+        spacing: Globals.geometry.spacing.md
 
         BaseIcon {
             icon: "search"
