@@ -8,8 +8,6 @@ Item {
     implicitHeight: mainCol.implicitHeight
     Layout.fillWidth: true
 
-    readonly property int _iconBoxSize: 32 * Globals.shellScale
-
     function pushPage(name) {
         StackView.view.pushPage(Qt.resolvedUrl(name), name);
     }
@@ -61,7 +59,6 @@ Item {
                 clickable: true
                 bounceTitleOnHover: true
                 verticalPadding: 0
-                leftIconBoxSize: root._iconBoxSize
                 leftIcon: modelData.icon
                 onClicked: root.pushPage(modelData.page)
             }

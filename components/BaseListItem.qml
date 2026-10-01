@@ -8,7 +8,7 @@ Item {
     // Row metrics live here rather than in Globals: this is the one row both the
     // settings pages and the list menus use, so it owns its own height.
     property int itemHeight: 36 * Globals.shellScale
-    property int leftIconBoxSize: Globals.dimensions.iconMedium
+    property int leftIconBoxSize: Globals.dimensions.iconMedium + 2 * Globals.geometry.spacing.small
     property int verticalPadding: Globals.geometry.spacing.large
     property real controlWidthRatio: 0.6
 

@@ -120,6 +120,7 @@ Item {
                     spacing: 2
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
+                    Layout.leftMargin: root.deviceType === "wifi" ? Globals.geometry.spacing.small : 0
 
                     RowLayout {
                         Layout.fillWidth: true
