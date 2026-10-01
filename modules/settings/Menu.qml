@@ -162,7 +162,11 @@ SettingsPage {
             ColumnLayout {
                 id: mixerCol
                 anchors.fill: parent
-                spacing: Globals.geometry.spacing.xs
+                // The two separators own all the air in this block, so the
+                // sliders touch and both get the same step either side. A gap
+                // here would only ever land under the top row and push it
+                // high against the rule above.
+                spacing: 0
 
                 RowLayout {
                     Layout.fillWidth: true
