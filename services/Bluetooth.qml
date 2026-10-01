@@ -13,7 +13,26 @@ Singleton {
     property bool powered: adapter ? adapter.enabled : false
     property bool scanning: adapter ? adapter.discovering : false
     property var devices: adapter ? adapter.devices.values : []
-    property int connectedCount: devices.filter(function(d) { return d.connected }).length
+    property int connectedCount: 0
+
+    function recount() {
+        var n = 0;
+        var devs = adapter ? adapter.devices.values : [];
+        for (var i = 0; i < devs.length; i++)
+            if (devs[i] && devs[i].connected) n++;
+        connectedCount = n;
+    }
+
+    Instantiator {
+        model: adapter ? adapter.devices : null
+        onObjectAdded: root.recount()
+        onObjectRemoved: root.recount()
+        delegate: Connections {
+            required property var modelData
+            target: modelData
+            function onConnectedChanged() { root.recount() }
+        }
+    }
 
     function togglePower() {
         if (adapter)
