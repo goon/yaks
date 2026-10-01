@@ -11,8 +11,8 @@ QtObject {
     // ── KEYBOARD ROUTING ─────────────────────────────────────────────
 
     function handleKey(event) {
-        var panel = IslandService.activePanelName;
-        var item = IslandService.activePanelItem;
+        var panel = Panels.activePanelName;
+        var item = Panels.activePanelItem;
 
         if (panel === "launcher") {
             handleLauncherKey(event, item);
@@ -21,7 +21,7 @@ QtObject {
         }
 
         if (event.key === Qt.Key_Escape) {
-            IslandService.closeAll();
+            Panels.closeAll();
             event.accepted = true;
         }
     }
@@ -83,10 +83,10 @@ QtObject {
     // ── MOUSE WHEEL ROUTING ──────────────────────────────────────────
 
     function handleWheel(event) {
-        var panel = IslandService.activePanelName;
+        var panel = Panels.activePanelName;
 
         if (panel === "wallpaper") {
-            var panelItem = IslandService.activePanelItem;
+            var panelItem = Panels.activePanelItem;
             var carousel = (panelItem && panelItem.carouselItem) ? panelItem.carouselItem : panelItem;
             if (carousel) {
                 _wheelAcc += event.angleDelta.y / 120;

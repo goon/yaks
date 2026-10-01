@@ -39,7 +39,7 @@ FocusScope {
         var queryChanged = query !== _lastQuery;
         _lastQuery = query;
 
-        cachedModel = LauncherService.searchApps(query, DesktopEntries.applications.values, 100);
+        cachedModel = Launcher.searchApps(query, DesktopEntries.applications.values, 100);
         updateCurrentIndex(queryChanged);
     }
 
@@ -60,14 +60,14 @@ FocusScope {
             appListView.currentIndex = 0;
 
         if (appListView.currentIndex >= 0 && appListView.currentIndex < cachedModel.length) {
-            LauncherService.executeItem(cachedModel[appListView.currentIndex]);
-            IslandService.closeAll();
+            Launcher.executeItem(cachedModel[appListView.currentIndex]);
+            Panels.closeAll();
         }
     }
 
     function opening() {
-        LauncherService.resetInputStates();
-        LauncherService.lastInputMethod = "keyboard";
+        Launcher.resetInputStates();
+        Launcher.lastInputMethod = "keyboard";
         searchBar.text = "";
         performSearch();
     }
@@ -83,7 +83,7 @@ FocusScope {
     function navigateDown() {
         var listView = getCurrentListView();
         if (listView && listView.count > 0) {
-            LauncherService.resetInputStates();
+            Launcher.resetInputStates();
             listView.forceActiveFocus();
             if (listView.currentIndex === -1)
                 listView.currentIndex = 0;
@@ -96,7 +96,7 @@ FocusScope {
         var listView = getCurrentListView();
         if (listView) {
             if (listView.currentIndex > 0) {
-                LauncherService.resetInputStates();
+                Launcher.resetInputStates();
                 listView.decrementCurrentIndex();
             } else {
                 backToSearch("");
@@ -105,7 +105,7 @@ FocusScope {
     }
 
     function backToSearch(text) {
-        LauncherService.resetInputStates();
+        Launcher.resetInputStates();
         searchBar.focusInput();
         if (text === "\b") {
             if (searchBar.text.length > 0)
@@ -117,7 +117,7 @@ FocusScope {
 
     function handleListMouseMove(listView, index, mouse) {
         var globalPos = listView.mapToGlobal(mouse.x, mouse.y);
-        if (LauncherService.handleMouseMove(globalPos.x, globalPos.y))
+        if (Launcher.handleMouseMove(globalPos.x, globalPos.y))
             listView.currentIndex = index;
     }
 
@@ -169,7 +169,7 @@ FocusScope {
                 model: root.cachedModel
 
                 onCountChanged: {
-                    if (LauncherService.lastInputMethod === "keyboard" || currentIndex === -1) {
+                    if (Launcher.lastInputMethod === "keyboard" || currentIndex === -1) {
                         if (count > 0 && currentIndex < 0)
                             currentIndex = 0;
                         else if (count === 0)
@@ -207,7 +207,7 @@ FocusScope {
 
         readonly property bool selected: ListView.view ? ListView.view.currentIndex === index : false
         readonly property string entryName: modelData ? modelData.name : ""
-        readonly property string entryImage: modelData ? LauncherService.resolveIcon(modelData.icon) : ""
+        readonly property string entryImage: modelData ? Launcher.resolveIcon(modelData.icon) : ""
         readonly property bool showFallbackIcon: entryImage === ""
         readonly property string fallbackText: entryName.length > 0 ? entryName.charAt(0).toUpperCase() : "?"
 

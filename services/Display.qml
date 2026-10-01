@@ -16,7 +16,7 @@ Item {
 
     function getBrightness() {
         if (root.backend === "brightnessctl") {
-            ProcessService.run(["brightnessctl", "g", "-m"], function(output) {
+            Runner.run(["brightnessctl", "g", "-m"], function(output) {
                 var parts = output.trim().split(",");
                 if (parts.length >= 4) {
                     var current = parseInt(parts[2]);
@@ -27,7 +27,7 @@ Item {
             });
         } else if (root.monitorBus !== "") {
             // Explicit bus and fast read flags
-            ProcessService.run(["ddcutil", "getvcp", "10", "--bus", root.monitorBus, "--terse", "--sleep-multiplier", "0.01"], function(output) {
+            Runner.run(["ddcutil", "getvcp", "10", "--bus", root.monitorBus, "--terse", "--sleep-multiplier", "0.01"], function(output) {
                 // More robust regex parsing to handle "VCP 10 C <val> <max>" or "VCP 10 C <val> M <max>"
                 var match = output.match(/C\s+(\d+)\s+(?:M\s+)?(\d+)/);
                 if (match) {
@@ -47,7 +47,7 @@ Item {
     }
 
     function detectMonitor() {
-        ProcessService.run(["ddcutil", "detect", "--terse"], function(output) {
+        Runner.run(["ddcutil", "detect", "--terse"], function(output) {
             var lines = output.split("\n");
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i].trim();
@@ -66,9 +66,9 @@ Item {
 
     function detectBackend() {
         // First check for brightnessctl and active backlights
-        ProcessService.run(["which", "brightnessctl"], function(output) {
+        Runner.run(["which", "brightnessctl"], function(output) {
             if (output.trim() !== "") {
-                ProcessService.run(["brightnessctl", "-l", "-m"], function(devOutput) {
+                Runner.run(["brightnessctl", "-l", "-m"], function(devOutput) {
                     if (devOutput.trim() !== "" && devOutput.includes("backlight")) {
                         root.backend = "brightnessctl";
                         root.getBrightness();
@@ -97,13 +97,13 @@ Item {
             root._brightnessUpdating = true;
 
             if (root.backend === "brightnessctl") {
-                ProcessService.run(["brightnessctl", "s", val + "%"], function() {
+                Runner.run(["brightnessctl", "s", val + "%"], function() {
                     root._brightnessUpdating = false;
                     if (root._targetBrightness !== -1)
                         brightnessUpdateTimer.restart();
                 });
             } else if (root.monitorBus !== "") {
-                ProcessService.run(["ddcutil", "setvcp", "10", val.toString(), "--bus", root.monitorBus, "--sleep-multiplier", "0.05", "--noverify", "--async"], function() {
+                Runner.run(["ddcutil", "setvcp", "10", val.toString(), "--bus", root.monitorBus, "--sleep-multiplier", "0.05", "--noverify", "--async"], function() {
                     root._brightnessUpdating = false;
                     if (root._targetBrightness !== -1)
                         brightnessUpdateTimer.restart();

@@ -61,7 +61,6 @@ SettingsPage {
             BaseListItem {
                 leftIcon: "picture-in-picture-2"
                 title: "Overhang"
-                subtitle: "Float the bar over window content"
 
                 BaseSwitch {
                     checked: Preferences.bar.overhang
@@ -72,7 +71,6 @@ SettingsPage {
             BaseListItem {
                 leftIcon: "move-vertical"
                 title: "Reserved"
-                subtitle: "Bar height kept clear; the rest overhangs"
 
                 BaseSpinBox {
                     from: 0

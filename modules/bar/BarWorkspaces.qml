@@ -94,7 +94,7 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.RightButton) {
-                            IslandService.toggleSettings("Workspaces");
+                            Panels.toggleSettings("Workspaces");
                         } else {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();

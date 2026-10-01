@@ -50,7 +50,7 @@ FocusScope {
                 id: carousel
                 anchors.fill: parent
 
-                onCloseRequested: IslandService.closeAll()
+                onCloseRequested: Panels.closeAll()
             }
         }
     }

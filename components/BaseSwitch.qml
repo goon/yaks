@@ -18,6 +18,7 @@ Switch {
     // call sites wired to onToggled. Override toggle() so it flips `checked`
     // and always emits toggled, giving callers one consistent signal.
     function toggle() {
+        if (!control.enabled) return;
         control.checked = !control.checked;
         control.toggled();
     }

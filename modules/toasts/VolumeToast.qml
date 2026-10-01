@@ -15,16 +15,16 @@ Item {
         id: slider
         anchors.fill: parent
         
-        icon: Volume.volumeIcon
-        muted: Volume.muted
+        icon: Audio.volumeIcon
+        muted: Audio.muted
         
-        value: Volume.volume
+        value: Audio.volume
         
-        onValueChangedByUser: Volume.setVolume(value)
-        onRightClicked: Volume.toggleMute()
+        onValueChangedByUser: Audio.setVolume(value)
+        onRightClicked: Audio.toggleMute()
         
         Binding on value {
-            value: Volume.volume
+            value: Audio.volume
             when: !slider.pressed
             restoreMode: Binding.RestoreBinding
         }

@@ -38,14 +38,14 @@ Singleton {
     function connectDevice(address) {
         // Quickshell's BlueZ wrapper lacks a proper DBus Agent for PipeWire A2DP authorization.
         // Shelled out to bluetoothctl which properly spawns an agent and handles pairing/connecting.
-        ProcessService.runDetached(["bluetoothctl", "connect", address]);
+        Runner.runDetached(["bluetoothctl", "connect", address]);
     }
 
     function disconnectDevice(address) {
-        ProcessService.runDetached(["bluetoothctl", "disconnect", address]);
+        Runner.runDetached(["bluetoothctl", "disconnect", address]);
     }
 
     function removeDevice(address) {
-        ProcessService.runDetached(["bluetoothctl", "remove", address]);
+        Runner.runDetached(["bluetoothctl", "remove", address]);
     }
 }

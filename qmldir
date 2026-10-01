@@ -5,14 +5,14 @@ singleton Globals config/Globals.qml
 
 # Services (Singletons)
 singleton Theme services/Theme.qml
-singleton ProcessService services/ProcessService.qml
+singleton Runner services/Runner.qml
 
-singleton LauncherService services/LauncherService.qml
+singleton Launcher services/Launcher.qml
 singleton Compositor services/Compositor.qml
-singleton IslandService services/IslandService.qml
+singleton Panels services/Panels.qml
 singleton Power services/Power.qml
 singleton Preferences services/Preferences.qml
-singleton Volume services/Volume.qml
+singleton Audio services/Audio.qml
 singleton Wallpaper services/Wallpaper.qml
 singleton Network services/Network.qml
 singleton Bluetooth services/Bluetooth.qml
@@ -20,11 +20,9 @@ singleton Display services/Display.qml
 singleton Notifications services/Notifications.qml
 singleton Binds services/Binds.qml
 
-
 # Components
 BaseActiveBackground components/BaseActiveBackground.qml
 BaseHeader components/BaseHeader.qml
-BaseBento components/BaseBento.qml
 BaseContainer components/BaseContainer.qml
 BaseButton components/BaseButton.qml
 BaseIcon components/BaseIcon.qml
@@ -67,4 +65,3 @@ Full modules/bar/Full.qml
 # Panels
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 NetworkDevice modules/network/NetworkDevice.qml
-

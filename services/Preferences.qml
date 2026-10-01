@@ -190,19 +190,14 @@ QtObject {
         if (loaded) saveTimer.restart();
     }
 
-    // One-time bootstrap so the data directory exists before the first write.
-    // FileView.setText() does not create parent directories.
-    property Process _dataDirProc: Process {
-        command: ["mkdir", "-p", Globals.dataDir]
-    }
-
     // ── INITIALISATION ──────────────────────────────────────────────────
 
     Component.onCompleted: {
-        // Create the data dir first; the first save can follow immediately after
-        // a missing-file boot, so sequencing here avoids a lost initial write.
-        _dataDirProc.onExited.connect(function () {
-            ProcessService.run(["test", "-f", root.prefsFile], function(out, exitCode) {
+        // Create the data dir first; FileView.setText() does not create parent
+        // directories and the first save can follow immediately after a
+        // missing-file boot, so sequencing here avoids a lost initial write.
+        Runner.run(["mkdir", "-p", Globals.dataDir], function () {
+            Runner.run(["test", "-f", root.prefsFile], function (out, exitCode) {
                 if (exitCode !== 0) {
                     console.log("[Preferences] No preferences file found. Booting with defaults immediately.");
                     safetyTimer.stop();
@@ -213,7 +208,6 @@ QtObject {
                 }
             });
         });
-        _dataDirProc.running = true;
     }
 
     property Timer safetyTimer: Timer {

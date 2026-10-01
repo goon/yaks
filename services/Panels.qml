@@ -145,6 +145,7 @@ QtObject {
                         activePanelItem.changePage(pageName);
                     }
                 });
+            }
         }
     }
 
@@ -166,7 +167,7 @@ QtObject {
     }
 
     property Connections _volumeConnections: Connections {
-        target: Volume
+        target: Audio
         function onVolumeChanged() {
             if (!_startupDelayFinished) return;
             

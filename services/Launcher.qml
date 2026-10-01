@@ -18,7 +18,7 @@ QtObject {
     Component.onCompleted: {
         var cmd = "for t in kitty alacritty foot wezterm ghostty; do "
                 + "command -v $t >/dev/null 2>&1 && echo $t; done";
-        ProcessService.run(["sh", "-c", cmd], function(out, code) {
+        Runner.run(["sh", "-c", cmd], function(out, code) {
             var found = out.trim().split("\n").filter(function(x) { return x.length > 0; });
             if (found.length > 0) root._availableTerminals = found;
         });
@@ -232,7 +232,7 @@ QtObject {
             return;
 
         if (item.app.runInTerminal)
-            ProcessService.runDetached(["sh", "-c", resolveTerminal() + " -e " + item.app.command]);
+            Runner.runDetached(["sh", "-c", resolveTerminal() + " -e " + item.app.command]);
         else
             item.app.execute();
     }

@@ -14,8 +14,8 @@ Item {
     Component.onCompleted: Qt.callLater(() => { _ready = true; })
     
     // ── DYNAMIC ISLAND STATE ──────────────────────────────────────────
-    readonly property bool shouldBeMorphed: IslandService.activePanelName !== "" && 
-        (IslandService.activeScreen === barWindow.screen || (!IslandService.activeScreen && barWindow.screen === Quickshell.screens[0]))
+    readonly property bool shouldBeMorphed: Panels.activePanelName !== "" && 
+        (Panels.activeScreen === barWindow.screen || (!Panels.activeScreen && barWindow.screen === Quickshell.screens[0]))
 
     property bool isMorphed: false
     property string activePanelName: ""
@@ -23,12 +23,12 @@ Item {
 
     // ── HOVER EXPAND STATE ────────────────────────────────────────────
     // Whether the pointer is over the visible pill. Published to
-    // IslandService.isIslandHovered, which the volume toast reads to avoid
+    // Panels.isIslandHovered, which the volume toast reads to avoid
     // auto-dismissing while the pointer rests on the island. Tracked directly
     // off the capsule's HoverHandler — no settle delay, so the state is always
     // current rather than lagging a trailing timer.
     property bool isHovered: typeof capsuleHoverHandler !== "undefined" ? capsuleHoverHandler.hovered : false
-    onIsHoveredChanged: IslandService.isIslandHovered = isHovered;
+    onIsHoveredChanged: Panels.isIslandHovered = isHovered;
 
     // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
     readonly property bool isIslandMorphed: shouldBeMorphed || capsule.height > normalCapsuleHeight + 1
@@ -63,7 +63,7 @@ Item {
 
     function updateMorphedState() {
         if (islandRoot.shouldBeMorphed) {
-            var newName = IslandService.activePanelName;
+            var newName = Panels.activePanelName;
             var wasAlreadyLoaded = (islandRoot.loadedPanelName !== "" && islandRoot.loadedPanelName === newName);
             
             if (islandRoot.loadedPanelName !== "" && !wasAlreadyLoaded) {
@@ -98,7 +98,7 @@ Item {
     }
 
     Connections {
-        target: IslandService
+        target: Panels
         function onActivePanelNameChanged() { islandRoot.updateMorphedState(); }
         function onActiveScreenChanged() { islandRoot.updateMorphedState(); }
     }
@@ -137,8 +137,8 @@ Item {
     readonly property real totalHeightPadding: (Globals.geometry.padding.island * 2)
 
     // Fall back to the registry's expected size until the loaded panel reports its own.
-    property real activePanelWidth: activePanelItem ? (activePanelItem.implicitWidth || 0) + totalWidthPadding : IslandService.expectedWidth(activePanelName)
-    property real activePanelHeight: activePanelItem ? (activePanelItem.implicitHeight || 0) + totalHeightPadding : IslandService.expectedHeight(activePanelName)
+    property real activePanelWidth: activePanelItem ? (activePanelItem.implicitWidth || 0) + totalWidthPadding : Panels.expectedWidth(activePanelName)
+    property real activePanelHeight: activePanelItem ? (activePanelItem.implicitHeight || 0) + totalHeightPadding : Panels.expectedHeight(activePanelName)
 
     readonly property real targetCapsuleWidth: {
         if (isMorphed) {
@@ -163,12 +163,12 @@ Item {
     readonly property real targetCapsuleX: {
         if (!isMorphed) return normalCapsuleX;
         let actualPanelWidth = (activePanelName === "fullbar") ? targetCapsuleWidth : activePanelWidth;
-        if (IslandService.anchorX < 0) return (barWindow.width - actualPanelWidth) / 2;
+        if (Panels.anchorX < 0) return (barWindow.width - actualPanelWidth) / 2;
         
-        var x = IslandService.anchorX - (actualPanelWidth / 2);
+        var x = Panels.anchorX - (actualPanelWidth / 2);
         var radiusInset = Globals.geometry.radius;
-        var minX = (IslandService.anchorMinX >= 0) ? (IslandService.anchorMinX + radiusInset) : 0;
-        var maxX = (IslandService.anchorMaxX >= 0) ? (IslandService.anchorMaxX - actualPanelWidth - radiusInset) : (barWindow.width - actualPanelWidth);
+        var minX = (Panels.anchorMinX >= 0) ? (Panels.anchorMinX + radiusInset) : 0;
+        var maxX = (Panels.anchorMaxX >= 0) ? (Panels.anchorMaxX - actualPanelWidth - radiusInset) : (barWindow.width - actualPanelWidth);
         return Math.max(minX, Math.min(x, maxX));
     }
 
@@ -183,7 +183,7 @@ Item {
         enabled: islandRoot.isMorphed && !islandRoot.isToast
         z: 1
         onClicked: {
-            IslandService.closeAll();
+            Panels.closeAll();
         }
     }
 
@@ -338,13 +338,13 @@ Item {
                 Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
 
                 source: {
-                    var src = IslandService.panelSource(islandRoot.loadedPanelName);
+                    var src = Panels.panelSource(islandRoot.loadedPanelName);
                     return src ? Qt.resolvedUrl(src) : "";
                 }
 
                 onLoaded: {
                     if (item) {
-                        IslandService.activePanelItem = item;
+                        Panels.activePanelItem = item;
                         if (islandRoot.isMorphed) {
                             islandRoot.setPanelState("Opening");
                             islandRoot.notifyPanel("opening");
@@ -361,8 +361,8 @@ Item {
                 // reference so consumers (Binds, runWhenPanelReady, toasts) never
                 // see a dangling item pointing at a destroyed object.
                 onItemChanged: {
-                    if (panelLoader.item === null && IslandService.activePanelItem !== null)
-                        IslandService.activePanelItem = null;
+                    if (panelLoader.item === null && Panels.activePanelItem !== null)
+                        Panels.activePanelItem = null;
                 }
             }
 

@@ -72,7 +72,7 @@ Singleton {
     }
 
     function _refreshClients() {
-        ProcessService.run(["hyprctl", "clients", "-j"], function(text, exitCode) {
+        Runner.run(["hyprctl", "clients", "-j"], function(text, exitCode) {
             try {
                 var clients = JSON.parse(text);
                 var byAddr = {};

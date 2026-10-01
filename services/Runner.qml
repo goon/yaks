@@ -45,7 +45,7 @@ pragma Singleton
                         try {
                             proc.callback(collector.text, proc.capturedExitCode);
                         } catch (e) {
-                            console.warn("ProcessService: Callback error", e);
+                            console.warn("Runner: Callback error", e);
                         }
                     }
                     proc.destroy();

@@ -48,7 +48,7 @@ Item {
         var cmd = ["sh", "-c",
             'export PATH="' + Globals.toolPath + '"; exec sh "$1" "$2"',
             "--", root.seedScript, wp];
-        ProcessService.run(cmd, function(output, exitCode) {
+        Runner.run(cmd, function(output, exitCode) {
             var seed = (exitCode === 0 && output)
                 ? Color.seedFromHistogram(output)
                 : Color.DEFAULT_SEED;
@@ -90,7 +90,7 @@ Item {
 
             root._writeHookFiles(result.files);
             if (result.postHook)
-                ProcessService.runDetached(["sh", "-c", result.postHook]);
+                Runner.runDetached(["sh", "-c", result.postHook]);
         }
     }
 
@@ -99,7 +99,7 @@ Item {
         for (var i = 0; i < files.length; i++) {
             var f = files[i];
             if (!f || !f.path) continue;
-            ProcessService.runDetached(["sh", "-c",
+            Runner.runDetached(["sh", "-c",
                 'p="$1"; p="${p/#\\~/$HOME}"; mkdir -p "$(dirname "$p")" && printf "%s" "$2" > "$p"',
                 "--", f.path, f.content || ""]);
         }
@@ -130,7 +130,7 @@ Item {
             // a tool that is installed but outside the service PATH is not
             // wrongly reported missing.
             var script = 'export PATH="' + Globals.toolPath + '"; ' + app.binary + ' > /dev/null 2>&1';
-            ProcessService.run(["sh", "-c", script], function(out, exitCode) {
+            Runner.run(["sh", "-c", script], function(out, exitCode) {
                 newInstalled[app.id] = (exitCode === 0);
                 completed++;
                 if (completed === apps.length) root.installedApps = newInstalled;

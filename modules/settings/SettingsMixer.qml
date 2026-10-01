@@ -13,7 +13,7 @@ Item {
     property string source: "output"
 
     readonly property bool inputActive: root.source === "input"
-    readonly property bool activeMuted: root.inputActive ? Volume.inputMuted : Volume.muted
+    readonly property bool activeMuted: root.inputActive ? Audio.inputMuted : Audio.muted
 
     readonly property Item hoveredSlider: {
         if (audioSlider.hovered) return audioSlider;
@@ -22,13 +22,13 @@ Item {
     }
 
     function _setActiveVolume(val) {
-        if (root.inputActive) Volume.setInputVolume(val);
-        else Volume.setVolume(val);
+        if (root.inputActive) Audio.setInputVolume(val);
+        else Audio.setVolume(val);
     }
 
     function _toggleActiveMute() {
-        if (root.inputActive) Volume.toggleInputMute();
-        else Volume.toggleMute();
+        if (root.inputActive) Audio.toggleInputMute();
+        else Audio.toggleMute();
     }
 
     // ── SOURCE TOGGLE ICON ──────────────────────────────────────────────
@@ -108,8 +108,8 @@ Item {
                 size: Globals.dimensions.iconMedium
                 muted: root.activeMuted
                 secondary: root.inputActive
-                primaryIcon: Volume.muted ? "volume-off" : "volume-2"
-                secondaryIcon: Volume.inputMuted ? "mic-off" : "mic"
+                primaryIcon: Audio.muted ? "volume-off" : "volume-2"
+                secondaryIcon: Audio.inputMuted ? "mic-off" : "mic"
                 onClicked: root.source = root.inputActive ? "output" : "input"
                 onRightClicked: root._toggleActiveMute()
             }
@@ -122,7 +122,7 @@ Item {
                 muted: root.activeMuted
 
                 Binding on value {
-                    value: root.inputActive ? Volume.inputVolume : Volume.volume
+                    value: root.inputActive ? Audio.inputVolume : Audio.volume
                     when: !audioSlider.pressed
                     restoreMode: Binding.RestoreBinding
                 }

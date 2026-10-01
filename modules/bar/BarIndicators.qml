@@ -54,10 +54,10 @@ Item {
 
     function _openPanel(key) {
         switch (key) {
-            case "wifi": IslandService.togglePanel("network"); break;
-            case "notifications": IslandService.togglePanel("notifications_island"); break;
-            case "power": IslandService.togglePanel("power"); break;
-            case "settings": IslandService.toggleSettings(); break;
+            case "wifi": Panels.togglePanel("network"); break;
+            case "notifications": Panels.togglePanel("notifications_island"); break;
+            case "power": Panels.togglePanel("power"); break;
+            case "settings": Panels.toggleSettings(); break;
         }
     }
 
@@ -126,8 +126,8 @@ Item {
         onIsDraggingChanged: {
             if (isDragging) {
                 // Only close other panels — do NOT close the fullbar we're dragging inside
-                if (IslandService.activePanelName !== "fullbar") {
-                    IslandService.closeAll();
+                if (Panels.activePanelName !== "fullbar") {
+                    Panels.closeAll();
                 }
             }
         }

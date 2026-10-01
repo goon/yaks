@@ -8,15 +8,15 @@ QtObject {
     id: root
 
     function shutdown() {
-        ProcessService.runDetached(["systemctl", "poweroff"]);
+        Runner.runDetached(["systemctl", "poweroff"]);
     }
 
     function reboot() {
-        ProcessService.runDetached(["systemctl", "reboot"]);
+        Runner.runDetached(["systemctl", "reboot"]);
     }
 
     function suspend() {
-        ProcessService.runDetached(["systemctl", "suspend"]);
+        Runner.runDetached(["systemctl", "suspend"]);
     }
 
 }

@@ -15,22 +15,22 @@ ShellRoot {
     }
 
     IpcHandler {
-        function toggle() { IslandService.togglePanel("launcher"); }
+        function toggle() { Panels.togglePanel("launcher"); }
         target: "launcher"
     }
 
     IpcHandler {
-        function toggle() { IslandService.toggleSettings(); }
+        function toggle() { Panels.toggleSettings(); }
         target: "settings"
     }
 
     IpcHandler {
-        function toggle() { IslandService.togglePanel("wallpaper"); }
+        function toggle() { Panels.togglePanel("wallpaper"); }
         target: "wallpaper"
     }
 
     IpcHandler {
-        function toggle() { IslandService.togglePanel("power"); }
+        function toggle() { Panels.togglePanel("power"); }
         target: "power"
     }
 

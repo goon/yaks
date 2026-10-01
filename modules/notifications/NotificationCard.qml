@@ -75,7 +75,7 @@ BaseContainer {
                     radius: 0
 
                     function resolveSource(src) {
-                        return LauncherService.resolveIcon(src);
+                        return Launcher.resolveIcon(src);
                     }
 
                     // 1. Specific Image (Highest Priority)

@@ -50,7 +50,7 @@ BaseContainer {
 
                 visible: isValid
                 anchors.centerIn: parent
-                source: LauncherService.resolveIcon(windowItem.windowAppId) || "image://icon/application-x-executable"
+                source: Launcher.resolveIcon(windowItem.windowAppId) || "image://icon/application-x-executable"
                 sourceSize: Qt.size(64, 64)
                 width: Globals.dimensions.iconSmall
                 height: Globals.dimensions.iconSmall

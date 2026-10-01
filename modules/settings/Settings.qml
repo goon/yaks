@@ -32,7 +32,7 @@ FocusScope {
 
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Escape) {
-            IslandService.closeAll();
+            Panels.closeAll();
             event.accepted = true;
         } else if (event.key === Qt.Key_Backspace && pageStack.depth > 1) {
             pageStack.pop(null);

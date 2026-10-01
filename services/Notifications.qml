@@ -61,8 +61,8 @@ Item {
         if (root.activeToastNotification === null && root._toastQueue.length > 0) {
             root.activeToastNotification = root._toastQueue.shift();
             
-            if (IslandService.activePanelName === "" || IslandService.activePanelName === "notificationtoast") {
-                IslandService.openPanel("notificationtoast");
+            if (Panels.activePanelName === "" || Panels.activePanelName === "notificationtoast") {
+                Panels.openPanel("notificationtoast");
                 toastTimer.restart();
             } else {
                 // If another panel is open, we skip showing the toast to avoid interrupting the user.
@@ -82,8 +82,8 @@ Item {
             root._processQueue();
         } else {
             // Queue is empty, safely close the island
-            if (IslandService.activePanelName === "notificationtoast") {
-                IslandService.closeAll();
+            if (Panels.activePanelName === "notificationtoast") {
+                Panels.closeAll();
             }
         }
     }

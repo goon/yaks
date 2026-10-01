@@ -83,7 +83,7 @@ Item {
 
         Preferences.currentWallpaper = path;
 
-        ProcessService.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper has been applied."]);
+        Runner.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper has been applied."]);
     }
 
     function ensureScanned() {
@@ -142,14 +142,14 @@ Item {
             "done"];
 
         isLoading = true;
-        var proc = ProcessService.run(cmd, function(output, exitCode) {
+        var proc = Runner.run(cmd, function(output, exitCode) {
             isLoading = false;
             hasScanned = true;
 
             if (exitCode !== 0) {
                 root.wallpapers = [];
                 console.warn("[WallpaperService] scan failed for", dir, "exit code", exitCode);
-                ProcessService.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image-error", "Wallpaper", "Could not scan directory: " + dir]);
+                Runner.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image-error", "Wallpaper", "Could not scan directory: " + dir]);
                 root._replayPendingScan();
                 return;
             }
