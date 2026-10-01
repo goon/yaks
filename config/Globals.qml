@@ -165,7 +165,7 @@ QtObject {
         readonly property QtObject
         shadow: QtObject {
             readonly property color color: "#000000"
-            readonly property int radius: 20 * Globals.shellScale
+            readonly property int radius: 20 * root.shellScale
             readonly property real opacity: 0.4
             readonly property int offsetX: 0
             readonly property int offsetY: 0
