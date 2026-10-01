@@ -22,7 +22,6 @@ singleton Peripherals services/Peripherals.qml
 singleton Binds services/Binds.qml
 
 # Components
-BaseActiveBackground components/BaseActiveBackground.qml
 BaseHeader components/BaseHeader.qml
 BaseContainer components/BaseContainer.qml
 BaseButton components/BaseButton.qml

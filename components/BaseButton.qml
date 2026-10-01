@@ -36,13 +36,12 @@ Rectangle {
 
     Behavior on scale { BaseMotion { duration: Globals.motion.hover } }
 
-    BaseActiveBackground {
-        id: stateLayer
+    Rectangle {
         anchors.fill: parent
         radius: parent.radius
-        hoverColor: root.hoverColor
-        hovered: mouseArea.containsMouse
-        hoverEnabled: root.hoverEnabled
+        color: root.hoverEnabled && mouseArea.containsMouse ? root.hoverColor : "transparent"
+
+        Behavior on color { BaseMotion { duration: Globals.motion.hover } }
     }
 
     RowLayout {

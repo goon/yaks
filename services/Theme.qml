@@ -146,10 +146,19 @@ Item {
 
     // ── SYSTEM FONTS ──────────────────────────────────────────────────
 
+    readonly property var notoKeep: ["Noto Sans", "Noto Serif", "Noto Sans Mono"]
     property var allFontFamilies: []
     function updateFontFamilies() {
         const blacklist = /(mtx|math|private|opensymbol|stix|tex|pfont|noto sans .* [0-9])/i;
-        root.allFontFamilies = Qt.fontFamilies().filter(font => !blacklist.test(font));
+        root.allFontFamilies = Qt.fontFamilies().filter(font => {
+            if (blacklist.test(font)) return false;
+            // Noto ships hundreds of per-script variants (Noto Kufi Arabic, Noto
+            // Naskh Arabic, Noto Serif Devanagari and the like) that flood the
+            // font picker, never serve as a UI font, and each one costs a
+            // first-time fontconfig match when a Font.qml delegate renders it.
+            if (font.indexOf("Noto ") === 0 && root.notoKeep.indexOf(font) < 0) return false;
+            return true;
+        });
     }
 
     property Timer executionTimer: Timer {
