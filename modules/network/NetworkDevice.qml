@@ -20,8 +20,6 @@ Item {
     property bool isSecured: false
     property bool isKnown: false // For Wi-Fi or Bluetooth (paired/bonded/trusted)
     property real batteryPct: -1
-    property string badge: ""
-    property string actionText: ""
     
     property bool expanded: false
     // A peripheral row is informational: no connect/disconnect/forget, so it
@@ -99,10 +97,19 @@ Item {
                         opacity: 0.75
                     }
 
+                    Rectangle {
+                        anchors.fill: parent
+                        visible: root.deviceType !== "wifi"
+                        radius: Globals.geometry.innerRadius.medium
+                        color: "transparent"
+                        border.width: 1
+                        border.color: Globals.colors.hair
+                    }
+
                     BaseIcon {
                         anchors.centerIn: parent
                         icon: root.iconName
-                        color: root.isConnected ? Globals.colors.primary : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.muted : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
+                        color: (root.isConnected || root.deviceType === "peripheral") ? Globals.colors.primary : (root.deviceType === "bluetooth" && root.isKnown ? Globals.colors.muted : (root.isHovered ? Globals.colors.primary : Globals.colors.text))
                         Behavior on color { BaseMotion { } }
                     }
                 }
@@ -118,31 +125,13 @@ Item {
 
                         BaseText {
                             text: root.title
+                            pixelSize: Globals.typography.size.large
                             weight: root.isConnected ? Globals.typography.weights.bold : Globals.typography.weights.medium
                             color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
                             elide: Text.ElideRight
                             wrapMode: Text.NoWrap
                             Layout.fillWidth: true
                             Behavior on color { BaseMotion { } }
-                        }
-
-                        Rectangle {
-                            visible: root.badge !== ""
-                            Layout.alignment: Qt.AlignVCenter
-                            implicitWidth: badgeText.implicitWidth + Globals.geometry.spacing.small * 2
-                            implicitHeight: badgeText.implicitHeight + Globals.geometry.spacing.small / 2
-                            radius: height / 2
-                            color: Globals.colors.hover
-                            border.width: 1
-                            border.color: Globals.colors.hair
-
-                            BaseText {
-                                id: badgeText
-                                anchors.centerIn: parent
-                                text: root.badge
-                                pixelSize: Globals.typography.size.small
-                                muted: true
-                            }
                         }
 
                         Rectangle {
@@ -177,23 +166,16 @@ Item {
                             visible: root.batteryPct >= 0
                             Layout.alignment: Qt.AlignVCenter
                             text: Math.round(root.batteryPct) + "%"
-                            weight: Globals.typography.weights.bold
-                        }
-
-                        BaseButton {
-                            visible: root.actionText !== ""
-                            Layout.alignment: Qt.AlignVCenter
-                            text: root.actionText
-                            border.width: 1
-                            border.color: Globals.colors.hair
-                            onClicked: root.actionClicked()
+                            pixelSize: Globals.typography.size.large
                         }
                     }
 
                     BaseSlider {
                         visible: root.batteryPct >= 0
                         Layout.fillWidth: true
+                        Layout.topMargin: Globals.geometry.spacing.small
                         interactive: false
+                        roundActiveEnd: true
                         trackHeight: Globals.geometry.spacing.small
                         value: root.batteryPct
                         from: 0
@@ -203,7 +185,7 @@ Item {
                     BaseText {
                         text: root.subtitle
                         visible: root.subtitle !== ""
-                        pixelSize: Globals.typography.size.small
+                        pixelSize: Globals.typography.size.medium
                         muted: true
                         elide: Text.ElideRight
                         wrapMode: Text.NoWrap

@@ -7,7 +7,7 @@ import qs
 BaseScrolling {
     id: root
     clip: true
-    implicitWidth: 400
+    implicitWidth: 325
     implicitHeight: mainLayout.implicitHeight
     readonly property int _spinMs: 1000
 
@@ -106,7 +106,8 @@ BaseScrolling {
     }
 
     readonly property var connectedRows: root.rows.filter(function(r) { return r.bt ? r.bt.connected : true; })
-    readonly property var nearbyRows: root.rows.filter(function(r) { return r.bt && !r.bt.connected; })
+    readonly property var pairedRows: root.rows.filter(function(r) { return r.bt && !r.bt.connected && (r.bt.paired || r.bt.bonded || r.bt.trusted); })
+    readonly property var nearbyRows: root.rows.filter(function(r) { return r.bt && !r.bt.connected && !(r.bt.paired || r.bt.bonded || r.bt.trusted); })
 
     MouseArea {
         anchors.fill: parent
@@ -137,22 +138,6 @@ BaseScrolling {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: Globals.geometry.spacing.small
-
-                BaseIcon {
-                    icon: "chevron-left"
-                    color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
-                    Layout.alignment: Qt.AlignVCenter
-                    Behavior on color { BaseMotion { } }
-
-                    MouseArea {
-                        id: backMouseArea
-                        anchors.fill: parent
-                        anchors.margins: -8
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Modules.closeAll()
-                    }
-                }
 
                 BaseHeader {
                     id: pageHeader
@@ -203,8 +188,7 @@ BaseScrolling {
 
             BaseText {
                 text: "Searching devices..."
-                color: Globals.colors.muted
-                font.pixelSize: Globals.typography.size.small
+                muted: true
                 anchors.centerIn: parent
             }
         }
@@ -218,7 +202,7 @@ BaseScrolling {
             visible: root.rows.length > 0
 
             function _hoverPredicate() {
-                var repeaters = [connectedRepeater, nearbyRepeater];
+                var repeaters = [connectedRepeater, pairedRepeater, nearbyRepeater];
                 for (var r = 0; r < repeaters.length; r++) {
                     for (var i = 0; i < repeaters[r].count; i++) {
                         var item = repeaters[r].itemAt(i);
@@ -265,6 +249,24 @@ BaseScrolling {
 
                 ColumnLayout {
                     Layout.fillWidth: true
+                    visible: root.pairedRows.length > 0
+                    spacing: Globals.geometry.spacing.small
+
+                    BaseHeader {
+                        text: "PAIRED"
+                        isActive: false
+                        pixelSize: Globals.typography.size.small
+                    }
+
+                    Repeater {
+                        id: pairedRepeater
+                        model: root.pairedRows
+                        delegate: deviceDelegate
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
                     visible: root.nearbyRows.length > 0
                     spacing: Globals.geometry.spacing.small
 
@@ -298,8 +300,6 @@ BaseScrolling {
             subtitle: {
                 if (bt && bt.connecting)
                     return "Connecting...";
-                if (bt && !bt.connected)
-                    return "disconnected · " + bt.address;
                 if (up && Peripherals.charging(up))
                     return "Charging";
                 return "";
@@ -308,8 +308,6 @@ BaseScrolling {
             isConnected: !!bt && bt.connected
             isKnown: !!bt && (bt.paired || bt.bonded || bt.trusted)
             batteryPct: up ? Peripherals.pct(up) : -1
-            badge: bt ? "" : "USB"
-            actionText: (bt && !bt.connected) ? "Pair" : ""
 
             onActionClicked: {
                 if (bt && !bt.connected) {

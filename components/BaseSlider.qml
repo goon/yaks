@@ -13,6 +13,7 @@ Item {
 
     property bool interactive: true
     property bool muted: false
+    property bool roundActiveEnd: false
     property alias pressed: mouseArea.pressed
     readonly property bool hovered: mouseArea.containsMouse
 
@@ -92,8 +93,8 @@ Item {
                 height: parent.height
                 topLeftRadius: height / 2
                 bottomLeftRadius: height / 2
-                topRightRadius: 0
-                bottomRightRadius: 0
+                topRightRadius: root.roundActiveEnd ? height / 2 : 0
+                bottomRightRadius: root.roundActiveEnd ? height / 2 : 0
                 opacity: root.pressed ? root.breathOpacity : 1.0
 
                 gradient: Gradient {
@@ -168,6 +169,17 @@ Item {
                     if (pressed && (mouse.buttons & Qt.LeftButton))
                         updateValue(mouse.x);
                 }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                anchors.topMargin: -(root.handleHeight - root.trackHeight) / 2
+                anchors.bottomMargin: -(root.handleHeight - root.trackHeight) / 2
+                visible: !root.interactive
+                enabled: !root.interactive
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onPressed: (mouse) => mouse.accepted = true
             }
         }
     }

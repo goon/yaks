@@ -6,7 +6,7 @@ import qs
 BaseScrolling {
     id: root
     clip: true
-    implicitWidth: 400
+    implicitWidth: 325
     implicitHeight: mainLayout.implicitHeight
     readonly property int _spinMs: 1000
 
@@ -39,22 +39,6 @@ BaseScrolling {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: Globals.geometry.spacing.small
-
-                BaseIcon {
-                    icon: "chevron-left"
-                    color: backMouseArea.containsMouse ? Globals.colors.primary : Globals.colors.text
-                    Layout.alignment: Qt.AlignVCenter
-                    Behavior on color { BaseMotion { } }
-
-                    MouseArea {
-                        id: backMouseArea
-                        anchors.fill: parent
-                        anchors.margins: -8
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Modules.closeAll()
-                    }
-                }
 
                 BaseHeader {
                     id: pageHeader

@@ -9,7 +9,7 @@ BaseText {
 
     visible: text !== ""
     weight: Globals.typography.weights.medium
-    font.letterSpacing: 3
+    font.letterSpacing: 4
     color: isActive ? Globals.colors.text : Globals.colors.muted
 
     verticalAlignment: Text.AlignBottom

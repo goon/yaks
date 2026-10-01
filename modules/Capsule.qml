@@ -146,6 +146,13 @@ Item {
     readonly property real totalWidthPadding: (Globals.geometry.padding.capsule * 2)
     readonly property real totalHeightPadding: (Globals.geometry.padding.capsule * 2)
 
+    // The capsule gradient ramps over a fixed band (the bar's height) instead of
+    // the whole capsule, so every module shows the same sheen no matter how tall
+    // it is; past the band the surface stays flat. The ramp is pinned to the
+    // capsule's bottom, so the dark edge is always the module's lower edge.
+    readonly property real _gradientBand: Preferences.bar.height
+    readonly property real _bandFrac: Math.min(1.0, _gradientBand / Math.max(1, capsule.height))
+
     // Fall back to the registry's expected size until the loaded module reports its own.
     property real activePanelWidth: activeModuleItem ? (activeModuleItem.implicitWidth || 0) + totalWidthPadding : Modules.expectedWidth(activeModuleName)
     property real activePanelHeight: activeModuleItem ? (activeModuleItem.implicitHeight || 0) + totalHeightPadding : Modules.expectedHeight(activeModuleName)
@@ -249,6 +256,7 @@ Item {
 
         gradient: Gradient {
             GradientStop { position: 0.0; color: Globals.colors.top }
+            GradientStop { position: 1.0 - capsuleRoot._bandFrac; color: Globals.colors.top }
             GradientStop { position: 1.0; color: Globals.colors.bottom }
         }
 
