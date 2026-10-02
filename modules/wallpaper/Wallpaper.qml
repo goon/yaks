@@ -4,8 +4,6 @@ import qs
 
 FocusScope {
 
-    property string moduleState: "Closed"
-
     implicitWidth: carousel.naturalWidth
     implicitHeight: carousel.naturalHeight
 
@@ -13,12 +11,10 @@ FocusScope {
 
     readonly property var carouselItem: carousel
 
-    onModuleStateChanged: {
-        if (moduleState === "Opening") {
-            Wallpaper.ensureScanned();
-            carousel.focusFirst();
-            carousel.syncDirectory();
-        }
+    function opening() {
+        Wallpaper.ensureScanned();
+        carousel.focusFirst();
+        carousel.syncDirectory();
     }
 
     Component.onCompleted: {

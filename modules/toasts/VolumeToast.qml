@@ -5,8 +5,6 @@ import qs
 
 Item {
     
-    property string moduleState: "Closed"
-    
     // No inset shaved off the size: the capsule's `capsulePad` is the popout's
     // inset, so the toast fills the space it is given.
     implicitWidth: 300

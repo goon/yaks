@@ -45,7 +45,7 @@ ShellRoot {
     Instantiator {
         model: Quickshell.screens
 
-        Bar {
+        Capsule {
             screen: modelData
         }
     }

@@ -123,12 +123,7 @@ Item {
         }
 
         onIsDraggingChanged: {
-            if (isDragging) {
-                // Only close other modules — do NOT close the fullbar we're dragging inside
-                if (Modules.activeModuleName !== "full_bar") {
-                    Modules.closeAll();
-                }
-            }
+            if (isDragging) Modules.closeAll();
         }
         BaseIcon {
             anchors.centerIn: parent

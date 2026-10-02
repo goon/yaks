@@ -2,103 +2,105 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
+import Quickshell.Wayland
 import qs
 
-Item {
+// The island: the Wayland window, the capsule, and the loader that swaps a
+// module in and out of it. One file because there is only ever one object here
+// — the window is the island, and the island lives in the window.
+PanelWindow {
     id: capsuleRoot
 
-    required property var barWindow
     readonly property int itemHeight: 32 * Globals.shellScale
     property bool _ready: false
-    Component.onCompleted: Qt.callLater(() => { _ready = true; })
 
-    // ── DYNAMIC CAPSULE STATE ──────────────────────────────────────────
-    readonly property bool shouldBeMorphed: Modules.activeModuleName !== "" &&
-        (Modules.activeScreen === barWindow.screen || (!Modules.activeScreen && barWindow.screen === Quickshell.screens[0]))
+    color: "transparent"
 
-    property bool isMorphed: false
-    property string activeModuleName: ""
-    property string loadedModuleName: ""
+    WlrLayershell.keyboardFocus: capsuleRoot.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    WlrLayershell.namespace: "yaks:bar"
+    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.exclusiveZone: Preferences.bar.reservedZone
 
-    readonly property string mode: isMorphed ? activeModuleName : "rest"
+    implicitHeight: capsuleRoot.screen ? capsuleRoot.screen.height : 1080
+    implicitWidth: 0
 
-    // ── HOVER EXPAND STATE ────────────────────────────────────────────
-    // Whether the pointer is over the visible pill. Published to
-    // Modules.isCapsuleHovered, which the volume toast reads to avoid
-    // auto-dismissing while the pointer rests on the capsule. Tracked directly
-    // off the capsule's HoverHandler — no settle delay, so the state is always
-    // current rather than lagging a trailing timer.
-    property bool isHovered: typeof capsuleHoverHandler !== "undefined" ? capsuleHoverHandler.hovered : false
-    onIsHoveredChanged: Modules.isCapsuleHovered = isHovered;
+    anchors {
+        top: Preferences.bar.position === "top"
+        bottom: Preferences.bar.position === "bottom"
+        left: true
+        right: true
+    }
 
-    // Gated only on capsule.height — not timers — so the bar never resizes mid-animation.
+    margins {
+        top: 0
+        bottom: 0
+        left: 0
+        right: 0
+    }
+
+    // ── ISLAND STATE ──────────────────────────────────────────────────
+    // `Modules.activeModuleName` is the intent — a name means open, "" means
+    // closed. `shown` is what the Loader actually holds. They differ for
+    // exactly one reason: on close the intent clears immediately, so the bar
+    // starts fading back in, while `shown` lingers for the shrink animation
+    // and is only cleared once the module has been evicted.
+    property string shown: ""
+
+    readonly property string mode: Modules.activeModuleName !== "" ? shown : "rest"
+
+    // Gated only on capsule.height — not timers — so the bar never resizes
+    // mid-animation.
     readonly property bool isCapsuleMorphed: mode !== "rest" || capsule.height > normalCapsuleHeight + 1
 
-    // Identify toast-like modules that should not capture full screen mouse inputs
-    readonly property bool isFullBar: mode === "full_bar"
-    readonly property bool isToast: mode === "volume_toast" || mode === "notification_toast" || mode === "full_bar"
+    // A toast is informational: it must not take keyboard focus, and clicks
+    // outside it fall through to whatever is underneath.
+    readonly property bool isToast: Modules.moduleKind(shown) === "toast"
+    readonly property bool grabsFocus: mode !== "rest" && Modules.moduleKind(shown) === "popout"
 
-    readonly property bool grabsFocus: mode !== "rest" &&
-        mode !== "volume_toast" &&
-        mode !== "notification_toast" &&
-        mode !== "full_bar"
+    // Follow the intent. A module swap happens the moment the name changes,
+    // rather than after the old module has animated out.
+    function syncShown() {
+        const want = Modules.activeModuleName;
 
-    // Safely call lifecycle methods and set properties on loaded views
+        if (want === "") {
+            // Closing. `mode` is already "rest" and the bar is fading in;
+            // hold the item just long enough for the capsule to shrink.
+            collapseTimer.restart();
+            return;
+        }
+
+        collapseTimer.stop();
+        evictionTimer.stop();
+
+        if (shown === want) {
+            // Cached from a previous open and not yet evicted — re-enter it
+            // without paying for a reload.
+            notifyModule("opening");
+            openTimer.restart();
+            return;
+        }
+
+        // A direct swap. The outgoing module simply goes; it gets no closing
+        // hook, because nothing runs during those 420 ms that could read one.
+        shown = want;
+    }
+
+    // Lifecycle hooks are optional: a module implements `opening` (its item now
+    // exists) and/or `opened` (the morph has settled), and nothing else.
     function notifyModule(funcName) {
         if (moduleLoader.item && typeof moduleLoader.item[funcName] === "function") {
             moduleLoader.item[funcName]();
         }
     }
 
-    function setModuleState(state) {
-        if (moduleLoader.item) {
-            if (moduleLoader.item.hasOwnProperty("moduleState")) {
-                moduleLoader.item.moduleState = state;
-            }
-        }
-    }
-
-    function updateMorphedState() {
-        if (capsuleRoot.shouldBeMorphed) {
-            var newName = Modules.activeModuleName;
-            var wasAlreadyLoaded = (capsuleRoot.loadedModuleName !== "" && capsuleRoot.loadedModuleName === newName);
-
-            if (capsuleRoot.loadedModuleName !== "" && !wasAlreadyLoaded) {
-                // Transitioning directly between two modules
-                if (moduleLoader.item) {
-                    capsuleRoot.setModuleState("Closing");
-                    capsuleRoot.notifyModule("closing");
-                    capsuleRoot.setModuleState("Closed");
-                    capsuleRoot.notifyModule("closed");
-                }
-            }
-            capsuleRoot.activeModuleName = newName;
-            capsuleRoot.loadedModuleName = newName;
-            capsuleRoot.isMorphed = true;
-            collapseTimer.stop();
-            evictionTimer.stop();
-
-            if (wasAlreadyLoaded && moduleLoader.item) {
-                capsuleRoot.setModuleState("Opening");
-                capsuleRoot.notifyModule("opening");
-                openTimer.start();
-            }
-        } else {
-            if (capsuleRoot.isMorphed) {
-                capsuleRoot.isMorphed = false;
-                if (moduleLoader.item) {
-                    capsuleRoot.setModuleState("Closing");
-                    capsuleRoot.notifyModule("closing");
-                }
-                collapseTimer.start();
-            }
-        }
-    }
-
     Connections {
         target: Modules
-        function onActiveModuleNameChanged() { capsuleRoot.updateMorphedState(); }
-        function onActiveScreenChanged() { capsuleRoot.updateMorphedState(); }
+        function onActiveModuleNameChanged() { capsuleRoot.syncShown(); }
+    }
+
+    Component.onCompleted: {
+        _ready = true;
+        capsuleRoot.syncShown();
     }
 
     Timer {
@@ -106,14 +108,8 @@ Item {
         interval: Globals.motion.morph
         repeat: false
         onTriggered: {
-            if (!capsuleRoot.isMorphed) {
-                if (moduleLoader.item) {
-                    capsuleRoot.setModuleState("Closed");
-                    capsuleRoot.notifyModule("closed");
-                }
-                evictionTimer.interval = Modules.evictionTime(capsuleRoot.loadedModuleName);
-                evictionTimer.start();
-            }
+            evictionTimer.interval = Modules.evictionTime(capsuleRoot.shown);
+            evictionTimer.start();
         }
     }
 
@@ -121,31 +117,25 @@ Item {
         id: evictionTimer
         repeat: false
         onTriggered: {
-            if (!capsuleRoot.isMorphed && capsuleRoot.loadedModuleName !== "") {
-                capsuleRoot.loadedModuleName = "";
-                capsuleRoot.activeModuleName = "";
-            }
+            // Guard against a new module having opened while this was pending.
+            if (Modules.activeModuleName === "" && capsuleRoot.shown !== "")
+                capsuleRoot.shown = "";
         }
     }
 
     readonly property alias activeModuleItem: moduleLoader.item
 
-    // Expose the mask element to Bar.qml for input region
-    readonly property alias maskItem: maskItem
-
     readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - capsuleRoot.itemHeight) / 2)
-    readonly property real normalCapsuleWidth: staticFull.implicitWidth
+    readonly property real normalCapsuleWidth: barFace.implicitWidth
     readonly property real normalCapsuleHeight: Preferences.bar.height
-    readonly property real normalCapsuleX: (barWindow.width - normalCapsuleWidth) / 2
+    readonly property real normalCapsuleX: (capsuleRoot.width - normalCapsuleWidth) / 2
     readonly property real normalCapsuleY: Preferences.bar.position === "top"
         ? Preferences.bar.marginTop
-        : (barWindow.height - normalCapsuleHeight - Preferences.bar.marginTop)
-
+        : (capsuleRoot.height - normalCapsuleHeight - Preferences.bar.marginTop)
 
     // The capsule's own inset, and the only one. Every module lays its content
-    // out against this one value, handed to Full rather than read out of Globals
-    // by two readers. It is `lg` because a container's edge separates from its
-    // content at `lg`; a module must not stack an inset of its own on top.
+    // out against this one value, handed to the bar rather than read out of
+    // Globals by two readers. A module must not stack an inset of its own on top.
     readonly property real capsulePad: Globals.geometry.spacing.xl
     readonly property real totalWidthPadding: capsulePad * 2
     readonly property real totalHeightPadding: capsulePad * 2
@@ -157,45 +147,51 @@ Item {
     readonly property real _gradientBand: Preferences.bar.height
     readonly property real _bandFrac: Math.min(1.0, _gradientBand / Math.max(1, capsule.height))
 
-    // Fall back to the registry's expected size until the loaded module reports its own.
-    property real activePanelWidth: activeModuleItem ? (activeModuleItem.implicitWidth || 0) + totalWidthPadding : Modules.expectedWidth(activeModuleName)
-    property real activePanelHeight: activeModuleItem ? (activeModuleItem.implicitHeight || 0) + totalHeightPadding : Modules.expectedHeight(activeModuleName)
+    // The registry's size is the morph target until the module reports its own.
+    readonly property real activePanelWidth: activeModuleItem
+        ? (activeModuleItem.implicitWidth || 0) + totalWidthPadding
+        : Modules.expectedWidth(shown)
+    readonly property real activePanelHeight: activeModuleItem
+        ? (activeModuleItem.implicitHeight || 0) + totalHeightPadding
+        : Modules.expectedHeight(shown)
 
-    readonly property real targetCapsuleWidth: {
-        if (mode !== "rest") {
-            if (mode === "full_bar") {
-                return (activeModuleItem ? activeModuleItem.implicitWidth : barWindow.width);
-            }
-            return activePanelWidth;
-        }
-        return normalCapsuleWidth;
+    readonly property real targetCapsuleWidth: mode === "rest" ? normalCapsuleWidth : activePanelWidth
+    readonly property real targetCapsuleHeight: mode === "rest" ? normalCapsuleHeight : activePanelHeight
+
+    // The island is always centred on its screen. It was once anchored to
+    // whichever bar element opened it; nothing ever passed an anchor, so the
+    // clamp that bounded it never ran.
+    readonly property real targetCapsuleX: (capsuleRoot.width
+        - (mode === "rest" ? normalCapsuleWidth : activePanelWidth)) / 2
+
+    readonly property real targetCapsuleY: mode === "rest"
+        ? normalCapsuleY
+        : (Preferences.bar.position === "top"
+            ? Preferences.bar.marginTop
+            : capsuleRoot.height - activePanelHeight - Preferences.bar.marginTop)
+
+    // While the pill is settled (collapsed or fully expanded / a surface is
+    // open) the input region can be the exact capsule rect or the whole layer.
+    // While it is mid-morph the moving capsule can briefly leave the capsule
+    // rect, so the union of the rest pill and the animating capsule is used
+    // instead, keeping input stable across the transition.
+    mask: {
+        if (capsuleRoot.isCapsuleMorphed && !capsuleRoot.isToast)
+            return null;
+        if (!capsuleRoot.isSettled)
+            return unionRegion;
+        return capsuleRegion;
     }
 
-    readonly property real targetCapsuleHeight: {
-        if (mode !== "rest") {
-            if (mode === "full_bar") {
-                return normalCapsuleHeight;
-            }
-            return activePanelHeight;
-        }
-        return normalCapsuleHeight;
+    Region {
+        id: capsuleRegion
+        item: maskItem
     }
 
-    readonly property real targetCapsuleX: {
-        if (mode === "rest") return normalCapsuleX;
-        let actualPanelWidth = (mode === "full_bar") ? targetCapsuleWidth : activePanelWidth;
-        if (Modules.anchorX < 0) return (barWindow.width - actualPanelWidth) / 2;
-
-        var x = Modules.anchorX - (actualPanelWidth / 2);
-        var radiusInset = Globals.geometry.radius;
-        var minX = (Modules.anchorMinX >= 0) ? (Modules.anchorMinX + radiusInset) : 0;
-        var maxX = (Modules.anchorMaxX >= 0) ? (Modules.anchorMaxX - actualPanelWidth - radiusInset) : (barWindow.width - actualPanelWidth);
-        return Math.max(minX, Math.min(x, maxX));
+    Region {
+        id: unionRegion
+        item: maskUnion
     }
-
-    readonly property real targetCapsuleY: mode !== "rest"
-        ? (Preferences.bar.position === "top" ? Preferences.bar.marginTop : barWindow.height - (mode === "full_bar" ? targetCapsuleHeight : activePanelHeight) - Preferences.bar.marginTop)
-        : normalCapsuleY
 
     // ── CLICK OUTSIDE SHIELD ──────────────────────────────────────────
     MouseArea {
@@ -203,12 +199,10 @@ Item {
         anchors.fill: parent
         enabled: capsuleRoot.mode !== "rest" && !capsuleRoot.isToast
         z: 1
-        onClicked: {
-            Modules.closeAll();
-        }
+        onClicked: Modules.closeAll()
     }
 
-    // ── MASK ITEM (INPUT REGION) ──────────────────────────────────────
+    // ── INPUT REGION ──────────────────────────────────────────────────
     Item {
         id: maskItem
         x: targetCapsuleX
@@ -217,7 +211,8 @@ Item {
         height: targetCapsuleHeight
         z: 2
 
-        // Prevent click-throughs to clickOutsideShield inside the capsule bounds
+        // Swallow clicks so they cannot reach the clickOutsideShield beneath
+        // the capsule's own bounds.
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
@@ -225,19 +220,10 @@ Item {
         }
     }
 
-    // Union of the rest pill and the current (possibly mid-animation) capsule,
-    // spanning the top of the screen. While the pill is morphing the moving
-    // capsule can momentarily leave the single maskItem rect, which would drop
-    // input mid-animation; this union covers both extremes for the whole morph.
-    readonly property bool isSettled:
-        mode === "rest"
-        || (Math.abs(capsule.x - targetCapsuleX) < 1
-            && Math.abs(capsule.y - targetCapsuleY) < 1
-            && Math.abs(capsule.width - targetCapsuleWidth) < 1
-            && Math.abs(capsule.height - targetCapsuleHeight) < 1)
-
-    readonly property alias maskItemUnion: maskUnion
-
+    // Union of the rest pill and the current (possibly mid-animation) capsule.
+    // While the pill is morphing the moving capsule can momentarily leave the
+    // single maskItem rect, which would drop input mid-animation; this union
+    // covers both extremes for the whole morph.
     Item {
         id: maskUnion
         visible: false
@@ -253,6 +239,13 @@ Item {
         width: Math.max(0, restRight - restLeft)
         height: Math.max(0, bottomEdge - topEdge)
     }
+
+    readonly property bool isSettled:
+        mode === "rest"
+        || (Math.abs(capsule.x - targetCapsuleX) < 1
+            && Math.abs(capsule.y - targetCapsuleY) < 1
+            && Math.abs(capsule.width - targetCapsuleWidth) < 1
+            && Math.abs(capsule.height - targetCapsuleHeight) < 1)
 
     // ── MORPHING CAPSULE ──────────────────────────────────────────────
     Rectangle {
@@ -273,7 +266,6 @@ Item {
         width: targetCapsuleWidth
         height: targetCapsuleHeight
         z: 2
-
 
         border.color: Preferences.globals.capsuleOutline ? Globals.colors.outline : "transparent"
         border.width: Preferences.globals.capsuleOutline ? 1 : 0
@@ -297,16 +289,16 @@ Item {
         Behavior on width  { enabled: capsuleRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
         Behavior on height { enabled: capsuleRoot._ready; NumberAnimation { duration: Globals.motion.morph; easing.type: Easing.BezierSpline; easing.bezierCurve: Globals.motion.easeEmphasis } }
 
-
-
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             acceptedButtons: Qt.NoButton
 
-            // ── NORMAL BAR LAYOUT ──────────────────────────────────────
+            // ── DEFAULT FACE ───────────────────────────────────────────
+            // What the island shows when nothing else is open. It is a literal
+            // child rather than a registry module: never loaded, never
+            // evicted, it just fades out of the way.
             RowLayout {
-
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: implicitHeight
@@ -318,21 +310,20 @@ Item {
 
                 Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
 
-                Full {
-                    id: staticFull
-                    barWindow: capsuleRoot.barWindow
+                Bar {
+                    id: barFace
                     capsulePad: capsuleRoot.capsulePad
                     Layout.alignment: Qt.AlignCenter
                 }
             }
 
-            // ── MODULE CONTENT LOADER ───────────────────────────────────
+            // ── MODULE CONTENT ─────────────────────────────────────────
             Loader {
                 id: moduleLoader
                 anchors.fill: parent
-                anchors.margins: capsuleRoot.loadedModuleName === "full_bar" ? 0 : capsuleRoot.capsulePad
+                anchors.margins: capsuleRoot.capsulePad
 
-                active: capsuleRoot.loadedModuleName !== ""
+                active: capsuleRoot.shown !== ""
                 focus: true
 
                 Binding {
@@ -349,34 +340,20 @@ Item {
                     when: moduleLoader.item !== null
                 }
 
-                Binding {
-                    target: moduleLoader.item
-                    property: "barWindow"
-                    value: capsuleRoot.barWindow
-                    when: moduleLoader.item !== null && typeof moduleLoader.item.barWindow !== "undefined"
-                }
-
-                opacity: capsuleRoot.isMorphed && status === Loader.Ready ? 1.0 : 0.0
+                opacity: capsuleRoot.mode !== "rest" && status === Loader.Ready ? 1.0 : 0.0
                 visible: opacity > 0.0
                 Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
 
                 source: {
-                    var src = Modules.moduleSource(capsuleRoot.loadedModuleName);
+                    var src = Modules.moduleSource(capsuleRoot.shown);
                     return src ? Qt.resolvedUrl(src) : "";
                 }
 
                 onLoaded: {
-                    if (item) {
-                        Modules.activeModuleItem = item;
-                        if (capsuleRoot.mode !== "rest") {
-                            capsuleRoot.setModuleState("Opening");
-                            capsuleRoot.notifyModule("opening");
-                            openTimer.start();
-                        }
-                        if (item.forceActiveFocus && item !== capsuleRoot) {
-                            item.forceActiveFocus();
-                        }
-                    }
+                    if (!item) return;
+                    Modules.activeModuleItem = item;
+                    notifyModule("opening");
+                    openTimer.restart();
                 }
 
                 // When the loader deactivates (module closed, or switched to a
@@ -394,19 +371,15 @@ Item {
                 interval: Globals.motion.morph
                 repeat: false
                 onTriggered: {
-                    if (capsuleRoot.mode !== "rest" && moduleLoader.item) {
-                        capsuleRoot.setModuleState("Open");
-                        capsuleRoot.notifyModule("opened");
+                    notifyModule("opened");
 
-                        // Handle initial focus delegation
-                        if (moduleLoader.item.hasOwnProperty("initialFocusItem") && moduleLoader.item.initialFocusItem) {
-                            var focusTarget = moduleLoader.item.initialFocusItem;
-                            if (typeof focusTarget.focusInput === "function") {
-                                focusTarget.focusInput();
-                            } else {
-                                focusTarget.forceActiveFocus();
-                            }
-                        }
+                    // Hand initial focus to whatever the module nominated.
+                    const target = activeModuleItem;
+                    if (target && target.initialFocusItem) {
+                        if (typeof target.initialFocusItem.focusInput === "function")
+                            target.initialFocusItem.focusInput();
+                        else
+                            target.initialFocusItem.forceActiveFocus();
                     }
                 }
             }

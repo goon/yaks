@@ -6,72 +6,53 @@ pragma Singleton
 QtObject {
     id: root
 
-    // ── STATE PROPERTIES ──────────────────────────────────────────────
+    // ── STATE ─────────────────────────────────────────────────────────
+    // The single source of truth for "what is the island showing". A module name
+    // means open; "" means closed. Capsule.qml owns what is actually *loaded*,
+    // which lags this by the collapse animation — everything else asks here.
     property string activeModuleName: ""
-    property var activeScreen: null
     property Item activeModuleItem: null
-    property bool isCapsuleHovered: false
-
-    property real anchorX: -1
-    property real anchorMinX: -1
-    property real anchorMaxX: -1
 
     property var _pendingCallbacks: []
 
+    // Run cb once the active module's item exists. The only caller is
+    // toggleSettings, which needs the page stack to exist before it can push.
+    // Queued callbacks are dropped when the item dies, so one can never fire
+    // against a destroyed module.
     function runWhenModuleReady(callback) {
-        if (activeModuleItem && (activeModuleItem.moduleState === "Opening" || activeModuleItem.moduleState === "Open")) {
-            Qt.callLater(callback);
-        } else {
-            _pendingCallbacks.push(callback);
-        }
+        if (activeModuleItem) Qt.callLater(callback);
+        else _pendingCallbacks.push(callback);
     }
 
     onActiveModuleItemChanged: {
-        if (activeModuleItem) {
-            if (typeof activeModuleItem.moduleStateChanged === "undefined") {
-                while (_pendingCallbacks.length > 0) {
-                    var cb = _pendingCallbacks.shift();
-                    if (typeof cb === "function") Qt.callLater(cb);
-                }
-                return;
-            }
-            var checkState = () => {
-                if (activeModuleItem && (activeModuleItem.moduleState === "Opening" || activeModuleItem.moduleState === "Open")) {
-                    while (_pendingCallbacks.length > 0) {
-                        var cb = _pendingCallbacks.shift();
-                        if (typeof cb === "function") Qt.callLater(cb);
-                    }
-                    activeModuleItem.moduleStateChanged.disconnect(checkState);
-                }
-            };
-            activeModuleItem.moduleStateChanged.connect(checkState);
-            checkState();
-        } else {
-            // The module unloaded and its item was destroyed; drop any callbacks
-            // that were waiting for it so they can't fire against a stale item.
+        if (!activeModuleItem) {
             _pendingCallbacks = [];
+            return;
+        }
+        while (_pendingCallbacks.length > 0) {
+            var cb = _pendingCallbacks.shift();
+            if (typeof cb === "function") Qt.callLater(cb);
         }
     }
 
     // ── MODULE REGISTRY ──────────────────────────────────────────────────
-    // Single source of truth for a module's QML source and its expected
-    // dimensions. The dimensions are the pre-load estimate the capsule morphs
-    // toward before the module's own implicitWidth/Height is available; keep
-    // them in step with each module's declared implicit size.
+    // A module's QML source, the width the capsule morphs toward before the
+    // module can report its own, and how the capsule should treat it: a
+    // `popout` takes focus and captures clicks outside, a `toast` does
+    // neither. Keep widths in step with each module's implicitWidth.
     readonly property var moduleRegistry: ({
-        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 400, height: 500, evictionTime: 10000 },
-        "settings":      { source: "../modules/settings/Settings.qml",      width: 400, height: 500, evictionTime: 10000 },
-        "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",    evictionTime: 3000 },
-        "full_bar":       { source: "../modules/bar/Full.qml",               evictionTime: 10000 },
-        "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 325, evictionTime: 5000 },
-        "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, evictionTime: 5000 },
-        "notifications": { source: "../modules/notifications/NotificationsIsland.qml", width: 460, evictionTime: 5000 },
-        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, evictionTime: 3000 },
-        "notification_toast": { source: "../modules/toasts/NotificationToast.qml", width: 420, evictionTime: 3000 }
+        "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 400, height: 500, kind: "popout", evictionTime: 10000 },
+        "settings":      { source: "../modules/settings/Settings.qml",      width: 400, height: 500, kind: "popout", evictionTime: 10000 },
+        "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",                height: 500, kind: "popout", evictionTime: 3000 },
+        "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 325, height: 500, kind: "popout", evictionTime: 5000 },
+        "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, height: 500, kind: "popout", evictionTime: 5000 },
+        "notifications": { source: "../modules/notifications/NotificationsIsland.qml", width: 460, height: 500, kind: "popout", evictionTime: 5000 },
+        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, height: 100, kind: "toast",  evictionTime: 3000 },
+        "notification_toast": { source: "../modules/toasts/NotificationToast.qml", width: 420, height: 140, kind: "toast", evictionTime: 3000 }
     })
 
-    // Fallback dimensions used while a module is still loading, so the morph has
-    // a sane target. Prefer the registry entry, then a generic default.
+    // Pre-load estimate for the morph target; a generic default when the
+    // registry has nothing better.
     function expectedWidth(name) {
         var module = root.moduleRegistry[name];
         return (module && module.width) ? module.width : 420;
@@ -93,68 +74,54 @@ QtObject {
         return module ? module.source : "";
     }
 
-    // ── CONTROL APIS ──────────────────────────────────────────────────
-    function toggleModule(name, screenX, barLeft, barRight, screen) {
-        if (activeModuleName === name) {
-            closeAll();
-        } else {
-            activeModuleName = name;
-            activeScreen = screen || Quickshell.screens[0];
-            anchorX = (screenX !== undefined) ? screenX : -1;
-            anchorMinX = (barLeft !== undefined) ? barLeft : -1;
-            anchorMaxX = (barRight !== undefined) ? barRight : -1;
-        }
+    function moduleKind(name) {
+        var module = root.moduleRegistry[name];
+        return (module && module.kind) ? module.kind : "popout";
     }
 
-    function openModule(name, screenX, barLeft, barRight, screen) {
+    // ── CONTROL APIS ──────────────────────────────────────────────────
+    function toggleModule(name) {
+        if (activeModuleName === name) closeAll();
+        else activeModuleName = name;
+    }
+
+    function openModule(name) {
         if (activeModuleName === name) return;
         activeModuleName = name;
-        activeScreen = screen || Quickshell.screens[0];
-        anchorX = (screenX !== undefined) ? screenX : -1;
-        anchorMinX = (barLeft !== undefined) ? barLeft : -1;
-        anchorMaxX = (barRight !== undefined) ? barRight : -1;
     }
 
     function closeAll() {
         activeModuleName = "";
-        activeScreen = null;
         activeModuleItem = null;
-        anchorX = -1;
-        anchorMinX = -1;
-        anchorMaxX = -1;
     }
 
     // Plain toggles go through toggleModule(name); only modules needing stack
     // navigation get a wrapper.
     function toggleSettings(pageName) {
-        var isCurrentlyOpen = (activeModuleName === "settings");
-
-        if (isCurrentlyOpen) {
-            if (pageName !== undefined) {
-                if (activeModuleItem) {
-                    var stack = activeModuleItem.pageStack;
-                    if (stack && stack.selectedPage === pageName) {
-                        closeAll();
-                    } else if (typeof activeModuleItem.changePage === "function") {
-                        activeModuleItem.changePage(pageName);
-                    }
-                }
-            } else {
-                closeAll();
-            }
-        } else {
+        if (activeModuleName !== "settings") {
             openModule("settings");
             if (pageName !== undefined) {
                 runWhenModuleReady(() => {
-                    if (activeModuleItem && typeof activeModuleItem.changePage === "function") {
+                    if (activeModuleItem && typeof activeModuleItem.changePage === "function")
                         activeModuleItem.changePage(pageName);
-                    }
                 });
             }
+            return;
+        }
+
+        if (pageName === undefined) {
+            closeAll();
+        } else if (activeModuleItem) {
+            var stack = activeModuleItem.pageStack;
+            if (stack && stack.selectedPage === pageName) closeAll();
+            else if (typeof activeModuleItem.changePage === "function") activeModuleItem.changePage(pageName);
         }
     }
 
-    // ── VOLUME TOAST LOGIC ────────────────────────────────────────────
+    // ── VOLUME TOAST ───────────────────────────────────────────────────
+    // Fires on every volume or mute change once the shell has settled, and
+    // closes itself again after a beat. It only ever opens when nothing else
+    // is showing, so it never interrupts a popout.
     property bool _startupDelayFinished: false
     property Timer _startupTimer: Timer {
         running: true
@@ -165,30 +132,20 @@ QtObject {
     property Timer _volumeToastTimer: Timer {
         interval: 2000
         onTriggered: {
-            if (activeModuleName === "volume_toast" && !isCapsuleHovered) {
-                closeAll();
-            }
+            if (activeModuleName === "volume_toast") closeAll();
         }
     }
 
     property Connections _volumeConnections: Connections {
         target: Audio
-        function onVolumeChanged() {
-            if (!_startupDelayFinished) return;
-            
-            if (activeModuleName === "" || activeModuleName === "volume_toast") {
-                openModule("volume_toast");
-                _volumeToastTimer.restart();
-            }
-        }
-        function onMutedChanged() {
-            if (!_startupDelayFinished) return;
-            
-            if (activeModuleName === "" || activeModuleName === "volume_toast") {
-                openModule("volume_toast");
-                _volumeToastTimer.restart();
-            }
-        }
+        function onVolumeChanged() { root.showVolumeToast(); }
+        function onMutedChanged() { root.showVolumeToast(); }
+    }
+
+    function showVolumeToast() {
+        if (!_startupDelayFinished) return;
+        if (activeModuleName !== "" && activeModuleName !== "volume_toast") return;
+        openModule("volume_toast");
+        _volumeToastTimer.restart();
     }
 }
-

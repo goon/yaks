@@ -7,8 +7,6 @@ import qs
 FocusScope {
     id: root
 
-    property string moduleState: "Closed"
-
     readonly property var popupWindow: Window.window
 
     implicitWidth: 400
@@ -25,8 +23,17 @@ FocusScope {
         pageStack.pushPage(Qt.resolvedUrl(pageFile), pageFile);
     }
 
-    function closed() {
-        pageStack.pop(null); // Return to root when closed
+    // Settings always opens at the menu, so the stack is reset on the way in
+    // rather than on the way out — that also covers a reopen of a module that
+    // was never evicted.
+    function opening() {
+        pageStack.pop(null);
+    }
+
+    // Once the morph has settled the page's rows are laid out and visible, so
+    // recollect — this catches rows the initial bind saw while still hidden.
+    function opened() {
+        SettingsNav.rebuild();
     }
 
     Keys.onPressed: (event) => {
@@ -59,13 +66,6 @@ FocusScope {
     }
 
     Component.onCompleted: SettingsNav.bind(pageStack.currentItem)
-
-    // Once the module is fully open the page's rows have settled (visible), so
-    // recollect — this catches rows the initial bind saw while still hidden.
-    onModuleStateChanged: {
-        if (moduleState === "Open")
-            SettingsNav.rebuild();
-    }
 
     // Moving the pointer over the surface hands control back to the mouse:
     // clear the keyboard selection so the indicator follows the pointer again.

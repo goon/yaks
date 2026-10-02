@@ -1,13 +1,24 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 import qs
 
-PanelWindow {
-    id: bar
+// The island's default face — what the capsule shows when nothing else is
+// open. It measures and hosts the four bar components; it draws nothing itself
+// and it is never loaded or evicted, unlike every registry module. Lives here,
+// beside the components it names, so the bare filenames in resolveComponentSource
+// resolve against this folder.
+Item {
+    id: barFace
 
-    property var components: Preferences.bar.components
+    // The capsule inset, owned by Capsule and passed in so the bar lines up
+    // with every other module without reaching into Globals for it.
+    required property real capsulePad
+
+    implicitHeight: Preferences.bar.height
+    implicitWidth: (contentLayout.implicitWidth || 0) + (capsulePad * 2)
+
+    readonly property real horizontalSpacing: Globals.geometry.spacing.lg
 
     function resolveComponentSource(name) {
         const map = {
@@ -19,60 +30,57 @@ PanelWindow {
         return map[name] || "";
     }
 
-    objectName: "bar"
-    color: "transparent"
-    
-    WlrLayershell.keyboardFocus: capsule.grabsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    RowLayout {
+        id: contentLayout
 
-    WlrLayershell.namespace: "yaks:bar"
-    WlrLayershell.layer: WlrLayer.Top
-    
-    WlrLayershell.exclusiveZone: Preferences.bar.reservedZone
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        height: implicitHeight
+        width: mainContent.implicitWidth
+        spacing: horizontalSpacing
 
-    implicitHeight: bar.screen ? bar.screen.height : 1080
-    implicitWidth: 0
+        RowLayout {
+            id: mainContent
+            Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
+            spacing: horizontalSpacing
 
-    anchors {
-        top: Preferences.bar.position === "top"
-        bottom: Preferences.bar.position === "bottom"
-        left: true
-        right: true
+            Repeater {
+                model: Preferences.bar.components
+
+                RowLayout {
+                    id: componentLayout
+                    Layout.alignment: Qt.AlignVCenter
+
+                    readonly property bool isComponentVisible: (Preferences.bar.componentsEnabled[modelData] === true)
+                        && (modelData === "dock" ? Compositor.hasDockWindows : barFace.resolveComponentSource(modelData) !== "")
+                    visible: isComponentVisible
+                    spacing: horizontalSpacing
+
+                    BaseSeparator {
+                        visible: {
+                            if (!componentLayout.isComponentVisible) return false;
+
+                            for (let i = 0; i < index; i++) {
+                                let otherData = Preferences.bar.components[i];
+                                let otherVisible = (Preferences.bar.componentsEnabled[otherData] === true)
+                                                   && (otherData === "dock" ? Compositor.hasDockWindows : barFace.resolveComponentSource(otherData) !== "");
+                                if (otherVisible) return true;
+                            }
+                            return false;
+                        }
+                        orientation: BaseSeparator.Vertical
+                        Layout.fillHeight: false
+                        Layout.preferredHeight: 22
+                        Layout.preferredWidth: 1
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    Loader {
+                        Layout.alignment: Qt.AlignVCenter
+                        source: barFace.resolveComponentSource(modelData)
+                    }
+                }
+            }
+        }
     }
-
-    margins {
-        top: 0
-        bottom: 0
-        left: 0
-        right: 0
-    }
-
-    // While the pill is settled (collapsed or fully expanded / a surface is
-    // open) the input region can be the exact capsule rect or the whole layer.
-    // While it is mid-morph the moving capsule can briefly leave the capsule
-    // rect, so the union of the rest pill and the animating capsule is used
-    // instead, keeping input stable across the transition.
-    mask: {
-        if (capsule.isCapsuleMorphed && !capsule.isToast)
-            return null;
-        if (!capsule.isSettled)
-            return unionRegion;
-        return capsuleRegion;
-    }
-
-    Region {
-        id: capsuleRegion
-        item: capsule.maskItem
-    }
-
-    Region {
-        id: unionRegion
-        item: capsule.maskItemUnion
-    }
-
-    Capsule {
-        id: capsule
-        barWindow: bar
-        anchors.fill: parent
-    }
-
 }

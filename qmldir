@@ -40,16 +40,15 @@ BaseStackView components/BaseStackView.qml
 BaseSwitch components/BaseSwitch.qml
 BaseText components/BaseText.qml
 
-# Shell frame
+# Shell frame — the island window
 Capsule modules/Capsule.qml
 
-# Bar
+# Bar — the island's default face, plus its four components
 Bar modules/bar/Bar.qml
 BarClock modules/bar/BarClock.qml
 BarDock modules/bar/BarDock.qml
 BarIndicators modules/bar/BarIndicators.qml
 BarWorkspaces modules/bar/BarWorkspaces.qml
-Full modules/bar/Full.qml
 
 # Network
 NetworkDevice modules/network/NetworkDevice.qml

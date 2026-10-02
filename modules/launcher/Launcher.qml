@@ -6,8 +6,6 @@ import qs
 FocusScope {
     id: root
 
-    property string moduleState: "Closed"
-
     readonly property int itemHeight: 54 * Globals.shellScale
 
     implicitWidth: 400
@@ -70,10 +68,6 @@ FocusScope {
         Launcher.lastInputMethod = "keyboard";
         searchBar.text = "";
         performSearch();
-    }
-
-    function closing() {
-        searchBar.text = "";
     }
 
     function getCurrentListView() {

@@ -6,8 +6,6 @@ import "../notifications"
 
 NotificationCard {
 
-    property string moduleState: "Closed"
-
     // Default card width is 350. Increased by 20% = 420
     implicitWidth: 420
 
