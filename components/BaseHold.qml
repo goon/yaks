@@ -5,6 +5,10 @@ import qs
 // own pointer or key handler and watches `hold` to render progress; `confirmed`
 // fires only when the fill completes. Releasing or cancelling early drains.
 //
+// Set `tapThreshold` when the same hitbox also has a click meaning: a release
+// below it fires `tapped`, so a hold that is abandoned part-way cannot be
+// misread as a click on whatever the tap does. Left at 0, `tapped` never fires.
+//
 // The drain is short and the `fired` latch keeps a release that lands just
 // after a confirm from being read as a second gesture.
 Item {
@@ -20,8 +24,13 @@ Item {
     readonly property bool holding: hold > 0.001
     property real duration: Globals.motion.heat
     property bool fired: false
+    // Fraction of the fill below which a release counts as a tap. 0 disables
+    // `tapped` entirely, which is what the power tiles want: their tile has no
+    // click meaning to preserve.
+    property real tapThreshold: 0
 
     signal confirmed()
+    signal tapped()
 
     function press() {
         fired = false;
@@ -31,8 +40,11 @@ Item {
 
     function release() {
         fill.stop();
-        if (!fired && hold < 1)
-            drain.restart();
+        if (fired || hold >= 1)
+            return;
+        if (tapThreshold > 0 && hold < tapThreshold)
+            tapped();
+        drain.restart();
     }
 
     function cancel() {

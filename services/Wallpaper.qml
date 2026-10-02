@@ -86,6 +86,36 @@ Item {
         Runner.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper has been applied."]);
     }
 
+    // Recoverable delete: gio trash moves the file to the desktop trash, so a
+    // mis-aimed hold costs nothing. A non-zero exit means the file is still
+    // there, so the scan is replayed rather than the list left disagreeing with
+    // the directory.
+    function trash(path) {
+        if (!path) return;
+
+        Runner.run(["gio", "trash", path], function (out, exitCode) {
+            if (exitCode !== 0) {
+                refreshWallpapers();
+            }
+        });
+
+        var kept = [];
+        for (var i = 0; i < root.wallpapers.length; i++) {
+            if (root.wallpapers[i].path !== path) kept.push(root.wallpapers[i]);
+        }
+        root.wallpapers = kept;
+        listCacheWriter.setText(JSON.stringify(kept));
+
+        // The background must not keep pointing at a file that no longer exists.
+        if (root.currentWallpaper === path) {
+            root.currentWallpaper = "";
+            Preferences.currentWallpaper = "";
+            if (kept.length > 0) setWallpaper(kept[0].path);
+        }
+
+        Runner.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image-trash", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper was moved to the trash."]);
+    }
+
     function ensureScanned() {
         if (!hasScanned) {
             if (Preferences.loaded) {

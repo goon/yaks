@@ -131,6 +131,13 @@ FocusScope {
 
             readonly property string thumbSource: "file://" + modelData.thumb + "?v=" + Math.round(modelData.mtime)
 
+            function apply() {
+                if (root.model && root.currentIndex >= 0 && root.currentIndex < root.model.length) {
+                    Wallpaper.setWallpaper(root.model[root.currentIndex].path);
+                    root.closeRequested();
+                }
+            }
+
             width:  root.slotLerp(root.slotW, ao) * root.s
             height: root.slotLerp(root.slotH, ao) * root.s
             x: root.width / 2 + root.offsetX(off) - width / 2
@@ -139,6 +146,10 @@ FocusScope {
 
             visible: ao <= 3
             opacity: edgeFade * (ao <= 2 ? 1 : Math.max(0, 3 - ao))
+
+            // Focus moving away mid-hold drains instead of trashing a tile the
+            // pointer is no longer on.
+            onFocusedChanged: if (!focused) hold.cancel()
 
             ClippingRectangle {
                 anchors.fill: parent
@@ -169,21 +180,96 @@ FocusScope {
                     color: "black"
                     opacity: 1 - tile.bright
                 }
+
+                // Rising hold fill. Destructive, so it reads like the power
+                // tiles' fill rather than inventing a colour the role layer
+                // does not have — but translucent, because the power tiles
+                // fill a flat well while this one covers the wallpaper it is
+                // about to remove, and an opaque slab would hide the thing
+                // being deleted.
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: parent.height * hold.hold
+                    visible: hold.holding
+                    opacity: 0.55
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Globals.colors.accentTop }
+                        GradientStop { position: 1.0; color: Globals.colors.accentBottom }
+                    }
+
+                    // The bright line on the fill's leading edge — the
+                    // wavefront, so the eye can tell how far the hold has got
+                    // at a glance. Fading to the fill's own top colour rather
+                    // than to transparent gets the soft-ended read without
+                    // colour maths at the call site.
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        height: Globals.geometry.borderWidth.thick
+                        opacity: Math.min(1, hold.hold * 3)
+                        gradient: Gradient {
+                            orientation: Gradient.Horizontal
+                            GradientStop { position: 0.0; color: Globals.colors.accentTop }
+                            GradientStop { position: 0.5; color: Globals.colors.text }
+                            GradientStop { position: 1.0; color: Globals.colors.accentTop }
+                        }
+                    }
+                }
+            }
+
+            // Hairline outline on every tile, as on Ukishima's: the strip reads
+            // as a set of cards rather than a photo smear. A sibling of the
+            // ClippingRectangle, not a child — the clip would shave the
+            // hairline off at the corners.
+            Rectangle {
+                anchors.fill: parent
+                radius: tile.corner
+                color: "transparent"
+                border.width: Globals.geometry.borderWidth.hair
+                border.color: hold.holding ? Globals.colors.accentTop : Globals.colors.border
+                Behavior on border.color { BaseMotion { duration: Globals.motion.hover } }
+            }
+
+            BaseHold {
+                id: hold
+                // A quarter of the fill. Long enough that a deliberate hold is
+                // never mistaken for a click, short enough that a click still
+                // feels instant.
+                tapThreshold: 0.25
+                onTapped: tile.apply()
+
+                onConfirmed: {
+                    if (!tile.focused)
+                        return;
+                    var slot = tile.index;
+                    Wallpaper.trash(tile.modelData.path);
+                    // trash() replaces the model, which trips focusFirst() and
+                    // zeroes both pos and focusIndex. Restore the slot the
+                    // trashed tile left behind — pos too, or the strip slides
+                    // in from the far end instead of staying put.
+                    var next = Math.min(slot, Math.max(0, root.model.length - 1));
+                    root.pos = next;
+                    root.focusIndex = next;
+                }
             }
 
             MouseArea {
                 anchors.fill: parent
+                hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    if (tile.focused) {
-                        if (root.model && root.currentIndex >= 0 && root.currentIndex < root.model.length) {
-                            Wallpaper.setWallpaper(root.model[root.currentIndex].path);
-                            root.closeRequested();
-                        }
-                    } else {
-                        root.focusIndex = tile.index;
-                    }
-                }
+
+                onExited: hold.cancel()
+                onPressed: if (tile.focused) hold.press()
+                onReleased: if (tile.focused) hold.release()
+
+                // Focus only. Applying lives on hold's `tapped`, so a press held
+                // past the tap threshold and then abandoned drains without
+                // applying, and a completed hold cannot apply what it trashed.
+                onClicked: if (!tile.focused) root.focusIndex = tile.index
             }
         }
     }
