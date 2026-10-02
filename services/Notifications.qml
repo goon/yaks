@@ -8,7 +8,9 @@ pragma Singleton
 Item {
     id: root
 
-    property NotificationServer server: NotificationServer {}
+    // keepOnReload off: the server re-emits every tracked notification on reload,
+// which replayed them as toasts. History is in-memory, so starting empty is fine.
+property NotificationServer server: NotificationServer { keepOnReload: false }
     
     property alias notificationHistory: historyModel
     readonly property alias unreadCount: historyModel.count
