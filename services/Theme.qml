@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs
-import qs.services
 
 import "../lib/color.js" as Color
 import "../lib/apps.js" as Apps

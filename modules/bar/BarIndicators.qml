@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
 import qs
-import qs.services
 
 Item {
     id: root

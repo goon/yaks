@@ -3,7 +3,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs
-import qs.services
 
 ShellRoot {
     property var _display: Display

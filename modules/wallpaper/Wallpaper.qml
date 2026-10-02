@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Effects
-import qs.services
 import qs
 
 FocusScope {

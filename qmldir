@@ -1,68 +1,68 @@
 module qs
 
-# Singletons
+# Singletons — config
 singleton Globals config/Globals.qml
 
-# Services (Singletons)
-singleton Theme services/Theme.qml
-singleton Runner services/Runner.qml
-
-singleton Launcher services/Launcher.qml
-singleton Compositor services/Compositor.qml
-singleton Modules services/Modules.qml
-singleton Power services/Power.qml
-singleton Preferences services/Preferences.qml
+# Singletons — services
 singleton Audio services/Audio.qml
-singleton Wallpaper services/Wallpaper.qml
-singleton Network services/Network.qml
+singleton Binds services/Binds.qml
 singleton Bluetooth services/Bluetooth.qml
+singleton Compositor services/Compositor.qml
 singleton Display services/Display.qml
+singleton Launcher services/Launcher.qml
+singleton Modules services/Modules.qml
+singleton Network services/Network.qml
 singleton Notifications services/Notifications.qml
 singleton Peripherals services/Peripherals.qml
-singleton Binds services/Binds.qml
+singleton Power services/Power.qml
+singleton Preferences services/Preferences.qml
+singleton Runner services/Runner.qml
+singleton Theme services/Theme.qml
+singleton Wallpaper services/Wallpaper.qml
 
 # Components
-BaseHeader components/BaseHeader.qml
-BaseContainer components/BaseContainer.qml
 BaseButton components/BaseButton.qml
+BaseContainer components/BaseContainer.qml
+BaseHeader components/BaseHeader.qml
+BaseHold components/BaseHold.qml
 BaseIcon components/BaseIcon.qml
-BaseListItem components/BaseListItem.qml
+BaseIndicator components/BaseIndicator.qml
 BaseInput components/BaseInput.qml
-Capsule modules/Capsule.qml
+BaseListItem components/BaseListItem.qml
+BaseMotion components/BaseMotion.qml
 BaseScrolling components/BaseScrolling.qml
+BaseSearch components/BaseSearch.qml
+BaseSegmentedControl components/BaseSegmentedControl.qml
 BaseSeparator components/BaseSeparator.qml
 BaseSlider components/BaseSlider.qml
-BaseText components/BaseText.qml
-BaseSegmentedControl components/BaseSegmentedControl.qml
-BaseSwitch components/BaseSwitch.qml
-BaseMotion components/BaseMotion.qml
-BaseHold components/BaseHold.qml
 BaseSpinBox components/BaseSpinBox.qml
-BaseIndicator components/BaseIndicator.qml
-BaseSearch components/BaseSearch.qml
-
 BaseStackView components/BaseStackView.qml
+BaseSwitch components/BaseSwitch.qml
+BaseText components/BaseText.qml
 
+# Shell frame
+Capsule modules/Capsule.qml
+
+# Bar
+Bar modules/bar/Bar.qml
+BarClock modules/bar/BarClock.qml
+BarDock modules/bar/BarDock.qml
+BarIndicators modules/bar/BarIndicators.qml
+BarWorkspaces modules/bar/BarWorkspaces.qml
+Full modules/bar/Full.qml
+
+# Network
+NetworkDevice modules/network/NetworkDevice.qml
+NetworkHeader modules/network/NetworkHeader.qml
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml
 
-
 # Settings
-SettingsPage modules/settings/SettingsPage.qml
 SettingsGroup modules/settings/SettingsGroup.qml
-singleton SettingsNav modules/settings/SettingsNav.qml
+SettingsNav modules/settings/SettingsNav.qml
+SettingsPage modules/settings/SettingsPage.qml
 
-# Bar
+# Wallpaper
 WallpaperBackground modules/wallpaper/WallpaperBackground.qml
-Bar modules/bar/Bar.qml
-BarClock modules/bar/BarClock.qml
-BarWorkspaces modules/bar/BarWorkspaces.qml
-BarDock modules/bar/BarDock.qml
-BarIndicators modules/bar/BarIndicators.qml
-Full modules/bar/Full.qml
-
-# Modules
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
-NetworkDevice modules/network/NetworkDevice.qml
-NetworkHeader modules/network/NetworkHeader.qml
