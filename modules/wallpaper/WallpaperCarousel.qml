@@ -311,6 +311,6 @@ FocusScope {
         anchors.bottomMargin: root.contentPadding
         text: root.model.length > 0 ? (root.currentIndex + 1) + " / " + root.model.length : ""
         font.pixelSize: Globals.typography.size.sm
-        color: Globals.colors.muted
+        muted: true
     }
 }

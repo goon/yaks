@@ -127,7 +127,6 @@ Item {
 
                         BaseText {
                             text: root.title
-                            pixelSize: Globals.typography.size.md
                             weight: root.isConnected ? Globals.typography.weight.demi : Globals.typography.weight.normal
                             font.capitalization: Font.AllUppercase
                             color: root.isConnected ? Globals.colors.primary : (root.isHovered ? Globals.colors.primary : Globals.colors.text)
@@ -148,7 +147,6 @@ Item {
                             BaseText {
                                 anchors.centerIn: parent
                                 text: Math.round(root.batteryPct) + "%"
-                                pixelSize: Globals.typography.size.md
                             }
                         }
 
@@ -207,7 +205,6 @@ Item {
                         roundActiveEnd: true
                         trackHeight: 6 * Globals.shellScale
                         value: root.batteryPct
-                        from: 0
                         to: 100
                     }
 
@@ -281,7 +278,7 @@ Item {
                 }
             }
 
-            Behavior on Layout.preferredHeight { BaseMotion { duration: Globals.motion.standard } }
+            Behavior on Layout.preferredHeight { BaseMotion { } }
         }
     }
 }

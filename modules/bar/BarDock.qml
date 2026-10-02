@@ -11,7 +11,6 @@ BaseContainer {
     visible: Compositor.hasDockWindows
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
-    paddingHorizontal: 0
     implicitHeight: _itemSize
     ListView {
 

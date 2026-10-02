@@ -94,7 +94,7 @@ SpinBox {
             text: root.suffix
             visible: root.suffix !== ""
             pixelSize: Globals.typography.size.sm
-            color: Globals.colors.muted
+            muted: true
         }
     }
 

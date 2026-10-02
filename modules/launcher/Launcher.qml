@@ -297,7 +297,6 @@ FocusScope {
                         Layout.fillWidth: true
                         text: delegateRoot.entryName
                         pixelSize: Globals.typography.size.lg
-                        color: Globals.colors.text
                         weight: delegateRoot.selected ? Globals.typography.weight.demi : Globals.typography.weight.normal
                         elide: Text.ElideRight
                     }

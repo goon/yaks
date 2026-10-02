@@ -6,7 +6,6 @@ BaseText {
     id: root
 
     pixelSize: Globals.typography.size.xs
-    weight: Globals.typography.weight.normal
     font.capitalization: Font.AllUppercase
     font.letterSpacing: 1.5
     muted: true

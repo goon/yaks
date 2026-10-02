@@ -25,32 +25,32 @@ StackView {
 
     pushEnter: Transition {
         ParallelAnimation {
-            BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
-            BaseMotion { property: "x"; from: 50; to: 0; duration: Globals.motion.standard }
+            BaseMotion { property: "opacity"; from: 0; to: 1 }
+            BaseMotion { property: "x"; from: 50; to: 0 }
         }
     }
     pushExit: Transition {
         ParallelAnimation {
-            BaseMotion { property: "opacity"; from: 1; to: 0; duration: Globals.motion.standard }
-            BaseMotion { property: "x"; from: 0; to: -50; duration: Globals.motion.standard }
+            BaseMotion { property: "opacity"; from: 1; to: 0 }
+            BaseMotion { property: "x"; from: 0; to: -50 }
         }
     }
     popEnter: Transition {
         ParallelAnimation {
-            BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
-            BaseMotion { property: "x"; from: -50; to: 0; duration: Globals.motion.standard }
+            BaseMotion { property: "opacity"; from: 0; to: 1 }
+            BaseMotion { property: "x"; from: -50; to: 0 }
         }
     }
     popExit: Transition {
         ParallelAnimation {
-            BaseMotion { property: "opacity"; from: 1; to: 0; duration: Globals.motion.standard }
-            BaseMotion { property: "x"; from: 0; to: 50; duration: Globals.motion.standard }
+            BaseMotion { property: "opacity"; from: 1; to: 0 }
+            BaseMotion { property: "x"; from: 0; to: 50 }
         }
     }
     replaceEnter: Transition {
-        BaseMotion { property: "opacity"; from: 0; to: 1; duration: Globals.motion.standard }
+        BaseMotion { property: "opacity"; from: 0; to: 1 }
     }
     replaceExit: Transition {
-        BaseMotion { property: "opacity"; from: 1; to: 0; duration: Globals.motion.standard }
+        BaseMotion { property: "opacity"; from: 1; to: 0 }
     }
 }

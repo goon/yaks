@@ -16,8 +16,6 @@ BaseContainer {
     property var notificationManager: Notifications
     property int notifCount: notificationManager ? notificationManager.notificationHistory.count : 0
 
-    spacing: Globals.geometry.spacing.md
-
     ColumnLayout {
         Layout.fillWidth: true
         visible: root.notifCount > 0
@@ -35,7 +33,6 @@ BaseContainer {
 
             BaseButton {
                 icon: "trash-2"
-                hoverColor: "transparent"
                 onClicked: {
                     if (root.notificationManager) {
                         const model = root.notificationManager.notificationHistory;

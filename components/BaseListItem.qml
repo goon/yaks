@@ -121,7 +121,6 @@ Item {
                 visible: root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
-                size: Globals.typography.icon.md
                 iconColor: root.leftIconActive ? Globals.colors.primary : Globals.colors.text
                 onClicked: root.leftIconClicked()
                 z: 2 // Sit above the main MouseArea
@@ -193,7 +192,6 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     text: root.subtitle
-                    pixelSize: Globals.typography.size.md
                     muted: true
                     elide: Text.ElideRight
                     maximumLineCount: 1

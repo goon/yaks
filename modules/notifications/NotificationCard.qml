@@ -182,7 +182,6 @@ BaseContainer {
                         muted: true
                         visible: root.showTime
                         text: root.timeString
-                        pixelSize: Globals.typography.size.md
                         font.italic: true
                         elide: Text.ElideRight
                     }

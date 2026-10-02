@@ -35,7 +35,6 @@ SettingsPage {
                 BaseSpinBox {
                     from: 30
                     to: 100
-                    stepSize: 1
                     value: Preferences.bar.height
                     suffix: "px"
                     onValueChanged: Preferences.bar.height = value
@@ -47,9 +46,7 @@ SettingsPage {
                 title: "Margin"
 
                 BaseSpinBox {
-                    from: 0
                     to: 50
-                    stepSize: 1
                     value: Preferences.bar.marginTop
                     suffix: "px"
                     onValueChanged: Preferences.bar.marginTop = value
@@ -71,7 +68,6 @@ SettingsPage {
                 title: "Reserved"
 
                 BaseSpinBox {
-                    from: 0
                     to: 100
                     stepSize: 5
                     value: Preferences.bar.overhangReserve
