@@ -59,7 +59,7 @@ NotificationCard modules/notifications/NotificationCard.qml
 
 # Settings
 SettingsGroup modules/settings/SettingsGroup.qml
-SettingsNav modules/settings/SettingsNav.qml
+singleton SettingsNav modules/settings/SettingsNav.qml
 SettingsPage modules/settings/SettingsPage.qml
 
 # Wallpaper

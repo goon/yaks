@@ -42,7 +42,10 @@ FocusScope {
     }
 
     function updateCurrentIndex(queryChanged) {
-        if (queryChanged || appListView.currentIndex === -1) {
+        // Out of range too, not just -1: performSearch also runs from
+        // DesktopEntries.onValuesChanged with queryChanged false, and a shrunk
+        // model would otherwise leave an index activateCurrentItem silently skips.
+        if (queryChanged || appListView.currentIndex < 0 || appListView.currentIndex >= cachedModel.length) {
             if (cachedModel.length > 0)
                 appListView.currentIndex = 0;
             else

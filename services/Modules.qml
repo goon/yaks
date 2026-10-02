@@ -17,18 +17,25 @@ QtObject {
 
     // Run cb once the active module's item exists. The only caller is
     // toggleSettings, which needs the page stack to exist before it can push.
-    // Queued callbacks are dropped when the item dies, so one can never fire
-    // against a destroyed module.
+    // Queued callbacks are dropped when the island closes, so one can never fire
+    // against the next module.
     function runWhenModuleReady(callback) {
         if (activeModuleItem) Qt.callLater(callback);
         else _pendingCallbacks.push(callback);
     }
 
+    // The queue belongs to the *intent*, not the item: activeModuleItem is a
+    // mirror of the capsule loader and legitimately outlives closeAll() through
+    // the collapse animation and the eviction delay. What invalidates a queued
+    // callback is the intent going away, not the item — the mirror clearing is
+    // Capsule's business alone, and clearing it here is what left a re-entered
+    // cached module with no item to key against.
+    onActiveModuleNameChanged: {
+        if (activeModuleName === "") _pendingCallbacks = [];
+    }
+
     onActiveModuleItemChanged: {
-        if (!activeModuleItem) {
-            _pendingCallbacks = [];
-            return;
-        }
+        if (!activeModuleItem) return;
         while (_pendingCallbacks.length > 0) {
             var cb = _pendingCallbacks.shift();
             if (typeof cb === "function") Qt.callLater(cb);
@@ -92,11 +99,6 @@ QtObject {
 
     function closeAll() {
         activeModuleName = "";
-        // Eager, not redundant with Capsule's own mirror of the loader: the loader
-        // only drops its item after the collapse animation and the eviction delay,
-        // and a queued callback must not survive that long to fire at the next
-        // module. Clearing here also drops the pending queue outright.
-        activeModuleItem = null;
     }
 
     // Plain toggles go through toggleModule(name); only modules needing stack

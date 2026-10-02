@@ -92,6 +92,20 @@ PanelWindow {
         }
     }
 
+    // Hand the keyboard to whatever just became the module, immediately on load
+    // and again once the morph settles. Called on both so the 420ms morph is not
+    // a window where keys land nowhere — the shell has no other key grabber.
+    // A module with `initialFocusItem` says where; one without gets the root,
+    // which is what makes its own Keys.onPressed reachable at all.
+    function focusModule() {
+        if (!capsuleRoot.grabsFocus) return;
+        const target = moduleLoader.item;
+        if (!target) return;
+        const t = target.initialFocusItem || target;
+        if (typeof t.focusInput === "function") t.focusInput();
+        else if (typeof t.forceActiveFocus === "function") t.forceActiveFocus();
+    }
+
     Connections {
         target: Modules
         function onActiveModuleNameChanged() { capsuleRoot.syncShown(); }
@@ -345,6 +359,7 @@ PanelWindow {
                 onLoaded: {
                     if (!item) return;
                     notifyModule("opening");
+                    capsuleRoot.focusModule();
                     openTimer.restart();
                 }
             }
@@ -355,15 +370,7 @@ PanelWindow {
                 repeat: false
                 onTriggered: {
                     notifyModule("opened");
-
-                    // Hand initial focus to whatever the module nominated.
-                    const target = activeModuleItem;
-                    if (target && target.initialFocusItem) {
-                        if (typeof target.initialFocusItem.focusInput === "function")
-                            target.initialFocusItem.focusInput();
-                        else
-                            target.initialFocusItem.forceActiveFocus();
-                    }
+                    capsuleRoot.focusModule();
                 }
             }
         }
