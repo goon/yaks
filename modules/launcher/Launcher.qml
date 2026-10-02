@@ -13,7 +13,7 @@ FocusScope {
     implicitWidth: 400
     implicitHeight: {
         var searchHeight = searchBar.implicitHeight;
-        var padLarge = Globals.geometry.spacing.md;
+        var padLarge = Globals.geometry.spacing.sm;
 
         var visibleItems = Math.min(cachedModel.length, 6);
 
@@ -162,7 +162,7 @@ FocusScope {
             ListView {
                 id: appListView
                 anchors.fill: parent
-                spacing: Globals.geometry.spacing.md
+                spacing: Globals.geometry.spacing.sm
                 activeFocusOnTab: false
                 highlightMoveDuration: 0
                 highlightResizeDuration: 0
@@ -295,7 +295,7 @@ FocusScope {
                         text: delegateRoot.entryName
                         pixelSize: Globals.typography.size.lg
                         color: delegateRoot.selected ? Globals.colors.text : Globals.colors.muted
-                        weight: delegateRoot.selected ? Globals.typography.weight.bold : Globals.typography.weight.normal
+                        weight: delegateRoot.selected ? Globals.typography.weight.demi : Globals.typography.weight.normal
                         elide: Text.ElideRight
                     }
                 }
