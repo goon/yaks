@@ -146,6 +146,9 @@ FocusScope {
 
         BaseSearch {
             id: searchBar
+            counterText: cachedModel.length > 0
+                ? (appListView.currentIndex + 1) + "/" + cachedModel.length
+                : ""
         }
 
         BaseSeparator {
@@ -294,10 +297,19 @@ FocusScope {
                         Layout.fillWidth: true
                         text: delegateRoot.entryName
                         pixelSize: Globals.typography.size.lg
-                        color: delegateRoot.selected ? Globals.colors.text : Globals.colors.muted
+                        color: Globals.colors.text
                         weight: delegateRoot.selected ? Globals.typography.weight.demi : Globals.typography.weight.normal
                         elide: Text.ElideRight
                     }
+                }
+
+                BaseIcon {
+                    icon: "corner-down-left"
+                    size: Globals.typography.icon.md
+                    color: Globals.colors.primary
+                    Layout.alignment: Qt.AlignVCenter
+                    opacity: delegateRoot.selected ? 1 : 0
+                    Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
                 }
             }
         }

@@ -90,8 +90,8 @@ QtObject {
             readonly property int xs: 4 * root.shellScale
             readonly property int sm: 8 * root.shellScale
             readonly property int md: 12 * root.shellScale
-            readonly property int lg: 18 * root.shellScale
-            readonly property int xl: 22 * root.shellScale
+            readonly property int lg: 15 * root.shellScale
+            readonly property int xl: 18 * root.shellScale
         }
 
         readonly property QtObject borderWidth: QtObject {

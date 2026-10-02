@@ -7,6 +7,7 @@ BaseContainer {
 
     property alias text: input.text
     property alias placeholderText: input.placeholderText
+    property string counterText: ""
 
     function focusInput() {
         input.forceActiveFocus();
@@ -49,6 +50,12 @@ BaseContainer {
                 verticalAlignment: Text.AlignVCenter
                 activeFocusOnTab: false
             }
+        }
+
+        BaseText {
+            text: root.counterText
+            visible: root.counterText !== ""
+            muted: true
         }
     }
 }
