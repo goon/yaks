@@ -86,8 +86,8 @@ QtObject {
         var module = Modules.activeModuleName;
 
         if (module === "wallpaper") {
-            var panelItem = Modules.activeModuleItem;
-            var carousel = (panelItem && panelItem.carouselItem) ? panelItem.carouselItem : panelItem;
+            var moduleItem = Modules.activeModuleItem;
+            var carousel = (moduleItem && moduleItem.carouselItem) ? moduleItem.carouselItem : moduleItem;
             if (carousel) {
                 _wheelAcc += event.angleDelta.y / 120;
                 var notches = Math.trunc(_wheelAcc);

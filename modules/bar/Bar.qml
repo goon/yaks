@@ -9,7 +9,7 @@ import qs
 // beside the components it names, so the bare filenames in resolveComponentSource
 // resolve against this folder.
 Item {
-    id: barFace
+    id: bar
 
     // The capsule inset, owned by Capsule and passed in so the bar lines up
     // with every other module without reaching into Globals for it.
@@ -52,7 +52,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
 
                     readonly property bool isComponentVisible: (Preferences.bar.componentsEnabled[modelData] === true)
-                        && (modelData === "dock" ? Compositor.hasDockWindows : barFace.resolveComponentSource(modelData) !== "")
+                        && (modelData === "dock" ? Compositor.hasDockWindows : bar.resolveComponentSource(modelData) !== "")
                     visible: isComponentVisible
                     spacing: horizontalSpacing
 
@@ -63,7 +63,7 @@ Item {
                             for (let i = 0; i < index; i++) {
                                 let otherData = Preferences.bar.components[i];
                                 let otherVisible = (Preferences.bar.componentsEnabled[otherData] === true)
-                                                   && (otherData === "dock" ? Compositor.hasDockWindows : barFace.resolveComponentSource(otherData) !== "");
+                                                   && (otherData === "dock" ? Compositor.hasDockWindows : bar.resolveComponentSource(otherData) !== "");
                                 if (otherVisible) return true;
                             }
                             return false;
@@ -77,7 +77,7 @@ Item {
 
                     Loader {
                         Layout.alignment: Qt.AlignVCenter
-                        source: barFace.resolveComponentSource(modelData)
+                        source: bar.resolveComponentSource(modelData)
                     }
                 }
             }

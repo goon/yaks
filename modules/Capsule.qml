@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
@@ -125,8 +124,12 @@ PanelWindow {
 
     readonly property alias activeModuleItem: moduleLoader.item
 
-    readonly property real normalSideMargin: Math.max(0, (Preferences.bar.height - capsuleRoot.itemHeight) / 2)
-    readonly property real normalCapsuleWidth: barFace.implicitWidth
+    // Mirror the loader's item into the singleton everything else reads, so it can
+    // never point at a destroyed module. Loading and unloading both flow through
+    // this one handler, which is why there is nothing to hook on the Loader itself.
+    onActiveModuleItemChanged: Modules.activeModuleItem = capsuleRoot.activeModuleItem
+
+    readonly property real normalCapsuleWidth: bar.implicitWidth
     readonly property real normalCapsuleHeight: Preferences.bar.height
     readonly property real normalCapsuleX: (capsuleRoot.width - normalCapsuleWidth) / 2
     readonly property real normalCapsuleY: Preferences.bar.position === "top"
@@ -148,27 +151,27 @@ PanelWindow {
     readonly property real _bandFrac: Math.min(1.0, _gradientBand / Math.max(1, capsule.height))
 
     // The registry's size is the morph target until the module reports its own.
-    readonly property real activePanelWidth: activeModuleItem
+    readonly property real activeModuleWidth: activeModuleItem
         ? (activeModuleItem.implicitWidth || 0) + totalWidthPadding
         : Modules.expectedWidth(shown)
-    readonly property real activePanelHeight: activeModuleItem
+    readonly property real activeModuleHeight: activeModuleItem
         ? (activeModuleItem.implicitHeight || 0) + totalHeightPadding
         : Modules.expectedHeight(shown)
 
-    readonly property real targetCapsuleWidth: mode === "rest" ? normalCapsuleWidth : activePanelWidth
-    readonly property real targetCapsuleHeight: mode === "rest" ? normalCapsuleHeight : activePanelHeight
+    readonly property real targetCapsuleWidth: mode === "rest" ? normalCapsuleWidth : activeModuleWidth
+    readonly property real targetCapsuleHeight: mode === "rest" ? normalCapsuleHeight : activeModuleHeight
 
     // The island is always centred on its screen. It was once anchored to
     // whichever bar element opened it; nothing ever passed an anchor, so the
     // clamp that bounded it never ran.
     readonly property real targetCapsuleX: (capsuleRoot.width
-        - (mode === "rest" ? normalCapsuleWidth : activePanelWidth)) / 2
+        - (mode === "rest" ? normalCapsuleWidth : activeModuleWidth)) / 2
 
     readonly property real targetCapsuleY: mode === "rest"
         ? normalCapsuleY
         : (Preferences.bar.position === "top"
             ? Preferences.bar.marginTop
-            : capsuleRoot.height - activePanelHeight - Preferences.bar.marginTop)
+            : capsuleRoot.height - activeModuleHeight - Preferences.bar.marginTop)
 
     // While the pill is settled (collapsed or fully expanded / a surface is
     // open) the input region can be the exact capsule rect or the whole layer.
@@ -257,10 +260,6 @@ PanelWindow {
             GradientStop { position: 1.0; color: Globals.colors.bottom }
         }
 
-        HoverHandler {
-            id: capsuleHoverHandler
-        }
-
         x: targetCapsuleX
         y: targetCapsuleY
         width: targetCapsuleWidth
@@ -298,23 +297,17 @@ PanelWindow {
             // What the island shows when nothing else is open. It is a literal
             // child rather than a registry module: never loaded, never
             // evicted, it just fades out of the way.
-            RowLayout {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+            Bar {
+                id: bar
+                anchors.centerIn: parent
+                width: implicitWidth
                 height: implicitHeight
-                width: normalCapsuleWidth
-                spacing: normalSideMargin
+                capsulePad: capsuleRoot.capsulePad
 
                 opacity: capsuleRoot.isCapsuleMorphed ? 0.0 : 1.0
                 enabled: opacity > 0.01
 
                 Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
-
-                Bar {
-                    id: barFace
-                    capsulePad: capsuleRoot.capsulePad
-                    Layout.alignment: Qt.AlignCenter
-                }
             }
 
             // ── MODULE CONTENT ─────────────────────────────────────────
@@ -351,18 +344,8 @@ PanelWindow {
 
                 onLoaded: {
                     if (!item) return;
-                    Modules.activeModuleItem = item;
                     notifyModule("opening");
                     openTimer.restart();
-                }
-
-                // When the loader deactivates (module closed, or switched to a
-                // different source) the item is destroyed. Clear the shared
-                // reference so consumers (Binds, runWhenModuleReady, toasts) never
-                // see a dangling item pointing at a destroyed object.
-                onItemChanged: {
-                    if (moduleLoader.item === null && Modules.activeModuleItem !== null)
-                        Modules.activeModuleItem = null;
                 }
             }
 

@@ -92,6 +92,10 @@ QtObject {
 
     function closeAll() {
         activeModuleName = "";
+        // Eager, not redundant with Capsule's own mirror of the loader: the loader
+        // only drops its item after the collapse animation and the eviction delay,
+        // and a queued callback must not survive that long to fire at the next
+        // module. Clearing here also drops the pending queue outright.
         activeModuleItem = null;
     }
 
