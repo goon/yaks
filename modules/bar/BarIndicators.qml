@@ -50,7 +50,7 @@ Item {
 
     function _openModule(key) {
         switch (key) {
-            case "notifications": Modules.toggleModule("notifications"); break;
+            case "notifications": Modules.toggleSettings(); break;
         }
     }
 
