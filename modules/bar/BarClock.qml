@@ -1,9 +1,12 @@
 import QtQuick
+import QtQuick.VectorImage
 import QtQuick.Layouts
 import Quickshell
 import qs
 
 BaseContainer {
+
+    property real iconSize: 38 * Globals.shellScale
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
@@ -30,35 +33,43 @@ BaseContainer {
             opacity: Weather.ready ? 1 : 0
             Behavior on opacity { BaseMotion {} }
 
-            implicitWidth: weatherImg.implicitWidth
-            implicitHeight: weatherImg.implicitHeight
+            implicitWidth: iconSize
+            implicitHeight: clockText.height
 
-            Image {
-                id: weatherImg
-
+            VectorImage {
+                width: iconSize
+                height: iconSize
+                fillMode: VectorImage.Stretch
                 anchors.centerIn: parent
+                opacity: 0.85
+                preferredRendererType: VectorImage.CurveRenderer
+
                 source: {
                     if (!Weather.ready)
                         return "";
-                    return Qt.resolvedUrl("../../assets/weather/" + Weather.iconFor(Weather.code, Weather.isDay) + ".svg");
+                    return Qt.resolvedUrl("../../assets/weather.svg");
                 }
-                sourceSize.width: Globals.typography.size.xl
-                sourceSize.height: Globals.typography.size.xl
-                asynchronous: true
+                animations.loops: Animation.Infinite
             }
         }
 
         BaseText {
             visible: Weather.ready
             text: Weather.temp + "°"
-            muted: true
+            pixelSize: Globals.typography.size.xl
+            weight: Globals.typography.weight.normal
+            font.letterSpacing: 1
+            renderType: Text.NativeRendering
+            font.features: ({ "tnum": 1 })
             Layout.alignment: Qt.AlignBottom
         }
 
         BaseText {
+            id: clockText
+            Layout.leftMargin: Globals.geometry.spacing.md
             text: Qt.formatDateTime(systemClock.date, "HH:mm")
             pixelSize: Globals.typography.size.xl
-            weight: Globals.typography.weight.demi
+            weight: Globals.typography.weight.normal
             font.letterSpacing: 1
             renderType: Text.NativeRendering
             font.features: ({ "tnum": 1 })

@@ -11,8 +11,6 @@ Singleton {
     readonly property string weatherDir: Globals.cacheDir + "/weather"
 
     property int temp: 0
-    property int code: 0
-    property bool isDay: true
     property bool ready: false
 
     property real lat: 0
@@ -20,23 +18,6 @@ Singleton {
     property bool located: false
 
     readonly property int _refreshMs: 20 * 60 * 1000
-
-    function iconFor(code, day) {
-        function cloudBase(c) {
-            if (c === 45 || c === 48) return "fog";
-            if (c >= 95) return "thunderstorms";
-            if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "snow";
-            if (c === 66 || c === 67 || c === 84) return "sleet";
-            if (c >= 51 && c <= 57) return "drizzle";
-            if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82)) return "rain";
-            if (c === 3) return "overcast";
-            if (c >= 1) return "partly-cloudy";
-            return "clear";
-        }
-        var base = cloudBase(code);
-        var dayVariant = base === "clear" || base === "partly-cloudy" || base === "fog" || base === "thunderstorms";
-        return dayVariant ? base + (day ? "-day" : "-night") : base;
-    }
 
     function fetch() {
         if (!root.located) {
@@ -46,17 +27,14 @@ Singleton {
         Runner.run(["curl", "-s", "--max-time", "10",
             "https://api.open-meteo.com/v1/forecast?latitude=" + root.lat
             + "&longitude=" + root.lon
-            + "&current=temperature_2m,weather_code,is_day"], function (out) {
+            + "&current=temperature_2m"], function (out) {
             try {
                 var cur = JSON.parse(out).current;
                 if (!cur) return;
                 root.temp = Math.round(cur.temperature_2m);
-                root.code = cur.weather_code;
-                root.isDay = cur.is_day === 1;
                 root.ready = true;
                 weatherCacheFile.setText(JSON.stringify({
-                    temp: root.temp, code: root.code,
-                    isDay: root.isDay, ts: Date.now()
+                    temp: root.temp, ts: Date.now()
                 }));
             } catch (e) {}
         });
@@ -89,10 +67,8 @@ Singleton {
         } catch (e) {}
         try {
             var w = JSON.parse(weatherCacheFile.text());
-            if (typeof w.code === "number") {
-                root.temp = w.temp || 0;
-                root.code = w.code;
-                root.isDay = w.isDay !== false;
+            if (typeof w.temp === "number") {
+                root.temp = w.temp;
                 root.ready = true;
             }
         } catch (e) {}
