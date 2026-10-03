@@ -180,10 +180,9 @@ FocusScope {
                     opacity: 1 - tile.bright
                 }
 
-                // Rising hold fill. Destructive, so it reads like the power
-                // tiles' fill rather than inventing a colour the role layer
-                // does not have — but translucent, because the power tiles
-                // fill a flat well while this one covers the wallpaper it is
+                // Rising hold fill. Destructive, so it uses the accent pair
+                // rather than inventing a colour the role layer does not have
+                // — but translucent, because it covers the wallpaper it is
                 // about to remove, and an opaque slab would hide the thing
                 // being deleted.
                 Rectangle {
