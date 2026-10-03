@@ -19,6 +19,7 @@ singleton Preferences services/Preferences.qml
 singleton Runner services/Runner.qml
 singleton Theme services/Theme.qml
 singleton Wallpaper services/Wallpaper.qml
+singleton Weather services/Weather.qml
 
 # Components
 BaseButton components/BaseButton.qml
