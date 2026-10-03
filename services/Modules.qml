@@ -59,8 +59,6 @@ QtObject {
         "launcher":      { source: "../modules/launcher/Launcher.qml",      width: 400, height: 500, kind: "popout", evictionTime: 10000 },
         "settings":      { source: "../modules/settings/Settings.qml",      width: 400, height: 500, kind: "popout", evictionTime: 10000 },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",                height: 500, kind: "popout", evictionTime: 3000 },
-        "wifi":          { source: "../modules/network/NetworkWifi.qml",    width: 325, height: 500, kind: "popout", evictionTime: 5000 },
-        "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, height: 500, kind: "popout", evictionTime: 5000 },
         "notifications": { source: "../modules/notifications/Notif.qml", width: 460, height: 500, kind: "popout", evictionTime: 5000 },
         "calendar":      { source: "../modules/calendar/Calendar.qml",     width: 320, height: 260, kind: "popout", evictionTime: 5000 },
         // The volume toast is the bar face wearing a slider: its height tracks
