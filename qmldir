@@ -65,5 +65,6 @@ singleton SettingsNav modules/settings/SettingsNav.qml
 SettingsPage modules/settings/SettingsPage.qml
 
 # Wallpaper
+WallpaperTransition modules/wallpaper/WallpaperTransition.qml
 WallpaperBackground modules/wallpaper/WallpaperBackground.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
