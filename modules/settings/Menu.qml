@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell.Widgets
 import qs
 
 SettingsPage {
@@ -11,12 +10,26 @@ SettingsPage {
         StackView.view.pushPage(Qt.resolvedUrl(name), name);
     }
 
+    // The Network row uses the signal-aware device glyph at full strength
+    // rather than a Lucide string icon.
+    Component {
+        id: fullNetworkGlyph
+
+        NetworkGlyph {
+            level: 1
+            implicitWidth: 22 * Globals.shellScale
+            implicitHeight: 22 * Globals.shellScale
+        }
+    }
+
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
     readonly property var _menuModel: [
         { page: "Style.qml",         title: "Style",         icon: "paintbrush"  },
         { page: "Bar.qml",           title: "Bar",           icon: "panel-top"   },
         { page: "Applications.qml",  title: "Applications",  icon: "layout-grid" },
+        { page: "../network/NetworkWifi.qml",      title: "Network",   icon: "wifi",      glyph: true },
+        { page: "../network/NetworkBluetooth.qml", title: "Bluetooth", icon: "bluetooth" },
     ]
 
     readonly property Item activeHover: {
@@ -40,122 +53,12 @@ SettingsPage {
         return null;
     }
 
-    // ── POWER TILES ──────────────────────────────────────────────────────
-
-    readonly property var _powerActions: [
-        { key: "logout",   icon: "log-out",  run: function() { Modules.closeAll(); Compositor.quit(); } },
-        { key: "suspend",  icon: "moon",     run: function() { Modules.closeAll(); Power.suspend(); } },
-        { key: "reboot",   icon: "rotate-cw", run: function() { Modules.closeAll(); Power.reboot(); } },
-        { key: "shutdown", icon: "power",    run: function() { Modules.closeAll(); Power.shutdown(); } }
-    ]
-
-    property string powerHoveredKey: ""
-
-    component PowerTile: Item {
-        id: tile
-
-        required property var modelData
-
-        // Fixed, not innerRadius(): a chip is its own shape and must not turn
-        // into a circle when the shell rounding goes round.
-        readonly property int size: 32 * Globals.shellScale
-        readonly property int corner: 8 * Globals.shellScale
-
-        width: tile.size
-        height: tile.size
-
-        readonly property bool lit: root.powerHoveredKey === modelData.key
-
-        Rectangle {
-            anchors.fill: parent
-            radius: tile.corner
-            color: tile.lit ? Globals.colors.raised : Globals.colors.well
-            border.width: Globals.geometry.borderWidth.hair
-            border.color: tile.lit ? Globals.colors.border : Globals.colors.hair
-
-            Behavior on color { BaseMotion { duration: Globals.motion.hover } }
-        }
-
-        // The rising fill needs a clip that carries the tile's own corners. A
-        // plain Rectangle clamps its radius to height/2 while the fill is still
-        // flat, so its corners poke outside the tile outline on the first beat.
-        ClippingRectangle {
-            anchors.fill: parent
-            anchors.margins: Globals.geometry.borderWidth.hair
-            radius: tile.corner - Globals.geometry.borderWidth.hair
-            color: "transparent"
-
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                height: parent.height * hold.hold
-                visible: hold.holding
-                gradient: Gradient {
-                    orientation: Gradient.Vertical
-                    GradientStop { position: 0.0; color: Globals.colors.accentTop }
-                    GradientStop { position: 1.0; color: Globals.colors.accentBottom }
-                }
-            }
-        }
-
-        BaseIcon {
-            anchors.centerIn: parent
-            icon: tile.modelData.icon
-            size: Globals.typography.icon.md
-            color: hold.holding ? Globals.colors.accentTop
-                                : Globals.colors.text
-
-            Behavior on color { BaseMotion { duration: Globals.motion.hover } }
-        }
-
-        BaseHold {
-            id: hold
-            onConfirmed: tile.modelData.run()
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-
-            onEntered: root.powerHoveredKey = tile.modelData.key
-            // Leaving mid-hold drains instead of confirming, so a pointer that
-            // slides off never fires the action.
-            onExited: {
-                if (root.powerHoveredKey === tile.modelData.key)
-                    root.powerHoveredKey = "";
-                hold.cancel();
-            }
-
-            onPressed: hold.press()
-            onReleased: hold.release()
-        }
-    }
-
     ColumnLayout {
         id: mainCol
         Layout.fillWidth: true
-        // The nav rows above and the mixer below are separate blocks, each
+        // The nav list above and the mixer below are separate blocks, each
         // closed by its own rule, so the blocks touch.
         spacing: 0
-
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignRight
-            spacing: Globals.geometry.spacing.sm
-
-            Repeater {
-                model: root._powerActions
-
-                delegate: PowerTile {}
-            }
-        }
-
-        BaseSeparator {
-            Layout.fillWidth: true
-            Layout.topMargin: Globals.geometry.spacing.md
-            Layout.bottomMargin: Globals.geometry.spacing.md
-        }
 
         Repeater {
             id: menuRepeater
@@ -170,6 +73,7 @@ SettingsPage {
                 bounceTitleOnHover: true
                 verticalPadding: 0
                 leftIcon: modelData.icon
+                leftIconComponent: modelData.glyph ? fullNetworkGlyph : null
                 // The nav list is one block, closed by the separator below it,
                 // so it opts out of the per-row rule every settings row draws.
                 showSeparator: false
