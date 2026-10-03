@@ -24,6 +24,9 @@ Item {
     property bool bounceTitleOnHover: false
 
     property string leftIcon: ""
+    // A non-Lucide left icon (e.g. the wifi signal glyph), rendered in place of
+    // the string icon when set.
+    property Component leftIconComponent: null
     property bool leftIconInteractive: false
     property bool leftIconActive: false
     property real leftIconScale: 1.0
@@ -111,14 +114,14 @@ Item {
         }
 
         Item {
-            visible: root.leftIcon !== ""
+            visible: root.leftIcon !== "" || root.leftIconComponent !== null
             Layout.preferredWidth: root.leftIconBoxSize
             Layout.preferredHeight: root.leftIconBoxSize
             Layout.alignment: Qt.AlignVCenter
             scale: root.leftIconScale
 
             BaseButton {
-                visible: root.leftIconInteractive
+                visible: root.leftIconInteractive && root.leftIconComponent === null
                 anchors.centerIn: parent
                 icon: root.leftIcon
                 iconColor: root.leftIconActive ? Globals.colors.primary : Globals.colors.text
@@ -126,8 +129,14 @@ Item {
                 z: 2 // Sit above the main MouseArea
             }
 
+            Loader {
+                anchors.centerIn: parent
+                visible: root.leftIconComponent !== null
+                sourceComponent: root.leftIconComponent
+            }
+
             BaseIcon {
-                visible: !root.leftIconInteractive
+                visible: root.leftIconComponent === null && !root.leftIconInteractive
                 anchors.centerIn: parent
                 icon: root.leftIcon
                 size: Globals.typography.icon.md
