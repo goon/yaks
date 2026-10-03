@@ -133,7 +133,7 @@ QtObject {
             readonly property int sm: 12 * root.shellScale
             readonly property int md: 14 * root.shellScale
             readonly property int lg: 16 * root.shellScale
-            readonly property int xl: 22 * root.shellScale
+            readonly property int xl: 18 * root.shellScale
         }
 
         readonly property QtObject
