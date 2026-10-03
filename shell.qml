@@ -34,6 +34,13 @@ ShellRoot {
         target: "shell"
     }
 
+    IpcHandler {
+        function apply(path: string): void { Wallpaper.setWallpaper(path); }
+        target: "transition"
+    }
+
+    WallpaperTransition {}
+
     Instantiator {
         model: Quickshell.screens
 
