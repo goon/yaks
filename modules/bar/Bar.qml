@@ -20,6 +20,9 @@ Item {
 
     readonly property real horizontalSpacing: Globals.geometry.spacing.lg
 
+    // Fixed left-to-right order of the bar components. Not user-reorderable.
+    readonly property var componentOrder: ["weather", "workspaces", "clock", "dock", "indicators"]
+
     function resolveComponentSource(name) {
         const map = {
             "workspaces": Qt.resolvedUrl("BarWorkspaces.qml"),
@@ -46,7 +49,7 @@ Item {
             spacing: horizontalSpacing
 
             Repeater {
-                model: Preferences.bar.components
+                model: bar.componentOrder
 
                 RowLayout {
                     id: componentLayout
@@ -62,7 +65,7 @@ Item {
                             if (!componentLayout.isComponentVisible) return false;
 
                             for (let i = 0; i < index; i++) {
-                                let otherData = Preferences.bar.components[i];
+                                let otherData = bar.componentOrder[i];
                                 let otherVisible = (Preferences.bar.componentsEnabled[otherData] === true)
                                                    && (otherData === "dock" ? Compositor.hasDockWindows : bar.resolveComponentSource(otherData) !== "");
                                 if (otherVisible) return true;
