@@ -74,7 +74,6 @@ QtObject {
             if (carousel.model && carousel.currentIndex >= 0
                     && carousel.currentIndex < carousel.model.length) {
                 Wallpaper.setWallpaper(carousel.model[carousel.currentIndex].path);
-                carousel.closeRequested();
             }
             event.accepted = true;
         }
