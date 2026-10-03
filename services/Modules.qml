@@ -15,6 +15,14 @@ QtObject {
 
     property var _pendingCallbacks: []
 
+    // Hides the island's rest face (the bar) without touching activeModuleName.
+    // The wallpaper freeze in modules/wallpaper/ sets this so grim captures a
+    // clean desktop — a bar baked into the screenshot would pop back in after the
+    // wipe instead of fading with it. Deliberately *not* a module: an open popout
+    // is still captured, and is meant to be — the screenshot's copy of it
+    // dissolves into the live one in place.
+    property bool osdSuppressed: false
+
     // Run cb once the active module's item exists. The only caller is
     // toggleSettings, which needs the page stack to exist before it can push.
     // Queued callbacks are dropped when the island closes, so one can never fire
