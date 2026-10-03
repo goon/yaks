@@ -27,6 +27,20 @@ Item {
     // A scan was requested while another was in flight; replayed on completion.
     property bool pendingScan: false
 
+    // Wallpaper transitions. Transition.qml listens for transitionRequested and
+    // answers with applyNow() once the freeze is holding the screen; a request that
+    // lands mid-flight is parked in _queuedPath instead of starting a second one.
+    signal transitionRequested(string path)
+    property bool _transitionPending: false
+    property string _queuedPath: ""
+
+    // applyNow writes currentWallpaper so Theme re-applies, but the actual
+    // wallpaper Image swap is held here until WallpaperTransition.commitPending()
+    // fires at wipe start. Otherwise WallpaperBackground picks up the new source
+    // mid-freeze and flashes the new wallpaper ~500 ms before the wipe reveals.
+    property string _pendingSource: ""
+    signal pendingCommitted(string path)
+
     readonly property string wallpaperListFile: Globals.cacheDir + "/wallpaper.json"
     readonly property string thumbDir: (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/yaks/thumbnails"
     readonly property string thumbScript: Globals.rootDir + "/lib/thumbnailer.sh"
@@ -76,14 +90,47 @@ Item {
         }
     }
 
-    function setWallpaper(path) {
+    // A wallpaper change is a *request*; WallpaperTransition owns how it is shown.
+    // `animate: false` is the escape hatch for changes that must not cost the user
+    // two seconds of frozen desktop — the startup auto-apply is the only caller,
+    // because there is no prior image to wipe away.
+    function setWallpaper(path, animate = true) {
         if (!path || path === "" || root.currentWallpaper === path) return;
 
+        // A transition already owns the screen. Queue behind it: the wallpaper it
+        // is wiping to will be replaced mid-flight otherwise, and the second wipe
+        // would never be seen.
+        if (root._transitionPending) {
+            root._queuedPath = path;
+            return;
+        }
+
+        if (animate) {
+            root._transitionPending = true;
+            root.transitionRequested(path);
+            return;
+        }
+
+        applyNow(path);
+    }
+
+    // The real write. Called by setWallpaper on an unanimated change, and by
+    // Transition.qml mid-freeze, once the "before" screenshot is already on screen
+    // and the new one is safe to put underneath it.
+    function applyNow(path) {
         root.currentWallpaper = path;
 
         Preferences.currentWallpaper = path;
 
-        Runner.runDetached(["notify-send", "-a", "Wallpaper", "-i", "symbol:image", "Wallpaper", "The <b>" + path.split("/").pop() + "</b> wallpaper has been applied."]);
+        root._pendingSource = path;
+    }
+
+    // Called by WallpaperTransition at wipe start, fully hidden under the
+    // overlay's progress=0 fully-opaque frame, so the Image.source swap is
+    // invisible. WallpaperBackground listens to pendingCommitted instead of
+    // currentWallpaperChanged while a transition is in flight.
+    function commitPending() {
+        if (root._pendingSource !== "") root.pendingCommitted(root._pendingSource);
     }
 
     // Recoverable delete: gio trash moves the file to the desktop trash, so a
@@ -203,7 +250,7 @@ Item {
 
             listCacheWriter.setText(JSON.stringify(entries));
             if (root.currentWallpaper === "" && entries.length > 0) {
-                setWallpaper(entries[0].path);
+                setWallpaper(entries[0].path, false);
             }
 
             root._replayPendingScan();

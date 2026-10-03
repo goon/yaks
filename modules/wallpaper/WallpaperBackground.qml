@@ -12,62 +12,19 @@ PanelWindow {
 
     // ── STATE ──────────────────────────────────────────────────────────
     property string activePath: ""
-    property string pendingPath: ""
-    property real progress: 0
-    property real discCenterX: 0.5
-    property real discCenterY: 0.5
-    property bool transitionPending: false
-
-    readonly property int transitionDurationMs:
-        Math.max(100, Math.round(Preferences.wallpaper.transitionDuration))
-
-    readonly property bool transitioning: transitionAnim.running
 
     // ── LOGIC ──────────────────────────────────────────────────────────
+    //
+    // This window is only the backdrop. One texture, pointed at whatever the
+    // wallpaper is *now* — the visible change happens in WallpaperTransition.qml,
+    // which freezes the whole desktop and wipes to the new image. Nothing here
+    // animates: by the time the wipe finishes this is already showing the
+    // wallpaper being revealed.
 
     function updateWallpaper(newPath) {
-        if (!newPath || newPath === "" || newPath === activePath || newPath === pendingPath) return;
-
-        if (activePath === "" && String(loaderA.source).length === 0) {
-            activePath = newPath;
-            loaderA.source = "file://" + newPath;
-            return;
-        }
-
-        pendingPath = newPath;
-        transitionPending = true;
-        loaderB.source = "file://" + newPath;
-
-        if (loaderB.status === Image.Ready) {
-            startTransition();
-        }
-    }
-
-    function startTransition() {
-        if (!transitionPending || pendingPath === "") return;
-        if (loaderA.status !== Image.Ready || loaderB.status !== Image.Ready) return;
-
-        discCenterX = 0.2 + Math.random() * 0.6;
-        discCenterY = 0.2 + Math.random() * 0.6;
-        progress = 0;
-
-        if (transitionAnim.running) {
-            transitionAnim.stop();
-            commitSwap();
-            loaderB.source = "file://" + pendingPath;
-            if (loaderB.status !== Image.Ready) return;
-        }
-
-        transitionPending = false;
-        transitionAnim.start();
-    }
-
-    function commitSwap() {
-        loaderA.source = loaderB.source;
-        loaderB.source = "";
-        activePath = pendingPath;
-        pendingPath = "";
-        progress = 0;
+        if (!newPath || newPath === activePath) return;
+        activePath = newPath;
+        loader.source = "file://" + newPath;
     }
 
     // ── CONNECTIONS ────────────────────────────────────────────────────
@@ -75,13 +32,21 @@ PanelWindow {
     Connections {
         target: Wallpaper
         function onCurrentWallpaperChanged() {
-            root.updateWallpaper(Wallpaper.currentWallpaper);
+            // Hold the source swap during a transition: WallpaperTransition
+            // commits it via pendingCommitted at wipe start, fully hidden under
+            // the overlay's progress=0 fully-opaque frame.
+            if (!Wallpaper._transitionPending) {
+                root.updateWallpaper(Wallpaper.currentWallpaper);
+            }
+        }
+        function onPendingCommitted(path) {
+            root.updateWallpaper(path);
         }
     }
 
     Component.onCompleted: {
         if (Wallpaper.currentWallpaper !== "") {
-            loaderA.source = "file://" + Wallpaper.currentWallpaper;
+            loader.source = "file://" + Wallpaper.currentWallpaper;
             activePath = Wallpaper.currentWallpaper;
         }
     }
@@ -106,93 +71,14 @@ PanelWindow {
         bottom: (Preferences.bar.position === "bottom") ? -Preferences.bar.reservedZone : 0
     }
 
-    // ── TEXTURE PROVIDERS ──────────────────────────────────────────────
+    // ── TEXTURE ────────────────────────────────────────────────────────
 
     Image {
-        id: loaderA
+        id: loader
         anchors.fill: parent
         visible: true
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true
-    }
-
-    Image {
-        id: loaderB
-        anchors.fill: parent
-        visible: true
-        opacity: 0
-        fillMode: Image.PreserveAspectCrop
-        asynchronous: true
-        cache: true
-
-        onStatusChanged: if (status === Image.Ready) root.startTransition()
-    }
-
-    // ── TRANSITION CANVAS ──────────────────────────────────────────────
-
-    Canvas {
-        id: transitionCanvas
-        anchors.fill: parent
-        visible: root.transitioning
-        renderTarget: Canvas.FramebufferObject
-
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.save();
-            ctx.clearRect(0, 0, width, height);
-
-            // Bail if loaderB isn't ready yet (canvas paints can fire
-            // before the new image finishes decoding).
-            if (loaderB.status !== Image.Ready) {
-                ctx.restore();
-                return;
-            }
-
-            var imgW = loaderB.sourceSize.width;
-            var imgH = loaderB.sourceSize.height;
-            if (imgW <= 0 || imgH <= 0) {
-                ctx.restore();
-                return;
-            }
-            var scale = Math.max(width / imgW, height / imgH);
-            var drawW = imgW * scale;
-            var drawH = imgH * scale;
-            var drawX = (width - drawW) * 0.5;
-            var drawY = (height - drawH) * 0.5;
-
-            // Expanding disc centred on a random point in the screen.
-            var r = Math.hypot(width, height) * root.progress;
-            ctx.beginPath();
-            ctx.arc(width * root.discCenterX, height * root.discCenterY, r, 0, 2 * Math.PI);
-            ctx.clip();
-
-            ctx.drawImage(loaderB, drawX, drawY, drawW, drawH);
-            ctx.restore();
-        }
-
-        // Repaint every time `progress` ticks, and on size changes.
-        Connections {
-            target: root
-            function onProgressChanged() { transitionCanvas.requestPaint() }
-            function onDiscCenterXChanged() { transitionCanvas.requestPaint() }
-            function onDiscCenterYChanged() { transitionCanvas.requestPaint() }
-        }
-
-        onWidthChanged: requestPaint()
-        onHeightChanged: requestPaint()
-    }
-
-    // ── TRANSITION ANIMATION ──────────────────────────────────────────
-    NumberAnimation {
-        id: transitionAnim
-        target: root
-        property: "progress"
-        from: 0
-        to: 1
-        duration: root.transitionDurationMs
-        easing.type: Easing.InOutCubic
-        onStarted: transitionCanvas.requestPaint()
-        onFinished: root.commitSwap()
     }
 }

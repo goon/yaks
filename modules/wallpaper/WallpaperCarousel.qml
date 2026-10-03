@@ -134,7 +134,6 @@ FocusScope {
             function apply() {
                 if (root.model && root.currentIndex >= 0 && root.currentIndex < root.model.length) {
                     Wallpaper.setWallpaper(root.model[root.currentIndex].path);
-                    root.closeRequested();
                 }
             }
 
