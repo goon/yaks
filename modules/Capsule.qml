@@ -286,9 +286,11 @@ PanelWindow {
         clip: true
 
         // Optional soft drop shadow (Settings > Bar), like Uki's pill. The
-        // offscreen layer is dropped while the capsule morphs so the shadow
-        // never re-renders per animation frame; it returns once settled.
-        layer.enabled: Preferences.globals.shadow && capsuleRoot.isSettled
+        // offscreen layer follows the morph: it used to be dropped until the
+        // capsule settled, which made the shadow vanish and pop back on every
+        // morph — very visible on a module that re-animates its height. The
+        // re-render cost is bounded by the morph itself (motion.morph).
+        layer.enabled: Preferences.globals.shadow
         layer.effect: MultiEffect {
             shadowEnabled: true
             shadowColor: Globals.alpha(Globals.effects.shadow.color, Globals.effects.shadow.opacity)
