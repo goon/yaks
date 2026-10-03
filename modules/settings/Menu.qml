@@ -270,13 +270,21 @@ SettingsPage {
             RowLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: Globals.geometry.spacing.sm
-                Layout.rightMargin: Globals.geometry.spacing.sm
-                spacing: Globals.geometry.spacing.sm
+                spacing: 0
 
                 BaseIcon {
                     icon: notifBlock.dndMode ? "bell-off" : "bell"
                     size: Globals.typography.icon.md
                     color: notifBlock.dndMode ? Globals.colors.faint : Globals.colors.text
+                }
+
+                BaseText {
+                    text: "Notifications"
+                    font.pixelSize: Globals.typography.size.lg
+                    color: Globals.colors.text
+                    // Label aligns with nav labels: row inset 8 + icon box 32,
+                    // minus icon 18 already laid out = 14.
+                    Layout.leftMargin: 14 * Globals.shellScale
                 }
 
                 Item {
@@ -383,7 +391,7 @@ SettingsPage {
                         BaseText {
                             id: clearLabel
                             anchors.centerIn: parent
-                            text: "CLEAR"
+                            text: "CALM"
                             weight: Globals.typography.weight.demi
                             font.letterSpacing: 3
                             color: Globals.colors.faint
