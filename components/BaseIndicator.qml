@@ -40,12 +40,16 @@ Item {
     z: 10
 
     width: 0
-    // Deliberately zero-sized. This Item is an overlay that positions itself
-    // with `x`/`y` and is routinely a direct child of a page's ColumnLayout,
-    // where a layout honours an explicit `width`/`height` and would reserve
-    // space for it. Keeping the box at 0×0 makes it invisible to every layout,
-    // so call sites need no wrapper Item and no reparenting. The visible pill
-    // carries its own size and centres on this anchor point.
+    // Deliberately zero-sized. Two constraints a call site has to satisfy:
+    // (1) the item must be a SIBLING of any ColumnLayout, never a child — a
+    // layout is a positioner that writes `x`/`y` on every child and clobbers
+    // the `y: targetY` binding, parking the pill at the end of the column.
+    // Roots that are a plain `Item` (e.g. `SettingsGroup`) satisfy this for
+    // free; roots rooted in a `BaseContainer` (whose default property is the
+    // inner ColumnLayout) need a zero-height wrapper Item as the first child
+    // of that layout. (2) the 0×0 box keeps the layout from reserving any
+    // space. The visible pill carries its own size and centres on this anchor
+    // point.
 
     Rectangle {
         x: 0
