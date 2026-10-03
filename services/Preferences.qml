@@ -25,8 +25,8 @@ QtObject {
         property bool overhang: false
         property int overhangReserve: 70
         property int workspaceCount: 5
-        property var components: ["workspaces", "dock", "indicators", "clock"]
-        property var componentsEnabled: ({"workspaces": true, "dock": true, "indicators": true, "clock": true})
+        property var components: ["workspaces", "weather", "dock", "indicators", "clock"]
+        property var componentsEnabled: ({"workspaces": true, "weather": true, "dock": true, "indicators": true, "clock": true})
 
         // Space the bar reserves from its screen edge. With overhang on, only
         // `overhangReserve`% of the bar height stays reserved (plus the top
@@ -239,14 +239,15 @@ QtObject {
                     var data = JSON.parse(rawText);
                     if (!data || typeof data !== "object") throw new Error("Invalid JSON");
 
-                    // Snapshot default array values BEFORE the schema-driven load
-                    // overwrites them — later used to prune stale array entries.
-                    var arrayDefaults = Object.create(null);
+                    // Snapshot default container values BEFORE the schema-driven load
+                    // overwrites them — later used to reconcile stale entries.
+                    var containerDefaults = Object.create(null);
                     for (var si = 0; si < _schema.length; si++) {
                         var snapPath = _schema[si];
                         var walker = root;
                         for (var pi = 0; pi < snapPath.length; pi++) walker = walker[snapPath[pi]];
-                        if (Array.isArray(walker)) arrayDefaults[snapPath.join(".")] = walker.slice();
+                        if (Array.isArray(walker)) containerDefaults[snapPath.join(".")] = walker.slice();
+                        else if (walker && typeof walker === "object") containerDefaults[snapPath.join(".")] = Object.assign({}, walker);
                     }
 
                     // ── SCHEMA-DRIVEN LOAD ─────────────────────────────────
@@ -258,23 +259,44 @@ QtObject {
                         if (val !== undefined) _set(path, val);
                     }
 
-                    // ── PRUNE STALE ARRAY ENTRIES ────────────────────────
-                    var prunedAny = false;
-                    for (var arrayKey in arrayDefaults) {
-                        var parts = arrayKey.split(".");
-                        var arr = _get(parts);
-                        if (!Array.isArray(arr)) continue;
-                        var validEntries = Object.create(null);
-                        for (var vi = 0; vi < arrayDefaults[arrayKey].length; vi++)
-                            validEntries[arrayDefaults[arrayKey][vi]] = true;
-                        var filtered = arr.filter(function(v) { return !!validEntries[v]; });
-                        if (filtered.length !== arr.length) {
-                            _set(parts, filtered);
-                            prunedAny = true;
+                    // ── RECONCILE CONTAINERS ────────────────────────────
+                    // Arrays keep only entries a default still lists (a
+                    // component removed by a shell update must not linger) and
+                    // then adopt any default entry they are missing, so a
+                    // component added by an update shows up without wiping the
+                    // user's saved order. Dictionaries only ever gain keys —
+                    // removing one would silently re-enable a default the user
+                    // deliberately turned off.
+                    var reconciled = false;
+                    for (var containerKey in containerDefaults) {
+                        if (containerKey === "applications.themedApps") continue;
+                        var parts = containerKey.split(".");
+                        var current = _get(parts);
+                        var fallback = containerDefaults[containerKey];
+                        if (Array.isArray(fallback) && Array.isArray(current)) {
+                            var valid = Object.create(null);
+                            for (var vi = 0; vi < fallback.length; vi++) valid[fallback[vi]] = true;
+                            var next = current.filter(function (v) { return !!valid[v]; });
+                            for (var mi = 0; mi < fallback.length; mi++)
+                                if (next.indexOf(fallback[mi]) === -1) next.push(fallback[mi]);
+                            if (next.join(" ") !== current.join(" ")) {
+                                _set(parts, next);
+                                reconciled = true;
+                            }
+                        } else if (fallback && current && typeof fallback === "object" && typeof current === "object") {
+                            var merged = Object.assign({}, current);
+                            var added = false;
+                            for (var key in fallback) {
+                                if (!(key in merged)) { merged[key] = fallback[key]; added = true; }
+                            }
+                            if (added) {
+                                _set(parts, merged);
+                                reconciled = true;
+                            }
                         }
                     }
-                    if (prunedAny)
-                        console.log("[Preferences] Pruned stale entries from preferences file.");
+                    if (reconciled)
+                        console.log("[Preferences] Reconciled preferences with the current defaults.");
 
                     // ── MERGE DICTIONARIES ─────────────────────────────────
                     var savedApps = _getData(data, ["applications", "themedApps"]);
@@ -297,7 +319,7 @@ QtObject {
                     safetyTimer.stop();
                     root.loaded = true;
 
-                    if (prunedAny) root.requestSave();
+                    if (reconciled) root.requestSave();
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
                 }

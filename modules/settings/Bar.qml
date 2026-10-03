@@ -103,6 +103,7 @@ SettingsPage {
                 readonly property var metadata: ({
                     "workspaces": { name: "Workspaces", icon: "columns-4" },
                     "clock":      { name: "Clock",      icon: "clock"    },
+                    "weather":    { name: "Weather",    icon: "cloud-sun" },
                     "dock":       { name: "Dock",        icon: "columns-2" },
                     "indicators": { name: "Indicators",  icon: "layers"   },
                 })
