@@ -4,11 +4,8 @@ import QtQuick.Layouts
 import Quickshell.Services.UPower
 import qs
 
-BaseScrolling {
+SettingsPage {
     id: root
-    clip: true
-    implicitWidth: 325
-    implicitHeight: mainLayout.implicitHeight
 
     function resolveBluetoothIcon(bluezIcon) {
         if (!bluezIcon)
@@ -108,24 +105,9 @@ BaseScrolling {
     readonly property var pairedRows: root.rows.filter(function(r) { return r.bt && !r.bt.connected && (r.bt.paired || r.bt.bonded || r.bt.trusted); })
     readonly property var nearbyRows: root.rows.filter(function(r) { return r.bt && !r.bt.connected && !(r.bt.paired || r.bt.bonded || r.bt.trusted); })
 
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: Modules.closeAll()
-        z: -1
-    }
-
-    focus: true
-    Keys.onPressed: (event) => {
-        if (event.key === Qt.Key_Backspace) {
-            Modules.closeAll();
-            event.accepted = true;
-        }
-    }
-
     ColumnLayout {
         id: mainLayout
-        width: root.availableWidth
+        Layout.fillWidth: true
         spacing: Globals.geometry.spacing.sm
 
         NetworkHeader {

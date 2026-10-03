@@ -14,7 +14,6 @@ singleton Modules services/Modules.qml
 singleton Network services/Network.qml
 singleton Notifications services/Notifications.qml
 singleton Peripherals services/Peripherals.qml
-singleton Power services/Power.qml
 singleton Preferences services/Preferences.qml
 singleton Runner services/Runner.qml
 singleton Theme services/Theme.qml
@@ -55,6 +54,7 @@ BarWorkspaces modules/bar/BarWorkspaces.qml
 # Network
 NetworkDevice modules/network/NetworkDevice.qml
 NetworkHeader modules/network/NetworkHeader.qml
+NetworkGlyph modules/network/NetworkGlyph.qml
 
 # Notifications
 NotificationCard modules/notifications/NotificationCard.qml

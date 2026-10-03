@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs
 
-// The header strip both device popouts (wifi, bluetooth) open with: a scan
+// The header strip both device settings pages (wifi, bluetooth) open with: a scan
 // button that spins while a scan runs, a power switch, a rule, and an empty
 // state. Only the labels and the callbacks differ between them, so those are
 // the whole API — everything else is shared so the two cannot drift apart.
