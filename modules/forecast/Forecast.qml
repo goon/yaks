@@ -10,8 +10,8 @@ import qs
 BaseContainer {
     id: root
 
-    readonly property real panelWidth: 300 * Globals.shellScale
-    readonly property real currentIconSize: 34 * Globals.shellScale
+    readonly property real panelWidth: 275 * Globals.shellScale
+    readonly property real currentIconSize: 48 * Globals.shellScale
     readonly property real tempPixelSize: 52 * Globals.shellScale
     readonly property real rowHeight: 26 * Globals.shellScale
     readonly property real dayWidth: 32 * Globals.shellScale
@@ -49,21 +49,21 @@ BaseContainer {
 
     function labelFor(code) {
         if (code === 0) return "Clear";
-        if (code === 1) return "Mainly clear";
-        if (code === 2) return "Partly cloudy";
+        if (code === 1) return "Mostly Clear";
+        if (code === 2) return "Partly Cloudy";
         if (code === 3) return "Overcast";
         if (code === 45 || code === 48) return "Fog";
         if (code >= 51 && code <= 55) return "Drizzle";
-        if (code === 56 || code === 57) return "Freezing drizzle";
+        if (code === 56 || code === 57) return "Freezing Drizzle";
         if (code === 61 || code === 63) return "Rain";
-        if (code === 65) return "Heavy rain";
-        if (code === 66 || code === 67) return "Freezing rain";
+        if (code === 65) return "Heavy Rain";
+        if (code === 66 || code === 67) return "Freezing Rain";
         if (code === 71 || code === 73 || code === 75) return "Snow";
-        if (code === 77) return "Snow grains";
+        if (code === 77) return "Snow Grains";
         if (code >= 80 && code <= 82) return "Showers";
-        if (code === 85 || code === 86) return "Snow showers";
+        if (code === 85 || code === 86) return "Snow Showers";
         if (code === 95) return "Thunderstorm";
-        if (code === 96 || code === 99) return "Thunderstorm, hail";
+        if (code === 96 || code === 99) return "Thunderstorm & Hail";
         return "";
     }
 
@@ -91,7 +91,7 @@ BaseContainer {
             BaseText {
                 text: Weather.temp + "°"
                 pixelSize: root.tempPixelSize
-                weight: Globals.typography.weight.demi
+                weight: Globals.typography.weight.normal
                 font.letterSpacing: 0
                 font.features: ({ "tnum": 1 })
                 Layout.alignment: Qt.AlignVCenter
@@ -197,7 +197,8 @@ BaseContainer {
                 BaseText {
                     Layout.fillWidth: true
                     text: root.labelFor(dayRow.modelData.code)
-                    pixelSize: Globals.typography.size.sm
+                    pixelSize: Globals.typography.size.md
+                    weight: Globals.typography.weight.normal
                     elide: Text.ElideRight
                     wrapMode: Text.NoWrap
                 }
