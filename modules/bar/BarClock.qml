@@ -9,7 +9,9 @@ BaseContainer {
     Layout.fillWidth: false
 
     padding: Globals.geometry.spacing.sm
-    hoverEnabled: false
+    clickable: true
+
+    onClicked: Modules.toggleModule("calendar")
 
     SystemClock {
         id: systemClock
