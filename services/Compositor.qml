@@ -208,12 +208,6 @@ Singleton {
         _dispatch("(function() for _, w in ipairs(hl.get_windows()) do if w.address == \"" + addr + "\" then return hl.dsp.focus({ window = w }) end end end)()");
     }
 
-    function quit() {
-        _dispatch("exit");
-    }
-
-
-
     Component.onCompleted: {
         Hyprland.refreshWorkspaces();
         Hyprland.refreshToplevels();
