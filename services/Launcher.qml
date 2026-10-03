@@ -15,6 +15,13 @@ QtObject {
     // Terminal auto-discovery (priority: $TERMINAL > discovered > xterm)
     property var _availableTerminals: ["xterm"]
 
+    // Apps launch into their own transient unit so they outlive this shell: yaks is a
+    // systemd user service with KillMode=control-group, so anything exec'd from it stays
+    // in its cgroup and systemd SIGKILLs it the moment quickshell dies. ExitType=cgroup
+    // is load-bearing -- with the default `main`, systemd would cull the app's own forked
+    // children (renderer, zygote) once the parent exits.
+    readonly property var _appUnit: ["systemd-run", "--user", "--collect", "--service-type=exec", "--property=ExitType=cgroup"]
+
     Component.onCompleted: {
         var cmd = "for t in kitty alacritty foot wezterm ghostty; do "
                 + "command -v $t >/dev/null 2>&1 && echo $t; done";
@@ -233,7 +240,12 @@ QtObject {
 
         if (item.app.runInTerminal)
             Runner.runDetached(["sh", "-c", resolveTerminal() + " -e " + item.app.command]);
-        else
-            item.app.execute();
+        else {
+            var cmd = root._appUnit.slice();
+            if (item.app.workingDirectory)
+                cmd.push("--working-directory=" + item.app.workingDirectory);
+            cmd.push("--");
+            Quickshell.execDetached(cmd.concat(item.app.command));
+        }
     }
 }

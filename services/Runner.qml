@@ -19,7 +19,7 @@ pragma Singleton
     }
 
     function runDetached(cmd) {
-        run(cmd, null);
+        Quickshell.execDetached(Array.isArray(cmd) ? cmd : [cmd]);
     }
 
     processComponent: Component {
