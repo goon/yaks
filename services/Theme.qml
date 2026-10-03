@@ -31,11 +31,24 @@ Item {
 
     readonly property int debounceInterval: 300
 
+    // Fired at the end of every apply, once the palette is built and hooks are
+    // dispatched. The wallpaper transition gates its wipe on this instead of a
+    // fixed settle, so the wipe starts the instant the theme is actually done.
+    signal applied()
+
     // ── THEME APPLICATION ─────────────────────────────────────────────
 
-    function requestApply(context) {
+    function requestApply(context, immediate) {
         if (!Preferences.loaded) return;
         executionTimer.pendingContext = context || "manual";
+        // The transition has already hidden the desktop behind the freeze, so it
+        // cannot wait out the coalescing debounce — apply now. This also cancels
+        // the debounced call that currentWallpaperChanged just queued.
+        if (immediate) {
+            executionTimer.stop();
+            root.apply();
+            return;
+        }
         executionTimer.restart();
     }
 
@@ -69,6 +82,7 @@ Item {
         root.currentColors = Color.build(s);
         root.hookColors = Color.build(s, { forApps: true });
         root.runHooks(executionTimer.pendingContext);
+        root.applied();
     }
 
     // ── APPLICATION HOOKS ─────────────────────────────────────────────

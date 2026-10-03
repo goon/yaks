@@ -52,9 +52,12 @@ Scope {
     // One settle timer per pause, all named for what they are waiting on rather
     // than reused, because each phase needs a different duration.
     readonly property int _osdHideMs: 150
-    readonly property int _loadSettleMs: 350
-    readonly property int _applySettleMs: 500
+    // One composited frame is all the opaque overlay needs before the theme
+    // swaps underneath it; the phase name is kept for the log.
+    readonly property int _overlaySettleMs: 80
     readonly property int _loadTimeoutMs: 1500
+    // Backstop only: if Theme never fires `applied` the freeze must still end.
+    readonly property int _themeTimeoutMs: 2000
 
     // ── COORDINATION ───────────────────────────────────────────────────
     // One window per screen, all in one process, so the phases are shared state
@@ -68,6 +71,13 @@ Scope {
         target: Wallpaper
         function onTransitionRequested(path) {
             root.start(path);
+        }
+    }
+
+    Connections {
+        target: Theme
+        function onApplied() {
+            if (root.phase === "runningTheme") root.beginPhase("runningTransition");
         }
     }
 
@@ -113,14 +123,16 @@ Scope {
             case "runningTheme":
                 // The desktop is already frozen on screen, so this is the one
                 // moment a wallpaper can change without the user seeing it
-                // happen. The settle that follows covers Theme's 300 ms debounce
-                // plus the image decode — wipe before that and the reveal is of
-                // a half-painted wallpaper.
+                // happen. Apply the palette immediately (skipping Theme's
+                // debounce) and wait for Theme.applied — not a fixed timer — so
+                // the wipe starts the instant the theme is actually done.
                 Wallpaper.applyNow(root.pendingPath);
-                applySettleTimer.restart();
+                Theme.requestApply("wallpaper", true);
+                themeTimeoutTimer.restart();
                 break;
 
             case "runningTransition":
+                themeTimeoutTimer.stop();
                 root.transitionsFinishedCount = 0;
                 // Commit the deferred wallpaper source swap. The overlay is fully
                 // opaque at progress=0, so the swap is invisible; otherwise the
@@ -130,6 +142,7 @@ Scope {
                 break;
 
             case "done":
+                themeTimeoutTimer.stop();
                 root.broadcastFinish();
                 Modules.osdSuppressed = false;
                 root.pendingPath = "";
@@ -174,14 +187,16 @@ Scope {
 
     Timer {
         id: loadSettleTimer
-        interval: root._loadSettleMs
+        interval: root._overlaySettleMs
         onTriggered: root.beginPhase("runningTheme")
     }
 
     Timer {
-        id: applySettleTimer
-        interval: root._applySettleMs
-        onTriggered: root.beginPhase("runningTransition")
+        id: themeTimeoutTimer
+        interval: root._themeTimeoutMs
+        onTriggered: {
+            if (root.phase === "runningTheme") root.beginPhase("runningTransition");
+        }
     }
 
     // The screenshot is a plain file and a screen whose monitor name never
