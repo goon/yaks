@@ -10,7 +10,6 @@ NotificationCard {
     implicitWidth: 420
 
     notification: Notifications.activeToastNotification
-    showTime: false
     clickable: true
     
     onClicked: {

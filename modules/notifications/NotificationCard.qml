@@ -9,38 +9,6 @@ BaseContainer {
     id: root
 
     property var notification: null
-    property bool showTime: true
-    property var time: new Date()
-    property string timeString: "just now"
-
-
-    function updateTime() {
-        if (!time) return;
-
-        const now = new Date();
-        const diffMs = Math.max(0, now.getTime() - time.getTime());
-        const diffSecs = Math.floor(diffMs / 1000);
-        const diffMins = Math.floor(diffSecs / 60);
-        const diffHours = Math.floor(diffMins / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffDays > 0) {
-            timeString = diffDays + "d ago";
-        } else if (diffHours > 0) {
-            timeString = diffHours + "h ago";
-        } else if (diffMins > 0) {
-            timeString = diffMins + "m ago";
-        } else {
-            timeString = "just now";
-        }
-    }
-
-    Timer {
-        interval: 60000
-        running: root.visible
-        repeat: true
-        onTriggered: root.updateTime()
-    }
 
     readonly property bool isScreenshot: {
         if (!root.notification) return false;
@@ -55,9 +23,6 @@ BaseContainer {
     }
 
     clickable: true
-    onTimeChanged: root.updateTime()
-
-    Component.onCompleted: root.updateTime()
     Layout.fillWidth: true
     implicitWidth: 350
 
@@ -164,28 +129,13 @@ BaseContainer {
                     BaseText {
                         Layout.fillWidth: false
                         pixelSize: Globals.typography.size.lg
-                        weight: Globals.typography.weight.bold
+                        weight: Globals.typography.weight.demi
                         text: root.notification ? (root.notification.summary || "") : ""
                         maximumLineCount: 1
                         elide: Text.ElideRight
                         // Allow the summary to shrink but avoid circular dependency on parent.width
                         Layout.maximumWidth: root.width - 120
                     }
-
-                    BaseText {
-                        text: "|"
-                        muted: true
-                        visible: root.showTime
-                    }
-
-                    BaseText {
-                        muted: true
-                        visible: root.showTime
-                        text: root.timeString
-                        font.italic: true
-                        elide: Text.ElideRight
-                    }
-
                 }
 
             }
@@ -195,7 +145,7 @@ BaseContainer {
                 Layout.preferredWidth: 200 // Hint to help Layout
                 text: root.notification ? (root.notification.body || "") : ""
                 wrapMode: Text.Wrap
-                maximumLineCount: 8
+                maximumLineCount: 2
                 elide: Text.ElideRight
                 visible: text !== ""
             }
