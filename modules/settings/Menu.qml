@@ -265,6 +265,32 @@ SettingsPage {
             spacing: 0
 
             readonly property int notifCount: Notifications.notificationHistory.count
+            readonly property bool dndMode: Preferences.notifications.mode === 1
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.leftMargin: Globals.geometry.spacing.sm
+                Layout.rightMargin: Globals.geometry.spacing.sm
+                spacing: Globals.geometry.spacing.sm
+
+                BaseIcon {
+                    icon: notifBlock.dndMode ? "bell-off" : "bell"
+                    size: Globals.typography.icon.md
+                    color: notifBlock.dndMode ? Globals.colors.faint : Globals.colors.text
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                BaseSwitch {
+                    checked: notifBlock.dndMode
+                    onToggled: {
+                        Preferences.notifications.mode = checked ? 1 : 0
+                        Notifications.notificationHistory.clear()
+                    }
+                }
+            }
 
             ListView {
                 id: notifList
@@ -317,19 +343,68 @@ SettingsPage {
                     anchors.centerIn: parent
                     spacing: Globals.geometry.spacing.md
 
-                    BaseIcon {
+                    Item {
                         Layout.alignment: Qt.AlignHCenter
-                        icon: "bell-check"
-                        size: 32 * Globals.shellScale
-                        color: Globals.colors.muted
+                        width: 32 * Globals.shellScale
+                        height: 32 * Globals.shellScale
+
+                        BaseIcon {
+                            anchors.centerIn: parent
+                            icon: "bell-check"
+                            size: 32 * Globals.shellScale
+                            color: Globals.colors.muted
+                            opacity: notifBlock.dndMode ? 0 : 1
+                            rotation: notifBlock.dndMode ? -180 : 0
+                            scale: notifBlock.dndMode ? 0.3 : 1
+                            Behavior on opacity { BaseMotion {} }
+                            Behavior on rotation { BaseMotion {} }
+                            Behavior on scale { BaseMotion {} }
+                        }
+
+                        BaseIcon {
+                            anchors.centerIn: parent
+                            icon: "bell-off"
+                            size: 32 * Globals.shellScale
+                            color: Globals.colors.muted
+                            opacity: notifBlock.dndMode ? 1 : 0
+                            rotation: notifBlock.dndMode ? 0 : 180
+                            scale: notifBlock.dndMode ? 1 : 0.3
+                            Behavior on opacity { BaseMotion {} }
+                            Behavior on rotation { BaseMotion {} }
+                            Behavior on scale { BaseMotion {} }
+                        }
                     }
 
-                    BaseText {
+                    Item {
                         Layout.alignment: Qt.AlignHCenter
-                        text: "CLEAR"
-                        weight: Globals.typography.weight.demi
-                        font.letterSpacing: 3
-                        color: Globals.colors.faint
+                        implicitWidth: Math.max(clearLabel.implicitWidth, silenceLabel.implicitWidth)
+                        implicitHeight: Math.max(clearLabel.implicitHeight, silenceLabel.implicitHeight)
+
+                        BaseText {
+                            id: clearLabel
+                            anchors.centerIn: parent
+                            text: "CLEAR"
+                            weight: Globals.typography.weight.demi
+                            font.letterSpacing: 3
+                            color: Globals.colors.faint
+                            opacity: notifBlock.dndMode ? 0 : 1
+                            scale: notifBlock.dndMode ? 0.85 : 1
+                            Behavior on opacity { BaseMotion {} }
+                            Behavior on scale { BaseMotion {} }
+                        }
+
+                        BaseText {
+                            id: silenceLabel
+                            anchors.centerIn: parent
+                            text: "SILENCE"
+                            weight: Globals.typography.weight.demi
+                            font.letterSpacing: 3
+                            color: Globals.colors.faint
+                            opacity: notifBlock.dndMode ? 1 : 0
+                            scale: notifBlock.dndMode ? 1 : 0.85
+                            Behavior on opacity { BaseMotion {} }
+                            Behavior on scale { BaseMotion {} }
+                        }
                     }
                 }
             }
