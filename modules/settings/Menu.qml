@@ -53,6 +53,14 @@ SettingsPage {
         return null;
     }
 
+    Item {
+        Layout.fillWidth: true
+        implicitHeight: 0
+        BaseIndicator {
+            hoverPredicate: root._hoverPredicate
+        }
+    }
+
     ColumnLayout {
         id: mainCol
         Layout.fillWidth: true
@@ -241,9 +249,90 @@ SettingsPage {
                 }
             }
         }
-    }
 
-    BaseIndicator {
-        hoverPredicate: root._hoverPredicate
+        BaseSeparator {
+            Layout.fillWidth: true
+            Layout.topMargin: Globals.geometry.spacing.md
+            Layout.bottomMargin: Globals.geometry.spacing.md
+        }
+
+        // Notification history lives here as a block of the menu, not as its own
+        // module: the bell opens settings, and the cards sit under the mixer.
+        ColumnLayout {
+            id: notifBlock
+
+            Layout.fillWidth: true
+            spacing: 0
+
+            readonly property int notifCount: Notifications.notificationHistory.count
+
+            ListView {
+                id: notifList
+
+                Layout.fillWidth: true
+                implicitHeight: contentHeight
+                model: Notifications.notificationHistory
+                spacing: Globals.geometry.spacing.md
+                interactive: false
+                visible: notifBlock.notifCount > 0
+
+                delegate: Column {
+                    width: ListView.view.width
+                    spacing: Globals.geometry.spacing.md
+
+                    NotificationCard {
+                        width: parent.width
+                        notification: modelData
+                        onRightClicked: {
+                            if (modelData)
+                                modelData.dismiss();
+                        }
+                    }
+
+                    BaseSeparator {
+                        width: parent.width
+                        visible: index < notifList.count - 1
+                    }
+                }
+            }
+
+            // ── EMPTY STATE ──────────────────────────────────────────
+            // implicitHeight, not Layout.preferredHeight: the block's height is
+            // the sum of its children's implicit heights, and a fixed minimum is
+            // what keeps the menu from shrinking when the history empties.
+            Item {
+                Layout.fillWidth: true
+                implicitHeight: notifBlock.notifCount === 0 ? 175 * Globals.shellScale : 0
+                visible: notifBlock.notifCount === 0
+                opacity: visible ? 1 : 0
+                Behavior on opacity {
+                    BaseMotion {}
+                }
+                Behavior on height {
+                    BaseMotion {}
+                }
+                clip: true
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: Globals.geometry.spacing.md
+
+                    BaseIcon {
+                        Layout.alignment: Qt.AlignHCenter
+                        icon: "bell-check"
+                        size: 32 * Globals.shellScale
+                        color: Globals.colors.muted
+                    }
+
+                    BaseText {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "CLEAR"
+                        weight: Globals.typography.weight.demi
+                        font.letterSpacing: 3
+                        color: Globals.colors.faint
+                    }
+                }
+            }
+        }
     }
 }
