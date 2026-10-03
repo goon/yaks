@@ -55,7 +55,10 @@ QtObject {
         "bluetooth":     { source: "../modules/network/NetworkBluetooth.qml", width: 325, height: 500, kind: "popout", evictionTime: 5000 },
         "notifications": { source: "../modules/notifications/Notif.qml", width: 460, height: 500, kind: "popout", evictionTime: 5000 },
         "calendar":      { source: "../modules/calendar/Calendar.qml",     width: 320, height: 260, kind: "popout", evictionTime: 5000 },
-        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, height: 100, kind: "toast",  evictionTime: 3000 },
+        // The volume toast is the bar face wearing a slider: its height tracks
+        // `bar.height`, so the pre-load estimate must too or the capsule morphs
+        // to 100 and then snaps back.
+        "volume_toast":   { source: "../modules/toasts/VolumeToast.qml",     width: 300, height: Preferences.bar.height, kind: "toast",  evictionTime: 3000 },
         "notification_toast": { source: "../modules/toasts/NotificationToast.qml", width: 420, height: 140, kind: "toast", evictionTime: 3000 }
     })
 
