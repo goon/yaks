@@ -6,6 +6,16 @@ import qs
 SettingsPage {
     id: root
 
+    // Fixed display order of the bar components. The render order lives in
+    // modules/bar/Bar.qml's componentOrder; this page is toggle-only, no reorder.
+    readonly property var componentList: [
+        { id: "weather",    name: "Weather",    icon: "cloud-sun" },
+        { id: "workspaces", name: "Workspaces", icon: "columns-4" },
+        { id: "clock",      name: "Clock",      icon: "clock"     },
+        { id: "dock",       name: "Dock",       icon: "columns-2" },
+        { id: "indicators", name: "Indicators", icon: "layers"    }
+    ]
+
     ColumnLayout {
         Layout.fillWidth: true
         spacing: Globals.geometry.spacing.md
@@ -91,107 +101,24 @@ SettingsPage {
 
 
 
-            BaseListItem {
-                id: activeComponentsTitle
-                leftIcon: "grip-vertical"
-                title: "Components"
-            }
+            Repeater {
+                model: root.componentList
 
-            ColumnLayout {
-                id: componentList
-                property var indicatorTarget: activeComponentsTitle
-                readonly property var metadata: ({
-                    "workspaces": { name: "Workspaces", icon: "columns-4" },
-                    "clock":      { name: "Clock",      icon: "clock"    },
-                    "weather":    { name: "Weather",    icon: "cloud-sun" },
-                    "dock":       { name: "Dock",        icon: "columns-2" },
-                    "indicators": { name: "Indicators",  icon: "layers"   },
-                })
+                delegate: BaseListItem {
+                    id: componentRow
 
-                Layout.fillWidth: true
-                Layout.margins: Globals.geometry.spacing.sm
-                Layout.topMargin: Globals.geometry.spacing.md
-                spacing: Globals.geometry.spacing.xs
+                    readonly property bool isEnabled: Preferences.bar.componentsEnabled[modelData.id] === true
 
-                // Swap `componentId` with its neighbour: dir -1 is up, +1 is down.
-                function nudge(componentId, dir) {
-                    var list = Array.from(Preferences.bar.components);
-                    var i = list.indexOf(componentId);
-                    var j = i + dir;
-                    if (i < 0 || j < 0 || j >= list.length) return;
-                    var tmp = list[i];
-                    list[i] = list[j];
-                    list[j] = tmp;
-                    Preferences.bar.components = list;
-                }
+                    leftIcon: modelData.icon
+                    title: modelData.name
+                    showSeparator: index < root.componentList.length - 1
 
-                Repeater {
-                    id: repeater
-                    model: Preferences.bar.components
-
-                    Rectangle {
-                        id: pill
-                        readonly property bool isEnabled: Preferences.bar.componentsEnabled[modelData] === true
-
-                        Layout.fillWidth: true
-                        height: 48
-                        radius: Globals.innerRadius(Globals.geometry.spacing.sm)
-
-                        // Flat well-style container pills
-                        color:        isEnabled ? Globals.colors.tint : Globals.colors.disabled
-                        border.width: isEnabled ? 1 : 0
-                        border.color: isEnabled ? Globals.colors.primary : "transparent"
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                let map = Object.assign({}, Preferences.bar.componentsEnabled);
-                                map[modelData] = !pill.isEnabled;
-                                Preferences.bar.componentsEnabled = map;
-                            }
-                        }
-
-                        RowLayout {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: Globals.geometry.spacing.sm
-                            anchors.rightMargin: Globals.geometry.spacing.xs
-                            spacing: Globals.geometry.spacing.xs
-
-                            BaseIcon {
-                                icon:  componentList.metadata[modelData]?.icon || "extension"
-                                size:  Globals.typography.icon.md
-                                color: pill.isEnabled ? Globals.colors.primary : Globals.colors.text
-                            }
-
-                            BaseText {
-                                text:  componentList.metadata[modelData]?.name || modelData
-                                color: pill.isEnabled ? Globals.colors.primary : Globals.colors.text
-                                Layout.fillWidth: true
-                            }
-
-                            BaseButton {
-                                icon: "chevron-up"
-                                enabled: index > 0
-                                paddingHorizontal: Globals.geometry.spacing.xs
-                                paddingVertical: Globals.geometry.spacing.xs
-                                hoverColor: Globals.colors.hover
-                                iconColor: enabled ? Globals.colors.text : Globals.colors.disabled
-                                onClicked: componentList.nudge(modelData, -1)
-                            }
-
-                            BaseButton {
-                                icon: "chevron-down"
-                                enabled: index < repeater.count - 1
-                                paddingHorizontal: Globals.geometry.spacing.xs
-                                paddingVertical: Globals.geometry.spacing.xs
-                                hoverColor: Globals.colors.hover
-                                iconColor: enabled ? Globals.colors.text : Globals.colors.disabled
-                                onClicked: componentList.nudge(modelData, 1)
-                            }
+                    BaseSwitch {
+                        checked: componentRow.isEnabled
+                        onToggled: {
+                            let map = Object.assign({}, Preferences.bar.componentsEnabled);
+                            map[modelData.id] = !componentRow.isEnabled;
+                            Preferences.bar.componentsEnabled = map;
                         }
                     }
                 }

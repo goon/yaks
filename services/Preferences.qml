@@ -25,7 +25,6 @@ QtObject {
         property bool overhang: false
         property int overhangReserve: 70
         property int workspaceCount: 5
-        property var components: ["workspaces", "weather", "dock", "indicators", "clock"]
         property var componentsEnabled: ({"workspaces": true, "weather": true, "dock": true, "indicators": true, "clock": true})
 
         // Space the bar reserves from its screen edge. With overhang on, only
@@ -41,7 +40,6 @@ QtObject {
         onOverhangChanged: root.requestSave()
         onOverhangReserveChanged: root.requestSave()
         onWorkspaceCountChanged: root.requestSave()
-        onComponentsChanged: root.requestSave()
         onComponentsEnabledChanged: root.requestSave()
     }
 
@@ -105,7 +103,6 @@ QtObject {
         ["bar", "overhang"],
         ["bar", "overhangReserve"],
         ["bar", "workspaceCount"],
-        ["bar", "components"],
         ["bar", "componentsEnabled"],
         ["wallpaper", "directory"],
         ["wallpaper", "transitionDuration"],
