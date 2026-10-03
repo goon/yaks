@@ -18,10 +18,7 @@ Item {
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
     readonly property var _indicatorModel: [
-        { key: "wifi", icon: "wifi" },
-        { key: "bluetooth", icon: "bluetooth" },
-        { key: "notifications", icon: "bell" },
-        { key: "settings", icon: "settings" }
+        { key: "notifications", icon: "bell" }
     ]
 
     // Saved order first, then any model key the saved order never mentions, so a
@@ -53,10 +50,7 @@ Item {
 
     function _openModule(key) {
         switch (key) {
-            case "wifi": Modules.toggleModule("wifi"); break;
-            case "bluetooth": Modules.toggleModule("bluetooth"); break;
             case "notifications": Modules.toggleModule("notifications"); break;
-            case "settings": Modules.toggleSettings(); break;
         }
     }
 
@@ -212,8 +206,8 @@ Item {
 
             // Build the new order from `keys` (orderedKeys), not the persisted
             // array: _computeOrderedKeys has already appended any model key the
-            // persisted order omits, and splicing the persisted array left an
-            // omitted key (bluetooth) with from === -1, so it could never move.
+            // persisted order omits, and splicing the persisted array would leave
+            // an omitted key with from === -1, so it could never move.
             // Writing the merged list back also heals preferences.json.
             const order = keys;
             const from = currentIdx;

@@ -25,7 +25,7 @@ Item {
     property real duration: Globals.motion.heat
     property bool fired: false
     // Fraction of the fill below which a release counts as a tap. 0 disables
-    // `tapped` entirely, which is what the power tiles want: their tile has no
+    // `tapped` entirely, which is what a hold-only hitbox wants: it has no
     // click meaning to preserve.
     property real tapThreshold: 0
 
