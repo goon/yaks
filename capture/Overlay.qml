@@ -15,7 +15,7 @@ PanelWindow {
     property var modelData
     screen: modelData
 
-    // The Screenshot scope, reached through the Loader-style creation context
+    // The Capture scope, reached through the Loader-style creation context
     // Variants gives this file.
     readonly property var host: root
 
@@ -112,7 +112,7 @@ PanelWindow {
                     } else if (capTimer.tries > 120) {
                         // ~3 s. Degrade to a black crop rather than hanging.
                         capTimer.running = false;
-                        console.warn("[Screenshot] " + overlay.modelData.name + ": capture timed out");
+                        console.warn("[Capture] " + overlay.modelData.name + ": capture timed out");
                         host.reportReady(overlay);
                     } else {
                         capTimer.tries += 1;
