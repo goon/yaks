@@ -70,5 +70,5 @@ WallpaperBackground modules/wallpaper/WallpaperBackground.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 
 # Capture — screenshot and recording share one selection overlay
-Capture capture/Capture.qml
-Overlay capture/Overlay.qml
+Capture modules/capture/Capture.qml
+Overlay modules/capture/Overlay.qml
