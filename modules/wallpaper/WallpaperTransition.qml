@@ -27,7 +27,7 @@ import qs
  * compositor hands the buffer straight to the item and the ShaderEffect samples
  * it, so there is no fork+exec, no PNG on disk and no file to re-decode.
  *
- * Phase: waitForOSDHide → takingScreenshots → overlaySettle → runningTheme
+ * Phase: takingScreenshots → overlaySettle → runningTheme
  *      → runningTransition → done
  */
 Scope {
@@ -46,7 +46,6 @@ Scope {
 
     // One settle timer per pause, all named for what they are waiting on rather
     // than reused, because each phase needs a different duration.
-    readonly property int _osdHideMs: 150
     // One composited frame is all the opaque overlay needs before the theme
     // swaps underneath it; the phase name is kept for the log.
     readonly property int _overlaySettleMs: 80
@@ -78,7 +77,7 @@ Scope {
     function start(path) {
         if (root.phase !== "done" || !path) return;
         root.pendingPath = path;
-        root.beginPhase("waitForOSDHide");
+        root.beginPhase("takingScreenshots");
     }
 
     function beginPhase(next) {
@@ -86,15 +85,6 @@ Scope {
         console.log("[Transition] ->", next);
 
         switch (next) {
-            case "waitForOSDHide":
-                // The bar has to be gone *before* the frame is captured, and the
-                // compositor needs a frame or two to actually stop drawing it. A
-                // bar baked into the freeze would reappear after the wipe as a
-                // pop rather than fading with the rest of the desktop.
-                Modules.osdSuppressed = true;
-                osdHideTimer.restart();
-                break;
-
             case "takingScreenshots":
                 // Every screen maps its window, asks the compositor for one frame
                 // and polls for it. There is no process to fail to spawn and no
@@ -132,7 +122,6 @@ Scope {
             case "done":
                 themeTimeoutTimer.stop();
                 root.broadcastFinish();
-                Modules.osdSuppressed = false;
                 root.pendingPath = "";
                 // The freeze is over; release the deferred-swap guard so the next
                 // unanimated apply reaches WallpaperBackground directly. Cleared
@@ -166,12 +155,6 @@ Scope {
     }
 
     // ── TIMERS ─────────────────────────────────────────────────────────
-    Timer {
-        id: osdHideTimer
-        interval: root._osdHideMs
-        onTriggered: root.beginPhase("takingScreenshots")
-    }
-
     Timer {
         id: loadSettleTimer
         interval: root._overlaySettleMs

@@ -41,6 +41,16 @@ ShellRoot {
 
     WallpaperTransition {}
 
+    Screenshot {
+        id: shot
+    }
+
+    IpcHandler {
+        function toggle() { shot.toggle(); }
+        function window() { shot.begin(); }
+        target: "screenshot"
+    }
+
     Instantiator {
         model: Quickshell.screens
 

@@ -320,7 +320,7 @@ PanelWindow {
                 height: implicitHeight
                 capsulePad: capsuleRoot.capsulePad
 
-                opacity: (capsuleRoot.isCapsuleMorphed || Modules.osdSuppressed) ? 0.0 : 1.0
+                opacity: capsuleRoot.isCapsuleMorphed ? 0.0 : 1.0
                 enabled: opacity > 0.01
 
                 Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }

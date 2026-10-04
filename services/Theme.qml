@@ -81,11 +81,28 @@ Item {
         var s = seed || Color.DEFAULT_SEED;
         root.currentColors = Color.build(s);
         root.hookColors = Color.build(s, { forApps: true });
+        root._pendingWrites = 0;
         root.runHooks(executionTimer.pendingContext);
-        root.applied();
+        // No app enabled (or preferences not up yet) means nothing to wait
+        // for. Emitting here keeps WallpaperTransition off its 2 s backstop.
+        if (root._pendingWrites === 0) root.applied();
     }
 
     // ── APPLICATION HOOKS ─────────────────────────────────────────────
+
+    // applied() is the "the hooks are on disk" signal and the wallpaper
+    // wipe runs on it, so the writes have to be counted. They used to go
+    // through Runner.runDetached, which is Quickshell.execDetached and
+    // returns void — nothing can ever know when those land.
+    property int _pendingWrites: 0
+
+    function _write(cmd) {
+        root._pendingWrites += 1;
+        Runner.run(cmd, function () {
+            root._pendingWrites = Math.max(0, root._pendingWrites - 1);
+            if (root._pendingWrites === 0) root.applied();
+        });
+    }
 
     function runHooks(context) {
         if (!Preferences.loaded) return;
@@ -109,7 +126,7 @@ Item {
 
             root._writeHookFiles(result.files);
             if (result.postHook)
-                Runner.runDetached(["sh", "-c", result.postHook]);
+                root._write(["sh", "-c", result.postHook]);
         }
     }
 
@@ -118,7 +135,7 @@ Item {
         for (var i = 0; i < files.length; i++) {
             var f = files[i];
             if (!f || !f.path) continue;
-            Runner.runDetached(["sh", "-c",
+            root._write(["sh", "-c",
                 'p="$1"; p="${p/#\\~/$HOME}"; mkdir -p "$(dirname "$p")" && printf "%s" "$2" > "$p"',
                 "--", f.path, f.content || ""]);
         }
