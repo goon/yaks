@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import qs
 
@@ -24,8 +23,12 @@ import qs
  * string makes an illegal jump a visible no-op rather than a state to reason
  * about.
  *
- * Phase: waitForOSDHide → takingScreenshots → loadingScreenshots → overlaySettle
- *      → runningTheme → runningTransition → done
+ * The freeze frame is a Quickshell `ScreencopyView`, not a grim screenshot: the
+ * compositor hands the buffer straight to the item and the ShaderEffect samples
+ * it, so there is no fork+exec, no PNG on disk and no file to re-decode.
+ *
+ * Phase: waitForOSDHide → takingScreenshots → overlaySettle → runningTheme
+ *      → runningTransition → done
  */
 Scope {
     id: root
@@ -35,17 +38,9 @@ Scope {
     property int screensReadyCount: 0
     property int transitionsFinishedCount: 0
 
-    // The screenshot a wipe is replacing. Held by the root so every screen's
+    // The wallpaper a wipe is replacing. Held by the root so every screen's
     // window reads the same one.
     property string pendingPath: ""
-
-    // Cache-buster for the screenshot loads. grim rewrites the same paths every
-    // time and Qt will not re-decode an unchanged source URL, so without this
-    // the second transition shows the first transition's screenshot.
-    property double cacheBuster: Date.now()
-
-    readonly property string shotDir: Globals.cacheDir + "/transition"
-    readonly property string grimCmd: "mkdir -p \"" + shotDir + "\" && for m in $(hyprctl monitors -j | jq -r '.[].name'); do grim -o \"$m\" \"" + shotDir + "/BG_$m.png\" & done; wait"
 
     readonly property int transitionMs: Math.max(100, Math.round(Preferences.wallpaper.transitionDuration))
 
@@ -55,15 +50,14 @@ Scope {
     // One composited frame is all the opaque overlay needs before the theme
     // swaps underneath it; the phase name is kept for the log.
     readonly property int _overlaySettleMs: 80
-    readonly property int _loadTimeoutMs: 1500
     // Backstop only: if Theme never fires `applied` the freeze must still end.
     readonly property int _themeTimeoutMs: 2000
 
     // ── COORDINATION ───────────────────────────────────────────────────
     // One window per screen, all in one process, so the phases are shared state
-    // rather than cross-process messages — but the two broadcasts are still the
+    // rather than cross-process messages — but the broadcasts are still the
     // only way in: a window cannot join a phase halfway.
-    signal broadcastLoadScreenshots()
+    signal broadcastCapture()
     signal broadcastStartTransition()
     signal broadcastFinish()
 
@@ -93,30 +87,24 @@ Scope {
 
         switch (next) {
             case "waitForOSDHide":
-                // The bar has to be gone *before* grim looks, and the compositor
-                // needs a frame or two to actually stop drawing it. A bar baked
-                // into the screenshot would reappear after the wipe as a pop
-                // rather than fading with the rest of the desktop.
+                // The bar has to be gone *before* the frame is captured, and the
+                // compositor needs a frame or two to actually stop drawing it. A
+                // bar baked into the freeze would reappear after the wipe as a
+                // pop rather than fading with the rest of the desktop.
                 Modules.osdSuppressed = true;
                 osdHideTimer.restart();
                 break;
 
             case "takingScreenshots":
-                screenshotProcess.running = true;
-                // A failed spawn never reaches onExited, so without this a
-                // missing grim wedges the desktop in the frozen screenshot for
-                // good. Degrading to an instant swap is the right failure.
-                if (!screenshotProcess.running) beginPhase("loadingScreenshots");
-                break;
-
-            case "loadingScreenshots":
+                // Every screen maps its window, asks the compositor for one frame
+                // and polls for it. There is no process to fail to spawn and no
+                // file to decode, so this is the whole capture step — it just has
+                // to wait for the compositor to answer.
                 root.screensReadyCount = 0;
-                root.broadcastLoadScreenshots();
-                loadTimeoutTimer.restart();
+                root.broadcastCapture();
                 break;
 
             case "overlaySettle":
-                loadTimeoutTimer.stop();
                 loadSettleTimer.restart();
                 break;
 
@@ -146,7 +134,6 @@ Scope {
                 root.broadcastFinish();
                 Modules.osdSuppressed = false;
                 root.pendingPath = "";
-                root.cacheBuster = Date.now();
                 // The freeze is over; release the deferred-swap guard so the next
                 // unanimated apply reaches WallpaperBackground directly. Cleared
                 // before drainQueued so its applyNow is not itself deferred.
@@ -167,7 +154,7 @@ Scope {
     }
 
     function reportScreenReady() {
-        if (root.phase !== "loadingScreenshots") return;
+        if (root.phase !== "takingScreenshots") return;
         root.screensReadyCount++;
         if (root.screensReadyCount >= root.totalScreens) beginPhase("overlaySettle");
     }
@@ -197,26 +184,6 @@ Scope {
         onTriggered: {
             if (root.phase === "runningTheme") root.beginPhase("runningTransition");
         }
-    }
-
-    // The screenshot is a plain file and a screen whose monitor name never
-    // matches what hyprctl reports would leave the ready count short forever —
-    // pinned, on stale screenshots, with no way out but restarting the shell.
-    // Proceeding is always recoverable; hanging is not.
-    Timer {
-        id: loadTimeoutTimer
-        interval: root._loadTimeoutMs
-        onTriggered: {
-            if (root.phase === "loadingScreenshots") root.beginPhase("overlaySettle");
-        }
-    }
-
-    // ── SCREENSHOT ──────────────────────────────────────────────────────
-    Process {
-        id: screenshotProcess
-        running: false
-        command: ["bash", "-c", root.grimCmd]
-        onExited: root.beginPhase("loadingScreenshots")
     }
 
     // ── WINDOWS ─────────────────────────────────────────────────────────
@@ -251,15 +218,20 @@ Scope {
             Connections {
                 target: root
 
-                function onBroadcastLoadScreenshots() {
-                    // progress left at 1.0 (transparent) by the previous wipe, and
-                    // only reset by restart() at runningTransition — too late. Reset
-                    // here so the overlay is fully opaque the instant it appears,
-                    // hiding the runningTheme source swap underneath it.
+                function onBroadcastCapture() {
+                    // Order matters. progress stays 1.0 (transparent) until a frame
+                    // actually lands, so this window contributes zero alpha to the
+                    // very output it is capturing — a mapped-but-transparent layer
+                    // is harmless in Hyprland's screencopy. The window has to be
+                    // visible before captureFrame() though: the ScreencopyView
+                    // needs a scene graph to receive the buffer into.
                     transitionAnim.stop();
-                    shader.progress = 0.0;
+                    shader.progress = 1.0;
                     transitionWindow.visible = true;
-                    screenshotImage.source = "file://" + root.shotDir + "/BG_" + modelData.name + ".png?t=" + root.cacheBuster;
+                    frozenLoader.active = true;
+                    capTimer.tries = 0;
+                    capTimer.restart();
+                    if (frozenLoader.item) frozenLoader.item.captureFrame();
                 }
 
                 function onBroadcastStartTransition() {
@@ -267,19 +239,72 @@ Scope {
                 }
 
                 function onBroadcastFinish() {
+                    capTimer.stop();
                     transitionWindow.visible = false;
-                    screenshotImage.source = "";
+                    // hasContent is sticky — it means "a buffer arrived since
+                    // construction", so a surviving view would report ready on the
+                    // next transition against the *previous* freeze. Destroying it
+                    // is the reset; transitions are rare enough for this to be free.
+                    frozenLoader.active = false;
                 }
             }
 
-            // Never shown: the shader samples it as a texture, and an Image with
-            // no visible pixels still decodes and uploads. Making it visible
-            // would just draw the frozen desktop twice.
-            Image {
-                id: screenshotImage
-                visible: false
-                onStatusChanged: {
-                    if (status === Image.Ready) root.reportScreenReady();
+            Loader {
+                id: frozenLoader
+                active: false
+                anchors.fill: parent
+
+                sourceComponent: Component {
+                    ScreencopyView {
+                        anchors.fill: parent
+                        captureSource: transitionWindow.modelData
+                        live: false
+                        paintCursor: false
+                    }
+                }
+            }
+
+            ShaderEffectSource {
+                id: frozenSource
+                sourceItem: frozenLoader.item
+                // Hidden only once the buffer has landed, which is exactly when
+                // capTimer stops. Leaving the sourceItem visible would let it
+                // draw the same frozen texture the shader samples *directly*:
+                // the wipe then erases the shader's copy and uncovers an
+                // identical one, so the transition reads as an instant cut.
+                // Not hidden while capturing, because whether a hidden
+                // ScreencopyView still receives buffers is untested — which is
+                // also why capTimer.restart() precedes captureFrame().
+                hideSource: !capTimer.running
+            }
+
+            // The compositor answering is a round trip with no callback that
+            // reliably distinguishes "not yet" from "never" — hasContentChanged
+            // can fire before the first poll, so poll instead, and cap it. Giving
+            // up leaves progress at 1.0, i.e. a transparent overlay, so the
+            // wallpaper simply cuts. Proceeding is recoverable; hanging is not.
+            Timer {
+                id: capTimer
+                interval: 25
+                repeat: true
+                running: false
+
+                property int tries: 0
+
+                onTriggered: {
+                    const view = frozenLoader.item;
+                    if (!view) return;
+                    if (view.hasContent) {
+                        running = false;
+                        shader.progress = 0.0;
+                        root.reportScreenReady();
+                    } else if (tries > 120) {
+                        running = false;
+                        root.reportScreenReady();
+                    } else {
+                        tries += 1;
+                        view.captureFrame();
+                    }
                 }
             }
 
@@ -292,9 +317,17 @@ Scope {
                 // shader outright if these two get out of step. `seed` is unused
                 // by this fragment — it is declared only because the ubuf block
                 // requires it, and removing it would be a load failure.
-                property real progress: 0.0
+                //
+                // progress defaults to 1.0, not 0.0: 0.0 is fully opaque, and this
+                // window is now mapped before the frame arrives, so an opaque
+                // default would flash black. Only the captured frame makes it
+                // opaque, which is the point.
+                property real progress: 1.0
                 property real seed: 0.5
-                property Image sourceImage: screenshotImage
+                // wipe.frag declares sourceImage as a raw sampler2D, so the only
+                // thing binding = 1 needs is a texture — a ShaderEffectSource
+                // qualifies. That is why the freeze needs no PNG round trip.
+                property ShaderEffectSource sourceImage: frozenSource
 
                 fragmentShader: Qt.resolvedUrl("../../assets/shaders/wipe.frag.qsb")
             }

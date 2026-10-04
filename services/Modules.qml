@@ -16,10 +16,10 @@ QtObject {
     property var _pendingCallbacks: []
 
     // Hides the island's rest face (the bar) without touching activeModuleName.
-    // The wallpaper freeze in modules/wallpaper/ sets this so grim captures a
-    // clean desktop — a bar baked into the screenshot would pop back in after the
-    // wipe instead of fading with it. Deliberately *not* a module: an open popout
-    // is still captured, and is meant to be — the screenshot's copy of it
+    // The wallpaper freeze in modules/wallpaper/ sets this so the captured frame
+    // holds a clean desktop — a bar baked into the freeze would pop back in
+    // after the wipe instead of fading with it. Deliberately *not* a module: an
+    // open popout is still captured, and is meant to be — the freeze's copy of it
     // dissolves into the live one in place.
     property bool osdSuppressed: false
 
