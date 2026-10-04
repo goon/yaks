@@ -41,14 +41,20 @@ ShellRoot {
 
     WallpaperTransition {}
 
-    Screenshot {
-        id: shot
+    Capture {
+        id: capture
     }
 
     IpcHandler {
-        function toggle() { shot.toggle(); }
-        function window() { shot.begin(); }
+        function toggle() { capture.toggleShot(); }
+        function window() { capture.begin(); }
         target: "screenshot"
+    }
+
+    IpcHandler {
+        function toggle() { capture.toggleRecord(); }
+        function stop() { capture.stopRecording(); }
+        target: "recording"
     }
 
     Instantiator {

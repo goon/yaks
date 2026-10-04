@@ -69,6 +69,6 @@ WallpaperTransition modules/wallpaper/WallpaperTransition.qml
 WallpaperBackground modules/wallpaper/WallpaperBackground.qml
 WallpaperCarousel modules/wallpaper/WallpaperCarousel.qml
 
-# Screenshot
-Screenshot screenshot/Screenshot.qml
-Overlay screenshot/Overlay.qml
+# Capture — screenshot and recording share one selection overlay
+Capture capture/Capture.qml
+Overlay capture/Overlay.qml
