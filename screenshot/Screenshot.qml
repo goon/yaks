@@ -54,7 +54,7 @@ Scope {
             close();
             return;
         }
-        const path = saveDir + "/screenshot_" + stamp() + ".png";
+        const path = saveDir + "/" + stamp() + ".png";
         overlay.grabAndSave(path, function (ok) {
             if (!ok) {
                 Runner.run(["notify-send", "Screenshot", "Could not save " + path]);
