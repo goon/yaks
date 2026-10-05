@@ -10,7 +10,7 @@ Item {
     property int itemHeight: 36 * Globals.shellScale
     property int leftIconBoxSize: 32 * Globals.shellScale
     property int verticalPadding: Globals.geometry.spacing.md
-    property real controlWidthRatio: 0.6
+    property real controlWidthRatio: 0.5
 
     implicitHeight: Math.max(root.itemHeight, layout.implicitHeight) + root.verticalPadding * 2
     implicitWidth: layout.implicitWidth
