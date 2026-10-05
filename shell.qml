@@ -7,6 +7,7 @@ import qs
 ShellRoot {
     property var _display: Display
     property var _peripherals: Peripherals
+    property var _notifications: Notifications
 
     objectName: "shellRoot"
 
