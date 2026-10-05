@@ -11,11 +11,10 @@ NotificationCard {
 
     notification: Notifications.activeToastNotification
     clickable: true
-    
+
+    // The toast is the whole notification system now: closing it dismisses
+    // the server object, so nothing outlives its 5 seconds on screen.
     onClicked: {
-        if (Notifications.activeToastNotification) {
-            Notifications.activeToastNotification.dismiss();
-        }
         Notifications.closeActiveToast();
     }
 

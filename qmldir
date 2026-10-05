@@ -47,7 +47,6 @@ Capsule modules/Capsule.qml
 Bar modules/bar/Bar.qml
 BarClock modules/bar/BarClock.qml
 BarDock modules/bar/BarDock.qml
-BarIndicators modules/bar/BarIndicators.qml
 BarWeather modules/bar/BarWeather.qml
 BarWorkspaces modules/bar/BarWorkspaces.qml
 

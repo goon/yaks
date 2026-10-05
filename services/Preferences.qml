@@ -25,7 +25,7 @@ QtObject {
         property bool overhang: false
         property int overhangReserve: 70
         property int workspaceCount: 5
-        property var componentsEnabled: ({"workspaces": true, "weather": true, "dock": true, "indicators": true, "clock": true})
+        property var componentsEnabled: ({"workspaces": true, "weather": true, "dock": true, "clock": true})
 
         // Space the bar reserves from its screen edge. With overhang on, only
         // `overhangReserve`% of the bar height stays reserved (plus the top
@@ -80,12 +80,6 @@ QtObject {
         }
     }
 
-    property QtObject indicators: QtObject {
-        property list<string> order: ["notifications"]
-
-        onOrderChanged: root.requestSave()
-    }
-
     // ── TOP-LEVEL VALUES ─────────────────────────────────────────────────
 
     property string currentWallpaper: ""
@@ -112,7 +106,6 @@ QtObject {
         ["globals", "backgroundOpacity"],
         ["globals", "capsuleOutline"],
         ["globals", "shadow"],
-        ["indicators", "order"],
         ["currentWallpaper"]
     ]
 

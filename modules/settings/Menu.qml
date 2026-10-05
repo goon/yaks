@@ -22,6 +22,45 @@ SettingsPage {
         }
     }
 
+    // Do Not Disturb glyph: the bell ↔ bell-off rotate/morph from the old
+    // notification block, so the settings row keeps its animation.
+    Component {
+        id: dndGlyph
+
+        Item {
+            implicitWidth: 22 * Globals.shellScale
+            implicitHeight: 22 * Globals.shellScale
+
+            readonly property bool dnd: Preferences.notifications.mode === 1
+
+            BaseIcon {
+                anchors.centerIn: parent
+                icon: "bell"
+                size: Globals.typography.icon.md
+                color: Globals.colors.text
+                opacity: parent.dnd ? 0 : 1
+                rotation: parent.dnd ? -180 : 0
+                scale: parent.dnd ? 0.3 : 1
+                Behavior on opacity { BaseMotion {} }
+                Behavior on rotation { BaseMotion {} }
+                Behavior on scale { BaseMotion {} }
+            }
+
+            BaseIcon {
+                anchors.centerIn: parent
+                icon: "bell-off"
+                size: Globals.typography.icon.md
+                color: Globals.colors.text
+                opacity: parent.dnd ? 1 : 0
+                rotation: parent.dnd ? 0 : 180
+                scale: parent.dnd ? 1 : 0.3
+                Behavior on opacity { BaseMotion {} }
+                Behavior on rotation { BaseMotion {} }
+                Behavior on scale { BaseMotion {} }
+            }
+        }
+    }
+
     // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────────────
 
     readonly property var _menuModel: [
@@ -64,8 +103,8 @@ SettingsPage {
     ColumnLayout {
         id: mainCol
         Layout.fillWidth: true
-        // The nav list above and the mixer below are separate blocks, each
-        // closed by its own rule, so the blocks touch.
+        // The nav list and Do Not Disturb row above and the mixer below are
+        // separate blocks, each closed by its own rule, so the blocks touch.
         spacing: 0
 
         Repeater {
@@ -86,6 +125,23 @@ SettingsPage {
                 // so it opts out of the per-row rule every settings row draws.
                 showSeparator: false
                 onClicked: root.pushPage(modelData.page)
+            }
+        }
+
+        // Do Not Disturb lives here as a plain row, not a page: the only
+        // setting in the nav block with a switch instead of a chevron.
+        BaseListItem {
+            // leftIcon stays set (string unused for drawing once the glyph
+            // component lands) so the row separator keeps the nav indent.
+            leftIcon: "bell"
+            leftIconComponent: dndGlyph
+            title: "Do Not Disturb"
+            verticalPadding: 0
+            showSeparator: false
+
+            BaseSwitch {
+                checked: Preferences.notifications.mode === 1
+                onToggled: Preferences.notifications.mode = checked ? 1 : 0
             }
         }
 
@@ -250,172 +306,5 @@ SettingsPage {
             }
         }
 
-        BaseSeparator {
-            Layout.fillWidth: true
-            Layout.topMargin: Globals.geometry.spacing.md
-            Layout.bottomMargin: Globals.geometry.spacing.md
-        }
-
-        // Notification history lives here as a block of the menu, not as its own
-        // module: the bell opens settings, and the cards sit under the mixer.
-        ColumnLayout {
-            id: notifBlock
-
-            Layout.fillWidth: true
-            spacing: 0
-
-            readonly property int notifCount: Notifications.notificationHistory.count
-            readonly property bool dndMode: Preferences.notifications.mode === 1
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: Globals.geometry.spacing.sm
-                spacing: 0
-
-                BaseIcon {
-                    icon: notifBlock.dndMode ? "bell-off" : "bell"
-                    size: Globals.typography.icon.md
-                    color: notifBlock.dndMode ? Globals.colors.faint : Globals.colors.text
-                }
-
-                BaseText {
-                    text: "Notifications"
-                    font.pixelSize: Globals.typography.size.lg
-                    color: Globals.colors.text
-                    // Label aligns with nav labels: row inset 8 + icon box 32,
-                    // minus icon 18 already laid out = 14.
-                    Layout.leftMargin: 14 * Globals.shellScale
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                BaseSwitch {
-                    checked: notifBlock.dndMode
-                    onToggled: {
-                        Preferences.notifications.mode = checked ? 1 : 0
-                        Notifications.notificationHistory.clear()
-                    }
-                }
-            }
-
-            ListView {
-                id: notifList
-
-                Layout.fillWidth: true
-                implicitHeight: contentHeight
-                model: Notifications.notificationHistory
-                spacing: Globals.geometry.spacing.md
-                interactive: false
-                visible: notifBlock.notifCount > 0
-
-                delegate: Column {
-                    width: ListView.view.width
-                    spacing: Globals.geometry.spacing.md
-
-                    NotificationCard {
-                        width: parent.width
-                        notification: modelData
-                        onRightClicked: {
-                            if (modelData)
-                                modelData.dismiss();
-                        }
-                    }
-
-                    BaseSeparator {
-                        width: parent.width
-                        visible: index < notifList.count - 1
-                    }
-                }
-            }
-
-            // ── EMPTY STATE ──────────────────────────────────────────
-            // implicitHeight, not Layout.preferredHeight: the block's height is
-            // the sum of its children's implicit heights, and a fixed minimum is
-            // what keeps the menu from shrinking when the history empties.
-            Item {
-                Layout.fillWidth: true
-                implicitHeight: notifBlock.notifCount === 0 ? 175 * Globals.shellScale : 0
-                visible: notifBlock.notifCount === 0
-                opacity: visible ? 1 : 0
-                Behavior on opacity {
-                    BaseMotion {}
-                }
-                Behavior on height {
-                    BaseMotion {}
-                }
-                clip: true
-
-                ColumnLayout {
-                    anchors.centerIn: parent
-                    spacing: Globals.geometry.spacing.md
-
-                    Item {
-                        Layout.alignment: Qt.AlignHCenter
-                        width: 32 * Globals.shellScale
-                        height: 32 * Globals.shellScale
-
-                        BaseIcon {
-                            anchors.centerIn: parent
-                            icon: "bell-check"
-                            size: 32 * Globals.shellScale
-                            color: Globals.colors.muted
-                            opacity: notifBlock.dndMode ? 0 : 1
-                            rotation: notifBlock.dndMode ? -180 : 0
-                            scale: notifBlock.dndMode ? 0.3 : 1
-                            Behavior on opacity { BaseMotion {} }
-                            Behavior on rotation { BaseMotion {} }
-                            Behavior on scale { BaseMotion {} }
-                        }
-
-                        BaseIcon {
-                            anchors.centerIn: parent
-                            icon: "bell-off"
-                            size: 32 * Globals.shellScale
-                            color: Globals.colors.muted
-                            opacity: notifBlock.dndMode ? 1 : 0
-                            rotation: notifBlock.dndMode ? 0 : 180
-                            scale: notifBlock.dndMode ? 1 : 0.3
-                            Behavior on opacity { BaseMotion {} }
-                            Behavior on rotation { BaseMotion {} }
-                            Behavior on scale { BaseMotion {} }
-                        }
-                    }
-
-                    Item {
-                        Layout.alignment: Qt.AlignHCenter
-                        implicitWidth: Math.max(clearLabel.implicitWidth, silenceLabel.implicitWidth)
-                        implicitHeight: Math.max(clearLabel.implicitHeight, silenceLabel.implicitHeight)
-
-                        BaseText {
-                            id: clearLabel
-                            anchors.centerIn: parent
-                            text: "CALM"
-                            weight: Globals.typography.weight.demi
-                            font.letterSpacing: 3
-                            color: Globals.colors.faint
-                            opacity: notifBlock.dndMode ? 0 : 1
-                            scale: notifBlock.dndMode ? 0.85 : 1
-                            Behavior on opacity { BaseMotion {} }
-                            Behavior on scale { BaseMotion {} }
-                        }
-
-                        BaseText {
-                            id: silenceLabel
-                            anchors.centerIn: parent
-                            text: "SILENCE"
-                            weight: Globals.typography.weight.demi
-                            font.letterSpacing: 3
-                            color: Globals.colors.faint
-                            opacity: notifBlock.dndMode ? 1 : 0
-                            scale: notifBlock.dndMode ? 1 : 0.85
-                            Behavior on opacity { BaseMotion {} }
-                            Behavior on scale { BaseMotion {} }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

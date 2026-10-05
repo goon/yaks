@@ -4,7 +4,7 @@ import Quickshell
 import qs
 
 // The island's default face — what the capsule shows when nothing else is
-// open. It measures and hosts the five bar components; it draws nothing itself
+// open. It measures and hosts the four bar components; it draws nothing itself
 // and it is never loaded or evicted, unlike every registry module. Lives here,
 // beside the components it names, so the bare filenames in resolveComponentSource
 // resolve against this folder.
@@ -21,7 +21,7 @@ Item {
     readonly property real horizontalSpacing: Globals.geometry.spacing.lg
 
     // Fixed left-to-right order of the bar components. Not user-reorderable.
-    readonly property var componentOrder: ["weather", "workspaces", "clock", "dock", "indicators"]
+    readonly property var componentOrder: ["weather", "workspaces", "clock", "dock"]
 
     function resolveComponentSource(name) {
         const map = {
@@ -29,7 +29,6 @@ Item {
             "clock": Qt.resolvedUrl("BarClock.qml"),
             "weather": Qt.resolvedUrl("BarWeather.qml"),
             "dock": Qt.resolvedUrl("BarDock.qml"),
-            "indicators": Qt.resolvedUrl("BarIndicators.qml"),
         };
         return map[name] || "";
     }

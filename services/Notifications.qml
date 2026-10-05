@@ -9,41 +9,20 @@ Item {
     id: root
 
     // keepOnReload off: the server re-emits every tracked notification on reload,
-// which replayed them as toasts. History is in-memory, so starting empty is fine.
-property NotificationServer server: NotificationServer { keepOnReload: false }
-    
-    property alias notificationHistory: historyModel
-    readonly property alias unreadCount: historyModel.count
-
-    ListModel {
-        id: historyModel
-    }
-
+    // which would replay them as toasts. Nothing persists, so starting empty is fine.
+    property NotificationServer server: NotificationServer { keepOnReload: false }
 
     Connections {
         target: server
-        
+
         function onNotification(notification) {
+            // DND suppresses on arrival: with no history there is nowhere to
+            // keep a suppressed notification, so it is dropped outright.
+            if (Preferences.notifications.mode !== 0) return;
+
             notification.tracked = true;
-            
-            historyModel.insert(0, {
-                "modelData": notification,
-                "receivedAt": new Date()
-            });
-
-            notification.onClosed.connect(() => {
-                for (var i = 0; i < historyModel.count; i++) {
-                    if (historyModel.get(i).modelData === notification) {
-                        historyModel.remove(i);
-                        break;
-                    }
-                }
-            });
-
-            if (Preferences.notifications.mode === 0) {
-                root._toastQueue.push(notification);
-                root._processQueue();
-            }
+            root._toastQueue.push(notification);
+            root._processQueue();
         }
     }
     
@@ -67,8 +46,10 @@ property NotificationServer server: NotificationServer { keepOnReload: false }
                 Modules.openModule("notification_toast");
                 toastTimer.restart();
             } else {
-                // If another module is open, we skip showing the toast to avoid interrupting the user.
-                // Or we could wait. For now, we just discard the toast.
+                // Another module holds the island, so the toast is dropped
+                // rather than interrupting it: missed means gone. Dismiss the
+                // server object so the tracked set does not grow.
+                root.activeToastNotification.dismiss();
                 root.activeToastNotification = null;
                 root._processQueue();
             }
@@ -76,6 +57,9 @@ property NotificationServer server: NotificationServer { keepOnReload: false }
     }
     
     function closeActiveToast() {
+        // The toast is the whole system now: dismiss the server object so
+        // nothing outlives its 5 seconds on screen.
+        if (root.activeToastNotification) root.activeToastNotification.dismiss();
         root.activeToastNotification = null;
         toastTimer.stop();
         
