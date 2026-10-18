@@ -34,7 +34,7 @@ FocusScope {
     implicitWidth: contentContainer.implicitWidth + (paddingHorizontal * 2)
     implicitHeight: contentContainer.implicitHeight + (paddingVertical * 2)
 
-    scale: (root.clickable && pressed) ? 0.98 : 1.0
+    scale: (root.clickable && pressed && (mouseArea.pressedButtons & Qt.LeftButton)) ? 0.98 : 1.0
 
     Behavior on scale { BaseMotion { duration: Globals.motion.hover } }
 
