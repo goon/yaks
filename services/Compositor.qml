@@ -11,7 +11,6 @@ Singleton {
     // ── PUBLIC STATE ───────────────────────────────────────────────────
     property var workspaces: []
     property var windowByAddress: ({})
-    property bool hasDockWindows: false
     property int activeWorkspaceId: -1
 
 
@@ -72,24 +71,9 @@ Singleton {
                     }
                 }
                 root.windowByAddress = byAddr;
-                root._updateDockWindows();
             } catch (e) {
             }
         });
-    }
-
-    function _updateDockWindows() {
-        var vals = Hyprland.toplevels ? Hyprland.toplevels.values : null;
-        if (!vals) { root.hasDockWindows = false; return; }
-        var wba = root.windowByAddress;
-        for (var i = 0; i < vals.length; i++) {
-            var t = vals[i];
-            var addr = t ? t.address : null;
-            if (!addr) continue;
-            if (!addr.startsWith("0x")) addr = "0x" + addr;
-            if (wba[addr]) { root.hasDockWindows = true; return; }
-        }
-        root.hasDockWindows = false;
     }
 
     // ── INTERNAL UPDATE HELPERS ───────────────────────────────────────
@@ -97,7 +81,6 @@ Singleton {
         var data = _mapWorkspaces();
         root.workspaces = data.list;
         root.activeWorkspaceId = data.activeId;
-        root._updateDockWindows();
     }
 
     // ── EVENT-DRIVEN UPDATES ──────────────────────────────────────────
@@ -166,7 +149,6 @@ Singleton {
         onTriggered: {
             _tries++;
             Hyprland.refreshWorkspaces();
-            Hyprland.refreshToplevels();
             root._refreshClients();
             root._updateWorkspaces();
 
@@ -201,16 +183,8 @@ Singleton {
         _dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
     }
 
-    function focusWindow(windowId) {
-        var addr = windowId.toString();
-        if (!addr.startsWith("0x")) addr = "0x" + addr;
-
-        _dispatch("(function() for _, w in ipairs(hl.get_windows()) do if w.address == \"" + addr + "\" then return hl.dsp.focus({ window = w }) end end end)()");
-    }
-
     Component.onCompleted: {
         Hyprland.refreshWorkspaces();
-        Hyprland.refreshToplevels();
         root._refreshClients();
         root._updateWorkspaces();
         startupTimer.start();

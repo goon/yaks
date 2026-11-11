@@ -4,7 +4,7 @@ import Quickshell
 import qs
 
 // The island's default face — what the capsule shows when nothing else is
-// open. It measures and hosts the four bar components; it draws nothing itself
+// open. It measures and hosts the three bar components; it draws nothing itself
 // and it is never loaded or evicted, unlike every registry module. Lives here,
 // beside the components it names, so the bare filenames in resolveComponentSource
 // resolve against this folder.
@@ -21,14 +21,13 @@ Item {
     readonly property real horizontalSpacing: Globals.geometry.spacing.lg
 
     // Fixed left-to-right order of the bar components. Not user-reorderable.
-    readonly property var componentOrder: ["weather", "workspaces", "clock", "dock"]
+    readonly property var componentOrder: ["weather", "workspaces", "clock"]
 
     function resolveComponentSource(name) {
         const map = {
             "workspaces": Qt.resolvedUrl("BarWorkspaces.qml"),
             "clock": Qt.resolvedUrl("BarClock.qml"),
             "weather": Qt.resolvedUrl("BarWeather.qml"),
-            "dock": Qt.resolvedUrl("BarDock.qml"),
         };
         return map[name] || "";
     }
@@ -55,7 +54,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
 
                     readonly property bool isComponentVisible: (Preferences.bar.componentsEnabled[modelData] === true)
-                        && (modelData === "dock" ? Compositor.hasDockWindows : bar.resolveComponentSource(modelData) !== "")
+                        && bar.resolveComponentSource(modelData) !== ""
                     visible: isComponentVisible
                     spacing: horizontalSpacing
 
@@ -66,7 +65,7 @@ Item {
                             for (let i = 0; i < index; i++) {
                                 let otherData = bar.componentOrder[i];
                                 let otherVisible = (Preferences.bar.componentsEnabled[otherData] === true)
-                                                   && (otherData === "dock" ? Compositor.hasDockWindows : bar.resolveComponentSource(otherData) !== "");
+                                                   && bar.resolveComponentSource(otherData) !== "";
                                 if (otherVisible) return true;
                             }
                             return false;

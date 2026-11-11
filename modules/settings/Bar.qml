@@ -11,8 +11,7 @@ SettingsPage {
     readonly property var componentList: [
         { id: "weather",    name: "Weather",    icon: "cloud-sun" },
         { id: "workspaces", name: "Workspaces", icon: "columns-4" },
-        { id: "clock",      name: "Clock",      icon: "clock"     },
-        { id: "dock",       name: "Dock",       icon: "columns-2"  }
+        { id: "clock",      name: "Clock",      icon: "clock"     }
     ]
 
     ColumnLayout {

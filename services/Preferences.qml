@@ -25,7 +25,7 @@ QtObject {
         property bool overhang: false
         property int overhangReserve: 70
         property int workspaceCount: 5
-        property var componentsEnabled: ({"workspaces": true, "weather": true, "dock": true, "clock": true})
+        property var componentsEnabled: ({"workspaces": true, "weather": true, "clock": true})
 
         // Space the bar reserves from its screen edge. With overhang on, only
         // `overhangReserve`% of the bar height stays reserved (plus the top
@@ -284,6 +284,13 @@ QtObject {
                                 reconciled = true;
                             }
                         }
+                    }
+                    var components = root.bar.componentsEnabled;
+                    if (components && typeof components === "object" && "dock" in components) {
+                        var prunedComponents = Object.assign({}, components);
+                        delete prunedComponents.dock;
+                        root.bar.componentsEnabled = prunedComponents;
+                        reconciled = true;
                     }
                     if (reconciled)
                         console.log("[Preferences] Reconciled preferences with the current defaults.");
