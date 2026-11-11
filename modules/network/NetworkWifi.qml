@@ -111,7 +111,7 @@ SettingsPage {
                 if (isPendingDisconnect) return "Disconnecting...";
                 if (isPendingForget) return "Forgetting...";
                 if (modelData.active) return Network.linkDetail;
-                return modelData.saved ? "Saved" : "";
+                return "";
             }
 
             isSecured: modelData.secured

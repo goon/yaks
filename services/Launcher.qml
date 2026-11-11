@@ -79,24 +79,6 @@ QtObject {
 
 
 
-    function getIconFromDesktop(appId) {
-        if (!appId) return "";
-        var apps = DesktopEntries.applications.values;
-        var lowerId = appId.toLowerCase();
-        
-        for (var i = 0; i < apps.length; i++) {
-            var app = apps[i];
-            var entryId = (app.id || "").toLowerCase();
-            
-            if (entryId === lowerId || entryId === lowerId + ".desktop" || 
-                (app.name && app.name.toLowerCase() === lowerId) ||
-                (app.startupClass && app.startupClass.toLowerCase() === lowerId)) {
-                return app.icon;
-            }
-        }
-        return "";
-    }
-
     function resolveIcon(iconName) {
         function getVerifiedPath(name) {
             if (!name)
@@ -139,7 +121,21 @@ QtObject {
         }
 
         // ── DESKTOP ENTRY LOOKUP ──────────────────────────────────────────
-        var desktopIcon = getIconFromDesktop(iconName);
+        var desktopIcon = "";
+        if (iconName) {
+            var apps = DesktopEntries.applications.values;
+            var lowerId = iconName.toLowerCase();
+            for (var i = 0; i < apps.length; i++) {
+                var app = apps[i];
+                var entryId = (app.id || "").toLowerCase();
+                if (entryId === lowerId || entryId === lowerId + ".desktop" ||
+                    (app.name && app.name.toLowerCase() === lowerId) ||
+                    (app.startupClass && app.startupClass.toLowerCase() === lowerId)) {
+                    desktopIcon = app.icon;
+                    break;
+                }
+            }
+        }
         if (desktopIcon) {
             if (desktopIcon.startsWith("/") || desktopIcon.startsWith("file://"))
                 return desktopIcon.startsWith("/") ? "file://" + desktopIcon : desktopIcon;

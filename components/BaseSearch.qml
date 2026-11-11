@@ -14,7 +14,7 @@ BaseContainer {
         input.cursorPosition = input.text.length;
     }
 
-    implicitHeight: 30 * Globals.shellScale
+    implicitHeight: Globals.dimensions.thumbnail
     // A control, not a page: the search field is the one field that takes md.
     paddingHorizontal: Globals.geometry.spacing.md
     clickable: true
@@ -42,8 +42,6 @@ BaseContainer {
                 id: input
                 anchors.fill: parent
                 clip: true
-                leftPadding: 8
-                rightPadding: 8
                 font.pixelSize: Globals.typography.size.lg
                 placeholderText: "Search..."
                 caretParksInPlaceholder: false

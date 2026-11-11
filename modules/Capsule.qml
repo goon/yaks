@@ -281,7 +281,7 @@ PanelWindow {
         z: 2
 
         border.color: Preferences.globals.capsuleOutline ? Globals.colors.outline : "transparent"
-        border.width: Preferences.globals.capsuleOutline ? 1 : 0
+        border.width: Preferences.globals.capsuleOutline ? Globals.geometry.borderWidth.hair : 0
         radius: Globals.geometry.radius
         clip: true
 

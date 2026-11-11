@@ -24,8 +24,8 @@ SpinBox {
 
 
     editable: true
-    leftPadding: expanded ? 32 : 0
-    rightPadding: expanded ? 32 : 0
+    leftPadding: expanded ? Globals.typography.icon.lg + Globals.geometry.spacing.sm + Globals.geometry.spacing.xs : 0
+    rightPadding: expanded ? Globals.typography.icon.lg + Globals.geometry.spacing.sm + Globals.geometry.spacing.xs : 0
     topPadding: 0
     bottomPadding: 0
 
@@ -37,7 +37,7 @@ SpinBox {
     }
 
     contentItem: Item {
-        implicitWidth: textInput.implicitWidth + (suffixText.visible ? suffixText.implicitWidth + 4 : 0)
+        implicitWidth: textInput.implicitWidth + (suffixText.visible ? suffixText.implicitWidth + Globals.geometry.spacing.xs : 0)
         implicitHeight: Math.max(textInput.implicitHeight, 36 * Globals.shellScale)
         property alias text: textInput.text
 
@@ -89,7 +89,7 @@ SpinBox {
 
         BaseText {
             id: suffixText
-            x: textInput.x + textInput.width + 4
+            x: textInput.x + textInput.width + Globals.geometry.spacing.xs
             y: textInput.y + (textInput.height - height) / 2 + 1 // +1 for baseline adjustment
             text: root.suffix
             visible: root.suffix !== ""
@@ -99,7 +99,7 @@ SpinBox {
     }
 
     up.indicator: BaseIcon {
-        x: root.width - width - 8
+        x: root.width - width - Globals.geometry.spacing.sm
         y: (root.height - height) / 2
         icon: "plus"
         color: root.atMax ? Globals.colors.muted
@@ -110,7 +110,7 @@ SpinBox {
     }
 
     down.indicator: BaseIcon {
-        x: 8
+        x: Globals.geometry.spacing.sm
         y: (root.height - height) / 2
         icon: "minus"
         color: root.atMin ? Globals.colors.muted

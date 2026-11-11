@@ -145,6 +145,10 @@ QtObject {
         if (!item)
             return false;
         var c = root._control();
+        if (c && c.activated !== undefined && c.model !== undefined && c.currentValue !== undefined) {
+            // Enter/Space steps a segmented control forward, matching Left/Right.
+            return root.adjust(1);
+        }
         if (c && c.checked !== undefined) {
             // Prefer toggle() so a control that emits toggled (e.g. BaseSwitch)
             // reaches onToggled call sites; fall back to a checked assignment.

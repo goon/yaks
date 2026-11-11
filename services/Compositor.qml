@@ -175,12 +175,8 @@ Singleton {
 
     // ── PUBLIC ACTIONS ────────────────────────────────────────────────
 
-    function _dispatch(cmd) {
-        Hyprland.dispatch(cmd);
-    }
-
     function switchToWorkspace(workspaceIdx) {
-        _dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
+        Hyprland.dispatch("hl.dsp.focus({ workspace = " + workspaceIdx.toString() + " })");
     }
 
     Component.onCompleted: {

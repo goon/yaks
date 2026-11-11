@@ -52,7 +52,7 @@ QtObject {
         "settings":      { source: "../modules/settings/Settings.qml",      width: 400, height: 500, kind: "popout", evictionTime: 10000 },
         "wallpaper":     { source: "../modules/wallpaper/Wallpaper.qml",                height: 500, kind: "popout", evictionTime: 3000 },
         "calendar":      { source: "../modules/calendar/Calendar.qml",     width: 320, height: 260, kind: "popout", evictionTime: 5000 },
-"forecast": { source: "../modules/forecast/Forecast.qml", width: 300, height: 276, kind: "popout", evictionTime: 5000 },
+        "forecast":      { source: "../modules/forecast/Forecast.qml",     width: 300, height: 276, kind: "popout", evictionTime: 5000 },
         // The volume toast is the bar face wearing a slider: its height tracks
         // `bar.height`, so the pre-load estimate must too or the capsule morphs
         // to 100 and then snaps back.

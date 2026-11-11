@@ -91,7 +91,6 @@ BaseContainer {
             BaseText {
                 text: Weather.temp + "°"
                 pixelSize: root.tempPixelSize
-                weight: Globals.typography.weight.normal
                 font.letterSpacing: 0
                 font.features: ({ "tnum": 1 })
                 Layout.alignment: Qt.AlignVCenter
@@ -190,15 +189,12 @@ BaseContainer {
 
                 BaseIcon {
                     icon: root.iconFor(dayRow.modelData.code)
-                    size: Globals.typography.icon.lg
                     Layout.alignment: Qt.AlignVCenter
                 }
 
                 BaseText {
                     Layout.fillWidth: true
                     text: root.labelFor(dayRow.modelData.code)
-                    pixelSize: Globals.typography.size.md
-                    weight: Globals.typography.weight.normal
                     elide: Text.ElideRight
                     wrapMode: Text.NoWrap
                 }
@@ -207,7 +203,6 @@ BaseContainer {
                     Layout.preferredWidth: root.tempWidth
                     horizontalAlignment: Text.AlignRight
                     text: dayRow.modelData.tMax + "°"
-                    pixelSize: Globals.typography.size.md
                     weight: Globals.typography.weight.demi
                     font.features: ({ "tnum": 1 })
                 }

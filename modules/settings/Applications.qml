@@ -33,6 +33,7 @@ SettingsPage {
                     clickable: isInstalled
                     enabled: isInstalled
                     opacity: isInstalled ? 1.0 : 0.5
+                    showSeparator: index < model.length - 1
 
                     BaseSwitch {
                         checked: appRow.isEnabled

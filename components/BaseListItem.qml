@@ -27,11 +27,6 @@ Item {
     // A non-Lucide left icon (e.g. the wifi signal glyph), rendered in place of
     // the string icon when set.
     property Component leftIconComponent: null
-    property bool leftIconInteractive: false
-    property bool leftIconActive: false
-    property real leftIconScale: 1.0
-
-    property bool showVerticalSeparator: false
 
     // Children dropped into a row land in the right-hand control slot.
     default property alias content: controlRow.data
@@ -82,7 +77,6 @@ Item {
     }
 
     signal clicked()
-    signal leftIconClicked()
 
     MouseArea {
         id: mainMouseArea
@@ -118,16 +112,6 @@ Item {
             Layout.preferredWidth: root.leftIconBoxSize
             Layout.preferredHeight: root.leftIconBoxSize
             Layout.alignment: Qt.AlignVCenter
-            scale: root.leftIconScale
-
-            BaseButton {
-                visible: root.leftIconInteractive && root.leftIconComponent === null
-                anchors.centerIn: parent
-                icon: root.leftIcon
-                iconColor: root.leftIconActive ? Globals.colors.primary : Globals.colors.text
-                onClicked: root.leftIconClicked()
-                z: 2 // Sit above the main MouseArea
-            }
 
             Loader {
                 anchors.centerIn: parent
@@ -136,7 +120,7 @@ Item {
             }
 
             BaseIcon {
-                visible: root.leftIconComponent === null && !root.leftIconInteractive
+                visible: root.leftIconComponent === null
                 anchors.centerIn: parent
                 icon: root.leftIcon
                 size: Globals.typography.icon.md
@@ -145,22 +129,12 @@ Item {
             }
         }
 
-        BaseSeparator {
-            visible: root.showVerticalSeparator
-            orientation: BaseSeparator.Vertical
-            Layout.fillHeight: true
-            Layout.topMargin: Globals.geometry.spacing.sm
-            Layout.bottomMargin: Globals.geometry.spacing.sm
-            opacity: 0.3
-        }
-
         ColumnLayout {
             Layout.fillWidth: true
             // The label yields room to the control slot, but only when there is one.
             Layout.maximumWidth: root.control !== null
                 ? layout.width * (1 - root.controlWidthRatio)
                 : Number.POSITIVE_INFINITY
-            Layout.leftMargin: root.showVerticalSeparator ? Globals.geometry.spacing.sm : 0
             spacing: 0
 
             BaseText {

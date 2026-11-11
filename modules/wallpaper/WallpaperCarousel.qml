@@ -286,7 +286,6 @@ FocusScope {
         anchors.topMargin: root.contentPadding
         width: parent.width - 2 * root.contentPadding
         placeholderText: "/home/user/wallpapers"
-        font.pixelSize: Globals.typography.size.md
         color: Globals.colors.muted
         placeholderTextColor: Globals.colors.muted
         horizontalAlignment: TextInput.AlignHCenter

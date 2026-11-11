@@ -94,7 +94,7 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.RightButton) {
-                            Modules.toggleSettings("Workspaces");
+                            Modules.toggleSettings("Bar.qml");
                         } else {
                             root.localActiveId = modelData.id;
                             syncTimer.restart();

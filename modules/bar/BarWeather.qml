@@ -50,7 +50,6 @@ BaseContainer {
             visible: Weather.ready
             text: Weather.temp + " °"
             pixelSize: Globals.typography.size.xl
-            weight: Globals.typography.weight.normal
             font.letterSpacing: 0
             renderType: Text.NativeRendering
             font.features: ({ "tnum": 1 })
