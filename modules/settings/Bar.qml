@@ -62,30 +62,6 @@ SettingsPage {
             }
 
             BaseListItem {
-                leftIcon: "picture-in-picture-2"
-                title: "Overhang"
-
-                BaseSwitch {
-                    checked: Preferences.bar.overhang
-                    onToggled: Preferences.bar.overhang = checked
-                }
-            }
-
-            BaseListItem {
-                leftIcon: "move-vertical"
-                title: "Reserved"
-
-                BaseSpinBox {
-                    to: 100
-                    stepSize: 5
-                    value: Preferences.bar.overhangReserve
-                    suffix: "%"
-                    enabled: Preferences.bar.overhang
-                    onValueChanged: Preferences.bar.overhangReserve = value
-                }
-            }
-
-            BaseListItem {
                 leftIcon: "layout-grid"
                 title: "Workspace Count"
 
