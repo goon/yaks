@@ -12,17 +12,11 @@ SettingsPage {
         SettingsGroup {
             Layout.fillWidth: true
 
-            BaseListItem {
-                id: appsTitleRow
-                leftIcon: "layout-grid"
-                title: "Applications"
-            }
-
             Repeater {
                 model: Theme.applications
 
                 delegate: BaseListItem {
-                    id: appRow
+                    id: integrationRow
 
                     readonly property bool isInstalled: Theme.installedApps[modelData.id] !== false
                     readonly property bool isEnabled: (Preferences.applications.themedApps[modelData.id] || false) && isInstalled
@@ -36,11 +30,11 @@ SettingsPage {
                     showSeparator: index < model.length - 1
 
                     BaseSwitch {
-                        checked: appRow.isEnabled
-                        enabled: appRow.isInstalled
+                        checked: integrationRow.isEnabled
+                        enabled: integrationRow.isInstalled
                         onToggled: {
                             let apps = Object.assign({}, Preferences.applications.themedApps);
-                            apps[modelData.id] = !appRow.isEnabled;
+                            apps[modelData.id] = !integrationRow.isEnabled;
                             Preferences.applications.themedApps = apps;
                         }
                     }
