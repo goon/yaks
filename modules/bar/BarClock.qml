@@ -4,6 +4,7 @@ import Quickshell
 import qs
 
 BaseContainer {
+    id: clock
 
     Layout.alignment: Qt.AlignVCenter
     Layout.fillWidth: false
@@ -19,6 +20,11 @@ BaseContainer {
     }
 
     readonly property string _timeText: Qt.formatDateTime(systemClock.date, "HH:mm")
+
+    // While a recording runs the clock gives way to its timer, tinted with the
+    // palette's warm red so the state reads at a glance without leaving the theme.
+    readonly property string _displayText: Recorder.recording ? Recorder.elapsedText : _timeText
+    readonly property color _tint: Recorder.recording ? Theme.currentColors.error : Globals.colors.text
 
     component DigitCell: Item {
         id: cell
@@ -109,14 +115,16 @@ BaseContainer {
         spacing: 0
 
         DigitCell {
-            text: _timeText.charAt(0)
+            text: _displayText.charAt(0)
+            tint: clock._tint
             pixelSize: Globals.typography.size.xl
             weight: Globals.typography.weight.demi
             Layout.alignment: Qt.AlignVCenter
         }
 
         DigitCell {
-            text: _timeText.charAt(1)
+            text: _displayText.charAt(1)
+            tint: clock._tint
             pixelSize: Globals.typography.size.xl
             weight: Globals.typography.weight.demi
             Layout.alignment: Qt.AlignVCenter
@@ -126,6 +134,7 @@ BaseContainer {
             text: ":"
             pixelSize: Globals.typography.size.xl
             weight: Globals.typography.weight.demi
+            color: clock._tint
             font.letterSpacing: 1
             renderType: Text.NativeRendering
             font.features: ({ "tnum": 1 })
@@ -133,14 +142,16 @@ BaseContainer {
         }
 
         DigitCell {
-            text: _timeText.charAt(3)
+            text: _displayText.charAt(3)
+            tint: clock._tint
             pixelSize: Globals.typography.size.xl
             weight: Globals.typography.weight.demi
             Layout.alignment: Qt.AlignVCenter
         }
 
         DigitCell {
-            text: _timeText.charAt(4)
+            text: _displayText.charAt(4)
+            tint: clock._tint
             pixelSize: Globals.typography.size.xl
             weight: Globals.typography.weight.demi
             Layout.alignment: Qt.AlignVCenter

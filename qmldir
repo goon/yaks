@@ -15,6 +15,7 @@ singleton Network services/Network.qml
 singleton Notifications services/Notifications.qml
 singleton Peripherals services/Peripherals.qml
 singleton Preferences services/Preferences.qml
+singleton Recorder services/Recorder.qml
 singleton Runner services/Runner.qml
 singleton Theme services/Theme.qml
 singleton Wallpaper services/Wallpaper.qml

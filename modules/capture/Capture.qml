@@ -126,9 +126,7 @@ Scope {
             "-ipc", recordSock,
             "-o", path
         ]), function (out, code) {
-            if (code === 0) {
-                Runner.run(["notify-send", "Recording", "Recording " + path]);
-            } else {
+            if (code !== 0) {
                 Runner.run(["notify-send", "Recording", "Could not start the recorder"]);
             }
         });
