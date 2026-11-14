@@ -19,22 +19,9 @@ BaseContainer {
     readonly property int offset: (new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay() + 6) % 7
     readonly property int monthLen: new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate()
     readonly property int previousMonthLen: new Date(viewDate.getFullYear(), viewDate.getMonth(), 0).getDate()
-    readonly property int rows: Math.ceil((offset + monthLen) / 7)
+    readonly property int rows: 6
     readonly property bool viewingCurrentMonth: viewDate.getFullYear() === today.getFullYear()
         && viewDate.getMonth() === today.getMonth()
-
-    // The grid's height follows `liveRows`, not the cell count, so a row-count
-    // change is animated here instead of landing on implicitHeight in one frame
-    // and re-targeting the capsule's own height animation mid-flight.
-    property int liveRows: rows
-
-    Behavior on liveRows {
-        NumberAnimation {
-            duration: Globals.motion.morph
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Globals.motion.easeEmphasis
-        }
-    }
 
     property date viewDate: new Date(today)
 
@@ -136,28 +123,18 @@ BaseContainer {
         }
 
         Item {
-            // The grid is wrapped so the popout's height comes from this
-            // item's animated preferredHeight alone. A bare `Grid` in the layout
-            // would also report its own cell-derived implicitHeight, which
-            // changes the instant the month does — that re-targets the
-            // capsule's height animation mid-flight and the popout snaps.
+            // Fixed six rows so the popout height never shifts between months.
+            // The grid is wrapped so the layout sees a stable preferredHeight
+            // instead of the Grid's own cell-derived implicitHeight.
             Layout.fillWidth: false
-            // fillHeight, so this box absorbs the slack between the capsule's
-            // animating height and the month's real height. A ColumnLayout
-            // otherwise splits that slack evenly across every row, which slides
-            // the header and the weekday row around on each frame of the morph.
             Layout.fillHeight: true
-            Layout.preferredHeight: root.liveRows * root.cellHeight
-                + Math.max(0, root.liveRows - 1) * Globals.geometry.spacing.xs
+            Layout.preferredHeight: root.rows * root.cellHeight
+                + Math.max(0, root.rows - 1) * Globals.geometry.spacing.xs
 
             Grid {
                 width: root.gridWidth
-                // Animated, not the cell-derived implicitHeight: the cells for a
-                // 6th row exist the moment the month changes, and clipping them
-                // in over motion.morph is what keeps the jump out of it.
-                height: root.liveRows * root.cellHeight
-                    + Math.max(0, root.liveRows - 1) * Globals.geometry.spacing.xs
-                clip: true
+                height: root.rows * root.cellHeight
+                    + Math.max(0, root.rows - 1) * Globals.geometry.spacing.xs
                 columns: 7
                 rowSpacing: Globals.geometry.spacing.xs
 
@@ -206,7 +183,7 @@ BaseContainer {
                     BaseText {
                         anchors.centerIn: parent
                         text: cell.inMonth ? cell.dayNum : cell.ghostNum
-                        muted: !cell.inMonth
+                        color: cell.inMonth ? Globals.colors.text : Globals.colors.faint
                         font.features: ({ "tnum": 1 })
                     }
                 }
