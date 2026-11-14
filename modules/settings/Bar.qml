@@ -6,14 +6,6 @@ import qs
 SettingsPage {
     id: root
 
-    // Fixed display order of the bar components. The render order lives in
-    // modules/bar/Bar.qml's componentOrder; this page is toggle-only, no reorder.
-    readonly property var componentList: [
-        { id: "weather",    name: "Weather",    icon: "cloud-sun" },
-        { id: "workspaces", name: "Workspaces", icon: "columns-4" },
-        { id: "clock",      name: "Clock",      icon: "clock"     }
-    ]
-
     ColumnLayout {
         Layout.fillWidth: true
         spacing: Globals.geometry.spacing.md
@@ -34,7 +26,6 @@ SettingsPage {
                     }
                 }
             }
-
 
             BaseListItem {
                 leftIcon: "unfold-vertical"
@@ -73,28 +64,14 @@ SettingsPage {
                 }
             }
 
+            BaseListItem {
+                leftIcon: "clock"
+                title: "12-Hour Clock"
+                showSeparator: false
 
-
-            Repeater {
-                model: root.componentList
-
-                delegate: BaseListItem {
-                    id: componentRow
-
-                    readonly property bool isEnabled: Preferences.bar.componentsEnabled[modelData.id] === true
-
-                    leftIcon: modelData.icon
-                    title: modelData.name
-                    showSeparator: index < root.componentList.length - 1
-
-                    BaseSwitch {
-                        checked: componentRow.isEnabled
-                        onToggled: {
-                            let map = Object.assign({}, Preferences.bar.componentsEnabled);
-                            map[modelData.id] = !componentRow.isEnabled;
-                            Preferences.bar.componentsEnabled = map;
-                        }
-                    }
+                BaseSwitch {
+                    checked: Preferences.bar.clock12Hour
+                    onToggled: Preferences.bar.clock12Hour = !Preferences.bar.clock12Hour
                 }
             }
         }

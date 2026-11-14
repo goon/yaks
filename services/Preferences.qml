@@ -23,7 +23,7 @@ QtObject {
         property int height: 55
         property int marginTop: 10
         property int workspaceCount: 5
-        property var componentsEnabled: ({"workspaces": true, "weather": true, "clock": true})
+        property bool clock12Hour: false
 
         // Space the bar reserves from its screen edge.
         readonly property int reservedZone: height + marginTop
@@ -32,7 +32,7 @@ QtObject {
         onHeightChanged: root.requestSave()
         onMarginTopChanged: root.requestSave()
         onWorkspaceCountChanged: root.requestSave()
-        onComponentsEnabledChanged: root.requestSave()
+        onClock12HourChanged: root.requestSave()
     }
 
     property QtObject wallpaper: QtObject {
@@ -87,7 +87,7 @@ QtObject {
         ["bar", "height"],
         ["bar", "marginTop"],
         ["bar", "workspaceCount"],
-        ["bar", "componentsEnabled"],
+        ["bar", "clock12Hour"],
         ["wallpaper", "directory"],
         ["wallpaper", "transitionDuration"],
         ["applications", "themedApps"],

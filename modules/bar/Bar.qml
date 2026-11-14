@@ -52,24 +52,10 @@ Item {
                 RowLayout {
                     id: componentLayout
                     Layout.alignment: Qt.AlignVCenter
-
-                    readonly property bool isComponentVisible: (Preferences.bar.componentsEnabled[modelData] === true)
-                        && bar.resolveComponentSource(modelData) !== ""
-                    visible: isComponentVisible
                     spacing: horizontalSpacing
 
                     BaseSeparator {
-                        visible: {
-                            if (!componentLayout.isComponentVisible) return false;
-
-                            for (let i = 0; i < index; i++) {
-                                let otherData = bar.componentOrder[i];
-                                let otherVisible = (Preferences.bar.componentsEnabled[otherData] === true)
-                                                   && bar.resolveComponentSource(otherData) !== "";
-                                if (otherVisible) return true;
-                            }
-                            return false;
-                        }
+                        visible: index > 0
                         orientation: BaseSeparator.Vertical
                         Layout.fillHeight: false
                         Layout.preferredHeight: 22
