@@ -4,9 +4,10 @@ import Quickshell
 import Quickshell.Wayland
 import qs
 
-// The island: the Wayland window, the capsule, and the loader that swaps a
-// module in and out of it. One file because there is only ever one object here
-// — the window is the island, and the island lives in the window.
+// The island: the Wayland window, the capsule, and the staged loaders that
+// swap modules in and out of it. Two loaders enable a true crossfade, and a
+// measurement pass guarantees the capsule morphs to the exact final size
+// instead of chasing it.
 PanelWindow {
     id: capsuleRoot
 
@@ -37,111 +38,72 @@ PanelWindow {
         right: 0
     }
 
-    // ── ISLAND STATE ──────────────────────────────────────────────────
-    // `Modules.activeModuleName` is the intent — a name means open, "" means
-    // closed. `shown` is what the Loader actually holds. They differ for
-    // exactly one reason: on close the intent clears immediately, so the bar
-    // starts fading back in, while `shown` lingers for the shrink animation
-    // and is only cleared once the module has been evicted.
+    // ── PHASE MACHINE ─────────────────────────────────────────────────
+    // Each phase owns exactly one segment of the transition. A phase change
+    // always aborts the running sequence and starts the next one from the
+    // current visual state, so rapid toggles never queue or desync.
+    enum Phase {
+        Rest,
+        MeasureOpen,
+        MorphOpen,
+        FadeInOpen,
+        Open,
+        FadeOutClose,
+        MorphClose,
+        MeasureSwap,
+        FadeOutSwap,
+        MorphSwap,
+        FadeInSwap
+    }
+
+    property int phase: Capsule.Phase.Rest
+
+    // `shown` is the module name the capsule is currently bound to. It is set
+    // the instant the intent changes so that mode, geometry targets and kind
+    // resolve correctly. The actual visible loader may still hold the previous
+    // module during a swap.
     property string shown: ""
 
+    property string pending: ""
+
+    // Toggled after every completed transition so the "next" loader becomes
+    // the "current" loader without recreating its item.
+    property bool _loaderToggle: false
+
+    // Track which module name lives in each loader so a cached re-open can
+    // detect when the current loader was left holding a stale module.
+    property string _loaderAContent: ""
+    property string _loaderBContent: ""
+    readonly property string _currentContentName: _loaderToggle ? _loaderBContent : _loaderAContent
+
+    // ── LOADER ROLES ──────────────────────────────────────────────────
+    readonly property Loader currentLoader: _loaderToggle ? loaderA : loaderB
+    readonly property Loader nextLoader: _loaderToggle ? loaderB : loaderA
+
+    readonly property Item currentItem: currentLoader.item
+    readonly property Item nextItem: nextLoader.item
+
+    // During a transition the interactive module is the one we are morphing
+    // toward, so route the rest of the shell to it as soon as it exists.
+    readonly property Item activeModuleItem: (pending !== "" && nextItem)
+        ? nextItem
+        : currentItem
+    onActiveModuleItemChanged: Modules.activeModuleItem = capsuleRoot.activeModuleItem
+
+    // ── ISLAND STATE ──────────────────────────────────────────────────
     readonly property string mode: Modules.activeModuleName !== "" ? shown : "rest"
 
-    // Gated only on capsule.height — not timers — so the bar never resizes
-    // mid-animation.
-    readonly property bool isCapsuleMorphed: mode !== "rest" || capsule.height > normalCapsuleHeight + 1
+    readonly property bool isCapsuleMorphed: mode !== "rest"
+        || capsule.height > normalCapsuleHeight + 1
+        || phase === Capsule.Phase.MorphClose
 
-    // A toast is informational: it must not take keyboard focus, and clicks
-    // outside it fall through to whatever is underneath.
     readonly property bool isToast: Modules.moduleKind(shown) === "toast"
     readonly property bool grabsFocus: mode !== "rest" && Modules.moduleKind(shown) === "popout"
 
-    // Follow the intent. A module swap happens the moment the name changes,
-    // rather than after the old module has animated out.
-    function syncShown() {
-        const want = Modules.activeModuleName;
-
-        if (want === "") {
-            // Closing. `mode` is already "rest" and the bar is fading in;
-            // hold the item just long enough for the capsule to shrink.
-            collapseTimer.restart();
-            return;
-        }
-
-        collapseTimer.stop();
-        evictionTimer.stop();
-
-        if (shown === want) {
-            // Cached from a previous open and not yet evicted — re-enter it
-            // without paying for a reload.
-            notifyModule("opening");
-            openTimer.restart();
-            return;
-        }
-
-        // A direct swap. The outgoing module simply goes; it gets no closing
-        // hook, because nothing runs during those 420 ms that could read one.
-        shown = want;
-    }
-
-    // Lifecycle hooks are optional: a module implements `opening` (its item now
-    // exists) and/or `opened` (the morph has settled), and nothing else.
-    function notifyModule(funcName) {
-        if (moduleLoader.item && typeof moduleLoader.item[funcName] === "function") {
-            moduleLoader.item[funcName]();
-        }
-    }
-
-    // Hand the keyboard to whatever just became the module, immediately on load
-    // and again once the morph settles. Called on both so the 420ms morph is not
-    // a window where keys land nowhere — the shell has no other key grabber.
-    // A module with `initialFocusItem` says where; one without gets the root,
-    // which is what makes its own Keys.onPressed reachable at all.
-    function focusModule() {
-        if (!capsuleRoot.grabsFocus) return;
-        const target = moduleLoader.item;
-        if (!target) return;
-        const t = target.initialFocusItem || target;
-        if (typeof t.focusInput === "function") t.focusInput();
-        else if (typeof t.forceActiveFocus === "function") t.forceActiveFocus();
-    }
-
-    Connections {
-        target: Modules
-        function onActiveModuleNameChanged() { capsuleRoot.syncShown(); }
-    }
-
-    Component.onCompleted: {
-        _ready = true;
-        capsuleRoot.syncShown();
-    }
-
-    Timer {
-        id: collapseTimer
-        interval: Globals.motion.morph
-        repeat: false
-        onTriggered: {
-            evictionTimer.interval = Modules.evictionTime(capsuleRoot.shown);
-            evictionTimer.start();
-        }
-    }
-
-    Timer {
-        id: evictionTimer
-        repeat: false
-        onTriggered: {
-            // Guard against a new module having opened while this was pending.
-            if (Modules.activeModuleName === "" && capsuleRoot.shown !== "")
-                capsuleRoot.shown = "";
-        }
-    }
-
-    readonly property alias activeModuleItem: moduleLoader.item
-
-    // Mirror the loader's item into the singleton everything else reads, so it can
-    // never point at a destroyed module. Loading and unloading both flow through
-    // this one handler, which is why there is nothing to hook on the Loader itself.
-    onActiveModuleItemChanged: Modules.activeModuleItem = capsuleRoot.activeModuleItem
+    // ── GEOMETRY ──────────────────────────────────────────────────────
+    readonly property real capsulePad: Globals.geometry.spacing.xl
+    readonly property real totalWidthPadding: capsulePad * 2
+    readonly property real totalHeightPadding: capsulePad * 2
 
     readonly property real normalCapsuleWidth: bar.implicitWidth
     readonly property real normalCapsuleHeight: Preferences.bar.height
@@ -150,48 +112,32 @@ PanelWindow {
         ? Preferences.bar.marginTop
         : (capsuleRoot.height - normalCapsuleHeight - Preferences.bar.marginTop)
 
-    // The capsule's own inset, and the only one. Every module lays its content
-    // out against this one value, handed to the bar rather than read out of
-    // Globals by two readers. A module must not stack an inset of its own on top.
-    readonly property real capsulePad: Globals.geometry.spacing.xl
-    readonly property real totalWidthPadding: capsulePad * 2
-    readonly property real totalHeightPadding: capsulePad * 2
+    // Final target size for the capsule. The next loader wins when it exists
+    // (transition in progress); otherwise fall back to the current loader or
+    // the registry estimate.
+    readonly property real targetCapsuleWidth: mode === "rest" ? normalCapsuleWidth
+        : (nextItem ? (nextItem.implicitWidth || 0) + totalWidthPadding
+                    : (currentItem ? (currentItem.implicitWidth || 0) + totalWidthPadding
+                                   : Modules.expectedWidth(shown)))
+    readonly property real targetCapsuleHeight: mode === "rest" ? normalCapsuleHeight
+        : (nextItem ? (nextItem.implicitHeight || 0) + totalHeightPadding
+                    : (currentItem ? (currentItem.implicitHeight || 0) + totalHeightPadding
+                                   : Modules.expectedHeight(shown)))
 
-    // The capsule gradient ramps over a fixed band (the bar's height) instead of
-    // the whole capsule, so every module shows the same sheen no matter how tall
-    // it is; past the band the surface stays flat. The ramp is pinned to the
-    // capsule's bottom, so the dark edge is always the module's lower edge.
-    readonly property real _gradientBand: Preferences.bar.height
-    readonly property real _bandFrac: Math.min(1.0, _gradientBand / Math.max(1, capsule.height))
-
-    // The registry's size is the morph target until the module reports its own.
-    readonly property real activeModuleWidth: activeModuleItem
-        ? (activeModuleItem.implicitWidth || 0) + totalWidthPadding
-        : Modules.expectedWidth(shown)
-    readonly property real activeModuleHeight: activeModuleItem
-        ? (activeModuleItem.implicitHeight || 0) + totalHeightPadding
-        : Modules.expectedHeight(shown)
-
-    readonly property real targetCapsuleWidth: mode === "rest" ? normalCapsuleWidth : activeModuleWidth
-    readonly property real targetCapsuleHeight: mode === "rest" ? normalCapsuleHeight : activeModuleHeight
-
-    // The island is always centred on its screen. It was once anchored to
-    // whichever bar element opened it; nothing ever passed an anchor, so the
-    // clamp that bounded it never ran.
-    readonly property real targetCapsuleX: (capsuleRoot.width
-        - (mode === "rest" ? normalCapsuleWidth : activeModuleWidth)) / 2
-
+    readonly property real targetCapsuleX: (capsuleRoot.width - targetCapsuleWidth) / 2
     readonly property real targetCapsuleY: mode === "rest"
         ? normalCapsuleY
         : (Preferences.bar.position === "top"
             ? Preferences.bar.marginTop
-            : capsuleRoot.height - activeModuleHeight - Preferences.bar.marginTop)
+            : capsuleRoot.height - targetCapsuleHeight - Preferences.bar.marginTop)
 
-    // While the pill is settled (collapsed or fully expanded / a surface is
-    // open) the input region can be the exact capsule rect or the whole layer.
-    // While it is mid-morph the moving capsule can briefly leave the capsule
-    // rect, so the union of the rest pill and the animating capsule is used
-    // instead, keeping input stable across the transition.
+    // ── GRADIENT BAND ─────────────────────────────────────────────────
+    readonly property real _gradientBand: Preferences.bar.height
+    readonly property real _bandFrac: Math.min(1.0, _gradientBand / Math.max(1, capsule.height))
+
+    // ── INPUT REGION ──────────────────────────────────────────────────
+    // Gated only on capsule.height — not timers — so the bar never resizes
+    // mid-animation.
     mask: {
         if (capsuleRoot.isCapsuleMorphed && !capsuleRoot.isToast)
             return null;
@@ -219,7 +165,7 @@ PanelWindow {
         onClicked: Modules.closeAll()
     }
 
-    // ── INPUT REGION ──────────────────────────────────────────────────
+    // ── MASK ITEM ─────────────────────────────────────────────────────
     Item {
         id: maskItem
         x: targetCapsuleX
@@ -228,8 +174,6 @@ PanelWindow {
         height: targetCapsuleHeight
         z: 2
 
-        // Swallow clicks so they cannot reach the clickOutsideShield beneath
-        // the capsule's own bounds.
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
@@ -237,10 +181,6 @@ PanelWindow {
         }
     }
 
-    // Union of the rest pill and the current (possibly mid-animation) capsule.
-    // While the pill is morphing the moving capsule can momentarily leave the
-    // single maskItem rect, which would drop input mid-animation; this union
-    // covers both extremes for the whole morph.
     Item {
         id: maskUnion
         visible: false
@@ -258,11 +198,11 @@ PanelWindow {
     }
 
     readonly property bool isSettled:
-        mode === "rest"
-        || (Math.abs(capsule.x - targetCapsuleX) < 1
-            && Math.abs(capsule.y - targetCapsuleY) < 1
-            && Math.abs(capsule.width - targetCapsuleWidth) < 1
-            && Math.abs(capsule.height - targetCapsuleHeight) < 1)
+        (phase === Capsule.Phase.Rest || phase === Capsule.Phase.Open)
+        && Math.abs(capsule.x - targetCapsuleX) < 1
+        && Math.abs(capsule.y - targetCapsuleY) < 1
+        && Math.abs(capsule.width - targetCapsuleWidth) < 1
+        && Math.abs(capsule.height - targetCapsuleHeight) < 1
 
     // ── MORPHING CAPSULE ──────────────────────────────────────────────
     Rectangle {
@@ -285,11 +225,6 @@ PanelWindow {
         radius: Globals.geometry.radius
         clip: true
 
-        // Optional soft drop shadow (Settings > Bar), like Uki's pill. The
-        // offscreen layer follows the morph: it used to be dropped until the
-        // capsule settled, which made the shadow vanish and pop back on every
-        // morph — very visible on a module that re-animates its height. The
-        // re-render cost is bounded by the morph itself (motion.morph).
         layer.enabled: Preferences.globals.shadow
         layer.effect: MultiEffect {
             shadowEnabled: true
@@ -310,9 +245,6 @@ PanelWindow {
             acceptedButtons: Qt.NoButton
 
             // ── DEFAULT FACE ───────────────────────────────────────────
-            // What the island shows when nothing else is open. It is a literal
-            // child rather than a registry module: never loaded, never
-            // evicted, it just fades out of the way.
             Bar {
                 id: bar
                 anchors.centerIn: parent
@@ -320,61 +252,408 @@ PanelWindow {
                 height: implicitHeight
                 capsulePad: capsuleRoot.capsulePad
 
-                opacity: capsuleRoot.isCapsuleMorphed ? 0.0 : 1.0
+                opacity: capsuleRoot._barOpacity
                 enabled: opacity > 0.01
-
-                Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
             }
 
-            // ── MODULE CONTENT ─────────────────────────────────────────
-            Loader {
-                id: moduleLoader
+            // ── MODULE STAGE ───────────────────────────────────────────
+            Item {
+                id: moduleStage
                 anchors.fill: parent
                 anchors.margins: capsuleRoot.capsulePad
 
-                active: capsuleRoot.shown !== ""
-                focus: true
+                Loader {
+                    id: loaderA
+                    anchors.fill: parent
+                    active: false
+                    focus: true
 
-                Binding {
-                    target: moduleLoader.item
-                    property: "width"
-                    value: moduleLoader.width
-                    when: moduleLoader.item !== null
+                    Binding {
+                        target: loaderA.item
+                        property: "width"
+                        value: loaderA.width
+                        when: loaderA.item !== null
+                    }
+                    Binding {
+                        target: loaderA.item
+                        property: "height"
+                        value: loaderA.height
+                        when: loaderA.item !== null
+                    }
+
+                    opacity: _loaderToggle ? _currentContentOpacity : _nextContentOpacity
+                    visible: opacity > 0.0
+
+                    source: capsuleRoot._loaderASource
+
+                    onLoaded: capsuleRoot._onLoaderLoaded(loaderA)
                 }
 
-                Binding {
-                    target: moduleLoader.item
-                    property: "height"
-                    value: moduleLoader.height
-                    when: moduleLoader.item !== null
-                }
+                Loader {
+                    id: loaderB
+                    anchors.fill: parent
+                    active: false
+                    focus: true
 
-                opacity: capsuleRoot.mode !== "rest" && status === Loader.Ready ? 1.0 : 0.0
-                visible: opacity > 0.0
-                Behavior on opacity { BaseMotion { duration: Globals.motion.hover } }
+                    Binding {
+                        target: loaderB.item
+                        property: "width"
+                        value: loaderB.width
+                        when: loaderB.item !== null
+                    }
+                    Binding {
+                        target: loaderB.item
+                        property: "height"
+                        value: loaderB.height
+                        when: loaderB.item !== null
+                    }
 
-                source: {
-                    var src = Modules.moduleSource(capsuleRoot.shown);
-                    return src ? Qt.resolvedUrl(src) : "";
-                }
+                    opacity: _loaderToggle ? _nextContentOpacity : _currentContentOpacity
+                    visible: opacity > 0.0
 
-                onLoaded: {
-                    if (!item) return;
-                    notifyModule("opening");
-                    capsuleRoot.focusModule();
-                    openTimer.restart();
-                }
-            }
+                    source: capsuleRoot._loaderBSource
 
-            Timer {
-                id: openTimer
-                interval: Globals.motion.morph
-                repeat: false
-                onTriggered: {
-                    notifyModule("opened");
-                    capsuleRoot.focusModule();
+                    onLoaded: capsuleRoot._onLoaderLoaded(loaderB)
                 }
             }
         }
+    }
+
+    // ── LOADER SOURCES AND OPACITIES ──────────────────────────────────
+    property string _loaderASource: ""
+    property string _loaderBSource: ""
+
+    property real _currentContentOpacity: 0
+    property real _nextContentOpacity: 0
+    property real _barOpacity: 1
+
+    // ── TRANSITION TIMING ─────────────────────────────────────────────
+    readonly property int _morphDuration: Globals.motion.morph
+    readonly property int _fadeDuration: Globals.motion.hover
+    readonly property int _fadeInDelay: _fadeDuration
+    readonly property int _settleDelay: Math.max(0, _morphDuration - _fadeInDelay - _fadeDuration)
+
+    // ── SEQUENCES ─────────────────────────────────────────────────────
+    SequentialAnimation {
+        id: openSequence
+        alwaysRunToEnd: false
+
+        NumberAnimation { target: capsuleRoot; property: "_barOpacity"; to: 0; duration: capsuleRoot._fadeDuration }
+        NumberAnimation { target: capsuleRoot; property: "_nextContentOpacity"; to: 1; duration: capsuleRoot._fadeDuration }
+        PauseAnimation { duration: capsuleRoot._settleDelay }
+
+        ScriptAction { script: capsuleRoot._finishOpen() }
+    }
+
+    SequentialAnimation {
+        id: cachedOpenSequence
+        alwaysRunToEnd: false
+
+        NumberAnimation { target: capsuleRoot; property: "_barOpacity"; to: 0; duration: capsuleRoot._fadeDuration }
+        NumberAnimation { target: capsuleRoot; property: "_currentContentOpacity"; to: 1; duration: capsuleRoot._fadeDuration }
+        PauseAnimation { duration: capsuleRoot._settleDelay }
+
+        ScriptAction { script: capsuleRoot._finishOpenCached() }
+    }
+
+    SequentialAnimation {
+        id: closeSequence
+        alwaysRunToEnd: false
+
+        NumberAnimation { target: capsuleRoot; property: "_currentContentOpacity"; to: 0; duration: capsuleRoot._fadeDuration }
+        NumberAnimation { target: capsuleRoot; property: "_barOpacity"; to: 1; duration: capsuleRoot._fadeDuration }
+        PauseAnimation { duration: capsuleRoot._settleDelay }
+
+        ScriptAction { script: capsuleRoot._finishClose() }
+    }
+
+    SequentialAnimation {
+        id: swapSequence
+        alwaysRunToEnd: false
+
+        NumberAnimation { target: capsuleRoot; property: "_currentContentOpacity"; to: 0; duration: capsuleRoot._fadeDuration }
+        NumberAnimation { target: capsuleRoot; property: "_nextContentOpacity"; to: 1; duration: capsuleRoot._fadeDuration }
+        PauseAnimation { duration: capsuleRoot._settleDelay }
+
+        ScriptAction { script: capsuleRoot._finishSwap() }
+    }
+
+    // ── EVICTION ──────────────────────────────────────────────────────
+    Timer {
+        id: collapseTimer
+        interval: Globals.motion.morph
+        repeat: false
+        onTriggered: {
+            evictionTimer.interval = Modules.evictionTime(capsuleRoot.shown);
+            evictionTimer.start();
+        }
+    }
+
+    Timer {
+        id: evictionTimer
+        repeat: false
+        onTriggered: {
+            if (Modules.activeModuleName === "" && capsuleRoot.shown !== "")
+                capsuleRoot._unloadCurrent();
+        }
+    }
+
+    // ── EXTERNAL CONTROL ──────────────────────────────────────────────
+    Connections {
+        target: Modules
+        function onActiveModuleNameChanged() { capsuleRoot._onIntentChanged(); }
+    }
+
+    Component.onCompleted: {
+        _ready = true;
+        _onIntentChanged();
+    }
+
+    // ── INTENT HANDLER ────────────────────────────────────────────────
+    function _onIntentChanged() {
+        const intent = Modules.activeModuleName;
+
+        if (intent === "") {
+            _startClose();
+            return;
+        }
+
+        if (intent === shown && pending === "" && _currentContentName === intent) {
+            if (currentItem) {
+                _startOpenCached();
+            } else {
+                // Evicted between checks; treat as a fresh open.
+                _startLoad(intent);
+            }
+            return;
+        }
+
+        if (intent === pending) return;
+
+        _startLoad(intent);
+    }
+
+    // ── LOADER CALLBACKS ──────────────────────────────────────────────
+    function _onLoaderLoaded(loader) {
+        if (loader !== nextLoader) return;
+        if (pending === "") return;
+
+        if (phase === Capsule.Phase.MeasureOpen) {
+            _startOpenMorph();
+        } else if (phase === Capsule.Phase.MeasureSwap) {
+            _startSwapMorph();
+        }
+    }
+
+    // ── TRANSITION STARTERS ───────────────────────────────────────────
+    function _startLoad(name) {
+        _stopSequences();
+        pending = name;
+        shown = name;
+
+        const src = Modules.moduleSource(name);
+        if (!src) {
+            pending = "";
+            shown = "";
+            return;
+        }
+
+        // If we are at rest or on the way back to rest, this is an open from
+        // the bar face. Otherwise it is a module-to-module swap.
+        if (phase === Capsule.Phase.Rest
+            || phase === Capsule.Phase.FadeOutClose
+            || phase === Capsule.Phase.MorphClose) {
+            phase = Capsule.Phase.MeasureOpen;
+        } else {
+            phase = Capsule.Phase.MeasureSwap;
+        }
+
+        nextLoader.active = false;
+        if (nextLoader === loaderA) {
+            _loaderAContent = name;
+            _loaderASource = Qt.resolvedUrl(src);
+        } else {
+            _loaderBContent = name;
+            _loaderBSource = Qt.resolvedUrl(src);
+        }
+        nextLoader.active = true;
+    }
+
+    function _startOpenCached() {
+        if (_currentContentName !== shown) {
+            _startLoad(shown);
+            return;
+        }
+
+        _stopSequences();
+        pending = "";
+        phase = Capsule.Phase.MorphOpen;
+
+        _currentContentOpacity = 0;
+        _nextContentOpacity = 0;
+        _barOpacity = 1;
+
+        _notifyModule(currentItem, "opening");
+        cachedOpenSequence.restart();
+    }
+
+    function _startOpenMorph() {
+        phase = Capsule.Phase.MorphOpen;
+
+        _nextContentOpacity = 0;
+        // _barOpacity and _currentContentOpacity are left at their current
+        // values so an interrupted close-to-rest continues smoothly into open.
+
+        _notifyModule(nextItem, "opening");
+        _focusModule(nextItem);
+        openSequence.restart();
+    }
+
+    function _startSwapMorph() {
+        phase = Capsule.Phase.MorphSwap;
+
+        _nextContentOpacity = 0;
+        _barOpacity = 0;
+
+        _notifyModule(nextItem, "opening");
+        _focusModule(nextItem);
+        swapSequence.restart();
+    }
+
+    function _startClose() {
+        if (shown === "" && phase === Capsule.Phase.Rest) return;
+
+        _stopSequences();
+        pending = "";
+
+        if (shown === "") {
+            _finishClose();
+            return;
+        }
+
+        phase = Capsule.Phase.FadeOutClose;
+        _nextContentOpacity = 0;
+        // _currentContentOpacity and _barOpacity are left at their current
+        // values so an interrupted open or swap reverses cleanly.
+
+        closeSequence.restart();
+    }
+
+    // ── TRANSITION FINISHERS ──────────────────────────────────────────
+    function _finishOpen() {
+        if (phase !== Capsule.Phase.MorphOpen && phase !== Capsule.Phase.FadeInOpen) return;
+
+        phase = Capsule.Phase.Open;
+        pending = "";
+
+        _loaderToggle = !_loaderToggle;
+        _currentContentOpacity = 1;
+        _nextContentOpacity = 0;
+        _barOpacity = 0;
+
+        // The old "current" loader is now "next"; unload it so it is ready
+        // for the next swap.
+        _unloadNext();
+
+        _notifyModule(currentItem, "opened");
+        _focusModule(currentItem);
+    }
+
+    function _finishOpenCached() {
+        if (phase !== Capsule.Phase.MorphOpen && phase !== Capsule.Phase.FadeInOpen) return;
+
+        phase = Capsule.Phase.Open;
+        pending = "";
+
+        _currentContentOpacity = 1;
+        _nextContentOpacity = 0;
+        _barOpacity = 0;
+
+        _notifyModule(currentItem, "opened");
+        _focusModule(currentItem);
+    }
+
+    function _finishSwap() {
+        if (phase !== Capsule.Phase.MorphSwap && phase !== Capsule.Phase.FadeInSwap) return;
+
+        phase = Capsule.Phase.Open;
+        pending = "";
+
+        _loaderToggle = !_loaderToggle;
+        _currentContentOpacity = 1;
+        _nextContentOpacity = 0;
+        _barOpacity = 0;
+
+        // nextItem is now the outgoing module after the toggle.
+        _notifyModule(nextItem, "closing");
+        _unloadNext();
+
+        _notifyModule(currentItem, "opened");
+        _focusModule(currentItem);
+    }
+
+    function _finishClose() {
+        if (phase !== Capsule.Phase.FadeOutClose && phase !== Capsule.Phase.MorphClose) return;
+
+        phase = Capsule.Phase.Rest;
+
+        _notifyModule(currentItem, "closing");
+        collapseTimer.restart();
+
+        _currentContentOpacity = 0;
+        _nextContentOpacity = 0;
+        _barOpacity = 1;
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────
+    function _stopSequences() {
+        openSequence.stop();
+        cachedOpenSequence.stop();
+        closeSequence.stop();
+        swapSequence.stop();
+    }
+
+    function _unloadCurrent() {
+        _notifyModule(currentItem, "closed");
+        if (_loaderToggle) {
+            _loaderASource = "";
+            _loaderAContent = "";
+        } else {
+            _loaderBSource = "";
+            _loaderBContent = "";
+        }
+        currentLoader.active = false;
+        shown = "";
+    }
+
+    function _unloadNext() {
+        if (_loaderToggle) {
+            _loaderBSource = "";
+            _loaderBContent = "";
+        } else {
+            _loaderASource = "";
+            _loaderAContent = "";
+        }
+        nextLoader.active = false;
+    }
+
+    // ── MODULE API ────────────────────────────────────────────────────
+    function _notifyModule(item, funcName) {
+        if (item && typeof item[funcName] === "function")
+            item[funcName]();
+    }
+
+    function _focusModule(item) {
+        if (!capsuleRoot.grabsFocus) return;
+        if (!item) return;
+        const t = item.initialFocusItem || item;
+        if (typeof t.focusInput === "function") t.focusInput();
+        else if (typeof t.forceActiveFocus === "function") t.forceActiveFocus();
+    }
+
+    // Kept for compatibility with any external callers that may read `shown`
+    // directly, though the lifecycle is now phase-driven.
+    function syncShown() {
+        _onIntentChanged();
     }
 }
