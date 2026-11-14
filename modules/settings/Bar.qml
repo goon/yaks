@@ -55,23 +55,13 @@ SettingsPage {
             BaseListItem {
                 leftIcon: "layout-grid"
                 title: "Workspace Count"
+                showSeparator: false
 
                 BaseSpinBox {
                     from: 1
                     to: 20
                     value: Preferences.bar.workspaceCount
                     onValueChanged: Preferences.bar.workspaceCount = value
-                }
-            }
-
-            BaseListItem {
-                leftIcon: "clock"
-                title: "12-Hour Clock"
-                showSeparator: false
-
-                BaseSwitch {
-                    checked: Preferences.bar.clock12Hour
-                    onToggled: Preferences.bar.clock12Hour = !Preferences.bar.clock12Hour
                 }
             }
         }
