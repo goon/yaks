@@ -28,6 +28,10 @@ Item {
 
     // Fallback seed (no wallpaper) lives with the generator: Color.DEFAULT_SEED.
     readonly property string seedScript: Globals.rootDir + "/lib/seed.sh"
+    readonly property string seedCacheFile: Globals.cacheDir + "/seed.json"
+
+    property var _cachedSeed: null
+    property string _cachedWallpaper: ""
 
     readonly property int debounceInterval: 300
 
@@ -53,7 +57,7 @@ Item {
     }
 
     function apply() {
-        var wp = Wallpaper.currentWallpaper;
+        var wp = Wallpaper.currentWallpaper || Preferences.currentWallpaper;
 
         if (!wp || wp === "") {
             root._ingest(Color.DEFAULT_SEED);
@@ -83,9 +87,19 @@ Item {
         root.hookColors = Color.build(s, { forApps: true });
         root._pendingWrites = 0;
         root.runHooks(executionTimer.pendingContext);
+        root._writeSeedCache(s);
         // No app enabled (or preferences not up yet) means nothing to wait
         // for. Emitting here keeps WallpaperTransition off its 2 s backstop.
         if (root._pendingWrites === 0) root.applied();
+    }
+
+    function _writeSeedCache(seed) {
+        try {
+            seedCacheWriter.setText(JSON.stringify({
+                wallpaper: Wallpaper.currentWallpaper || "",
+                seed: seed
+            }));
+        } catch (e) {}
     }
 
     // ── APPLICATION HOOKS ─────────────────────────────────────────────
@@ -147,7 +161,14 @@ Item {
     function runStartup() {
         if (_started || !Preferences.loaded) return;
         _started = true;
-        root.requestApply("startup");
+
+        var wp = Wallpaper.currentWallpaper || Preferences.currentWallpaper;
+        if (wp && wp === root._cachedWallpaper && root._cachedSeed) {
+            root.currentColors = Color.build(root._cachedSeed);
+            root.hookColors = Color.build(root._cachedSeed, { forApps: true });
+        }
+
+        root.requestApply("startup", true);
     }
 
     // ── APPLICATIONS ──────────────────────────────────────────────────
@@ -214,7 +235,32 @@ Item {
         }
     }
 
+    FileView {
+        id: seedCacheReader
+        path: root.seedCacheFile
+        watchChanges: false
+        onLoadedChanged: {
+            if (!loaded) return;
+            try {
+                var data = JSON.parse(text());
+                if (data && data.seed && typeof data.seed === "object" &&
+                    typeof data.wallpaper === "string") {
+                    root._cachedSeed = data.seed;
+                    root._cachedWallpaper = data.wallpaper;
+                }
+            } catch (e) {}
+            if (Preferences.loaded) root.runStartup();
+        }
+    }
+
+    FileView {
+        id: seedCacheWriter
+        path: root.seedCacheFile
+        watchChanges: false
+    }
+
     Component.onCompleted: {
+        Runner.run(["mkdir", "-p", Globals.cacheDir]);
         checkInstalledApps();
         updateFontFamilies();
         root.runStartup();
