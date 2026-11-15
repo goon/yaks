@@ -95,8 +95,10 @@ QtObject {
         }
 
         readonly property QtObject borderWidth: QtObject {
-            readonly property int hair: 1 * root.shellScale
-            readonly property int thick: 2 * root.shellScale
+            // Rounded, not truncated: 1 * 0.9 as an int floored to 0 and every
+            // hairline (separators, outlines) vanished at the 0.9x scale.
+            readonly property int hair: Math.round(1 * root.shellScale)
+            readonly property int thick: Math.round(2 * root.shellScale)
         }
     }
 
