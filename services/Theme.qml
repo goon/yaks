@@ -119,7 +119,7 @@ Item {
     }
 
     function runHooks(context) {
-        if (!Preferences.loaded) return;
+        if (!Preferences.loaded || !Preferences.applications.theming) return;
 
         var ctx = {
             "mode": "dark",
@@ -130,12 +130,12 @@ Item {
 
         for (var i = 0; i < root.applications.length; i++) {
             var app = root.applications[i];
-            if (Preferences.applications.themedApps[app.id] !== true) continue;
+            // Fail open: installedApps is filled by async probes at startup, so
+            // an unset id must not mean "not installed".
+            if (root.installedApps[app.id] === false) continue;
+            if (typeof app.hook !== "function") continue;
 
-            var hook = app.hook;
-            if (typeof hook !== "function") continue;
-
-            var result = hook(root.hookColors, ctx);
+            var result = app.hook(root.hookColors, ctx);
             if (!result) continue;
 
             root._writeHookFiles(result.files);

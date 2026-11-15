@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs
-import "../lib/apps.js" as Apps
 pragma Singleton
 
 QtObject {
@@ -44,11 +43,9 @@ QtObject {
     }
 
     property QtObject applications: QtObject {
-        // Defaults come from the single hook registry (lib/apps.js), so
-        // registering an app there is enough to make its toggle appear here.
-        property var themedApps: Apps.defaultThemedApps()
+        property bool theming: false
 
-        onThemedAppsChanged: root.requestSave()
+        onThemingChanged: root.requestSave()
     }
 
     property QtObject globals: QtObject {
@@ -90,7 +87,7 @@ QtObject {
         ["bar", "clock12Hour"],
         ["wallpaper", "directory"],
         ["wallpaper", "transitionDuration"],
-        ["applications", "themedApps"],
+        ["applications", "theming"],
         ["globals", "shellFont"],
         ["globals", "rounding"],
         ["globals", "backgroundOpacity"],
@@ -219,94 +216,16 @@ QtObject {
                     var data = JSON.parse(rawText);
                     if (!data || typeof data !== "object") throw new Error("Invalid JSON");
 
-                    // Snapshot default container values BEFORE the schema-driven load
-                    // overwrites them — later used to reconcile stale entries.
-                    var containerDefaults = Object.create(null);
-                    for (var si = 0; si < _schema.length; si++) {
-                        var snapPath = _schema[si];
-                        var walker = root;
-                        for (var pi = 0; pi < snapPath.length; pi++) walker = walker[snapPath[pi]];
-                        if (Array.isArray(walker)) containerDefaults[snapPath.join(".")] = walker.slice();
-                        else if (walker && typeof walker === "object") containerDefaults[snapPath.join(".")] = Object.assign({}, walker);
-                    }
-
                     // ── SCHEMA-DRIVEN LOAD ─────────────────────────────────
                     for (var i = 0; i < _schema.length; i++) {
                         var path = _schema[i];
-                        // applications.themedApps is handled by merge below
-                        if (path.length === 2 && path[0] === "applications" && path[1] === "themedApps") continue;
                         var val = _getData(data, path);
                         if (val !== undefined) _set(path, val);
-                    }
-
-                    // ── RECONCILE CONTAINERS ────────────────────────────
-                    // Arrays keep only entries a default still lists (a
-                    // component removed by a shell update must not linger) and
-                    // then adopt any default entry they are missing, so a
-                    // component added by an update shows up without wiping the
-                    // user's saved order. Dictionaries only ever gain keys —
-                    // removing one would silently re-enable a default the user
-                    // deliberately turned off.
-                    var reconciled = false;
-                    for (var containerKey in containerDefaults) {
-                        if (containerKey === "applications.themedApps") continue;
-                        var parts = containerKey.split(".");
-                        var current = _get(parts);
-                        var fallback = containerDefaults[containerKey];
-                        if (Array.isArray(fallback) && Array.isArray(current)) {
-                            var valid = Object.create(null);
-                            for (var vi = 0; vi < fallback.length; vi++) valid[fallback[vi]] = true;
-                            var next = current.filter(function (v) { return !!valid[v]; });
-                            for (var mi = 0; mi < fallback.length; mi++)
-                                if (next.indexOf(fallback[mi]) === -1) next.push(fallback[mi]);
-                            if (next.join(" ") !== current.join(" ")) {
-                                _set(parts, next);
-                                reconciled = true;
-                            }
-                        } else if (fallback && current && typeof fallback === "object" && typeof current === "object") {
-                            var merged = Object.assign({}, current);
-                            var added = false;
-                            for (var key in fallback) {
-                                if (!(key in merged)) { merged[key] = fallback[key]; added = true; }
-                            }
-                            if (added) {
-                                _set(parts, merged);
-                                reconciled = true;
-                            }
-                        }
-                    }
-                    var components = root.bar.componentsEnabled;
-                    if (components && typeof components === "object" && "dock" in components) {
-                        var prunedComponents = Object.assign({}, components);
-                        delete prunedComponents.dock;
-                        root.bar.componentsEnabled = prunedComponents;
-                        reconciled = true;
-                    }
-                    if (reconciled)
-                        console.log("[Preferences] Reconciled preferences with the current defaults.");
-
-                    // ── MERGE DICTIONARIES ─────────────────────────────────
-                    var savedApps = _getData(data, ["applications", "themedApps"]);
-                    if (savedApps !== undefined && typeof savedApps === "object") {
-                        var currentApps = root.applications.themedApps;
-                        var appsChanged = false;
-                        for (var appId in savedApps) {
-                            if (!(appId in currentApps)) continue;
-                            if (currentApps[appId] !== savedApps[appId]) {
-                                currentApps[appId] = savedApps[appId];
-                                appsChanged = true;
-                            }
-                        }
-                        if (appsChanged) {
-                            // Reassign to trigger property change
-                            root.applications.themedApps = Object.assign({}, currentApps);
-                        }
                     }
 
                     safetyTimer.stop();
                     root.loaded = true;
 
-                    if (reconciled) root.requestSave();
                 } catch (e) {
                     console.error("[Preferences] Failed to parse preferences file:", e.message);
                 }

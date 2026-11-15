@@ -66,7 +66,6 @@ SettingsPage {
     readonly property var _menuModel: [
         { page: "Style.qml",         title: "Style",         icon: "paintbrush"  },
         { page: "Bar.qml",           title: "Bar",           icon: "panel-top"   },
-        { page: "Integrations.qml",  title: "Integrations",  icon: "layout-grid" },
         { page: "../network/NetworkWifi.qml",      title: "Network",   icon: "wifi",      glyph: true },
         { page: "../network/NetworkBluetooth.qml", title: "Bluetooth", icon: "bluetooth" },
     ]

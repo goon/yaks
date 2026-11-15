@@ -98,11 +98,24 @@ SettingsPage {
                 BaseListItem {
                     leftIcon: "layers"
                     title: "Shadow"
-                    showSeparator: false
 
                     BaseSwitch {
                         checked: Preferences.globals.shadow
                         onToggled: Preferences.globals.shadow = checked
+                    }
+                }
+
+                BaseListItem {
+                    leftIcon: "swatch-book"
+                    title: "Hooks"
+                    showSeparator: false
+
+                    BaseSwitch {
+                        checked: Preferences.applications.theming
+                        onToggled: {
+                            Preferences.applications.theming = checked;
+                            if (checked) Theme.runHooks("manual");
+                        }
                     }
                 }
         }
