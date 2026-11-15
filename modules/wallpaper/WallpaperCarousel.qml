@@ -27,10 +27,10 @@ FocusScope {
     readonly property int contentPadding: 11
     readonly property int edgeFadeWidth: contentPadding
 
-    readonly property int headerH: 34 * Globals.shellScale
     readonly property int footerH: 34 * Globals.shellScale
 
     readonly property bool editingDirectory: dirInput.activeFocus
+    property bool directoryOpen: false
 
     // Directory is edited through the field itself, not a live binding: every change
     // to Preferences.wallpaper.directory kicks off a full rescan (find +
@@ -39,11 +39,27 @@ FocusScope {
         // Assigning rescan kicks off refreshWallpapers(). Empty is a valid value
         // (the settings page shows a warning and disables the gallery), and a
         // same-value assign is a no-op, so Return's double-commit is harmless.
-        Preferences.wallpaper.directory = dirInput.text;
+        // An empty field never commits: the field can be empty while it is still
+        // being seeded from a not-yet-loaded Preferences, and writing that would
+        // wipe a directory the user never touched.
+        if (dirInput.text.trim().length > 0)
+            Preferences.wallpaper.directory = dirInput.text;
+        root.directoryOpen = false;
+    }
+
+    // Field is visible on its own while the gallery is empty; with wallpapers it
+    // only appears when the counter is clicked.
+    function editDirectory() {
+        syncDirectory();
+        root.directoryOpen = true;
+        Qt.callLater(function() {
+            dirInput.forceActiveFocus();
+            dirInput.selectAll();
+        });
     }
 
     readonly property real naturalWidth: 2 * (slotCX[2] + slotW[2] / 2) * s + 2 * contentPadding
-    readonly property real naturalHeight: slotH[0] * s + 2 * contentPadding + headerH + footerH
+    readonly property real naturalHeight: slotH[0] * s + 2 * contentPadding + footerH
 
     function slotLerp(arr, ao) {
         if (ao >= arr.length - 1)
@@ -140,7 +156,7 @@ FocusScope {
             width:  root.slotLerp(root.slotW, ao) * root.s
             height: root.slotLerp(root.slotH, ao) * root.s
             x: root.width / 2 + root.offsetX(off) - width / 2
-            y: (root.height - root.headerH - root.footerH - height) / 2 + root.headerH
+            y: (root.height - root.footerH - height) / 2
             z: 10 - ao
 
             visible: ao <= 3
@@ -272,6 +288,59 @@ FocusScope {
         }
     }
 
+    Row {
+        id: emptyState
+        readonly property bool shown: Wallpaper.hasScanned && !root.model.length
+
+        anchors.centerIn: parent
+        spacing: Globals.geometry.spacing.md
+        visible: shown
+
+        // Masked tinting (MultiEffect) resamples the mask and turns the trace's
+        // hairline strokes to mush, so the art is drawn as-is.
+        Image {
+            width: 104 * Globals.shellScale
+            height: 104 * Globals.shellScale
+            anchors.verticalCenter: parent.verticalCenter
+            rotation: -15
+            source: Qt.resolvedUrl("../../assets/yak.png")
+            fillMode: Image.PreserveAspectFit
+            asynchronous: true
+            opacity: 0.3
+        }
+
+        Column {
+            id: emptyPrompt
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Globals.geometry.spacing.xs
+
+            BaseText {
+                text: "NO WALLPAPERS"
+                font.pixelSize: Globals.typography.size.lg
+                font.weight: Globals.typography.weight.bold
+                font.letterSpacing: 2 * Globals.shellScale
+            }
+
+            // The prompt keeps its slot while editing so the field can sit
+            // exactly on top of it.
+            BaseHeader {
+                id: emptyLabel
+                text: "CLICK HERE TO SET A DIRECTORY"
+                opacity: root.directoryOpen ? 0 : 1
+                muted: !emptyLabelArea.containsMouse
+
+                MouseArea {
+                    id: emptyLabelArea
+                    anchors.fill: parent
+                    anchors.margins: -Globals.geometry.spacing.xs
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.editDirectory()
+                }
+            }
+        }
+    }
+
     WheelHandler {
         onWheel: (event) => Binds.handleWheel(event)
     }
@@ -279,16 +348,29 @@ FocusScope {
     Keys.onPressed: (event) => Binds.handleKey(event)
 
     // ── DIRECTORY ─────────────────────────────────────────────────────
+    // One field, two homes: inline under the empty-state mark, or in the
+    // counter's place once there are wallpapers to browse.
     BaseInput {
         id: dirInput
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: root.contentPadding
-        width: parent.width - 2 * root.contentPadding
+        visible: root.directoryOpen
+        // In the empty state the field sits exactly on the prompt's slot and
+        // starts where the prompt starts, so typing begins under the label
+        // rather than in the middle of the capsule.
+        x: emptyState.shown ? emptyState.x + emptyPrompt.x : root.contentPadding
+        width: emptyState.shown
+            ? parent.width - root.contentPadding - x
+            : parent.width - 2 * root.contentPadding
+        y: emptyState.shown
+            ? emptyState.y + emptyPrompt.y + emptyLabel.y
+                + (emptyLabel.height - height) / 2
+            : parent.height - root.contentPadding - height
+        font.pixelSize: Globals.typography.size.sm
         placeholderText: "/home/user/wallpapers"
         color: Globals.colors.muted
         placeholderTextColor: Globals.colors.muted
-        horizontalAlignment: TextInput.AlignHCenter
+        horizontalAlignment: emptyState.shown
+            ? TextInput.AlignLeft
+            : TextInput.AlignHCenter
         activeFocusOnTab: false
         onEditingFinished: root.commitDirectory()
         Keys.onReturnPressed: {
@@ -303,11 +385,22 @@ FocusScope {
 
     // ── COUNTER ──────────────────────────────────────────────────────
     BaseText {
+        id: counter
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: root.contentPadding
         text: root.model.length > 0 ? (root.currentIndex + 1) + " / " + root.model.length : ""
+        visible: root.model.length > 0 && !root.directoryOpen
         font.pixelSize: Globals.typography.size.sm
-        muted: true
+        muted: !counterArea.containsMouse
+
+        MouseArea {
+            id: counterArea
+            anchors.fill: parent
+            anchors.margins: -Globals.geometry.spacing.sm
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.editDirectory()
+        }
     }
 }
