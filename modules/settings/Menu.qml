@@ -22,7 +22,7 @@ SettingsPage {
         }
     }
 
-    // Do Not Disturb glyph: the bell ↔ bell-off rotate/morph from the old
+    // Silence glyph: the bell ↔ bell-off rotate/morph from the old
     // notification block, so the settings row keeps its animation.
     Component {
         id: dndGlyph
@@ -103,7 +103,7 @@ SettingsPage {
     ColumnLayout {
         id: mainCol
         Layout.fillWidth: true
-        // The nav list and Do Not Disturb row above and the mixer below are
+        // The nav list and Silence row above and the mixer below are
         // separate blocks, each closed by its own rule, so the blocks touch.
         spacing: 0
 
@@ -128,14 +128,14 @@ SettingsPage {
             }
         }
 
-        // Do Not Disturb lives here as a plain row, not a page: the only
-        // setting in the nav block with a switch instead of a chevron.
+        // Silence lives here as a plain row, not a page: the only setting in
+        // the nav block with a switch instead of a chevron.
         BaseListItem {
             // leftIcon stays set (string unused for drawing once the glyph
             // component lands) so the row separator keeps the nav indent.
             leftIcon: "bell"
             leftIconComponent: dndGlyph
-            title: "Do Not Disturb"
+            title: "Silence"
             verticalPadding: 0
             showSeparator: false
 
